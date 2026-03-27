@@ -23,6 +23,7 @@ team patterns, then scaffolding `.vine/hooks/` with project-specific templates.
 2. Asks the engineer about team context that can't be derived from code
 3. Generates `.vine/hooks/shared.md` and per-phase hook files pre-filled with relevant context
 4. Optionally adds `.vine/` to `.gitignore`
+5. Introduces the engineer profile (builds organically through vine:verify)
 
 ## Step 1: Discover Repo Capabilities
 
@@ -115,7 +116,22 @@ not repo artifacts — they shouldn't be committed by default.
 If the engineer explicitly wants to commit VINE artifacts (e.g., for team sharing), they
 can `git add -f .vine/` selectively.
 
-## Step 5: Upgrade Existing Projects
+## Step 5: Introduce Engineer Profile
+
+After generating hooks, briefly mention the engineer profile to the engineer:
+
+> "VINE can track your familiarity with different areas of this codebase so it adjusts
+> explanation depth — more detail in unfamiliar domains, more concise where you're confident.
+> This builds organically: the first time you run `/vine:verify` in a new domain, you'll be
+> asked to rate your familiarity. No setup needed now."
+
+Do **not** ask any domain rating questions here. The profile seeds itself through vine:verify
+as the engineer works in different domains. This step is purely informational.
+
+If `.vine/PROFILE.md` already exists (e.g., from a previous init or manual creation), skip
+this message entirely.
+
+## Step 6: Upgrade Existing Projects
 
 If `.vine/hooks/` already exists (from a previous `/vine:init` or manual setup), run in
 **upgrade mode** instead of overwriting:
@@ -147,7 +163,10 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your project hooks will be loaded automatically.
 
+👤 Your engineer profile (.vine/PROFILE.md) will build as you work —
+   each new domain prompts a quick familiarity check during verify.
+
 💡 Tip: As you complete VINE cycles, `/vine:evolve` will suggest
-   updates to your hook files based on what you learn.
+   updates to your hook files and profile based on what you learn.
 ---
 ```

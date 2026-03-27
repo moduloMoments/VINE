@@ -197,7 +197,7 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 
 **Lifecycle:**
 
-1. **Seeded** at vine:init (Step 5) — optional. Uses domains discovered during repo scan. Engineer rates each via AskUserQuestion. Skippable.
+1. **Introduced** at vine:init (Step 5) — informational only. Tells the engineer the profile exists and will build through vine:verify. No domain rating at init time.
 2. **Re-prompted** at vine:verify start — if the current feature's domain isn't in the profile, offers to add it.
 3. **Read** by vine:verify, vine:inquire, and vine:navigate — sets a one-sentence depth hint for the session. If no profile exists or the domain isn't listed, commands behave exactly as today.
 4. **Updated** by vine:evolve — proposes domain level changes and growth log entries based on the completed cycle. Engineer approves via AskUserQuestion. Evolve also suggests Claude memory entries and CLAUDE.md lines for general preferences discovered during the cycle.
