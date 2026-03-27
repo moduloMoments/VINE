@@ -4,7 +4,7 @@
 
 VINE is a command chain for AI-assisted feature development in established codebases. It keeps the human connected, learning, and steering throughout — not watching from the sidelines while an AI codes autonomously.
 
-> **Early adopter alert.** VINE is in active development. The commands work and we use them daily, but expect rough edges. Contributing guidelines are coming soon — for now, open an issue if something breaks or feels off.
+> **Early adopter alert.** VINE is in active development. The commands work and we use them daily, but expect rough edges. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get involved, or open a [Discussion](../../discussions) if something breaks or feels off.
 
 ## Philosophy
 
@@ -40,7 +40,7 @@ Build the feature together. The engineer steers direction, Claude executes and e
 **Output:** `.vine/<domain>/<feature-slug>/NAVIGATION.md` + staged changes (not committed)
 
 ### vine:evolve — Triple Evolution
-Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new skills). User growth (knowledge gained, areas to explore).
+Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new commands). User growth (knowledge gained, areas to explore).
 
 **Output:** `.vine/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
 
@@ -145,7 +145,7 @@ commands, and conventions without forking the commands themselves.
 
 Loaded by every VINE phase. Contains repo-wide context:
 
-- Available slash commands, skills, and agents with descriptions
+- Available slash commands and agents with descriptions
 - Project conventions (testing, linting, naming, architecture patterns)
 - Team context (ownership, review patterns, external integrations)
 - CI/CD commands (how to run tests, lint, build)
@@ -182,15 +182,21 @@ should auto-run.
 
 These files are human-readable, git-friendly, and designed to survive session boundaries.
 
-## Comparison
+## How VINE compares
 
-| | GSD | PAUL | VINE |
-|---|---|---|---|
-| **Optimizes for** | Speed | Quality | Growth (product + agent + user) |
-| **Human role** | Approves | Reviews | Steers throughout |
-| **Commits** | Auto | Auto | Manual (engineer commits) |
-| **Best for** | Greenfield | Quality-critical | Established codebases |
-| **Learning model** | One-way (AI executes) | One-way (AI executes + verifies) | Two-way (both learn) |
+Most AI coding frameworks optimize for autonomous speed — the AI writes code, the human approves. VINE takes a different approach:
+
+| | Autonomous frameworks | VINE |
+|---|---|---|
+| **Optimizes for** | Speed | Growth (product + agent + user) |
+| **Human role** | Approves at the end | Steers throughout |
+| **Commits** | Auto | Engineer commits per slice |
+| **Best for** | Greenfield / scripted tasks | Established codebases |
+| **Learning model** | One-way (AI executes) | Two-way (both learn) |
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. The short version: open an issue or [Discussion](../../discussions) before submitting a PR.
 
 ## License
 
