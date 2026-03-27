@@ -121,6 +121,7 @@ commands, and conventions without forking the commands themselves.
 
 ```
 .vine/
+├── PROFILE.md                     # Engineer profile (per-repo, built over time)
 ├── hooks/
 │   ├── shared.md                  # Loaded by ALL phases
 │   ├── verify.md                  # verify-specific extensions
@@ -179,8 +180,21 @@ should auto-run.
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
+| `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo) |
 
 These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
+
+## Engineer Profile
+
+VINE tracks your growth through a layered profile model:
+
+**VINE layer** (`.vine/PROFILE.md`) — Tracks which domains of this codebase you're comfortable with, based on actual VINE cycles. Four levels: **confident**, **familiar**, **learning**, **new**. Commands use this to adjust explanation depth — more detail in unfamiliar areas, more concise where you're confident.
+
+**Claude layer** (memory + CLAUDE.md) — General preferences, interaction style, learning patterns. Suggested by `vine:evolve` after each cycle.
+
+The profile builds organically. The first time you run `vine:verify` in a new domain, you'll be asked to rate your familiarity. As you complete cycles, `vine:evolve` proposes level updates and growth log entries. No upfront setup required.
+
+This separation avoids duplication: VINE handles what Claude doesn't cover (per-domain expertise tracking), while Claude's native memory handles what it's already good at (general preferences and interaction patterns).
 
 ## How VINE compares
 
