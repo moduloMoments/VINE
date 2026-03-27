@@ -186,9 +186,11 @@ These files are human-readable, git-friendly, and designed to survive session bo
 
 ## Engineer Profile
 
+With AI assistance, engineers at every level are moving into unfamiliar domains at increasing speed. A principal exploring a new area of the codebase deserves the same depth of explanation as a junior encountering it for the first time. A junior who's built confidence in their domain deserves the same concise respect as a senior. The profile tracks domain expertise, not seniority — helping juniors to principals grow in areas both new and familiar.
+
 VINE tracks your growth through a layered profile model:
 
-**VINE layer** (`.vine/PROFILE.md`) — Tracks which domains of this codebase you're comfortable with, based on actual VINE cycles. Four levels: **confident**, **familiar**, **learning**, **new**. Commands use this to adjust explanation depth — more detail in unfamiliar areas, more concise where you're confident.
+**VINE layer** (`.vine/PROFILE.md`) — Tracks which domains of this codebase you're comfortable with, based on actual VINE cycles. Four levels: **confident**, **familiar**, **learning**, **new**. Commands use this to meet you where you are — more context and explanation in unfamiliar areas, more concise and focused where you're confident.
 
 **Claude layer** (memory + CLAUDE.md) — General preferences, interaction style, learning patterns. Suggested by `vine:evolve` after each cycle.
 
