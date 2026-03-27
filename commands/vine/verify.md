@@ -220,8 +220,9 @@ When you and the engineer feel you have a solid understanding of the landscape, 
    - [open question 2]
    - [tech debt decision needed]
 
-🔄 Start a fresh session for vine:inquire. Verify is exploratory — inquire
-   needs a clean, decisive headspace. CONTEXT.md carries everything forward.
+🔄 Recommended: Run `/clear` before starting vine:inquire.
+   Verify is exploratory — inquire needs a clean, decisive headspace.
+   CONTEXT.md carries everything forward; conversation context doesn't need to.
 
 🌱 Phase retro:
    - CLAUDE.md suggestion: [any project-level context worth persisting]

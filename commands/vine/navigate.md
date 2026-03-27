@@ -219,7 +219,7 @@ and committed independently.
    Slices completed: [list]
    Changes ready for review: [file count]
 
-🔄 Suggest starting a fresh session for Phase group [N+1: name].
+🔄 Recommended: Run `/clear` before starting Phase group [N+1: name].
    This group focused on [what was built]. The next group shifts to
    [what's next]. NAVIGATION.md carries the full context forward.
 
@@ -267,8 +267,9 @@ When all slices are implemented (or the engineer decides to stop):
    - [decisions that should be reviewed]
    - [discovered items to triage]
 
-🔄 Start a fresh session for vine:evolve. Navigate is tactical — evolve needs
-   a reflective, evaluative headspace. NAVIGATION.md carries everything forward.
+🔄 Recommended: Run `/clear` before starting vine:evolve.
+   Navigate is tactical — evolve needs a reflective, evaluative headspace.
+   NAVIGATION.md carries everything forward; conversation context doesn't need to.
 
 🌱 Phase retro:
    - CLAUDE.md suggestion: [coding patterns or conventions discovered]

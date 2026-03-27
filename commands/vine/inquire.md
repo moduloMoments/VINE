@@ -230,8 +230,9 @@ When the spec is solid and the engineer has signed off:
    Starting with [Phase 1: name / Slice 1: name]
    [1-2 sentence summary of what's first]
 
-🔄 Start a fresh session for vine:navigate. Inquire is analytical — navigate
-   needs a tactical, implementation-focused headspace. SPEC.md carries everything forward.
+🔄 Recommended: Run `/clear` before starting vine:navigate.
+   Inquire is analytical — navigate needs a tactical, implementation-focused headspace.
+   SPEC.md carries everything forward; conversation context doesn't need to.
 
 🌱 Phase retro:
    - CLAUDE.md suggestion: [any project conventions or decisions worth persisting]
