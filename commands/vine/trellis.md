@@ -48,24 +48,25 @@ extension. For example, `verify.md` must have `name: vine:verify`.
 
 ### Check 3: H1 Title Format
 
-The first H1 heading (line starting with `# `) must follow the pattern:
+The first line starting with `# ` (after the frontmatter closing `---`) must follow this pattern:
 
 ```
-# vine:<name> — <Subtitle>
+# vine:<stem> — <Subtitle>
 ```
 
-Where `<name>` matches the `name` field from frontmatter (without the `vine:` prefix on the
-left side — the full `vine:<name>` appears after `# `). The subtitle can be any text. The
-em dash ` — ` (space, em dash, space) is required as the separator.
+Where `<stem>` is the filename without `.md` (e.g., `verify.md` → `# vine:verify — ...`).
+The subtitle can be any text. The separator must be ` — ` (space, em dash, space) — not a
+hyphen, not a dash without spaces.
 
 ### Check 4: Load Project Hooks Section (non-init only)
 
 **Skip this check for `init.md` and `trellis.md`** — init creates hooks and trellis is a
 VINE-repo-only validation tool; neither loads project hooks.
 
-The command must contain a `## Load Project Hooks` section. Within that section, the text must
-reference `.vine/hooks/<phase>.md` where `<phase>` matches the command's stem name (e.g.,
-`verify.md` must reference `.vine/hooks/verify.md`).
+The command must contain a `## Load Project Hooks` heading. Between that heading and the next
+`##` heading, the text must contain the string `.vine/hooks/<phase>.md` where `<phase>` matches
+the command's stem name (e.g., `verify.md` must contain `.vine/hooks/verify.md` in its hooks
+section).
 
 ### Check 5: Load Engineer Profile Section (non-init/trellis only)
 
@@ -75,17 +76,26 @@ doesn't load it; trellis is a structural validation tool that doesn't need profi
 The command must contain a section with heading `## Load Engineer Profile` (or a heading that
 starts with `## Load Engineer Profile`).
 
-### Check 6: Allowed Tools Valid
+### Check 6: Section Ordering (non-init/trellis only)
 
-Every entry in the command's `allowed-tools` list must appear in the known tool set derived
-in Step 2. If a command introduces a tool name that no other command uses, that's fine — it
-adds to the union. This check catches typos, not novel tools.
+**Skip this check for `init.md` and `trellis.md`.**
 
-Since the known set is the union of all commands, this check effectively verifies that no
-command has a tool name that appears in only that one command's list AND looks like a typo
-of a known tool. In practice: verify the tools parse as a clean YAML list of strings.
+When both hooks and profile sections are present, the `## Load Project Hooks` heading must
+appear before `## Load Engineer Profile` in the file. This matches the convention: load hooks
+first (they may affect how the rest of the command behaves), then load the profile.
 
-### Check 7: AskUserQuestion Referenced
+### Check 7: Allowed Tools Valid
+
+The `allowed-tools` field must be a YAML list of strings (each prefixed with `  - `). Verify:
+
+1. **Well-formed**: Each entry is a single capitalized word (e.g., `Read`, `AskUserQuestion`),
+   not a sentence or path.
+2. **Non-empty**: At least one tool is listed.
+3. **Known**: Each tool appears in the known tool set derived in Step 2 (the union across all
+   commands). Since the union includes every command's tools, a tool that only one command uses
+   is still valid — this check catches misspellings, not novel tools.
+
+### Check 8: AskUserQuestion Referenced
 
 The string `AskUserQuestion` must appear somewhere in the command body (the content after
 the closing `---` of the frontmatter). This confirms the command references the preferred
@@ -96,15 +106,15 @@ interaction pattern.
 Present results as a summary table with commands as rows and checks as columns:
 
 ```
-| Command   | Frontmatter | Name | H1  | Hooks | Profile | Tools | AskUser |
-|-----------|-------------|------|-----|-------|---------|-------|---------|
-| init      | ✅          | ✅   | ✅  | skip  | skip    | ✅    | ✅      |
-| verify    | ✅          | ✅   | ✅  | ✅    | ✅      | ✅    | ✅      |
-| trellis   | ✅          | ✅   | ✅  | skip  | skip    | ✅    | ✅      |
-| ...       |             |      |     |       |         |       |         |
+| Command   | Frontmatter | Name | H1  | Hooks | Profile | Order | Tools | AskUser |
+|-----------|-------------|------|-----|-------|---------|-------|-------|---------|
+| init      | ✅          | ✅   | ✅  | skip  | skip    | skip  | ✅    | ✅      |
+| verify    | ✅          | ✅   | ✅  | ✅    | ✅      | ✅    | ✅    | ✅      |
+| trellis   | ✅          | ✅   | ✅  | skip  | skip    | skip  | ✅    | ✅      |
+| ...       |             |      |     |       |         |       |       |         |
 ```
 
-Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init exceptions).
+Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init/trellis exceptions).
 
 After the table, print a summary line:
 
