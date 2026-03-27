@@ -10,6 +10,7 @@ allowed-tools:
   - Edit
   - Bash
   - Agent
+  - AskUserQuestion
 ---
 
 # vine:navigate — Guided Implementation
@@ -33,8 +34,8 @@ your approach, and teaching you things about the domain that make the implementa
 ### 1. Load Context and Spec
 
 Identify the feature directory under `.vine/` (e.g., `.vine/payments/webhook-support/`). If
-there are multiple feature directories, present a select prompt listing them with last-modified
-dates so the engineer can quickly pick the right one.
+there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
+feature to work on.
 
 Read `.vine/<domain>/<feature-slug>/CONTEXT.md` and `.vine/<domain>/<feature-slug>/SPEC.md`. If either is
 missing, tell the engineer which prior phase needs to run first.
@@ -90,22 +91,17 @@ structured something a certain way. This is learning time — for both of you.
 
 **d. Surface decisions, don't make them silently**
 
-When you encounter something not covered by the spec (and you will), surface it as a
-structured choice. Don't leave it open-ended — present the options you see with a recommendation:
+When you encounter something not covered by the spec (and you will), use `AskUserQuestion`
+to present the options interactively. Never print markdown option lists for the engineer to
+respond to.
 
-> **The spec says to validate input, but I see two patterns in the codebase:**
-> 1. Decorator pattern (recommended) — matches newer services, less coupling
-> 2. Middleware pattern — matches older services, more consistent with payments module
-> 3. Other: ___
-
-When multiple tactical decisions stack up (e.g., naming conventions, error handling approach,
-test strategy), batch them into a multi-select so the engineer can make several calls at once
-instead of a serial Q&A:
-
-> **A few decisions before I continue with this slice:**
-> 1. Use `PaymentError` base class for all provider errors? (recommended) [yes/no]
-> 2. Add retry wrapper at the factory level or provider level? [factory (recommended) / provider]
-> 3. Include idempotency key in the interface? [yes (recommended) / no, defer]
+Key constraints for `AskUserQuestion`:
+- Max 4 questions per call, max 4 options per question (auto-adds "Other")
+- Use `multiSelect: false` for mutually exclusive choices (which pattern, which approach)
+- Use `multiSelect: true` when batching yes/no tactical decisions together
+- Put the recommended option first with "(Recommended)" appended to its label
+- Use short labels (1-5 words) with descriptions for tradeoff context
+- Batch related decisions into one call when possible
 
 The engineer decides. You document each decision in NAVIGATION.md.
 

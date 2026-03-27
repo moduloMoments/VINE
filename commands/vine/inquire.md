@@ -9,6 +9,7 @@ allowed-tools:
   - Write
   - Edit
   - Agent
+  - AskUserQuestion
 ---
 
 # vine:inquire — Feature Specification & Design
@@ -26,12 +27,7 @@ decide, and document everything. The output is a SPEC.md that vine:navigate can 
 
 Identify the feature directory under `.vine/`. Look for the domain/feature-slug path
 (e.g., `.vine/payments/webhook-support/`). If there's only one feature directory, use that.
-If there are multiple, present a select prompt:
-
-> **Which feature are you working on?**
-> 1. payments/webhook-support (last modified: today)
-> 2. auth/sso-migration (last modified: 3 days ago)
-> 3. Other: ___
+If there are multiple, use `AskUserQuestion` to let the engineer pick which feature to work on.
 
 Read `.vine/<domain>/<feature-slug>/CONTEXT.md` from the project. If it doesn't exist, tell the engineer:
 
@@ -59,25 +55,19 @@ The goal is informed decisions, not decision theater.
 
 Now propose the architecture. For each significant design decision:
 
-**Present options as structured choices.** Use single-select prompts for architecture decisions.
-Always lead with your recommendation and explain why, but give real alternatives:
+**Use AskUserQuestion for all design decisions.** Never print markdown option lists — use the
+interactive `AskUserQuestion` tool instead. This gives the engineer a clean UI with selectable
+options.
 
-> **How should we handle payment provider abstraction?**
-> 1. Factory pattern (recommended) — cleanest extension path, each provider is a class.
->    Tradeoff: more boilerplate upfront.
-> 2. Strategy pattern — lighter weight, providers are functions.
->    Tradeoff: harder to test in isolation.
-> 3. Direct integration — fastest to ship, refactor later.
->    Tradeoff: tech debt, coupling.
-> 4. Other: ___
-
-For tech debt triage, use multi-select so the engineer can batch decisions:
-
-> **Which tech debt items should we address during this feature?** (select all that apply)
-> 1. Migrate off deprecated auth middleware (recommended — it's in our critical path)
-> 2. Clean up dead code in payment utils
-> 3. Add missing index on transactions table
-> 4. None — defer all to backlog
+Key constraints:
+- Max 4 questions per AskUserQuestion call, max 4 options per question
+- The tool auto-adds an "Other" option — don't include one manually
+- Use `multiSelect: true` for inclusive choices (which tech debt to address, which criteria to keep)
+- Use `multiSelect: false` for mutually exclusive choices (architecture direction, pattern to follow)
+- Put the recommended option first with "(Recommended)" appended to its label
+- Use short labels (1-5 words) with longer descriptions for tradeoffs
+- Batch related decisions into one call when possible (e.g., architecture + tech debt triage)
+- If more than 4 options exist for a topic, split by category across multiple questions
 
 **Wait for the decision.** Don't assume. Don't proceed. The engineer decides.
 

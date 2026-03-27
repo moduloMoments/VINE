@@ -10,6 +10,7 @@ allowed-tools:
   - Edit
   - Bash
   - Agent
+  - AskUserQuestion
 ---
 
 # vine:evolve — Triple Evolution
@@ -21,8 +22,8 @@ ship — every feature is an opportunity to grow on three dimensions.
 ## Getting Started
 
 Identify the feature directory under `.vine/` (e.g., `.vine/payments/webhook-support/`). If
-there are multiple feature directories, present a select prompt listing them with last-modified
-dates so the engineer can quickly pick the right one.
+there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
+feature to review.
 
 Read all VINE artifacts for this feature:
 - `.vine/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
@@ -125,13 +126,10 @@ project's equivalent configuration). These might include:
 - **Tribal knowledge codified**: Things from CONTEXT.md that should be persistent project knowledge
   rather than living in one VINE session's artifacts.
 
-Present the suggestions as a multi-select so the engineer can batch their decisions:
-
-> **CLAUDE.md updates — which should we add?** (select all that apply)
-> 1. Repository pattern convention for data access (recommended)
-> 2. Feature flag gating requirement
-> 3. Integration test database reset convention
-> 4. None — these aren't general enough yet
+Use `AskUserQuestion` with `multiSelect: true` to let the engineer batch their decisions on
+which suggestions to accept. Max 4 options per question — if you have more suggestions, split
+across multiple calls by category. Put the strongest recommendation first with "(Recommended)"
+in its label.
 
 For each accepted suggestion, draft the exact text to add. The engineer manages the file —
 you draft, they commit.

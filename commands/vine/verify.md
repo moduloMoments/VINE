@@ -8,6 +8,7 @@ allowed-tools:
   - Grep
   - Agent
   - WebFetch
+  - AskUserQuestion
 ---
 
 # vine:verify — Context Building Spike
@@ -19,18 +20,19 @@ change as it happens, not after the fact. If the session is running in auto-acce
 switching before proceeding. The whole point is that both human and AI stay engaged with every
 decision.
 
-**Use structured questions throughout.** Whenever you're asking the engineer to make a choice,
-present it as a structured select or multi-select rather than an open-ended question. This keeps
-the flow tight and makes decisions explicit. Use single-select for mutually exclusive choices
-(architecture direction, which pattern to follow) and multi-select for inclusive ones (which tech
-debt items to address, which areas to explore). Always include a recommendation with brief
-rationale, and always offer an "other" escape hatch for when none of your options fit. Example:
+**Use AskUserQuestion for all decision points.** Never print markdown lists for the engineer to
+respond to. Instead, use the `AskUserQuestion` tool to present interactive prompts. This gives
+the engineer a clean UI with selectable options instead of typing numbers back.
 
-> **Which areas should we explore first?** (select all that apply)
-> 1. Payment processing pipeline (recommended — most affected by this feature)
-> 2. Notification service integration
-> 3. Database migration history
-> 4. Other: ___
+Key constraints:
+- Max 4 questions per AskUserQuestion call
+- Max 4 options per question (the tool auto-adds an "Other" escape hatch)
+- Use `multiSelect: true` for inclusive choices (which areas to explore, which debt to address)
+- Use `multiSelect: false` for mutually exclusive choices (architecture direction, environment)
+- Put the recommended option first with "(Recommended)" appended to its label
+- If you have more than 4 options, split by category across multiple questions
+- Batch related decisions into one AskUserQuestion call when possible
+- Use short labels (1-5 words) with longer descriptions for context
 
 You and the engineer are about to explore a codebase together. Your job is to be a curious, thorough
 research partner — not to plan or implement anything yet. Think of this as a spike: you're both
@@ -155,17 +157,9 @@ This two-level namespacing gives you collision prevention (multiple features in 
 and discoverability (see all VINE work in a domain at a glance). It also survives across repos
 if you work on the same domain in different services.
 
-When starting, present the engineer with a structured choice for the domain and feature slug.
-Use a select prompt to suggest likely domains based on the codebase areas discussed, with an
-option to enter a custom one:
-
-> **What domain does this feature belong to?**
-> 1. payments (based on the modules we explored)
-> 2. auth
-> 3. [enter custom domain]
->
-> **Feature slug?** (short, lowercase, hyphenated)
-> Suggestion: `webhook-support`
+When starting, use `AskUserQuestion` to let the engineer select the domain and confirm the
+feature slug. Suggest likely domains based on the codebase areas discussed. The tool auto-adds
+an "Other" option for custom input. Follow up with a second prompt for the feature slug if needed.
 
 Confirm both before creating the directory.
 
