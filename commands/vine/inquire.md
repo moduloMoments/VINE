@@ -27,6 +27,24 @@ Before starting this phase, check for project-level VINE hooks:
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
+## Load Engineer Profile
+
+After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
+
+If it exists, read it and extract the Domain Expertise table. Once you identify the feature
+directory (in "Load the Context" below), check the domain portion of the path against the
+profile's domain entries.
+
+- **If the domain is in the profile**: Set the depth hint for this session based on their level.
+- **If the domain is NOT in the profile or no profile exists**: Proceed normally — no prompt,
+  no warning. The profile is opt-in and verify handles seeding.
+
+**Depth hint pattern** (internal, not shown to the engineer):
+
+> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
+> explanation depth accordingly — be concise where they're confident, explain the why behind
+> decisions where they're learning or new."
+
 ---
 
 You and the engineer are designing a feature. The landscape has already been mapped in vine:verify

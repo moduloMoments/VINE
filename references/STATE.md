@@ -4,9 +4,11 @@ This document defines the state artifacts that flow between VINE phases. Each ph
 
 ## Directory Structure
 
-All artifacts live under `.vine/<domain>/<feature-slug>/` in the project root. The domain is the logical area the feature touches (e.g., `payments`, `auth`, `onboarding`). The feature slug is a short, lowercase, hyphenated name for the specific work (e.g., `webhook-support`, `retry-logic`). Both are confirmed with the engineer during vine:verify via structured select prompts.
+Per-feature artifacts live under `.vine/<domain>/<feature-slug>/` in the project root. The domain is the logical area the feature touches (e.g., `payments`, `auth`, `onboarding`). The feature slug is a short, lowercase, hyphenated name for the specific work (e.g., `webhook-support`, `retry-logic`). Both are confirmed with the engineer during vine:verify via structured select prompts.
 
 This two-level namespacing allows multiple features to be VINEd concurrently without collision — even features in the same domain. It also provides discoverability: `ls .vine/payments/` shows all payment-related VINE work at a glance.
+
+Per-repo artifacts (like `.vine/PROFILE.md`) live directly under `.vine/` and persist across all VINE cycles.
 
 ## State Files
 
@@ -158,6 +160,57 @@ The triple evolution report. Captures growth across product, agent, and user.
 - **Commit Suggestions**: [if changes aren't already committed]
 - **Context for future sessions**: What someone picking this up should know
 ```
+
+## Per-Repo Artifacts
+
+### PROFILE.md (seeded by vine:init, updated by vine:evolve)
+
+The engineer profile. Tracks per-domain expertise within this specific repo so VINE commands can adjust explanation depth — more narration in unfamiliar areas, more concise in comfort zones.
+
+Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root, not under a feature directory). It persists across all VINE cycles and grows over time.
+
+```markdown
+# Engineer Profile
+
+## Domain Expertise
+
+| Domain | Level | Last Updated | Notes |
+|--------|-------|--------------|-------|
+| auth | confident | 2026-03-15 | Built OAuth integration |
+| payments | learning | 2026-03-27 | First cycle in progress |
+
+## Growth Log
+
+### 2026-03-27 — payments/webhook-support
+- Explored webhook validation patterns
+- First exposure to idempotency keys
+```
+
+**Expertise levels** (four, ordered by familiarity):
+
+| Level | Meaning | Command behavior |
+|-------|---------|-----------------|
+| **confident** | Has built in this domain via VINE cycles | Concise narration, skip basics |
+| **familiar** | Has explored or reviewed this domain | Light narration, explain non-obvious choices |
+| **learning** | Currently working through first cycles | Full narration, explain the why behind decisions |
+| **new** | No prior VINE exposure to this domain | Full narration, explain patterns and context |
+
+**Lifecycle:**
+
+1. **Introduced** at vine:init (Step 5) — informational only. Tells the engineer the profile exists and will build through vine:verify. No domain rating at init time.
+2. **Re-prompted** at vine:verify start — if the current feature's domain isn't in the profile, offers to add it.
+3. **Read** by vine:verify, vine:inquire, and vine:navigate — sets a one-sentence depth hint for the session. If no profile exists or the domain isn't listed, commands behave exactly as today.
+4. **Updated** by vine:evolve — proposes domain level changes and growth log entries based on the completed cycle. Engineer approves via AskUserQuestion. Evolve also suggests Claude memory entries and CLAUDE.md lines for general preferences discovered during the cycle.
+
+**Depth hint pattern** (used internally by commands, not shown to the engineer):
+
+> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your explanation depth accordingly — be concise where they're confident, explain the why behind decisions where they're learning or new."
+
+**Design constraints:**
+
+- **Fully opt-in.** Every command works identically without PROFILE.md. No errors, no warnings, no degraded behavior.
+- **Domain matching is exact.** The domain in PROFILE.md must match the `.vine/<domain>/` namespace exactly. No fuzzy matching.
+- **Engineer controls updates.** Evolve suggests changes; the engineer approves or modifies them. VINE never silently updates the profile.
 
 ## Chaining Protocol
 

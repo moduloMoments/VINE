@@ -8,6 +8,7 @@ allowed-tools:
   - Grep
   - Agent
   - WebFetch
+  - Write
   - AskUserQuestion
 ---
 
@@ -27,6 +28,44 @@ Before starting this phase, check for project-level VINE hooks:
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, this is likely a
 first VINE run — suggest running `/vine:init` to scaffold the hooks directory.
+
+## Load Engineer Profile
+
+After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
+
+If it exists, read it and extract the Domain Expertise table. You'll use this later — once
+the engineer confirms which domain this feature lives in (during CONTEXT.md creation), check
+whether that domain appears in the profile.
+
+- **If the domain is in the profile**: Set the depth hint for this session based on their level.
+  Use this internally to calibrate your exploration narration — be concise where they're
+  confident, explain the why behind things where they're learning or new.
+- **If the domain is NOT in the profile**: After the engineer confirms the domain via
+  AskUserQuestion, ask them to rate their familiarity:
+
+  Use `AskUserQuestion` with a single question:
+  > "This is your first VINE cycle in the [domain] domain. How familiar are you with this
+  > area of the codebase?"
+
+  Options (mutually exclusive):
+  1. "Confident" — "I've built and maintained features here"
+  2. "Familiar" — "I've read and reviewed code here"
+  3. "Learning" — "I've seen it but haven't worked in it much"
+  4. "New" — "This is my first time in this area"
+
+  Add the domain to `.vine/PROFILE.md` with the selected level and today's date. If
+  PROFILE.md doesn't exist yet, create it with the format documented in `references/STATE.md`.
+
+If no profile exists and the engineer hasn't confirmed a domain yet, do nothing — the prompt
+happens naturally when the domain is confirmed during CONTEXT.md creation. No upfront questions.
+
+**Depth hint pattern** (internal, not shown to the engineer):
+
+> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
+> explanation depth accordingly — be concise where they're confident, explain the why behind
+> decisions where they're learning or new."
+
+If no profile exists or the domain isn't listed, proceed exactly as you would without a profile.
 
 ## Before You Start
 
