@@ -4,6 +4,8 @@
 
 VINE is a command chain for AI-assisted feature development in established codebases. It keeps the human connected, learning, and steering throughout — not watching from the sidelines while an AI codes autonomously.
 
+> **Early adopter alert.** VINE is in active development. The commands work and we use them daily, but expect rough edges. Contributing guidelines are coming soon — for now, open an issue if something breaks or feels off.
+
 ## Philosophy
 
 Most AI coding frameworks optimize for speed. VINE optimizes for **three things growing together**:
@@ -77,6 +79,20 @@ cp -r commands/vine .claude/commands/vine
 ```
 
 Or clone the repo and symlink.
+
+### Piloting in an existing project (e.g., at work)
+
+VINE creates a `.vine/` directory for feature artifacts and hooks. If you're trying VINE in a repo you don't want to modify tracked files in, add `.vine/` to your global gitignore so it stays local:
+
+```bash
+# Create a global gitignore if you don't have one
+git config --global core.excludesFile ~/.gitignore_global
+
+# Add .vine/ to it
+echo '.vine/' >> ~/.gitignore_global
+```
+
+This keeps your `.vine/` artifacts out of version control across all repos. When your team is ready to adopt VINE together, you can remove it from the global gitignore and commit `.vine/hooks/` to the repo instead.
 
 ## Usage
 
