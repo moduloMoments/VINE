@@ -53,35 +53,32 @@ what was actually built versus what was planned.
 
 This is the verification and quality pass. The product should be better than when you started.
 
-### Verify Against Acceptance Criteria
+### Trust Per-Slice Verification
 
-Go through each acceptance criterion in SPEC.md:
+Navigate now validates and commits each slice with its acceptance criteria. Don't re-read every
+file or re-check per-slice ACs — trust the commit history. Instead, pull the verification
+summary from NAVIGATION.md's slice entries (each has an acceptance criteria checklist and
+validation status).
 
-For each criterion:
-1. Check whether the implementation satisfies it
-2. If there are tests, run them
-3. If there aren't tests but should be, note it
-4. If the criterion was modified during navigate, check against the modified version
+Present a rollup of per-slice results from NAVIGATION.md, then focus your effort on what
+navigate couldn't verify:
 
-Present results clearly:
+### Cross-Slice Integration Check
 
-```
-Acceptance Criteria Verification:
-✅ AC-1: Payment factory returns correct provider — verified via unit test
-✅ AC-2: Stripe charges process within 500ms — verified via integration test
-⚠️  AC-3: Webhook signature validation — implemented but no test coverage
-❌ AC-4: Retry logic on provider timeout — not implemented (deferred in Slice 3)
-```
+This is where evolve adds value. Verify that the slices work together as a whole:
 
-For anything that's not passing, discuss with the engineer. Some items may be acceptable
-deferrals, others may need to be addressed before shipping.
+- Do the pieces integrate correctly? (data flows between modules, imports resolve, etc.)
+- Run the full test suite (not just per-file tests from navigate's validation)
+- Check for cross-cutting concerns: error handling paths, edge cases that span slices,
+  performance implications of the combined changes
+- If `.vine/hooks/evolve.md` defines integration validation commands, run those
 
 ### Review Spec Deviations
 
-Check NAVIGATION.md for any deviations from SPEC.md. For each:
+Since navigate now annotates deviations directly in SPEC.md (strikethroughs/addenda), the
+deviations table should be straightforward to compile. For each deviation:
 - Was it a justified tactical decision?
 - Does it change the feature's behavior in ways stakeholders should know about?
-- Should the spec be updated to reflect reality?
 
 ### Identify Follow-Up Work
 
@@ -99,18 +96,22 @@ Suggest concrete backlog items with enough context that someone else could pick 
 Generate the materials the engineer needs to ship:
 
 **Suggested PR description:**
+
+Since each slice is already committed, use `git log --oneline <base>..HEAD` to build the
+Changes section from the actual commit history rather than reconstructing a narrative:
+
 ```markdown
 ## Summary
 [What this PR does, tied to the problem statement from SPEC.md]
 
 ## Changes
-[Key changes organized by purpose, not by file]
+[Built from git log — each slice commit tells the story]
 
 ## Decisions Made
 [Non-obvious choices with rationale, from NAVIGATION.md]
 
 ## Testing
-[What's tested, what's not, and why]
+[What's tested per-slice + integration results from evolve]
 
 ## Follow-up
 [Items deferred or discovered during implementation]
@@ -119,9 +120,6 @@ Generate the materials the engineer needs to ship:
 **Reviewer notes:** What should the reviewer pay attention to? What context do they need?
 Pull this from CONTEXT.md's tribal knowledge — things a reviewer wouldn't know from just
 reading the diff.
-
-**Suggested commit message(s):** If the engineer hasn't committed yet, suggest how to
-structure the commits (one per slice, or squashed, depending on the team's convention).
 
 ## Evolution 2: Agent
 
@@ -150,6 +148,16 @@ in its label.
 For each accepted suggestion, draft the exact text to add. The engineer manages the file —
 you draft, they commit.
 
+### Convention Check for Created Artifacts
+
+Before writing any persistent artifacts (CLAUDE.md entries, skills, commands, hook updates),
+verify they follow current project conventions:
+
+1. Check existing examples first (read other CLAUDE.md entries, existing skills/commands)
+2. Match the naming, structure, and style of what's already there
+3. Flag inconsistencies to the engineer before writing — don't silently create artifacts that
+   don't fit the project's patterns
+
 ### Skill Suggestions
 
 Look at the workflow patterns from this feature:
@@ -176,6 +184,19 @@ Reflect on how the VINE process itself went:
 - Did you wish you had information in one phase that you only got in another?
 
 Note these for the engineer. They might want to customize VINE for their team.
+
+### Hook Update Suggestions
+
+Review what tools, agents, and patterns proved useful during this VINE cycle and suggest
+updates to `.vine/hooks/`:
+
+- Tools or agents that should be auto-invoked in future cycles (add to navigate.md or evolve.md hooks)
+- Validation commands that worked well (add to navigate.md hook)
+- Conventions discovered that should apply to all future VINE work (add to shared.md hook)
+- Domain-specific questions that should always be asked in verify (add to verify.md hook)
+
+Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which hook updates
+to apply. For each accepted suggestion, write the update directly to the hook file.
 
 ## Evolution 3: User
 

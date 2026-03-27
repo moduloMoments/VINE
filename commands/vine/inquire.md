@@ -131,6 +131,19 @@ For each slice:
 **Complexity signal**: Low / Medium / High + brief rationale
 ```
 
+**Conditional slices:** When a slice depends on a finding from verify that could go either way,
+mark it as conditional so navigate can skip it cleanly instead of discovering it's unnecessary
+mid-implementation:
+
+```markdown
+### Slice N: [Name] (CONDITIONAL)
+**Condition**: Only if [verify finding] — e.g., "only if role-based selectors
+  are insufficient for reliable test targeting"
+**Goal**: ...
+```
+
+Navigate will evaluate the condition before starting the slice and skip it if unmet.
+
 ### 6b. Group Slices Into Phases (for larger features)
 
 If the feature has more than 4-5 slices, group them into named phases with natural boundaries.

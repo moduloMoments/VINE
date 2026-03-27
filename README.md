@@ -48,7 +48,7 @@ Verify against acceptance criteria, then drive three evolutions. Product quality
 
 **Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
 
-**No auto-commits.** VINE never touches git. Changes are presented for review. The engineer commits when ready.
+**Commit per slice.** Each validated slice gets committed with its acceptance criteria. The engineer reviews every change via approve-edits before the commit happens — structured progress, not autonomous committing.
 
 **Document as you go.** Each phase produces artifacts that persist across sessions, handoffs, and team members. Nothing lives only in a chat transcript.
 

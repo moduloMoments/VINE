@@ -108,12 +108,29 @@ and agents to suggest wiring into hooks for next time
 
 ## Step 4: Gitignore
 
-Check if `.vine/` is already in `.gitignore` or the user's global gitignore. If not,
-use `AskUserQuestion` to ask whether to add it:
+Check if `.vine/` is already in `.gitignore` or the user's global gitignore. If neither,
+add `.vine/` to the project's `.gitignore` automatically. VINE artifacts are workflow state,
+not repo artifacts — they shouldn't be committed by default.
 
-- Add to `.gitignore` (recommended for most teams)
-- Add to global gitignore (for personal VINE use across repos)
-- Skip — we'll commit VINE artifacts
+If the engineer explicitly wants to commit VINE artifacts (e.g., for team sharing), they
+can `git add -f .vine/` selectively.
+
+## Step 5: Upgrade Existing Projects
+
+If `.vine/hooks/` already exists (from a previous `/vine:init` or manual setup), run in
+**upgrade mode** instead of overwriting:
+
+1. Read all existing hook files
+2. Re-run repo discovery to find new tools, agents, commands, or conventions added since
+   the last init
+3. Present a diff of what's new vs what's already in the hooks using `AskUserQuestion`:
+   - New tools/agents discovered that aren't in hooks yet
+   - Existing hook entries that reference tools/agents no longer present
+   - Convention changes detected
+4. Merge accepted changes into existing hook files — don't overwrite custom content the
+   engineer has added
+
+This makes upgrading after installing new skills, agents, or commands a one-command operation.
 
 ## Output
 

@@ -119,39 +119,51 @@ Key constraints for `AskUserQuestion`:
 
 The engineer decides. You document each decision in NAVIGATION.md.
 
-### 3. No Auto-Commits
+### 3. Validate and Commit Per Slice
 
-This is non-negotiable in VINE. You do NOT:
+Each completed slice gets validated and committed before moving to the next. This captures
+iterative progress, makes the PR tell the story of the implementation, and prevents carrying
+broken state forward.
 
-- Run `git add` or `git commit`
-- Stage files for commit
-- Push anything
-- Create branches
+**After completing a slice's code changes:**
 
-Instead, you:
+**a. Run validation**
 
-- Make changes to files
-- Clearly list what was changed and why
-- Suggest a commit message when the engineer is ready
-- Let the engineer handle all git operations
+Run relevant checks on the changed files. The default validation sequence is:
 
-When you've completed a logical unit of work, present it:
+1. Lint the changed files (if a linter is configured)
+2. Run typecheck (if the project uses TypeScript or similar)
+3. Run tests for the changed files (if tests exist)
+
+If `.vine/hooks/navigate.md` defines custom validation commands, use those instead. The hook
+overrides the defaults entirely — it knows this project's toolchain.
+
+If validation fails, fix the issues within the same slice. Don't commit broken code or carry
+failures to the next slice.
+
+**b. Commit the slice**
+
+Stage the changed files and commit with this format:
 
 ```
-📝 Changes ready for review:
-   Modified: src/services/payment.ts (added PaymentFactory)
-   Modified: src/services/payment.test.ts (added factory tests)
-   Created:  src/providers/stripe.ts (Stripe provider implementation)
+<slice-name>: <1-2 sentence summary>
 
-   Suggested commit message:
-   "feat(payments): add payment provider factory with Stripe implementation
-
-   Introduces factory pattern for payment providers per SPEC.md Slice 2.
-   Stripe provider implements the PaymentProvider interface with
-   charge, refund, and webhook verification."
-
-   Ready to review? I can walk through any of these files.
+Acceptance criteria verified:
+- [x] <AC from spec that passed>
+- [x] <AC from spec that passed>
+- [ ] <AC skipped with reason>
 ```
+
+If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. Check
+`.vine/hooks/shared.md` or `CLAUDE.md` for commit message conventions.
+
+**c. Record in NAVIGATION.md**
+
+Add the commit hash to the slice's entry in NAVIGATION.md so evolve can reference it.
+
+**Important:** The engineer still reviews every code change via approve-edits before the
+commit happens. This isn't autonomous committing — it's structured committing after
+human-reviewed, validated changes.
 
 ### 4. Document as You Go
 
@@ -162,10 +174,15 @@ For each slice, capture:
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
 **Started**: [timestamp]
+**Commit**: [hash] (or "pending" if in progress)
 **Approach taken**: [what you actually did]
-**Deviations from spec**: [anything that changed and why]
+**Deviations from spec**: [anything that changed and why — also annotated in SPEC.md]
+**Validation**: [pass/fail — lint, typecheck, tests]
 **Decisions made during implementation**:
   - [decision]: [rationale] (decided by: [engineer/claude])
+**Acceptance criteria**:
+  - [x] [AC from spec — verified]
+  - [ ] [AC skipped — reason]
 **Engineer feedback incorporated**: [adjustments made based on review]
 **Learnings**:
   - Engineer → Claude: [context the engineer provided that shaped the code]
@@ -191,23 +208,32 @@ When you hit something unexpected:
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.
 
-### 6. Between Slices
+### 6. Track Deviations Immediately
 
-After completing each slice, before starting the next:
+When the engineer or Claude decides to deviate from the spec during a slice, update **both**
+documents immediately:
 
-1. Update NAVIGATION.md with the completed slice
-2. Summarize what was built
+- **NAVIGATION.md**: Record the deviation with rationale in the slice entry
+- **SPEC.md**: Add a strikethrough or addendum to the affected section so the spec reflects
+  reality. This prevents evolve from cross-referencing two documents to understand what changed.
+
+### 7. Between Slices
+
+After each slice is validated and committed:
+
+1. Update NAVIGATION.md with the completed slice (including commit hash)
+2. Summarize what was built and committed
 3. Check if the next slice's assumptions still hold (sometimes building slice 1 reveals that
    slice 2 needs adjustment)
-4. Ask if the engineer wants to continue or pause
+4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met
+5. Ask if the engineer wants to continue or pause
 
-> "Slice 2 is complete. All changes are ready for your review. Before we start Slice 3
-> (the webhook handler), I want to flag that our implementation of the provider interface
-> is slightly different from what the spec assumed — we added an async initialization step.
-> This means the webhook handler will need to account for that. Want to adjust the plan,
-> or should I adapt as I go?"
+> "Slice 2 committed (abc1234). Before we start Slice 3 (the webhook handler), I want to
+> flag that our implementation of the provider interface is slightly different from what the
+> spec assumed — we added an async initialization step. This means the webhook handler will
+> need to account for that. Want to adjust the plan, or should I adapt as I go?"
 
-### 7. Between Phase Groups
+### 8. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
 This is a natural stopping point — the group's work is a coherent unit that can be reviewed
@@ -217,17 +243,17 @@ and committed independently.
 ---
 ✅ Phase group [N: name] complete
    Slices completed: [list]
-   Changes ready for review: [file count]
+   Commits: [hashes from this group]
 
 🔄 Recommended: Run `/clear` before starting Phase group [N+1: name].
    This group focused on [what was built]. The next group shifts to
    [what's next]. NAVIGATION.md carries the full context forward.
 
-📝 Changes from this phase group are ready for review/commit before continuing.
+📝 All slices in this group are committed and validated.
 ---
 ```
 
-Between groups is a great time for the engineer to review changes, commit, and take a break.
+Between groups is a great time for the engineer to review the commit history and take a break.
 The work so far should stand on its own.
 
 ## Important Principles
@@ -258,13 +284,12 @@ When all slices are implemented (or the engineer decides to stop):
 ---
 ✅ vine:navigate complete → .vine/<domain>/<feature-slug>/NAVIGATION.md updated
    Slices completed: [N of M]
-   Changes ready for review: [file count]
+   Commits: [list of commit hashes]
 
-📋 Suggested next step: Run `vine:evolve` to verify against acceptance criteria
-   and capture learnings.
+📋 Suggested next step: Run `vine:evolve` to verify integration and capture learnings.
    Key items for evolve:
-   - [spec deviations to validate]
-   - [decisions that should be reviewed]
+   - [spec deviations to review]
+   - [cross-slice integration to verify]
    - [discovered items to triage]
 
 🔄 Recommended: Run `/clear` before starting vine:evolve.
