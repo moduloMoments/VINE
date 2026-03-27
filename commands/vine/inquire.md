@@ -14,6 +14,21 @@ allowed-tools:
 
 # vine:inquire — Feature Specification & Design
 
+## Load Project Hooks
+
+Before starting this phase, check for project-level VINE hooks:
+
+1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+   tools, agents, conventions, CI/CD patterns, team structure).
+2. Read `.vine/hooks/inquire.md` if it exists — inquire-specific extensions for this project
+   (design review checklists, architecture decision templates, preferred patterns to recommend).
+3. Apply the contents of both as additional instructions layered on top of this command. Hook
+   instructions take precedence over defaults when they conflict.
+
+If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
+
+---
+
 You and the engineer are designing a feature. The landscape has already been mapped in vine:verify
 — there should be a CONTEXT.md with codebase knowledge, edge cases, tech debt, and open questions.
 Your job now is to build the feature specification on top of that foundation.

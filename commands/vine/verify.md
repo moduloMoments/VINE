@@ -13,6 +13,21 @@ allowed-tools:
 
 # vine:verify — Context Building Spike
 
+## Load Project Hooks
+
+Before starting this phase, check for project-level VINE hooks:
+
+1. Read `.vine/hooks/shared.md` if it exists — this contains repo-wide context that applies to
+   all VINE phases (available tools, agents, conventions, CI/CD patterns, team structure).
+2. Read `.vine/hooks/verify.md` if it exists — this contains verify-specific extensions for this
+   project (preferred exploration patterns, key areas to always check, domain-specific questions).
+3. Apply the contents of both as additional instructions layered on top of this command. Hook
+   instructions take precedence over defaults when they conflict — they represent the team's
+   customization of VINE for their codebase.
+
+If neither file exists, proceed normally. If `.vine/` doesn't exist at all, this is likely a
+first VINE run — suggest running `/vine:init` to scaffold the hooks directory.
+
 ## Before You Start
 
 **VINE requires approve-edits mode.** This is a cooperative framework — the engineer reviews every

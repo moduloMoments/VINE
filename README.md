@@ -80,7 +80,16 @@ Or clone the repo and symlink.
 
 ## Usage
 
-Start with verify and let the chain guide you:
+### First time in a repo
+
+Run `/vine:init` to scaffold project hooks. This discovers your repo's tools, agents, CI, and
+conventions, then generates `.vine/hooks/` with pre-filled templates:
+
+```
+> /vine:init
+```
+
+### Start a feature
 
 ```
 > /vine:verify I need to add webhook support to the payments service
@@ -88,25 +97,65 @@ Start with verify and let the chain guide you:
 
 At the end of each phase, you'll see a suggested next step. Run it when you're ready.
 
-## State Artifacts
+## Project Hooks
 
-VINE uses a `.vine/<domain>/<feature-slug>/` directory in your project root to store state. The domain groups features by the logical area they touch, and the feature slug identifies the specific work. Multiple features can be VINEd concurrently without collision — even in the same domain.
+VINE commands load project-specific extensions from `.vine/hooks/` before each phase starts.
+This is how you customize VINE for your codebase — wire in your repo's agents, tools, test
+commands, and conventions without forking the commands themselves.
 
 ```
 .vine/
+├── hooks/
+│   ├── shared.md                  # Loaded by ALL phases
+│   ├── verify.md                  # verify-specific extensions
+│   ├── inquire.md                 # inquire-specific extensions
+│   ├── navigate.md                # navigate-specific extensions
+│   └── evolve.md                  # evolve-specific extensions
 ├── payments/
-│   ├── webhook-support/          # Feature 1 (complete)
+│   ├── webhook-support/           # Feature 1 (complete)
 │   │   ├── CONTEXT.md
 │   │   ├── SPEC.md
 │   │   ├── NAVIGATION.md
 │   │   └── EVOLUTION.md
-│   └── retry-logic/              # Feature 2 (in progress)
+│   └── retry-logic/               # Feature 2 (in progress)
 │       ├── CONTEXT.md
 │       └── SPEC.md
 └── auth/
-    └── sso-migration/            # Feature 3 (in progress)
+    └── sso-migration/             # Feature 3 (in progress)
         └── CONTEXT.md
 ```
+
+### shared.md
+
+Loaded by every VINE phase. Contains repo-wide context:
+
+- Available slash commands, skills, and agents with descriptions
+- Project conventions (testing, linting, naming, architecture patterns)
+- Team context (ownership, review patterns, external integrations)
+- CI/CD commands (how to run tests, lint, build)
+
+### Per-phase hooks
+
+Only created when there's something phase-specific to add:
+
+| File | Example content |
+|------|----------------|
+| `verify.md` | Key areas to always explore, domain-specific questions |
+| `inquire.md` | Preferred architecture patterns, design review checklists |
+| `navigate.md` | Agents to run after code changes, test commands per domain |
+| `evolve.md` | PR creation workflow, CI validation, issue tracker integration |
+
+### How hooks load
+
+Each VINE command checks for `.vine/hooks/shared.md` and `.vine/hooks/<phase>.md` before
+starting. If found, the contents are applied as additional instructions on top of the base
+command. Hook instructions take precedence when they conflict with defaults.
+
+As you complete VINE cycles, `/vine:evolve` suggests updates to your hook files based on
+what you learn — tools that proved useful, patterns that should be default, agents that
+should auto-run.
+
+## State Artifacts
 
 | File | Phase | Purpose |
 |------|-------|---------|

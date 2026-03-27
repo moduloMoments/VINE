@@ -15,6 +15,22 @@ allowed-tools:
 
 # vine:evolve — Triple Evolution
 
+## Load Project Hooks
+
+Before starting this phase, check for project-level VINE hooks:
+
+1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+   tools, agents, conventions, CI/CD patterns, team structure).
+2. Read `.vine/hooks/evolve.md` if it exists — evolve-specific extensions for this project
+   (PR creation tools, CI validation commands, repo-level agents and skills to suggest wiring
+   into hooks, Jira/Linear integration for follow-up items).
+3. Apply the contents of both as additional instructions layered on top of this command. Hook
+   instructions take precedence over defaults when they conflict.
+
+If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
+
+---
+
 The feature is implemented. Now you evolve three things: the product, the agent's capabilities,
 and the user's knowledge. This is what makes VINE different from frameworks that just verify and
 ship — every feature is an opportunity to grow on three dimensions.

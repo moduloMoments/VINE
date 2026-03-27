@@ -15,6 +15,20 @@ allowed-tools:
 
 # vine:navigate — Guided Implementation
 
+## Load Project Hooks
+
+Before starting this phase, check for project-level VINE hooks:
+
+1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+   tools, agents, conventions, CI/CD patterns, team structure).
+2. Read `.vine/hooks/navigate.md` if it exists — navigate-specific extensions for this project
+   (agents to invoke after code changes, test commands to run, lint/format requirements,
+   review tools to use per domain).
+3. Apply the contents of both as additional instructions layered on top of this command. Hook
+   instructions take precedence over defaults when they conflict.
+
+If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
+
 ## Before You Start
 
 **VINE requires approve-edits mode.** This phase especially — the engineer needs to see and approve
