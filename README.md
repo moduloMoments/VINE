@@ -68,7 +68,7 @@ Copy the commands directory into your user-level Claude config:
 cp -r commands/vine ~/.claude/commands/vine
 ```
 
-This makes `/vine:verify`, `/vine:inquire`, `/vine:navigate`, and `/vine:evolve` available in every project.
+This makes `/vine:verify`, `/vine:inquire`, `/vine:navigate`, and `/vine:evolve` available in every project. (`vine:trellis` is also copied but is only useful in the VINE repo itself.)
 
 ### Project-level
 
