@@ -8,5 +8,8 @@ Thumbs.db
 *.swp
 *.swo
 
+# VINE workflow artifacts (dogfooding)
+.vine/
+
 # Node (if tooling is added later)
 node_modules/

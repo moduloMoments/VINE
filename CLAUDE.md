@@ -1,0 +1,38 @@
+# CLAUDE.md — VINE Framework
+
+## What This Repo Is
+
+VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 5 command files in `commands/vine/` (init, verify, inquire, navigate, evolve), a state reference at `references/STATE.md`, and a README.
+
+**Editing a command file changes the tool itself.** Test changes by running the modified command on a real repo.
+
+## Repository Structure
+
+- `commands/vine/` — The 5 VINE command files. These ARE the product.
+- `references/STATE.md` — State artifact contracts between phases
+- `.vine/hooks/` — Dogfooding hooks (gitignored)
+- `.vine/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
+- `.vine/PROFILE.md` — Engineer profile (gitignored)
+
+## Command Authoring Conventions
+
+- YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
+- Every command starts with a "Load Project Hooks" section (reads `.vine/hooks/shared.md` + `.vine/hooks/<phase>.md`)
+- Every command (except init) follows hooks with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`)
+- Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
+- `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
+- Each command is self-contained — repeated blocks (hook loading, profile loading) are intentional, not DRY violations
+
+## State Artifact Chain
+
+Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLUTION.md`
+
+All live in `.vine/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`.
+
+## Engineer Profile
+
+`.vine/PROFILE.md` tracks per-domain expertise (confident, familiar, learning, new). Commands use a one-sentence depth hint to adjust explanation depth:
+
+> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your explanation depth accordingly — be concise where they're confident, explain the why behind decisions where they're learning or new."
+
+If no profile exists or the domain isn't listed, commands behave exactly as they do without the feature.
