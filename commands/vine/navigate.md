@@ -89,7 +89,25 @@ Summarize your starting point:
 > "We're implementing [feature]. Based on the spec, I'm picking up at [Phase N: name /
 > Slice N: name]. [Brief description of what this involves]. Ready to go?"
 
-### 2. Implement One Slice at a Time
+### 2. Create a Feature Branch
+
+Before writing any code, check the current git branch. If the engineer is on `main` (or the
+repo's default branch), create a feature branch:
+
+```
+git checkout -b feature/<feature-slug>
+```
+
+Use the feature slug from the `.vine/` directory path. If the engineer is already on a feature
+branch, confirm it's the right one for this work:
+
+> "You're on branch `<branch-name>`. Is this the right branch for this work, or should I
+> create a new one?"
+
+If resuming (NAVIGATION.md exists), the engineer is likely already on the right branch — verify
+by checking that the commits recorded in NAVIGATION.md are in the current branch's history.
+
+### 3. Implement One Slice at a Time
 
 For each work slice from SPEC.md:
 
@@ -143,7 +161,7 @@ Key constraints for `AskUserQuestion`:
 
 The engineer decides. You document each decision in NAVIGATION.md.
 
-### 3. Validate and Commit Per Slice
+### 4. Validate and Commit Per Slice
 
 Each completed slice gets validated and committed before moving to the next. This captures
 iterative progress, makes the PR tell the story of the implementation, and prevents carrying
@@ -189,7 +207,7 @@ Add the commit hash to the slice's entry in NAVIGATION.md so evolve can referenc
 commit happens. This isn't autonomous committing — it's structured committing after
 human-reviewed, validated changes.
 
-### 4. Document as You Go
+### 5. Document as You Go
 
 Update `.vine/NAVIGATION.md` incrementally throughout implementation. Don't save it for the end.
 
@@ -213,7 +231,7 @@ For each slice, capture:
   - Claude → Engineer: [patterns or approaches the engineer found useful]
 ```
 
-### 5. Handle Blockers
+### 6. Handle Blockers
 
 When you hit something unexpected:
 
@@ -232,7 +250,7 @@ When you hit something unexpected:
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.
 
-### 6. Track Deviations Immediately
+### 7. Track Deviations Immediately
 
 When the engineer or Claude decides to deviate from the spec during a slice, update **both**
 documents immediately:
@@ -241,7 +259,7 @@ documents immediately:
 - **SPEC.md**: Add a strikethrough or addendum to the affected section so the spec reflects
   reality. This prevents evolve from cross-referencing two documents to understand what changed.
 
-### 7. Between Slices
+### 8. Between Slices
 
 After each slice is validated and committed:
 
@@ -257,7 +275,7 @@ After each slice is validated and committed:
 > spec assumed — we added an async initialization step. This means the webhook handler will
 > need to account for that. Want to adjust the plan, or should I adapt as I go?"
 
-### 8. Between Phase Groups
+### 9. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
 This is a natural stopping point — the group's work is a coherent unit that can be reviewed

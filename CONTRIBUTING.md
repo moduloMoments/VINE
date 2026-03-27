@@ -33,6 +33,7 @@ When submitting a PR:
 
 - Branch from `main`
 - Keep changes focused — one concern per PR
+- Run `/vine:trellis` to validate structural conventions across command files
 - Test the commands in an actual VINE cycle if you're changing behavior
 - Describe what you changed and why in the PR description
 
