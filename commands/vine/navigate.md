@@ -29,6 +29,30 @@ Before starting this phase, check for project-level VINE hooks:
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
+## Load Engineer Profile
+
+After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
+
+If it exists, read it and extract the Domain Expertise table. Once you identify the feature
+directory (in "Getting Started" below), check the domain portion of the path against the
+profile's domain entries.
+
+- **If the domain is in the profile**: Set the depth hint for this session based on their level.
+  Navigate is the biggest consumer of this hint — it directly affects how you narrate your
+  implementation choices:
+  - **confident/familiar**: Lead with what you're doing, not why. Skip pattern explanations
+    the engineer already knows. Focus narration on decisions specific to this feature.
+  - **learning/new**: Explain the why behind architectural choices. Name the patterns you're
+    using and briefly say why they fit. Flag non-obvious tradeoffs.
+- **If the domain is NOT in the profile or no profile exists**: Proceed normally — default
+  narration depth as described in the rest of this command. No prompt, no warning.
+
+**Depth hint pattern** (internal, not shown to the engineer):
+
+> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
+> explanation depth accordingly — be concise where they're confident, explain the why behind
+> decisions where they're learning or new."
+
 ## Before You Start
 
 **VINE requires approve-edits mode.** This phase especially — the engineer needs to see and approve
