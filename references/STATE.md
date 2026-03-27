@@ -17,7 +17,7 @@ The landscape document. Captures what exists, what's broken, what the codebase d
 ```markdown
 # Feature Context: [Feature Name]
 ## Date: [YYYY-MM-DD]
-## Author: [human] + Claude
+## Author: [engineer name] + Claude
 
 ### Codebase Landscape
 - Relevant modules and their responsibilities
@@ -26,7 +26,6 @@ The landscape document. Captures what exists, what's broken, what the codebase d
 
 ### Current State
 - What works today
-- Known tech debt in affected areas
 - Recent changes that matter
 
 ### Edge Cases & Tribal Knowledge
@@ -34,7 +33,11 @@ The landscape document. Captures what exists, what's broken, what the codebase d
 - Gotchas, workarounds, historical context
 - "Here be dragons" areas
 
-### README/Doc Gaps Identified
+### Tech Debt in Affected Areas
+- Known debt in modules this feature will touch
+- Debt that may affect implementation choices
+
+### Documentation Gaps
 - Documentation that needs updating
 - Missing architectural decision records
 - Stale comments or misleading docs
@@ -51,14 +54,14 @@ The feature specification. Built on top of CONTEXT.md — not from scratch.
 # Feature Spec: [Feature Name]
 ## Date: [YYYY-MM-DD]
 ## Built on: CONTEXT.md ([date])
+## Decisions made by: [engineer name]
 
 ### Problem Statement
 - What we're solving and why
 
-### Proposed Approach
-- Architecture and design decisions
-- Options considered with tradeoffs
-- Human's chosen direction and rationale
+### Approach
+- Chosen architecture with rationale
+- Key decisions and why they were made
 
 ### Acceptance Criteria
 - Verifiable conditions for "done"
@@ -66,14 +69,31 @@ The feature specification. Built on top of CONTEXT.md — not from scratch.
 - Performance/security considerations
 
 ### Work Slices
-- Ordered, independent units of work
-- Each with clear inputs/outputs
-- Estimated complexity signals
+Ordered, independent units of work:
+
+#### Slice 1: [Name]
+- **Goal**: What this slice accomplishes
+- **Depends on**: Previous slices or nothing
+- **Files likely touched**: [list]
+- **Acceptance criteria**: [specific, verifiable]
+- **Complexity signal**: Low / Medium / High + brief rationale
+
+#### CONDITIONAL Slice: [Name]
+- **Condition**: Only if [condition from verify findings]
+- (same fields as above)
+
+For larger features, slices are grouped into phases:
+- **Phase 1**: Core functionality (slices 1-3)
+- **Phase 2**: Edge cases and polish (slices 4-5)
 
 ### Tech Debt Integration
 - Debt items from CONTEXT.md addressed in this work
 - Debt items deferred (with reasoning)
 - New debt being consciously taken on
+
+### Dependencies & Risks
+- External dependencies or blockers
+- Risk factors and mitigations
 
 ### Backlog Updates
 - Items to add/modify in project backlog
@@ -82,28 +102,25 @@ The feature specification. Built on top of CONTEXT.md — not from scratch.
 
 ### NAVIGATION.md (produced by vine:navigate)
 
-The implementation journal. Documents what was built, why deviations happened, and what the human learned.
+The implementation journal. Built incrementally — each slice is appended as it's completed, with a commit per validated slice.
 
 ```markdown
 # Navigation Log: [Feature Name]
 ## Date: [YYYY-MM-DD]
 
-### Completed Slices
-For each work slice:
-- What was implemented
-- Deviations from spec (and why)
-- Human decisions made during implementation
-- Key code patterns introduced
+### Slice 1: [Name]
+- **Started**: [timestamp]
+- **Commit**: [hash] (or 'pending' if in progress)
+- **Approach taken**: What was implemented and how
+- **Deviations from spec**: Any changes and why
+- **Validation**: [pass/fail — lint, typecheck, tests]
+- **Decisions made**: Engineer choices during implementation
+- **Acceptance criteria**: [met/not met with details]
+- **Engineer feedback incorporated**: [what the engineer corrected or steered]
+- **Learnings**: What both sides learned from this slice
 
-### Staged Changes
-- Files modified (not committed)
-- Diff summary
-- Suggested commit message(s)
-
-### Learnings (Bidirectional)
-- What the human learned from the AI
-- What context the human provided that shaped implementation
-- Patterns worth documenting
+### Slice 2: [Name]
+(same structure, appended after slice 1 is committed)
 
 ### Remaining Work
 - Incomplete slices
@@ -120,36 +137,38 @@ The triple evolution report. Captures growth across product, agent, and user.
 ## Date: [YYYY-MM-DD]
 
 ### Product Evolution
-- Verification results against acceptance criteria
-- Quality assessment
-- Suggested follow-up work
+- **Acceptance Criteria Results**: [pass/fail table for each criterion]
+- **Spec Deviations**: [list with rationale]
+- **Follow-Up Items**: [concrete backlog suggestions]
 
 ### Agent Evolution
-- CLAUDE.md updates suggested
-- New skills or skill improvements identified
-- Workflow patterns worth codifying
+- **CLAUDE.md Suggestions**: Updates to project instructions
+- **Command Suggestions**: New commands or improvements identified
+- **Workflow Improvements**: Patterns worth codifying
+- **Hook Update Suggestions**: Updates to .vine/hooks/ based on learnings
+- **VINE Process Observations**: What worked, what to adjust
 
 ### User Evolution
-- New knowledge or patterns the user encountered
-- Areas for deeper learning
-- Suggested resources or explorations
+- **Knowledge Highlights**: New patterns or concepts the engineer encountered
+- **Suggested Explorations**: Areas for deeper learning
 
-### Handoff
-- Summary for PR description
-- Reviewer notes
-- Context for future sessions on this feature
+### Handoff Package
+- **PR Description**: [ready to paste]
+- **Reviewer Notes**: Context for code reviewers
+- **Commit Suggestions**: [if changes aren't already committed]
+- **Context for future sessions**: What someone picking this up should know
 ```
 
 ## Chaining Protocol
 
-Each phase ends with a **Next Step Suggestion** that tells the user exactly what to run next and why:
+Each phase ends with a **Next Step Suggestion** that tells the user exactly what to run next and why. Each phase also suggests starting a fresh session (`/clear`) so state flows through `.vine/` files rather than chat context:
 
 ```
 ---
 ✅ vine:verify complete → CONTEXT.md written
-📋 Suggested next step: Run `vine:inquire` to build the feature spec on top of this context.
+📋 Suggested next step: /clear, then run /vine:inquire to build the feature spec on top of this context.
    Key items for inquire to address: [list open questions from CONTEXT.md]
 ---
 ```
 
-This is a suggestion, not an auto-trigger. The human decides when to proceed.
+This is a suggestion, not an auto-trigger. The engineer decides when to proceed.

@@ -177,10 +177,10 @@ should auto-run.
 |------|-------|---------|
 | `CONTEXT.md` | verify | Codebase landscape, tribal knowledge, tech debt |
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
-| `NAVIGATION.md` | navigate | Implementation journal, decisions, learnings |
+| `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
 
-These files are human-readable, git-friendly, and designed to survive session boundaries.
+These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
 
 ## How VINE compares
 
