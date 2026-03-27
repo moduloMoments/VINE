@@ -29,6 +29,15 @@ Before starting this phase, check for project-level VINE hooks:
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
+## Load Engineer Profile
+
+After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
+
+If it exists, read it and note the current domain expertise entries. You'll use this during
+Evolution 3 to propose updates based on the completed cycle.
+
+If no profile exists, you'll offer to create one during Evolution 3.
+
 ---
 
 The feature is implemented. Now you evolve three things: the product, the agent's capabilities,
@@ -229,6 +238,69 @@ Based on what you observed, suggest 1-2 areas the engineer might find valuable:
 
 Keep it light. One or two sentences each, not a curriculum.
 
+### Update Engineer Profile
+
+Based on the completed cycle, propose updates to `.vine/PROFILE.md`. This is the concrete,
+persistent output of user evolution — the profile grows with each VINE cycle.
+
+**Domain expertise update:**
+
+Check the current feature's domain against the profile:
+
+- **If the domain exists**: Consider whether the level should change based on what happened
+  during this cycle. Did the engineer demonstrate deeper confidence? Did they struggle with
+  areas that suggest the level was too high? Propose an update only if the level should change.
+- **If the domain doesn't exist**: Propose adding it with a level based on what you observed
+  during the cycle.
+- **If no profile exists yet**: Offer to create `.vine/PROFILE.md` with an initial entry for
+  this domain.
+
+Use `AskUserQuestion` to present the proposed change:
+
+> "Based on this cycle, I'd suggest updating your profile for the [domain] domain:"
+
+Options (mutually exclusive):
+1. "[proposed level] (Recommended)" — "[rationale based on cycle observations]"
+2. "[alternative level]" — "[why this might also fit]"
+3. "Keep current" — "Leave the profile as-is"
+4. "Skip" — "Don't update the profile this time"
+
+**Growth log entry:**
+
+Draft a growth log entry for this cycle:
+
+```markdown
+### [date] — [domain]/[feature-slug]
+- [2-4 bullet points: what the engineer explored, built, or learned]
+```
+
+Present the draft and let the engineer edit or approve it. Don't include trivial observations
+— focus on genuine knowledge growth.
+
+For each accepted change, write the update to `.vine/PROFILE.md` directly. Create the file
+if needed, using the format documented in `references/STATE.md`.
+
+### Suggest Claude Memory Updates
+
+Separately from profile updates, review the cycle for general preferences and interaction
+patterns worth persisting in Claude's memory or CLAUDE.md. These are things that apply
+beyond this specific domain — how the engineer likes to work, not what they know.
+
+Examples of what to surface:
+- Communication preferences: "Engineer prefers seeing the diff before hearing the rationale"
+- Decision-making patterns: "Engineer consistently chooses simpler approaches over flexible ones"
+- Learning style: "Engineer engages most when patterns are compared to ones they already know"
+- Review preferences: "Engineer wants to see smaller code chunks more frequently"
+
+Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which observations
+to persist. For each accepted item, suggest the exact Claude memory entry or CLAUDE.md line.
+
+> "These observations from this cycle might be worth saving to Claude's memory so they apply
+> across future sessions:"
+
+If no general preferences were discovered this cycle, skip this section — don't manufacture
+observations. Domain-specific knowledge goes in the profile, not here.
+
 ## Write EVOLUTION.md
 
 Compile everything into `.vine/<domain>/<feature-slug>/EVOLUTION.md`:
@@ -264,6 +336,12 @@ Compile everything into `.vine/<domain>/<feature-slug>/EVOLUTION.md`:
 #### Suggested Explorations
 [1-2 areas to explore]
 
+#### Profile Updates
+[Domain level changes and growth log entries — accepted/rejected]
+
+#### Claude Memory Suggestions
+[General preferences proposed — accepted/rejected/deferred]
+
 ### Handoff Package
 #### PR Description
 [Ready to paste]
@@ -292,6 +370,7 @@ Compile everything into `.vine/<domain>/<feature-slug>/EVOLUTION.md`:
    - Product: [brief summary of quality state]
    - Agent: [brief summary of capability growth]
    - User: [brief summary of knowledge growth]
+   - Profile: [updated/created/unchanged] (.vine/PROFILE.md)
 
    "Grow features on solid roots."
 ---
