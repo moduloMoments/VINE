@@ -17,7 +17,10 @@ command files.
 
 ## Step 1: Discover Command Files
 
-Use Glob to find all `.md` files in `commands/vine/`. These are the command files to validate.
+Use Glob to find all `.md` files in `commands/vine/`. These are the command files to validate —
+including `trellis.md` itself. Trellis eats its own cooking: it must pass the same checks it
+applies to other commands (with init/trellis exceptions where noted).
+
 Read each file in full — you'll need the complete contents for all checks.
 
 ## Step 2: Build the Known Tool List
@@ -116,7 +119,8 @@ Present results as a summary table with commands as rows and checks as columns:
 
 Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init/trellis exceptions).
 
-After the table, print a summary line:
+After the table, print a summary line. Skipped checks count as passing (they're intentional
+exceptions, not failures).
 
 - If all checks pass: **"✅ N/N commands pass all checks"**
 - If any check fails: **"❌ N issues found across M commands"** followed by a brief list of
