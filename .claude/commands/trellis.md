@@ -120,3 +120,50 @@ exceptions, not failures).
 - If all checks pass: **"✅ N/N commands pass all checks"**
 - If any check fails: **"❌ N issues found across M commands"** followed by a brief list of
   each failure with the command name, check name, and what was wrong.
+
+## Step 5: Parse STATE.md and Discover Artifacts
+
+This step builds the data needed for artifact validation in Step 6. If `references/STATE.md`
+does not exist, print a warning and skip Steps 5–7 entirely — command validation (Steps 1–4)
+always runs regardless.
+
+### 5a: Parse Artifact Templates from STATE.md
+
+Read `references/STATE.md`. Locate each artifact template by finding the `### <Name>.md`
+headings under `## State Files` (CONTEXT.md, SPEC.md, NAVIGATION.md, EVOLUTION.md) and
+under `## Per-Repo Artifacts` (PROFILE.md).
+
+Each template is enclosed in a markdown code fence (` ```markdown ... ``` `). For each template:
+
+1. Extract the content inside the code fence
+2. Find all headings (lines starting with `##` or `###`) that have a `<!-- required -->` or
+   `<!-- optional -->` marker on the same line
+3. Record each heading's text (without the marker), heading level, and whether it's required
+   or optional
+4. Map these to the artifact type (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
+
+**Handling dynamic headings**: Some template headings contain placeholders like `[Name]` or
+`[Feature Name]`. For validation purposes, treat these as pattern prefixes. For example,
+`### Slice 1: [Name]` means "any heading matching `### Slice N: ...`". NAVIGATION slice
+headings are repeating entries — at least one must exist for the `required` marker to be
+satisfied.
+
+**Unmarked headings**: If a heading inside a code fence has no `<!-- required -->` or
+`<!-- optional -->` marker, record it as a warning. This catches marker drift when someone
+adds a section to a template without annotating it.
+
+If STATE.md exists but the template structure can't be parsed (no code fences found, no
+markers found at all), print a warning and skip Steps 6–7.
+
+### 5b: Discover Artifacts
+
+Use Glob to find all artifacts in `.vine/projects/`:
+
+- Look for `CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md` under
+  `.vine/projects/*/*/` (domain/feature-slug directories)
+- Look for `PROFILE.md` at `.vine/PROFILE.md`
+- **Filter out**: any path containing `.archive/` and any directory containing a `.resolved` file
+- For each discovered artifact, record its path and artifact type
+
+If no `.vine/projects/` directory exists or no artifacts are found, record this — Step 7 will
+handle the "no artifacts" case cleanly.
