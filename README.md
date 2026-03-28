@@ -1,4 +1,13 @@
-# VINE — Verify, Inquire, Navigate, Evolve
+```typescript
+   |
+ //|\\  __   __  ___   _  _   ___
+| /|\ | \ \ / / |_ _| | \| | | __|
+ \/|\/   \ V /   | |  | .` | | _|
+  \|/     \_/   |___| |_|\_| |___|
+Verify · Inquire · Navigate · Evolve
+```
+
+# VINE
 
 **Grow features on solid roots.**
 
@@ -25,21 +34,25 @@ vine:verify  →  vine:inquire  →  vine:navigate  →  vine:evolve
 ```
 
 ### vine:verify — Context Building Spike
+
 Research the codebase together. The engineer brings tribal knowledge, edge cases, and "the weird stuff." Claude reads broadly and asks questions. Together you produce a CONTEXT.md that captures the real landscape — not just what the code says, but what the docs don't.
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
 
 ### vine:inquire — Feature Specification
+
 Design the feature on top of verified context. Discuss architecture, weigh tradeoffs (always 2-3 options), and get explicit human approval on every decision. Layer the spec on the foundation you built in verify.
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/SPEC.md`
 
 ### vine:navigate — Guided Implementation
+
 Build the feature together. The engineer steers direction, Claude executes and explains. Both learn. No auto-commits — changes are surfaced for review. Every decision is documented.
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + staged changes (not committed)
 
 ### vine:evolve — Triple Evolution
+
 Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new commands). User growth (knowledge gained, areas to explore).
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
@@ -173,13 +186,13 @@ Loaded by every VINE phase. Contains repo-wide context:
 
 Only created when there's something phase-specific to add:
 
-| File | Example content |
-|------|----------------|
-| `verify.md` | Key areas to always explore, domain-specific questions |
-| `inquire.md` | Preferred architecture patterns, design review checklists |
-| `navigate.md` | Agents to run after code changes, test commands per domain |
-| `evolve.md` | PR creation workflow, CI validation, issue tracker integration |
-| `pair.md` | Test commands, lint/format requirements, commit conventions for small changes |
+| File          | Example content                                                               |
+| ------------- | ----------------------------------------------------------------------------- |
+| `verify.md`   | Key areas to always explore, domain-specific questions                        |
+| `inquire.md`  | Preferred architecture patterns, design review checklists                     |
+| `navigate.md` | Agents to run after code changes, test commands per domain                    |
+| `evolve.md`   | PR creation workflow, CI validation, issue tracker integration                |
+| `pair.md`     | Test commands, lint/format requirements, commit conventions for small changes |
 
 ### How hooks load
 
@@ -193,13 +206,13 @@ should auto-run.
 
 ## State Artifacts
 
-| File | Phase | Purpose |
-|------|-------|---------|
-| `CONTEXT.md` | verify | Codebase landscape, tribal knowledge, tech debt |
-| `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
-| `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
-| `EVOLUTION.md` | evolve | Verification results, triple evolution report |
-| `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo) |
+| File            | Phase      | Purpose                                               |
+| --------------- | ---------- | ----------------------------------------------------- |
+| `CONTEXT.md`    | verify     | Codebase landscape, tribal knowledge, tech debt       |
+| `SPEC.md`       | inquire    | Feature design, acceptance criteria, work slices      |
+| `NAVIGATION.md` | navigate   | Implementation journal, commit-per-slice log          |
+| `EVOLUTION.md`  | evolve     | Verification results, triple evolution report         |
+| `PROFILE.md`    | all phases | Engineer's domain expertise and growth log (per-repo) |
 
 These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
 
@@ -221,13 +234,13 @@ This separation avoids duplication: VINE handles what Claude doesn't cover (per-
 
 Most AI coding frameworks optimize for autonomous speed — the AI writes code, the human approves. VINE takes a different approach:
 
-| | Autonomous frameworks | VINE |
-|---|---|---|
-| **Optimizes for** | Speed | Growth (product + agent + user) |
-| **Human role** | Approves at the end | Steers throughout |
-| **Commits** | Auto | Engineer commits per slice |
-| **Best for** | Greenfield / scripted tasks | Established codebases |
-| **Learning model** | One-way (AI executes) | Two-way (both learn) |
+|                    | Autonomous frameworks       | VINE                            |
+| ------------------ | --------------------------- | ------------------------------- |
+| **Optimizes for**  | Speed                       | Growth (product + agent + user) |
+| **Human role**     | Approves at the end         | Steers throughout               |
+| **Commits**        | Auto                        | Engineer commits per slice      |
+| **Best for**       | Greenfield / scripted tasks | Established codebases           |
+| **Learning model** | One-way (AI executes)       | Two-way (both learn)            |
 
 ## Contributing
 
@@ -239,4 +252,4 @@ MIT
 
 ---
 
-*Built by [ModuloMoments](https://github.com/modulomoments)*
+_Built by [ModuloMoments](https://github.com/modulomoments)_

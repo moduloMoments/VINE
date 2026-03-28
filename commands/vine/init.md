@@ -151,7 +151,13 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
 ## Output
 
 ```
----
+   |
+ //|\\  __   __  ___   _  _   ___
+| /|\ | \ \ / / |_ _| | \| | | __|
+ \/|\/   \ V /   | |  | .` | | _|
+  \|/     \_/   |___| |_|\_| |___|
+Verify · Inquire · Navigate · Evolve
+
 ✅ vine:init complete
 📁 Created:
    - .vine/hooks/shared.md
@@ -160,13 +166,12 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
    - .vine/hooks/navigate.md (if applicable)
    - .vine/hooks/evolve.md (if applicable)
 
-📋 Next step: Run `/vine:verify` to start your first feature.
+📋 Next step: Run /vine:verify to start your first feature.
    Your project hooks will be loaded automatically.
 
 👤 Your engineer profile (.vine/PROFILE.md) will build as you work —
    each new domain prompts a quick familiarity check during verify.
 
-💡 Tip: As you complete VINE cycles, `/vine:evolve` will suggest
+💡 Tip: As you complete VINE cycles, /vine:evolve will suggest
    updates to your hook files and profile based on what you learn.
----
 ```
