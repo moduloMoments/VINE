@@ -59,8 +59,11 @@ decide, and document everything. The output is a SPEC.md that vine:navigate can 
 ### 1. Load the Context
 
 Identify the feature directory under `.vine/projects/`. Look for the domain/feature-slug path
-(e.g., `.vine/projects/payments/webhook-support/`). If there's only one feature directory, use that.
-If there are multiple, use `AskUserQuestion` to let the engineer pick which feature to work on.
+(e.g., `.vine/projects/payments/webhook-support/`). Filter out resolved projects (directories
+containing a `.resolved` file) and archived projects (under `.vine/projects/.archive/`). If
+there's only one active feature directory, use that. If there are multiple, use
+`AskUserQuestion` to let the engineer pick which feature to work on. If all projects are
+resolved or archived, tell the engineer and suggest starting a new cycle with `vine:verify`.
 
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` from the project. If it doesn't exist, tell the engineer:
 

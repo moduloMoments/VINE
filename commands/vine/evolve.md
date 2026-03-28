@@ -48,7 +48,9 @@ ship — every feature is an opportunity to grow on three dimensions.
 
 Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to review.
+feature to review. Filter out resolved projects (directories containing a `.resolved` file) and
+archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
+tell the engineer and suggest starting a new cycle with `vine:verify`.
 
 Read all VINE artifacts for this feature:
 - `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
@@ -375,6 +377,21 @@ Compile everything into `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md`:
    "Grow features on solid roots."
 ---
 ```
+
+### Mark as Resolved
+
+After presenting the completion block, offer to mark the project as resolved using
+`AskUserQuestion`:
+
+> "This VINE cycle is complete. Want to mark this project as resolved? Resolved projects
+> are filtered out of future command prompts but stay accessible by explicit path."
+
+Options (mutually exclusive):
+1. "Mark resolved (Recommended)" — "Add .resolved marker to this project directory"
+2. "Keep active" — "Leave the project in active state for now"
+
+If the engineer chooses to resolve, write an empty `.resolved` file to
+`.vine/projects/<domain>/<feature-slug>/.resolved`.
 
 ## Important Principles
 

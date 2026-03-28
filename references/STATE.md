@@ -218,6 +218,40 @@ Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode
 
 Artifact-free commands still follow the structural conventions (frontmatter, hooks, profile loading) — they just don't participate in the state artifact chain.
 
+## Project Lifecycle
+
+VINE projects progress through an implicit lifecycle: active → resolved → archived. By default, all projects are active. The lifecycle is opt-in — projects without markers behave exactly as they always have.
+
+### Resolved
+
+After `vine:evolve` completes, the engineer can mark a project as resolved by placing a `.resolved` marker file in the project directory:
+
+```
+.vine/projects/<domain>/<feature-slug>/.resolved
+```
+
+The file is empty — its presence is the signal. Commands that list feature directories (inquire, navigate, evolve) filter out resolved projects from `AskUserQuestion` prompts. Resolved projects are still accessible by explicit path.
+
+### Archived
+
+Archiving moves a resolved project to `.vine/projects/.archive/`:
+
+```
+.vine/projects/.archive/<domain>/<feature-slug>/
+```
+
+This gets completed work fully out of the way while preserving artifacts. Archiving is manual — VINE doesn't auto-archive.
+
+### Filtering Convention
+
+Commands that present feature directory lists via `AskUserQuestion` must:
+
+1. Skip directories containing a `.resolved` file
+2. Skip anything under `.vine/projects/.archive/`
+3. If all projects are resolved/archived, tell the engineer and suggest starting a new cycle with `vine:verify`
+
+If the engineer needs to access a resolved project, they can pass its path explicitly as an argument.
+
 ## Chaining Protocol
 
 Each phase ends with a **Next Step Suggestion** that tells the user exactly what to run next and why. Each phase also suggests starting a fresh session (`/clear`) so state flows through `.vine/` files rather than chat context:
