@@ -212,6 +212,12 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 - **Domain matching is exact.** The domain in PROFILE.md must match the `.vine/projects/<domain>/` namespace exactly. No fuzzy matching.
 - **Engineer controls updates.** Evolve suggests changes; the engineer approves or modifies them. VINE never silently updates the profile.
 
+## Artifact-Free Commands
+
+Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode that compresses verify → navigate → evolve into a single session without writing CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. Its only outputs are code changes and a single commit.
+
+Artifact-free commands still follow the structural conventions (frontmatter, hooks, profile loading) — they just don't participate in the state artifact chain.
+
 ## Chaining Protocol
 
 Each phase ends with a **Next Step Suggestion** that tells the user exactly what to run next and why. Each phase also suggests starting a fresh session (`/clear`) so state flows through `.vine/` files rather than chat context:

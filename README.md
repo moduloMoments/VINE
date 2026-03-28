@@ -44,6 +44,22 @@ Verify against acceptance criteria, then drive three evolutions. Product quality
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
 
+## Quick Mode: vine:pair
+
+Not every change needs the full cycle. `vine:pair` is a lightweight command for quick fixes,
+small features, and minor refactors — VINE's guided narration without the artifact ceremony.
+
+```
+> /vine:pair src/auth.ts
+> /vine:pair "fix the retry logic in the payments module"
+```
+
+vine:pair reads the target file and its immediate neighbors, asks what you want to change,
+implements with brief narration, and produces a single commit. No CONTEXT.md, no SPEC.md —
+just you and Claude working together on a small change.
+
+If the work grows beyond a quick fix, pair suggests escalating to the full cycle.
+
 ## Key Principles
 
 **Approve-edits mode.** VINE is a cooperative framework. Run with approve-edits enabled so the engineer reviews every change as it happens. Auto-accept defeats the purpose.
@@ -68,7 +84,7 @@ Copy the commands directory into your user-level Claude config:
 cp -r commands/vine ~/.claude/commands/vine
 ```
 
-This makes `/vine:verify`, `/vine:inquire`, `/vine:navigate`, and `/vine:evolve` available in every project.
+This makes all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`) available in every project.
 
 ### Project-level
 
@@ -127,7 +143,8 @@ commands, and conventions without forking the commands themselves.
 │   ├── verify.md                  # verify-specific extensions
 │   ├── inquire.md                 # inquire-specific extensions
 │   ├── navigate.md                # navigate-specific extensions
-│   └── evolve.md                  # evolve-specific extensions
+│   ├── evolve.md                  # evolve-specific extensions
+│   └── pair.md                    # pair-specific extensions
 └── projects/
     ├── payments/
     │   ├── webhook-support/       # Feature 1 (complete)
@@ -162,6 +179,7 @@ Only created when there's something phase-specific to add:
 | `inquire.md` | Preferred architecture patterns, design review checklists |
 | `navigate.md` | Agents to run after code changes, test commands per domain |
 | `evolve.md` | PR creation workflow, CI validation, issue tracker integration |
+| `pair.md` | Test commands, lint/format requirements, commit conventions for small changes |
 
 ### How hooks load
 
