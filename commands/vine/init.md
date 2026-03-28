@@ -89,7 +89,7 @@ This file is loaded by ALL VINE phases. It should contain:
 [How to run tests, lint, build — commands the engineer or Claude should use]
 ```
 
-### Per-phase files (verify.md, inquire.md, navigate.md, evolve.md)
+### Per-phase files (verify.md, inquire.md, navigate.md, evolve.md, pair.md)
 
 Only create per-phase files where there's something phase-specific to add. Don't create
 empty or boilerplate-only files. Examples of phase-specific content:
@@ -106,6 +106,9 @@ generators), test commands to run per domain, lint/format commands
 **evolve.md** — PR creation workflow (e.g., `/pr-create` command), CI validation
 commands (e.g., `/ci-fix`), issue tracker integration for follow-up items, commands
 and agents to suggest wiring into hooks for next time
+
+**pair.md** — Preferred test commands for quick changes, lint/format requirements,
+commit message conventions for small fixes
 
 ## Step 4: Gitignore
 
@@ -159,6 +162,7 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
    - .vine/hooks/inquire.md (if applicable)
    - .vine/hooks/navigate.md (if applicable)
    - .vine/hooks/evolve.md (if applicable)
+   - .vine/hooks/pair.md (if applicable)
 
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your project hooks will be loaded automatically.
