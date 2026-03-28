@@ -277,6 +277,22 @@ After each slice is validated and committed:
 > spec assumed — we added an async initialization step. This means the webhook handler will
 > need to account for that. Want to adjust the plan, or should I adapt as I go?"
 
+**If the engineer chooses to pause**, write a "Remaining Work" section to NAVIGATION.md before
+stopping. This ensures the next session (or vine:resume) has structured handoff context:
+
+```markdown
+### Remaining Work
+- **Incomplete slices**: [list slices not yet started or in progress, with brief status]
+- **Blockers encountered**: [anything that's blocking progress, or "None"]
+- **Handoff context**: [what the next session should pick up first, key decisions pending,
+  anything that won't be obvious from the slice entries alone]
+```
+
+After writing Remaining Work, suggest running `vine:pause` to capture the engineer's notes:
+
+> "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
+> for when you come back, run `vine:pause` before closing the session."
+
 ### 9. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
@@ -322,7 +338,17 @@ the whole system work.
 
 ## Phase Completion
 
-When all slices are implemented (or the engineer decides to stop):
+When all slices are implemented (or the engineer decides to stop), write a "Remaining Work"
+section to NAVIGATION.md. Even when all slices are complete, this section captures loose ends:
+
+```markdown
+### Remaining Work
+- **Incomplete slices**: [list any unfinished slices, or "All slices complete"]
+- **Blockers encountered**: [unresolved blockers, or "None"]
+- **Handoff context**: [discovered items, deferred decisions, things evolve should review]
+```
+
+Then present the completion block:
 
 ```
 ---

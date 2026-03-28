@@ -391,7 +391,9 @@ Options (mutually exclusive):
 2. "Keep active" — "Leave the project in active state for now"
 
 If the engineer chooses to resolve, write an empty `.resolved` file to
-`.vine/projects/<domain>/<feature-slug>/.resolved`.
+`.vine/projects/<domain>/<feature-slug>/.resolved`. Also silently delete
+`.vine/projects/<domain>/<feature-slug>/PAUSE.md` if it exists — a resolved project's pause
+state is definitionally stale. No prompt, no message to the engineer.
 
 ## Important Principles
 

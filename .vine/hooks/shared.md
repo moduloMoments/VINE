@@ -10,6 +10,8 @@
 - `/vine:navigate` — Guided implementation with per-slice commits
 - `/vine:evolve` — Triple evolution: product, agent, user
 - `/vine:pair` — Lightweight pair programming for quick fixes
+- `/vine:pause` — Capture session state when stopping work
+- `/vine:resume` — See where you left off and what's next
 
 ### Contributor Tools (in `.claude/commands/`)
 - `/trellis` — Validate structural conventions across VINE command files
@@ -23,7 +25,7 @@
 ## Project Conventions
 
 ### Repository Structure
-- `commands/vine/` — The 6 VINE command files (init, verify, inquire, navigate, evolve, pair). These ARE the product.
+- `commands/vine/` — The 8 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
 - `.github/` — PR template, issue templates (bug, friction, idea)

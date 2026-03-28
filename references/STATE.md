@@ -161,6 +161,34 @@ The triple evolution report. Captures growth across product, agent, and user.
 - **Context for future sessions**: What someone picking this up should know
 ```
 
+### PAUSE.md (produced by vine:pause, consumed by vine:resume)
+
+An ephemeral session artifact. Captures where the engineer stopped and why — the context that existing artifacts don't preserve. Unlike other state files, PAUSE.md is temporary: it's deleted when `vine:evolve` writes `.resolved`, and it's overwritten each time `vine:pause` runs (only one pause state per feature).
+
+```markdown
+# Paused: [Feature Name]
+## Paused at: [YYYY-MM-DD HH:MM]
+## Phase: [verify | inquire | navigate | evolve]
+## Active slice: [Slice N: Name — or "N/A" if not in navigate]
+
+### Notes
+[Free-form context from the engineer — why they stopped, what they were
+thinking, what to pick up first, anything that won't survive a session break]
+```
+
+**Lifecycle:**
+
+1. **Created** by `vine:pause` — detects current phase from artifact presence, asks the engineer for notes, writes PAUSE.md to the feature directory.
+2. **Read** by `vine:resume` — combines PAUSE.md with existing artifacts to display a status summary and recommend the next command.
+3. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
+4. **Deleted** by `vine:evolve` when writing `.resolved` — a resolved project's pause state is definitionally stale.
+
+**Design constraints:**
+
+- **Optional.** Resume works without PAUSE.md by falling back to artifact-only detection. PAUSE.md adds engineer notes and explicit phase tracking but isn't required.
+- **Ephemeral.** Not part of the permanent artifact chain. Not referenced by evolve's handoff package. Exists only to bridge session gaps.
+- **One per feature.** No history of pause states. The most recent pause is the only one that matters.
+
 ## Per-Repo Artifacts
 
 ### PROFILE.md (seeded by vine:init, updated by vine:evolve)

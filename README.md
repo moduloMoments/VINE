@@ -64,6 +64,23 @@ just you and Claude working together on a small change.
 
 If the work grows beyond a quick fix, pair suggests escalating to the full cycle.
 
+## Session Management: vine:pause + vine:resume
+
+Long-running features span multiple sessions. `vine:pause` captures where you stopped and why,
+`vine:resume` picks it back up.
+
+```
+> /vine:pause                    # saves session state + your notes to PAUSE.md
+> /vine:resume                   # shows status, progress, and recommends next command
+```
+
+vine:pause detects your current phase from artifacts, asks for free-form notes, and writes a
+lightweight `PAUSE.md` to the feature directory. vine:resume reads it (plus existing artifacts)
+to tell you exactly where you are — no re-reading everything yourself.
+
+Resume also works without PAUSE.md by reconstructing state from artifacts alone. PAUSE.md adds
+your notes and explicit phase tracking, but it's not required.
+
 ## Key Principles
 
 **Approve-edits mode.** VINE is a cooperative framework. Run with approve-edits enabled so the engineer reviews every change as it happens. Auto-accept defeats the purpose.
@@ -88,7 +105,7 @@ Copy the commands directory into your user-level Claude config:
 cp -r commands/vine ~/.claude/commands/vine
 ```
 
-This makes all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`) available in every project.
+This makes all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`) available in every project.
 
 ### Project-level
 
@@ -158,7 +175,8 @@ commands, and conventions without forking the commands themselves.
     │   │   └── EVOLUTION.md
     │   └── retry-logic/           # Feature 2 (in progress)
     │       ├── CONTEXT.md
-    │       └── SPEC.md
+    │       ├── SPEC.md
+    │       └── PAUSE.md           # Session state (ephemeral)
     └── auth/
         └── sso-migration/         # Feature 3 (in progress)
             └── CONTEXT.md
@@ -203,6 +221,7 @@ should auto-run.
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
+| `PAUSE.md` | pause | Session state, phase, active slice, engineer notes (ephemeral) |
 | `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo) |
 
 These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.

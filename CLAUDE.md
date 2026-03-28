@@ -2,13 +2,13 @@
 
 ## What This Repo Is
 
-VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 6 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, pair), a state reference at `references/STATE.md`, and a README.
+VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 8 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, pair, pause, resume), a state reference at `references/STATE.md`, and a README.
 
 **Editing a command file changes the tool itself.** Test changes by running the modified command on a real repo.
 
 ## Repository Structure
 
-- `commands/vine/` — The 6 VINE command files (init, verify, inquire, navigate, evolve, pair). These ARE the product.
+- `commands/vine/` — The 8 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
 - `.vine/hooks/shared.md` — Contributor context hook (tracked; per-phase hooks gitignored)
@@ -34,6 +34,8 @@ Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLU
 All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`. Section headings in STATE.md templates use `<!-- required -->` / `<!-- optional -->` HTML comment markers — new sections must include a marker to prevent validation drift.
 
 `vine:pair` is artifact-free — it produces code changes and a single commit but no CONTEXT/SPEC/NAVIGATION/EVOLUTION files.
+
+`vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is deleted when evolve writes `.resolved`.
 
 ## Engineer Profile
 
