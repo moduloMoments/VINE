@@ -197,15 +197,15 @@ Structure:
 [Anything unresolved that vine:inquire needs to address]
 ```
 
-Save this to a domain-namespaced directory under `.vine/`. The path follows the pattern:
-`.vine/<domain>/<feature-slug>/CONTEXT.md`
+Save this to a domain-namespaced directory under `.vine/projects/`. The path follows the pattern:
+`.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
 
 The domain is the root area or module the feature lives in — not the repo name, but the
 logical domain the work touches. For example:
-- `.vine/payments/webhook-support/CONTEXT.md`
-- `.vine/payments/retry-logic/CONTEXT.md`
-- `.vine/auth/sso-migration/CONTEXT.md`
-- `.vine/onboarding/welcome-flow/CONTEXT.md`
+- `.vine/projects/payments/webhook-support/CONTEXT.md`
+- `.vine/projects/payments/retry-logic/CONTEXT.md`
+- `.vine/projects/auth/sso-migration/CONTEXT.md`
+- `.vine/projects/onboarding/welcome-flow/CONTEXT.md`
 
 This two-level namespacing gives you collision prevention (multiple features in the same domain)
 and discoverability (see all VINE work in a domain at a glance). It also survives across repos
@@ -252,7 +252,7 @@ When you and the engineer feel you have a solid understanding of the landscape, 
 
 ```
 ---
-✅ vine:verify complete → CONTEXT.md written to .vine/<domain>/<feature-slug>/CONTEXT.md
+✅ vine:verify complete → CONTEXT.md written to .vine/projects/<domain>/<feature-slug>/CONTEXT.md
 📋 Suggested next step: Run `vine:inquire` to build the feature spec.
    Key items to address:
    - [open question 1]

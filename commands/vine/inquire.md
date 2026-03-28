@@ -58,11 +58,11 @@ decide, and document everything. The output is a SPEC.md that vine:navigate can 
 
 ### 1. Load the Context
 
-Identify the feature directory under `.vine/`. Look for the domain/feature-slug path
-(e.g., `.vine/payments/webhook-support/`). If there's only one feature directory, use that.
+Identify the feature directory under `.vine/projects/`. Look for the domain/feature-slug path
+(e.g., `.vine/projects/payments/webhook-support/`). If there's only one feature directory, use that.
 If there are multiple, use `AskUserQuestion` to let the engineer pick which feature to work on.
 
-Read `.vine/<domain>/<feature-slug>/CONTEXT.md` from the project. If it doesn't exist, tell the engineer:
+Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` from the project. If it doesn't exist, tell the engineer:
 
 > "I don't see a CONTEXT.md from a verify phase. We can either run vine:verify first to map the
 > landscape, or if you're confident we have enough context, I can work from what you tell me.
@@ -232,7 +232,7 @@ Compile everything into the spec document:
 [External dependencies, team coordination needed, unknowns]
 ```
 
-Save to `.vine/<domain>/<feature-slug>/SPEC.md`.
+Save to `.vine/projects/<domain>/<feature-slug>/SPEC.md`.
 
 ## Important Principles
 
@@ -256,7 +256,7 @@ When the spec is solid and the engineer has signed off:
 
 ```
 ---
-✅ vine:inquire complete → SPEC.md written to .vine/<domain>/<feature-slug>/SPEC.md
+✅ vine:inquire complete → SPEC.md written to .vine/projects/<domain>/<feature-slug>/SPEC.md
 📋 Suggested next step: Run `vine:navigate` to begin implementation.
    Starting with [Phase 1: name / Slice 1: name]
    [1-2 sentence summary of what's first]
