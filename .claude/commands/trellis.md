@@ -1,5 +1,5 @@
 ---
-name: vine:trellis
+name: trellis
 description: "Validate structural conventions across VINE command files"
 argument-hint: ""
 allowed-tools:
@@ -9,17 +9,15 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# vine:trellis — Command Structure Validation
+# trellis — Command Structure Validation
 
 Validate that all VINE command files in `commands/vine/` follow the structural conventions
-documented in CLAUDE.md. This is a VINE-repo-only tool — it validates the framework's own
-command files.
+documented in CLAUDE.md. This is a contributor-only tool — it validates the framework's own
+command files but is not part of the distributed VINE product.
 
 ## Step 1: Discover Command Files
 
-Use Glob to find all `.md` files in `commands/vine/`. These are the command files to validate —
-including `trellis.md` itself. Trellis eats its own cooking: it must pass the same checks it
-applies to other commands (with init/trellis exceptions where noted).
+Use Glob to find all `.md` files in `commands/vine/`. These are the VINE command files to validate.
 
 Read each file in full — you'll need the complete contents for all checks.
 
@@ -63,25 +61,23 @@ hyphen, not a dash without spaces.
 
 ### Check 4: Load Project Hooks Section (non-init only)
 
-**Skip this check for `init.md` and `trellis.md`** — init creates hooks and trellis is a
-VINE-repo-only validation tool; neither loads project hooks.
+**Skip this check for `init.md`** — init creates hooks rather than loading them.
 
 The command must contain a `## Load Project Hooks` heading. Between that heading and the next
 `##` heading, the text must contain the string `.vine/hooks/<phase>.md` where `<phase>` matches
 the command's stem name (e.g., `verify.md` must contain `.vine/hooks/verify.md` in its hooks
 section).
 
-### Check 5: Load Engineer Profile Section (non-init/trellis only)
+### Check 5: Load Engineer Profile Section (non-init only)
 
-**Skip this check for `init.md` and `trellis.md`** — init introduces the profile concept but
-doesn't load it; trellis is a structural validation tool that doesn't need profile context.
+**Skip this check for `init.md`** — init introduces the profile concept but doesn't load it.
 
 The command must contain a section with heading `## Load Engineer Profile` (or a heading that
 starts with `## Load Engineer Profile`).
 
-### Check 6: Section Ordering (non-init/trellis only)
+### Check 6: Section Ordering (non-init only)
 
-**Skip this check for `init.md` and `trellis.md`.**
+**Skip this check for `init.md`.**
 
 When both hooks and profile sections are present, the `## Load Project Hooks` heading must
 appear before `## Load Engineer Profile` in the file. This matches the convention: load hooks
@@ -113,11 +109,10 @@ Present results as a summary table with commands as rows and checks as columns:
 |-----------|-------------|------|-----|-------|---------|-------|-------|---------|
 | init      | ✅          | ✅   | ✅  | skip  | skip    | skip  | ✅    | ✅      |
 | verify    | ✅          | ✅   | ✅  | ✅    | ✅      | ✅    | ✅    | ✅      |
-| trellis   | ✅          | ✅   | ✅  | skip  | skip    | skip  | ✅    | ✅      |
 | ...       |             |      |     |       |         |       |       |         |
 ```
 
-Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init/trellis exceptions).
+Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init exceptions).
 
 After the table, print a summary line. Skipped checks count as passing (they're intentional
 exceptions, not failures).

@@ -29,12 +29,21 @@ For small fixes (typos, broken formatting, clarifying wording), a PR without an 
 
 For anything larger, **please open an issue first** so we can discuss the approach. The command architecture is still evolving, and a conversation upfront saves everyone time.
 
+### Contributor tools
+
+These slash commands in `.claude/commands/` help with common contributor workflows:
+
+- `/triage` — check GitHub issues, surface priorities, and discuss next steps
+- `/trellis` — validate structural conventions across VINE command files
+- `/pr` — create a PR using the repo's template and contributing guidelines
+
 When submitting a PR:
 
 - Branch from `main`
 - Keep changes focused — one concern per PR
-- Run `/vine:trellis` to validate structural conventions across command files
+- Run `/trellis` to validate structural conventions across command files
 - Test the commands in an actual VINE cycle if you're changing behavior
+- Use `/pr` to create your pull request — it fills in the template and checks guidelines
 - Describe what you changed and why in the PR description
 
 ## What's not ready for contribution yet
