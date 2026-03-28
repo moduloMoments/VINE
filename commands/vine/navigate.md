@@ -71,14 +71,14 @@ your approach, and teaching you things about the domain that make the implementa
 
 ### 1. Load Context and Spec
 
-Identify the feature directory under `.vine/` (e.g., `.vine/payments/webhook-support/`). If
+Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
 feature to work on.
 
-Read `.vine/<domain>/<feature-slug>/CONTEXT.md` and `.vine/<domain>/<feature-slug>/SPEC.md`. If either is
+Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` and `.vine/projects/<domain>/<feature-slug>/SPEC.md`. If either is
 missing, tell the engineer which prior phase needs to run first.
 
-Also check for `.vine/<domain>/<feature-slug>/NAVIGATION.md` — if it exists, you're resuming a
+Also check for `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` — if it exists, you're resuming a
 previous session. Read it to understand what's already been done and pick up where you left off.
 
 Check if SPEC.md organizes slices into phase groups. If it does, you're working on one phase
@@ -98,7 +98,7 @@ repo's default branch), create a feature branch:
 git checkout -b feature/<feature-slug>
 ```
 
-Use the feature slug from the `.vine/` directory path. If the engineer is already on a feature
+Use the feature slug from the `.vine/projects/` directory path. If the engineer is already on a feature
 branch, confirm it's the right one for this work:
 
 > "You're on branch `<branch-name>`. Is this the right branch for this work, or should I
@@ -209,7 +209,7 @@ human-reviewed, validated changes.
 
 ### 5. Document as You Go
 
-Update `.vine/NAVIGATION.md` incrementally throughout implementation. Don't save it for the end.
+Update `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` incrementally throughout implementation. Don't save it for the end.
 
 For each slice, capture:
 
@@ -324,7 +324,7 @@ When all slices are implemented (or the engineer decides to stop):
 
 ```
 ---
-✅ vine:navigate complete → .vine/<domain>/<feature-slug>/NAVIGATION.md updated
+✅ vine:navigate complete → .vine/projects/<domain>/<feature-slug>/NAVIGATION.md updated
    Slices completed: [N of M]
    Commits: [list of commit hashes]
 

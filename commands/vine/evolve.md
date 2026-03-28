@@ -46,14 +46,14 @@ ship — every feature is an opportunity to grow on three dimensions.
 
 ## Getting Started
 
-Identify the feature directory under `.vine/` (e.g., `.vine/payments/webhook-support/`). If
+Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
 feature to review.
 
 Read all VINE artifacts for this feature:
-- `.vine/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
-- `.vine/<domain>/<feature-slug>/SPEC.md` (the design)
-- `.vine/<domain>/<feature-slug>/NAVIGATION.md` (the implementation journal)
+- `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
+- `.vine/projects/<domain>/<feature-slug>/SPEC.md` (the design)
+- `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` (the implementation journal)
 
 If any are missing, work with what you have. NAVIGATION.md is the most critical — it tells you
 what was actually built versus what was planned.
@@ -303,7 +303,7 @@ observations. Domain-specific knowledge goes in the profile, not here.
 
 ## Write EVOLUTION.md
 
-Compile everything into `.vine/<domain>/<feature-slug>/EVOLUTION.md`:
+Compile everything into `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md`:
 
 ```markdown
 # Evolution Report: [Feature Name]
@@ -357,7 +357,7 @@ Compile everything into `.vine/<domain>/<feature-slug>/EVOLUTION.md`:
 
 ```
 ---
-✅ vine:evolve complete → EVOLUTION.md written to .vine/<domain>/<feature-slug>/EVOLUTION.md
+✅ vine:evolve complete → EVOLUTION.md written to .vine/projects/<domain>/<feature-slug>/EVOLUTION.md
 📦 Handoff package ready:
    - PR description drafted
    - Reviewer notes compiled

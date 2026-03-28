@@ -27,22 +27,38 @@ vine:verify  →  vine:inquire  →  vine:navigate  →  vine:evolve
 ### vine:verify — Context Building Spike
 Research the codebase together. The engineer brings tribal knowledge, edge cases, and "the weird stuff." Claude reads broadly and asks questions. Together you produce a CONTEXT.md that captures the real landscape — not just what the code says, but what the docs don't.
 
-**Output:** `.vine/<domain>/<feature-slug>/CONTEXT.md`
+**Output:** `.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
 
 ### vine:inquire — Feature Specification
 Design the feature on top of verified context. Discuss architecture, weigh tradeoffs (always 2-3 options), and get explicit human approval on every decision. Layer the spec on the foundation you built in verify.
 
-**Output:** `.vine/<domain>/<feature-slug>/SPEC.md`
+**Output:** `.vine/projects/<domain>/<feature-slug>/SPEC.md`
 
 ### vine:navigate — Guided Implementation
 Build the feature together. The engineer steers direction, Claude executes and explains. Both learn. No auto-commits — changes are surfaced for review. Every decision is documented.
 
-**Output:** `.vine/<domain>/<feature-slug>/NAVIGATION.md` + staged changes (not committed)
+**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + staged changes (not committed)
 
 ### vine:evolve — Triple Evolution
 Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new commands). User growth (knowledge gained, areas to explore).
 
-**Output:** `.vine/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
+**Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
+
+## Quick Mode: vine:pair
+
+Not every change needs the full cycle. `vine:pair` is a lightweight command for quick fixes,
+small features, and minor refactors — VINE's guided narration without the artifact ceremony.
+
+```
+> /vine:pair src/auth.ts
+> /vine:pair "fix the retry logic in the payments module"
+```
+
+vine:pair reads the target file and its immediate neighbors, asks what you want to change,
+implements with brief narration, and produces a single commit. No CONTEXT.md, no SPEC.md —
+just you and Claude working together on a small change.
+
+If the work grows beyond a quick fix, pair suggests escalating to the full cycle.
 
 ## Key Principles
 
@@ -68,7 +84,7 @@ Copy the commands directory into your user-level Claude config:
 cp -r commands/vine ~/.claude/commands/vine
 ```
 
-This makes `/vine:verify`, `/vine:inquire`, `/vine:navigate`, and `/vine:evolve` available in every project.
+This makes all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`) available in every project.
 
 ### Project-level
 
@@ -127,19 +143,21 @@ commands, and conventions without forking the commands themselves.
 │   ├── verify.md                  # verify-specific extensions
 │   ├── inquire.md                 # inquire-specific extensions
 │   ├── navigate.md                # navigate-specific extensions
-│   └── evolve.md                  # evolve-specific extensions
-├── payments/
-│   ├── webhook-support/           # Feature 1 (complete)
-│   │   ├── CONTEXT.md
-│   │   ├── SPEC.md
-│   │   ├── NAVIGATION.md
-│   │   └── EVOLUTION.md
-│   └── retry-logic/               # Feature 2 (in progress)
-│       ├── CONTEXT.md
-│       └── SPEC.md
-└── auth/
-    └── sso-migration/             # Feature 3 (in progress)
-        └── CONTEXT.md
+│   ├── evolve.md                  # evolve-specific extensions
+│   └── pair.md                    # pair-specific extensions
+└── projects/
+    ├── payments/
+    │   ├── webhook-support/       # Feature 1 (complete)
+    │   │   ├── CONTEXT.md
+    │   │   ├── SPEC.md
+    │   │   ├── NAVIGATION.md
+    │   │   └── EVOLUTION.md
+    │   └── retry-logic/           # Feature 2 (in progress)
+    │       ├── CONTEXT.md
+    │       └── SPEC.md
+    └── auth/
+        └── sso-migration/         # Feature 3 (in progress)
+            └── CONTEXT.md
 ```
 
 ### shared.md
@@ -161,6 +179,7 @@ Only created when there's something phase-specific to add:
 | `inquire.md` | Preferred architecture patterns, design review checklists |
 | `navigate.md` | Agents to run after code changes, test commands per domain |
 | `evolve.md` | PR creation workflow, CI validation, issue tracker integration |
+| `pair.md` | Test commands, lint/format requirements, commit conventions for small changes |
 
 ### How hooks load
 

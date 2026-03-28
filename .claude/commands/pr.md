@@ -56,9 +56,14 @@ Read `git diff main...HEAD` to understand the full diff. Then:
 2. **Check focus** — if changes span multiple unrelated concerns, warn the user and suggest splitting.
 3. **Check for command changes** — if any files in `commands/vine/` were modified, note that `/trellis` validation and VINE cycle testing are expected.
 
+**Check for related issues** — scan the open issues (`gh issue list --state open`) for any that
+this PR resolves. Match by topic, keywords, or explicit references in commit messages. If a
+match is found, include `Closes #N` in the Why section. Use `AskUserQuestion` to confirm the
+match before adding it — don't silently close issues.
+
 Draft the PR body by filling in the template sections:
 - **What** — concise summary of what changed
-- **Why** — motivation, link to issue if commits reference one
+- **Why** — motivation, link to issue if one exists. Include `Closes #N` for issues this PR resolves.
 - **How to test** — specific steps a reviewer can follow
 - **Checklist** — pre-check items based on what actually changed (only check the box for VINE cycle testing if command behavior was modified)
 
