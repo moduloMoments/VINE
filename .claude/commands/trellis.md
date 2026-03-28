@@ -114,12 +114,14 @@ Present results as a summary table with commands as rows and checks as columns:
 
 Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init exceptions).
 
-After the table, print a summary line. Skipped checks count as passing (they're intentional
-exceptions, not failures).
+After the table, print a command-specific summary line. Skipped checks count as passing
+(they're intentional exceptions, not failures).
 
 - If all checks pass: **"✅ N/N commands pass all checks"**
 - If any check fails: **"❌ N issues found across M commands"** followed by a brief list of
   each failure with the command name, check name, and what was wrong.
+
+The combined summary (covering both command and artifact results) is printed in Step 7.
 
 ## Step 5: Parse STATE.md and Discover Artifacts
 
@@ -247,3 +249,72 @@ For completed slices only, verify these fields are present as bold-prefixed list
 
 Pending or in-progress slices are not checked — NAVIGATION.md is built incrementally and
 partial files are expected.
+
+## Step 7: Format Artifact Results
+
+Present artifact validation results after the command checks from Step 4. This step produces
+output regardless of whether artifacts were found — the section should always appear so
+contributors know artifact validation ran.
+
+### Case 1: STATE.md Missing or Unparseable
+
+If Step 5 was skipped, print:
+
+```
+## Artifact Validation
+
+⚠️  Skipped — references/STATE.md is missing or could not be parsed.
+Command validation results above are unaffected.
+```
+
+### Case 2: No Artifacts Found
+
+If Step 5 ran but no artifacts were discovered in `.vine/projects/` and no `.vine/PROFILE.md`
+exists, print:
+
+```
+## Artifact Validation
+
+No artifacts found in .vine/projects/ or .vine/PROFILE.md — nothing to validate.
+This is expected if no VINE cycles have been run in this repo.
+```
+
+### Case 3: Artifacts Found
+
+Print a results table with artifacts as rows and checks as columns:
+
+```
+## Artifact Validation
+
+| Artifact                              | Sections | Table | Slice Fields | Nav Fields |
+|---------------------------------------|----------|-------|--------------|------------|
+| .vine/PROFILE.md                      | ✅       | ✅    | —            | —          |
+| .vine/projects/auth/login/CONTEXT.md  | ✅       | —     | —            | —          |
+| .vine/projects/auth/login/SPEC.md     | ✅       | —     | ✅           | —          |
+| .vine/projects/auth/login/NAV...md    | ✅       | —     | —            | ✅         |
+| ...                                   |          |       |              |            |
+```
+
+Column mapping:
+- **Sections** → Check A (applies to all)
+- **Table** → Check B (PROFILE only)
+- **Slice Fields** → Check C (SPEC only)
+- **Nav Fields** → Check D (NAVIGATION only)
+
+Use `✅` for pass, `❌` for fail, `—` for not applicable (the check doesn't apply to this
+artifact type).
+
+After the table, print any unmarked heading warnings from Step 5a (headings in STATE.md
+templates that lack a `<!-- required -->` or `<!-- optional -->` marker).
+
+### Combined Summary
+
+After both the command table (Step 4) and artifact table (Step 7), print a combined summary:
+
+- If everything passes: **"✅ All checks pass — N commands, M artifacts validated"**
+- If only command checks fail: **"❌ N command issues found (artifact validation passed)"**
+- If only artifact checks fail: **"❌ N artifact issues found (command validation passed)"**
+- If both fail: **"❌ N command issues + M artifact issues found"**
+
+Follow any failure summary with the detailed list of failures (command name or artifact path,
+check name, what was wrong).
