@@ -73,7 +73,9 @@ your approach, and teaching you things about the domain that make the implementa
 
 Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to work on.
+feature to work on. Filter out resolved projects (directories containing a `.resolved` file) and
+archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
+tell the engineer and suggest starting a new cycle with `vine:verify`.
 
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` and `.vine/projects/<domain>/<feature-slug>/SPEC.md`. If either is
 missing, tell the engineer which prior phase needs to run first.
