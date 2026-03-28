@@ -167,3 +167,83 @@ Use Glob to find all artifacts in `.vine/projects/`:
 
 If no `.vine/projects/` directory exists or no artifacts are found, record this — Step 7 will
 handle the "no artifacts" case cleanly.
+
+## Step 6: Validate Artifacts
+
+Using the parsed section requirements from Step 5a and the discovered artifacts from Step 5b,
+run the following checks against each artifact. Skip this step entirely if Step 5 was skipped
+(STATE.md missing/unparseable) or no artifacts were discovered.
+
+For each discovered artifact, run the applicable checks from the tiers below. Track pass/fail
+results per check per artifact.
+
+### Check A: Required Sections Present
+
+**Applies to**: all artifact types (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
+
+For each section marked `<!-- required -->` in the artifact's STATE.md template, verify that
+a matching heading exists in the actual artifact file.
+
+- Match headings by heading level and text prefix. For example, the template's
+  `### Codebase Landscape` matches `### Codebase Landscape` in CONTEXT.md.
+- For dynamic headings (those with placeholders like `[Name]`), match the fixed prefix.
+  For example, `### Slice 1: [Name]` matches any `### Slice N: <anything>` heading.
+  NAVIGATION slice headings are repeating — at least one must exist for the check to pass.
+- Optional sections are not checked — their absence is fine.
+
+### Check B: PROFILE Table Structure
+
+**Applies to**: PROFILE.md only
+
+If a `## Domain Expertise` section exists (it's required per Check A), verify the markdown
+table inside it:
+
+1. **Columns**: The table header must contain exactly these columns: Domain, Level,
+   Last Updated, Notes (in any order).
+2. **Level values**: Every value in the Level column must be one of: `confident`, `familiar`,
+   `learning`, `new`. Case-sensitive.
+
+If the Domain Expertise section exists but contains no table, this check fails.
+
+### Check C: SPEC Slice Fields
+
+**Applies to**: SPEC.md only
+
+If a `### Work Slices` section exists (it's required per Check A), find all slice headings
+(any `####` heading under Work Slices, including those prefixed with `CONDITIONAL`).
+
+For each slice, verify these fields are present as bold-prefixed list items:
+
+- `**Goal**`
+- `**Depends on**`
+- `**Files likely touched**`
+- `**Acceptance criteria**`
+- `**Complexity signal**`
+
+A `CONDITIONAL` slice must also have a `**Condition**` field.
+
+"Present" means the bold-prefixed item exists in the slice's content (between this slice's
+heading and the next heading of equal or higher level). The value after the colon can be
+anything — this is a structural check, not a content check.
+
+### Check D: NAVIGATION Slice Fields
+
+**Applies to**: NAVIGATION.md only
+
+Find all slice headings (`### Slice N: ...`) in the file. For each slice, determine its
+status:
+
+- **Complete**: The slice heading contains "Complete" (case-insensitive), OR the slice has a
+  `**Commit**` field with a value that is not "pending".
+- **Pending/In Progress**: Everything else — these slices are allowed to have incomplete fields.
+
+For completed slices only, verify these fields are present as bold-prefixed list items:
+
+- `**Started**`
+- `**Commit**`
+- `**Approach taken**`
+- `**Validation**`
+- `**Acceptance criteria**`
+
+Pending or in-progress slices are not checked — NAVIGATION.md is built incrementally and
+partial files are expected.
