@@ -33,6 +33,8 @@ Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLU
 
 All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`.
 
+`vine:pair` is artifact-free — it produces code changes and a single commit but no CONTEXT/SPEC/NAVIGATION/EVOLUTION files.
+
 ## Engineer Profile
 
 `.vine/PROFILE.md` tracks per-domain expertise (confident, familiar, learning, new). Commands use a one-sentence depth hint to adjust explanation depth:

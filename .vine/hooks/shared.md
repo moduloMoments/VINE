@@ -9,6 +9,7 @@
 - `/vine:inquire` — Feature specification and design
 - `/vine:navigate` — Guided implementation with per-slice commits
 - `/vine:evolve` — Triple evolution: product, agent, user
+- `/vine:pair` — Lightweight pair programming for quick fixes
 
 ### Contributor Tools (in `.claude/commands/`)
 - `/trellis` — Validate structural conventions across VINE command files
@@ -22,7 +23,7 @@
 ## Project Conventions
 
 ### Repository Structure
-- `commands/vine/` — The 5 VINE command files (init, verify, inquire, navigate, evolve). These ARE the product.
+- `commands/vine/` — The 6 VINE command files (init, verify, inquire, navigate, evolve, pair). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
 - `.github/` — PR template, issue templates (bug, friction, idea)
@@ -36,6 +37,14 @@
 - Sections use `##` headers for major steps, `###` for substeps
 - Anti-patterns and constraints are called out explicitly
 - AskUserQuestion is preferred over markdown lists for decision points
+
+### Command Addition Checklist
+When adding or removing a VINE command, update all of these:
+- `CLAUDE.md` — command count and list
+- `README.md` — command references, install text, hooks table
+- `references/STATE.md` — if the command affects the artifact chain
+- `.vine/hooks/shared.md` — command list and count
+- `.vine/hooks/verify.md` — command count reference
 
 ### Content Standards
 - Keep command files focused — one phase, one responsibility
