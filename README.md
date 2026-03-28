@@ -97,25 +97,39 @@ your notes and explicit phase tracking, but it's not required.
 
 ## Installation
 
-### Global (user-level)
-
-Copy the commands directory into your user-level Claude config:
+### Global (user-level, recommended)
 
 ```bash
-cp -r commands/vine ~/.claude/commands/vine
+npx create-vine --global
 ```
 
-This makes all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`) available in every project.
+This installs all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`) to `~/.claude/commands/vine/`, making them available in every project.
 
 ### Project-level
 
-Copy the commands directory into your project's `.claude/commands/` directory:
-
 ```bash
-cp -r commands/vine .claude/commands/vine
+npx create-vine
 ```
 
-Or clone the repo and symlink.
+Installs to `.claude/commands/vine/` in the current project.
+
+### Upgrade
+
+```bash
+npx create-vine@latest --global
+```
+
+### Manual install
+
+If you prefer not to use npx, copy the commands directly:
+
+```bash
+# Global
+cp -r commands/vine ~/.claude/commands/vine
+
+# Project-level
+cp -r commands/vine .claude/commands/vine
+```
 
 ### Piloting in an existing project (e.g., at work)
 

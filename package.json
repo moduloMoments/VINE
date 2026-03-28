@@ -1,0 +1,28 @@
+{
+  "name": "create-vine",
+  "version": "0.1.0",
+  "description": "Install VINE — AI-assisted feature development commands for Claude Code",
+  "bin": {
+    "create-vine": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "commands/vine"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "development",
+    "commands",
+    "vine"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/modulomoments/VINE.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
