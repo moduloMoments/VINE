@@ -114,9 +114,207 @@ Present results as a summary table with commands as rows and checks as columns:
 
 Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init exceptions).
 
-After the table, print a summary line. Skipped checks count as passing (they're intentional
-exceptions, not failures).
+After the table, print a command-specific summary line. Skipped checks count as passing
+(they're intentional exceptions, not failures).
 
 - If all checks pass: **"✅ N/N commands pass all checks"**
 - If any check fails: **"❌ N issues found across M commands"** followed by a brief list of
   each failure with the command name, check name, and what was wrong.
+
+The combined summary (covering both command and artifact results) is printed in Step 7.
+
+## Step 5: Parse STATE.md and Discover Artifacts
+
+This step builds the data needed for artifact validation in Step 6. If `references/STATE.md`
+does not exist, print a warning and skip Steps 5–7 entirely — command validation (Steps 1–4)
+always runs regardless.
+
+### 5a: Parse Artifact Templates from STATE.md
+
+Read `references/STATE.md`. Locate each artifact template by finding the `### <Name>.md`
+headings under `## State Files` (CONTEXT.md, SPEC.md, NAVIGATION.md, EVOLUTION.md) and
+under `## Per-Repo Artifacts` (PROFILE.md).
+
+Each template is enclosed in a markdown code fence (` ```markdown ... ``` `). For each template:
+
+1. Extract the content inside the code fence
+2. Find all headings (lines starting with `##` or `###`) that have a `<!-- required -->` or
+   `<!-- optional -->` marker on the same line
+3. Record each heading's text (without the marker), heading level, and whether it's required
+   or optional
+4. Map these to the artifact type (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
+
+**Handling dynamic headings**: Some template headings contain placeholders like `[Name]` or
+`[Feature Name]`. For validation purposes, treat these as pattern prefixes. For example,
+`### Slice 1: [Name]` means "any heading matching `### Slice N: ...`". NAVIGATION slice
+headings are repeating entries — at least one must exist for the `required` marker to be
+satisfied.
+
+**Unmarked headings**: If a heading inside a code fence has no `<!-- required -->` or
+`<!-- optional -->` marker, record it as a warning. This catches marker drift when someone
+adds a section to a template without annotating it.
+
+If STATE.md exists but the template structure can't be parsed (no code fences found, no
+markers found at all), print a warning and skip Steps 6–7.
+
+### 5b: Discover Artifacts
+
+Use Glob to find all artifacts in `.vine/projects/`:
+
+- Look for `CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md` under
+  `.vine/projects/*/*/` (domain/feature-slug directories)
+- Look for `PROFILE.md` at `.vine/PROFILE.md`
+- **Filter out**: any path containing `.archive/` and any directory containing a `.resolved` file
+- For each discovered artifact, record its path and artifact type
+
+If no `.vine/projects/` directory exists or no artifacts are found, record this — Step 7 will
+handle the "no artifacts" case cleanly.
+
+## Step 6: Validate Artifacts
+
+Using the parsed section requirements from Step 5a and the discovered artifacts from Step 5b,
+run the following checks against each artifact. Skip this step entirely if Step 5 was skipped
+(STATE.md missing/unparseable) or no artifacts were discovered.
+
+For each discovered artifact, run the applicable checks from the tiers below. Track pass/fail
+results per check per artifact.
+
+### Check A: Required Sections Present
+
+**Applies to**: all artifact types (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
+
+For each section marked `<!-- required -->` in the artifact's STATE.md template, verify that
+a matching heading exists in the actual artifact file.
+
+- Match headings by heading level and text prefix. For example, the template's
+  `### Codebase Landscape` matches `### Codebase Landscape` in CONTEXT.md.
+- For dynamic headings (those with placeholders like `[Name]`), match the fixed prefix.
+  For example, `### Slice 1: [Name]` matches any `### Slice N: <anything>` heading.
+  NAVIGATION slice headings are repeating — at least one must exist for the check to pass.
+- Optional sections are not checked — their absence is fine.
+
+### Check B: PROFILE Table Structure
+
+**Applies to**: PROFILE.md only
+
+If a `## Domain Expertise` section exists (it's required per Check A), verify the markdown
+table inside it:
+
+1. **Columns**: The table header must contain exactly these columns: Domain, Level,
+   Last Updated, Notes (in any order).
+2. **Level values**: Every value in the Level column must be one of: `confident`, `familiar`,
+   `learning`, `new`. Case-sensitive.
+
+If the Domain Expertise section exists but contains no table, this check fails.
+
+### Check C: SPEC Slice Fields
+
+**Applies to**: SPEC.md only
+
+If a `### Work Slices` section exists (it's required per Check A), find all slice headings
+(any `####` heading under Work Slices, including those prefixed with `CONDITIONAL`).
+
+For each slice, verify these fields are present as bold-prefixed list items:
+
+- `**Goal**`
+- `**Depends on**`
+- `**Files likely touched**`
+- `**Acceptance criteria**`
+- `**Complexity signal**`
+
+A `CONDITIONAL` slice must also have a `**Condition**` field.
+
+"Present" means the bold-prefixed item exists in the slice's content (between this slice's
+heading and the next heading of equal or higher level). The value after the colon can be
+anything — this is a structural check, not a content check.
+
+### Check D: NAVIGATION Slice Fields
+
+**Applies to**: NAVIGATION.md only
+
+Find all slice headings (`### Slice N: ...`) in the file. For each slice, determine its
+status:
+
+- **Complete**: The slice heading contains "Complete" (case-insensitive), OR the slice has a
+  `**Commit**` field with a value that is not "pending".
+- **Pending/In Progress**: Everything else — these slices are allowed to have incomplete fields.
+
+For completed slices only, verify these fields are present as bold-prefixed list items:
+
+- `**Started**`
+- `**Commit**`
+- `**Approach taken**`
+- `**Validation**`
+- `**Acceptance criteria**`
+
+Pending or in-progress slices are not checked — NAVIGATION.md is built incrementally and
+partial files are expected.
+
+## Step 7: Format Artifact Results
+
+Present artifact validation results after the command checks from Step 4. This step produces
+output regardless of whether artifacts were found — the section should always appear so
+contributors know artifact validation ran.
+
+### Case 1: STATE.md Missing or Unparseable
+
+If Step 5 was skipped, print:
+
+```
+## Artifact Validation
+
+⚠️  Skipped — references/STATE.md is missing or could not be parsed.
+Command validation results above are unaffected.
+```
+
+### Case 2: No Artifacts Found
+
+If Step 5 ran but no artifacts were discovered in `.vine/projects/` and no `.vine/PROFILE.md`
+exists, print:
+
+```
+## Artifact Validation
+
+No artifacts found in .vine/projects/ or .vine/PROFILE.md — nothing to validate.
+This is expected if no VINE cycles have been run in this repo.
+```
+
+### Case 3: Artifacts Found
+
+Print a results table with artifacts as rows and checks as columns:
+
+```
+## Artifact Validation
+
+| Artifact                              | Sections | Table | Slice Fields | Nav Fields |
+|---------------------------------------|----------|-------|--------------|------------|
+| .vine/PROFILE.md                      | ✅       | ✅    | —            | —          |
+| .vine/projects/auth/login/CONTEXT.md  | ✅       | —     | —            | —          |
+| .vine/projects/auth/login/SPEC.md     | ✅       | —     | ✅           | —          |
+| .vine/projects/auth/login/NAV...md    | ✅       | —     | —            | ✅         |
+| ...                                   |          |       |              |            |
+```
+
+Column mapping:
+- **Sections** → Check A (applies to all)
+- **Table** → Check B (PROFILE only)
+- **Slice Fields** → Check C (SPEC only)
+- **Nav Fields** → Check D (NAVIGATION only)
+
+Use `✅` for pass, `❌` for fail, `—` for not applicable (the check doesn't apply to this
+artifact type).
+
+After the table, print any unmarked heading warnings from Step 5a (headings in STATE.md
+templates that lack a `<!-- required -->` or `<!-- optional -->` marker).
+
+### Combined Summary
+
+After both the command table (Step 4) and artifact table (Step 7), print a combined summary:
+
+- If everything passes: **"✅ All checks pass — N commands, M artifacts validated"**
+- If only command checks fail: **"❌ N command issues found (artifact validation passed)"**
+- If only artifact checks fail: **"❌ N artifact issues found (command validation passed)"**
+- If both fail: **"❌ N command issues + M artifact issues found"**
+
+Follow any failure summary with the detailed list of failures (command name or artifact path,
+check name, what was wrong).

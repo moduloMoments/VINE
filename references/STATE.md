@@ -21,30 +21,30 @@ The landscape document. Captures what exists, what's broken, what the codebase d
 ## Date: [YYYY-MM-DD]
 ## Author: [engineer name] + Claude
 
-### Codebase Landscape
+### Codebase Landscape <!-- required -->
 - Relevant modules and their responsibilities
 - Key patterns and conventions in use
 - Dependencies and integration points
 
-### Current State
+### Current State <!-- required -->
 - What works today
 - Recent changes that matter
 
-### Edge Cases & Tribal Knowledge
+### Edge Cases & Tribal Knowledge <!-- required -->
 - Things the engineer knows that aren't documented
 - Gotchas, workarounds, historical context
 - "Here be dragons" areas
 
-### Tech Debt in Affected Areas
+### Tech Debt in Affected Areas <!-- optional -->
 - Known debt in modules this feature will touch
 - Debt that may affect implementation choices
 
-### Documentation Gaps
+### Documentation Gaps <!-- optional -->
 - Documentation that needs updating
 - Missing architectural decision records
 - Stale comments or misleading docs
 
-### Open Questions
+### Open Questions <!-- optional -->
 - Unresolved ambiguities for vine:inquire to address
 ```
 
@@ -58,19 +58,19 @@ The feature specification. Built on top of CONTEXT.md — not from scratch.
 ## Built on: CONTEXT.md ([date])
 ## Decisions made by: [engineer name]
 
-### Problem Statement
+### Problem Statement <!-- required -->
 - What we're solving and why
 
-### Approach
+### Approach <!-- required -->
 - Chosen architecture with rationale
 - Key decisions and why they were made
 
-### Acceptance Criteria
+### Acceptance Criteria <!-- required -->
 - Verifiable conditions for "done"
 - Edge cases explicitly handled
 - Performance/security considerations
 
-### Work Slices
+### Work Slices <!-- required -->
 Ordered, independent units of work:
 
 #### Slice 1: [Name]
@@ -88,16 +88,16 @@ For larger features, slices are grouped into phases:
 - **Phase 1**: Core functionality (slices 1-3)
 - **Phase 2**: Edge cases and polish (slices 4-5)
 
-### Tech Debt Integration
+### Tech Debt Integration <!-- optional -->
 - Debt items from CONTEXT.md addressed in this work
 - Debt items deferred (with reasoning)
 - New debt being consciously taken on
 
-### Dependencies & Risks
+### Dependencies & Risks <!-- optional -->
 - External dependencies or blockers
 - Risk factors and mitigations
 
-### Backlog Updates
+### Backlog Updates <!-- optional -->
 - Items to add/modify in project backlog
 - Dependencies on other work
 ```
@@ -110,7 +110,7 @@ The implementation journal. Built incrementally — each slice is appended as it
 # Navigation Log: [Feature Name]
 ## Date: [YYYY-MM-DD]
 
-### Slice 1: [Name]
+### Slice 1: [Name] <!-- required -->
 - **Started**: [timestamp]
 - **Commit**: [hash] (or 'pending' if in progress)
 - **Approach taken**: What was implemented and how
@@ -121,10 +121,10 @@ The implementation journal. Built incrementally — each slice is appended as it
 - **Engineer feedback incorporated**: [what the engineer corrected or steered]
 - **Learnings**: What both sides learned from this slice
 
-### Slice 2: [Name]
+### Slice 2: [Name] <!-- required -->
 (same structure, appended after slice 1 is committed)
 
-### Remaining Work
+### Remaining Work <!-- optional -->
 - Incomplete slices
 - Blockers encountered
 - Handoff context for next session
@@ -138,23 +138,23 @@ The triple evolution report. Captures growth across product, agent, and user.
 # Evolution Report: [Feature Name]
 ## Date: [YYYY-MM-DD]
 
-### Product Evolution
+### Product Evolution <!-- required -->
 - **Acceptance Criteria Results**: [pass/fail table for each criterion]
 - **Spec Deviations**: [list with rationale]
 - **Follow-Up Items**: [concrete backlog suggestions]
 
-### Agent Evolution
+### Agent Evolution <!-- required -->
 - **CLAUDE.md Suggestions**: Updates to project instructions
 - **Command Suggestions**: New commands or improvements identified
 - **Workflow Improvements**: Patterns worth codifying
 - **Hook Update Suggestions**: Updates to .vine/hooks/ based on learnings
 - **VINE Process Observations**: What worked, what to adjust
 
-### User Evolution
+### User Evolution <!-- required -->
 - **Knowledge Highlights**: New patterns or concepts the engineer encountered
 - **Suggested Explorations**: Areas for deeper learning
 
-### Handoff Package
+### Handoff Package <!-- required -->
 - **PR Description**: [ready to paste]
 - **Reviewer Notes**: Context for code reviewers
 - **Commit Suggestions**: [if changes aren't already committed]
@@ -172,14 +172,14 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 ```markdown
 # Engineer Profile
 
-## Domain Expertise
+## Domain Expertise <!-- required -->
 
 | Domain | Level | Last Updated | Notes |
 |--------|-------|--------------|-------|
 | auth | confident | 2026-03-15 | Built OAuth integration |
 | payments | learning | 2026-03-27 | First cycle in progress |
 
-## Growth Log
+## Growth Log <!-- optional -->
 
 ### 2026-03-27 — payments/webhook-support
 - Explored webhook validation patterns
