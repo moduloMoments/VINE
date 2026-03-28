@@ -2,15 +2,16 @@
 
 ## What This Repo Is
 
-VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 6 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, trellis), a state reference at `references/STATE.md`, and a README.
+VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 5 command files in `commands/vine/` (init, verify, inquire, navigate, evolve), a state reference at `references/STATE.md`, and a README.
 
 **Editing a command file changes the tool itself.** Test changes by running the modified command on a real repo.
 
 ## Repository Structure
 
-- `commands/vine/` — The 6 VINE command files. These ARE the product.
+- `commands/vine/` — The 5 VINE command files. These ARE the product.
+- `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
-- `.vine/hooks/` — Dogfooding hooks (gitignored)
+- `.vine/hooks/shared.md` — Contributor context hook (tracked; per-phase hooks gitignored)
 - `.vine/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
@@ -19,12 +20,12 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
 - Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion
 - Every command starts with a "Load Project Hooks" section (reads `.vine/hooks/shared.md` + `.vine/hooks/<phase>.md`)
-- Every command (except init and trellis) follows hooks with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates hooks/profile; trellis is repo-only tooling that doesn't need them.
-- Load Project Hooks must appear before Load Engineer Profile — this ordering is enforced by `vine:trellis`
+- Every command (except init) follows hooks with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates hooks/profile rather than loading them.
+- Load Project Hooks must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
 - Each command is self-contained — repeated blocks (hook loading, profile loading) are intentional, not DRY violations
-- Run `/vine:trellis` to validate structural conventions across all command files before submitting changes
+- Run `/trellis` to validate structural conventions across all command files before submitting changes
 
 ## State Artifact Chain
 

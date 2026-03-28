@@ -9,7 +9,11 @@ Thumbs.db
 *.swo
 
 # VINE workflow artifacts (dogfooding)
-.vine/
+# Track hooks for contributor context, ignore everything else
+.vine/*
+!.vine/hooks/
+.vine/hooks/*
+!.vine/hooks/shared.md
 
 # Node (if tooling is added later)
 node_modules/
