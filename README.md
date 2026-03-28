@@ -22,6 +22,10 @@ VINE is for engineers who want to stay engaged with their code, not delegate it 
 vine:verify  →  vine:inquire  →  vine:navigate  →  vine:evolve
    📡              📐               🧭                🌱
  Explore         Design           Build            Grow
+
+         ╰─────── vine:pair ───────╯
+                     🤝
+                Quick changes
 ```
 
 ### vine:verify — Context Building Spike
