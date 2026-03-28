@@ -63,5 +63,5 @@ When adding or removing a VINE command, update all of these:
 
 - **No CI pipeline yet** — validation is manual
 - **Testing**: Run VINE phases on real repos to test command changes
-- **Validation**: Run `/trellis` before submitting PRs to check structural conventions
+- **Validation**: Run `/trellis` before submitting PRs to check command structure and artifact format compliance
 - **Build**: None — pure markdown, no compilation step

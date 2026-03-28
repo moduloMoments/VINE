@@ -25,13 +25,13 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
 - Each command is self-contained — repeated blocks (hook loading, profile loading) are intentional, not DRY violations
-- Run `/trellis` to validate structural conventions across all command files before submitting changes
+- Run `/trellis` to validate command structure and artifact format compliance before submitting changes
 
 ## State Artifact Chain
 
 Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLUTION.md`
 
-All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`.
+All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`. Section headings in STATE.md templates use `<!-- required -->` / `<!-- optional -->` HTML comment markers — new sections must include a marker to prevent validation drift.
 
 `vine:pair` is artifact-free — it produces code changes and a single commit but no CONTEXT/SPEC/NAVIGATION/EVOLUTION files.
 

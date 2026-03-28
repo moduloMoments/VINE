@@ -15,5 +15,8 @@ Thumbs.db
 .vine/hooks/*
 !.vine/hooks/shared.md
 
+# Claude Code worktrees
+.claude/worktrees/
+
 # Node (if tooling is added later)
 node_modules/
