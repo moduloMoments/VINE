@@ -9,9 +9,9 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 ## Repository Structure
 
 - `commands/vine/` — The 5 VINE command files. These ARE the product.
-- `.claude/commands/` — Contributor tools (trellis, triage). Not part of the distributed product.
+- `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
-- `.vine/hooks/` — Dogfooding hooks (gitignored)
+- `.vine/hooks/shared.md` — Contributor context hook (tracked; per-phase hooks gitignored)
 - `.vine/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
