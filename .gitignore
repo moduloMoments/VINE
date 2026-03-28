@@ -18,5 +18,6 @@ Thumbs.db
 # Claude Code worktrees
 .claude/worktrees/
 
-# Node (if tooling is added later)
+# Node
 node_modules/
+package-lock.json
