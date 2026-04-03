@@ -80,6 +80,8 @@ Read whichever artifacts exist to build the full picture:
 - **SPEC.md**: Total slice count, phase groups (if any), acceptance criteria overview
 - **NAVIGATION.md**: Per-slice completion status, commit hashes, deviations from spec,
   remaining work section (if written)
+- **PROJECT-MAP.md**: VINE Progress table and Milestones (if multi-PR). This is the most
+  compact view of overall status — use it to enrich the status display.
 - **EVOLUTION.md**: If this exists, evolve has run — check if the project should be resolved
 
 Cross-reference NAVIGATION.md's slice entries against SPEC.md's slice list to determine
@@ -110,6 +112,12 @@ exists.
 📝 Your notes from last session:
    [Engineer's notes from PAUSE.md]
 
+[If PROJECT-MAP.md exists:]
+📊 VINE Progress: verify ✅ → inquire ✅ → navigate 🚧 → evolve ⬜
+[If PROJECT-MAP.md has Milestones table:]
+📦 Milestones:
+   [Compact milestone summary — e.g., "Phase 1: ✅ PR #42 | Phase 2: 🚧 | Phase 3: ⬜"]
+
 [If navigate in progress and NAVIGATION.md has Remaining Work section:]
 📋 Remaining work from last session:
    [Remaining work items]
@@ -133,6 +141,12 @@ exists.
    Branch: [current branch — with warning if it doesn't match]
 
    No pause state found — reconstructing from artifacts.
+
+[If PROJECT-MAP.md exists:]
+📊 VINE Progress: verify ✅ → inquire ✅ → navigate 🚧 → evolve ⬜
+[If PROJECT-MAP.md has Milestones table:]
+📦 Milestones:
+   [Compact milestone summary — e.g., "Phase 1: ✅ PR #42 | Phase 2: 🚧 | Phase 3: ⬜"]
 
 [If navigate in progress:]
 📋 Navigation progress:

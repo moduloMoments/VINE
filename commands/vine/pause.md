@@ -62,7 +62,10 @@ If a feature path was passed as an argument, use it directly. Otherwise:
 
 ## Detect Current Phase
 
-Determine the feature's current phase by checking which artifacts exist:
+First check `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` — if it exists, read the VINE
+Progress table for the current phase (the row with 🚧 status). This is the most reliable source.
+
+If no PROJECT-MAP.md exists, fall back to determining the phase from which artifacts exist:
 
 | Artifacts present | Phase |
 |---|---|
