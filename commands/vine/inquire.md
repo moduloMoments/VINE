@@ -35,15 +35,21 @@ If it exists, read it and extract the Domain Expertise table. Once you identify 
 directory (in "Load the Context" below), check the domain portion of the path against the
 profile's domain entries.
 
-- **If the domain is in the profile**: Set the depth hint for this session based on their level.
+- **If the domain is in the profile**: Note their level for this session.
 - **If the domain is NOT in the profile or no profile exists**: Proceed normally — no prompt,
   no warning. The profile is opt-in and verify handles seeding.
 
-**Depth hint pattern** (internal, not shown to the engineer):
+**Collaboration stance** (internal, not shown to the engineer):
 
-> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
-> explanation depth accordingly — be concise where they're confident, explain the why behind
-> decisions where they're learning or new."
+> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
+>
+> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
+>    say so. The engineer is a resource, not an audience.
+> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
+>    write. When they correct you, acknowledge what you learned. Growth lives in the
+>    narration, not in debriefs.
+> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
+>    calibrates your default — but confidence is contextual, so follow their lead."
 
 ---
 
