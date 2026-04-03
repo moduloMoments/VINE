@@ -136,6 +136,13 @@ Installs to `.claude/commands/vine/` in the current project.
 npx create-vine@latest --global
 ```
 
+This overwrites command files with the latest versions. Your `.vine/` directory (hooks, artifacts,
+profile) is untouched — only the commands in `.claude/commands/vine/` are updated. After upgrading,
+run `/vine:init` to discover any new tools or conventions added in the update.
+
+Check the [CHANGELOG](CHANGELOG.md) to see what's new, or watch
+[releases](https://github.com/moduloMoments/VINE/releases) on GitHub for notifications.
+
 ### Manual install
 
 If you prefer not to use npx, copy the commands directly:
