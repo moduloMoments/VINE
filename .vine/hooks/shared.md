@@ -13,6 +13,7 @@
 - `/vine:pause` — Capture session state when stopping work
 - `/vine:resume` — See where you left off and what's next
 - `/vine:status` — Quick read-only progress check
+- `/vine:help` — Command reference and usage guide
 
 ### Contributor Tools (in `.claude/commands/`)
 - `/trellis` — Validate structural conventions across VINE command files
