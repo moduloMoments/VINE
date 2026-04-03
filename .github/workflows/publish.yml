@@ -3,6 +3,7 @@ name: Publish to npm
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -18,10 +19,8 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
-      - name: Update npm
-        run: npm install -g npm@10
-
       - name: Verify package version matches release tag
+        if: github.event_name == 'release'
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           TAG_VERSION="${GITHUB_REF_NAME#v}"
@@ -37,5 +36,10 @@ jobs:
           test -f .claude/commands/vine/verify.md
           echo "Smoke test passed"
 
+      - name: Publish with provenance (dry run for manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        run: npm publish --provenance --access public --dry-run
+
       - name: Publish with provenance
+        if: github.event_name == 'release'
         run: npm publish --provenance --access public
