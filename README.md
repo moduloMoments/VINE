@@ -14,7 +14,7 @@ Most AI coding frameworks optimize for speed. VINE optimizes for **three things 
 2. **The agent** — Claude gets smarter about your codebase with every cycle
 3. **The user** — the engineer learns patterns and deepens expertise alongside the AI
 
-VINE is for engineers who want to stay engaged with their code, not delegate it away. The AI accelerates your work; it doesn't replace your judgment.
+VINE is for engineers who want to stay engaged with their code, not delegate it away. The AI accelerates your work; it doesn't replace your judgment. Every phase is a partnership — Claude flags its own uncertainty, names patterns as it uses them, and calibrates to your expertise. You steer, it executes, and both sides learn.
 
 ## The Four Phases
 
