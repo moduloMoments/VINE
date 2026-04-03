@@ -151,8 +151,7 @@ The triple evolution report. Captures growth across product, agent, and user.
 - **VINE Process Observations**: What worked, what to adjust
 
 ### User Evolution <!-- required -->
-- **Knowledge Highlights**: New patterns or concepts the engineer encountered
-- **Suggested Explorations**: Areas for deeper learning
+- **Engineer Contributions**: Decisions and domain knowledge that shaped the implementation
 
 ### Handoff Package <!-- required -->
 - **PR Description**: [ready to paste]

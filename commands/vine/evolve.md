@@ -257,34 +257,28 @@ to apply. For each accepted suggestion, write the update directly to the hook fi
 
 ## Evolution 3: User
 
-The engineer should know more after this feature than before. This isn't about teaching — it's
-about recognizing what they learned and where they might want to go deeper.
+This section is about what the engineer contributed, not what they "learned." The engineer
+shaped the implementation through their decisions, corrections, and domain knowledge. Capture
+that contribution and update the profile if appropriate.
 
-### Knowledge Captured
+### Engineer Contributions
 
-Review the bidirectional learnings from NAVIGATION.md:
+Review NAVIGATION.md for what the engineer brought to this cycle:
 
-- What patterns or approaches did the engineer engage with during navigate?
-- What questions did they ask that suggest curiosity about a topic?
-- What did they teach you that showed deep expertise in an area?
+- Decisions that steered the implementation away from a worse path
+- Domain knowledge that shaped the approach (from CONTEXT.md's tribal knowledge)
+- Corrections to Claude's approach — these are the most valuable; they show where the
+  engineer's judgment was load-bearing
 
-Summarize without being condescending. The engineer doesn't need a report card — they need a
-mirror:
+Frame this as contribution, not education:
 
-> "During this feature, you spent time understanding the factory pattern implementation and
-> asked good questions about when it's worth the abstraction overhead. The retry logic discussion
-> touched on circuit breaker patterns — that might be worth exploring if your services see
-> intermittent upstream failures."
+> "Your call to exclude status from the stance update avoided unnecessary complexity — the
+> interaction surface principle you applied there is a clean design heuristic. The auto-accept
+> addition to gearing turned a stylistic toggle into a real mode shift."
 
-### Suggested Explorations
-
-Based on what you observed, suggest 1-2 areas the engineer might find valuable:
-
-- A pattern they used that has deeper applications
-- A library or tool related to what they built
-- An architectural concept adjacent to decisions they made
-
-Keep it light. One or two sentences each, not a curriculum.
+**Do not summarize what the engineer "learned."** If they explored something new, they know.
+If they didn't, don't invent growth. If the cycle was routine work in their comfort zone,
+say so and move on — not every feature is a learning experience.
 
 ### Update Engineer Profile
 
@@ -315,15 +309,21 @@ Options (mutually exclusive):
 
 **Growth log entry:**
 
-Draft a growth log entry for this cycle:
+Ask the engineer if they want to add a growth log entry for this cycle. Don't draft one —
+the engineer writes their own narrative:
 
-```markdown
-### [date] — [domain]/[feature-slug]
-- [2-4 bullet points: what the engineer explored, built, or learned]
-```
+> "Want to add a growth log entry for this cycle? It's a few bullet points on what stood
+> out — your call whether anything is worth recording."
 
-Present the draft and let the engineer edit or approve it. Don't include trivial observations
-— focus on genuine knowledge growth.
+Use `AskUserQuestion`:
+1. "Use your draft" — "I'll draft bullet points from the cycle; you can edit before saving"
+2. "I'll write my own" — "I'll add the date/domain header, you fill in the bullets"
+3. "Skip (Recommended)" — "Not every cycle needs a log entry"
+
+Put "Skip" as recommended. Growth log entries should be the exception, not the default —
+only when the engineer genuinely wants to record something. If they choose the draft option,
+write bullet points focused on the engineer's contributions and decisions — not what they
+"learned." Present the draft for editing before writing to the file.
 
 For each accepted change, write the update to `.vine/PROFILE.md` directly. Create the file
 if needed, using the format documented in `references/STATE.md`.
@@ -378,11 +378,8 @@ Compile everything into `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md`:
 [What worked, what to adjust]
 
 ### User Evolution
-#### Knowledge Highlights
-[What the engineer learned and taught]
-
-#### Suggested Explorations
-[1-2 areas to explore]
+#### Engineer Contributions
+[Decisions and domain knowledge that shaped the implementation]
 
 #### Profile Updates
 [Domain level changes and growth log entries — accepted/rejected]
