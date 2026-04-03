@@ -220,35 +220,11 @@ overrides the defaults entirely — it knows this project's toolchain.
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.
 
-**b. Commit the slice**
+**b. Update NAVIGATION.md**
 
-Stage the changed files and commit with this format:
-
-```
-<slice-name>: <1-2 sentence summary>
-
-Acceptance criteria verified:
-- [x] <AC from spec that passed>
-- [x] <AC from spec that passed>
-- [ ] <AC skipped with reason>
-```
-
-If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. Check
-`.vine/hooks/shared.md` or `CLAUDE.md` for commit message conventions.
-
-**c. Record in NAVIGATION.md**
-
-Add the commit hash to the slice's entry in NAVIGATION.md so evolve can reference it.
-
-**Important:** The engineer still reviews every code change via approve-edits before the
-commit happens. This isn't autonomous committing — it's structured committing after
-human-reviewed, validated changes.
-
-### 5. Document as You Go
-
-Update `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` incrementally throughout implementation. Don't save it for the end.
-
-For each slice, capture:
+Before committing, update the slice's entry in `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md`
+with the full journal record. This is a prerequisite for committing — you can't commit
+without updating the journal. For each slice, capture:
 
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
@@ -268,7 +244,30 @@ For each slice, capture:
   - Claude → Engineer: [patterns or approaches the engineer found useful]
 ```
 
-### 6. Handle Blockers
+**c. Commit the slice**
+
+Stage the changed files (including NAVIGATION.md) and commit with this format:
+
+```
+<slice-name>: <1-2 sentence summary>
+
+Acceptance criteria verified:
+- [x] <AC from spec that passed>
+- [x] <AC from spec that passed>
+- [ ] <AC skipped with reason>
+```
+
+If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. Check
+`.vine/hooks/shared.md` or `CLAUDE.md` for commit message conventions.
+
+After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
+hash.
+
+**Important:** The engineer still reviews every code change via approve-edits before the
+commit happens (unless in "run with it" mode). This isn't autonomous committing — it's
+structured committing after human-reviewed, validated changes.
+
+### 5. Handle Blockers
 
 When you hit something unexpected:
 
@@ -287,7 +286,7 @@ When you hit something unexpected:
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.
 
-### 7. Track Deviations Immediately
+### 6. Track Deviations Immediately
 
 When the engineer or Claude decides to deviate from the spec during a slice, update **both**
 documents immediately:
@@ -296,7 +295,7 @@ documents immediately:
 - **SPEC.md**: Add a strikethrough or addendum to the affected section so the spec reflects
   reality. This prevents evolve from cross-referencing two documents to understand what changed.
 
-### 8. Between Slices
+### 7. Between Slices
 
 After each slice is validated and committed:
 
@@ -328,7 +327,7 @@ After writing Remaining Work, suggest running `vine:pause` to capture the engine
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
 > for when you come back, run `vine:pause` before closing the session."
 
-### 9. Between Phase Groups
+### 8. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
 This is a natural stopping point — the group's work is a coherent unit that can be reviewed

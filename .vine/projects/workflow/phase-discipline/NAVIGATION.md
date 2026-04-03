@@ -22,7 +22,7 @@
 
 ### Slice 2: Navigate Behavioral Integration + Per-Slice Gearing — Complete
 **Started**: 2026-04-03
-**Commit**: pending
+**Commit**: 14798b9
 **Approach taken**: Embedded collaboration stance behaviors into navigate's flow across three touchpoints: (1) Step 3a gets self-assessment guidance and per-slice gearing with "run with it" / "walk me through this" — folded into the existing preview confirmation. "Run with it" auto-accepts edits for the slice, reverts at slice boundary. (2) Step 3b gets explicit guidance on naming patterns and acknowledging corrections, with "(skip in run with it mode)" marker. (3) Step 3c marked skippable in run-with-it mode. (4) Important Principles: "Respect the engineer's expertise" strengthened with "flag your own gaps," "The engineer is learning too" replaced with "Grow through the work."
 **Deviations from spec**: Engineer added auto-accept behavior to "run with it" mode — spec only said "lighter narration, fewer pauses" but the engineer wanted mechanical teeth: auto-accept during slice, revert at boundary. This is stronger than spec envisioned.
 **Validation**: pass — frontmatter intact, structural checks pass, no sections added/removed
@@ -39,3 +39,21 @@
 **Learnings**:
   - Engineer → Claude: Gearing needs mechanical teeth, not just narration differences — auto-accept makes "run with it" a real mode shift
   - Claude → Engineer: None — engineer drove the key design insight here
+
+### Slice 3: Merge Step 5 into Step 4 — Complete
+**Started**: 2026-04-03
+**Commit**: pending
+**Approach taken**: Restructured step 4 to make NAVIGATION.md updates a prerequisite before committing: old step 4c ("Record in NAVIGATION.md" — one line about adding the commit hash) replaced with new step 4b ("Update NAVIGATION.md" — full journal template, explicit prerequisite). Old step 4b (commit) becomes 4c and now includes NAVIGATION.md in the staged files. Old step 5 ("Document as You Go") removed entirely — its journal template moved into 4b. Steps 6-9 renumbered to 5-8. Also added "run with it" mode parenthetical to the Important note about approve-edits.
+**Deviations from spec**: None
+**Validation**: pass — step numbering sequential 1-8, no dangling step references, frontmatter intact
+**Decisions made during implementation**:
+  - None — straightforward structural surgery as spec described
+**Acceptance criteria**:
+  - [x] Step 4 includes updating NAVIGATION.md (approach, commit hash, validation, AC, learnings) before committing
+  - [x] Step 5 ("Document as You Go") removed as separate section
+  - [x] Steps 6-9 renumbered to 5-8
+  - [x] Slice journal template preserved in merged step 4
+**Engineer feedback incorporated**: None needed — clean structural change
+**Learnings**:
+  - Engineer → Claude: None
+  - Claude → Engineer: None — mechanical restructure
