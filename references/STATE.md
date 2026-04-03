@@ -111,15 +111,15 @@ The implementation journal. Built incrementally — each slice is appended as it
 ## Date: [YYYY-MM-DD]
 
 ### Slice 1: [Name] <!-- required -->
-- **Started**: [timestamp]
-- **Commit**: [hash] (or 'pending' if in progress)
-- **Approach taken**: What was implemented and how
-- **Deviations from spec**: Any changes and why
-- **Validation**: [pass/fail — lint, typecheck, tests]
-- **Decisions made**: Engineer choices during implementation
-- **Acceptance criteria**: [met/not met with details]
-- **Engineer feedback incorporated**: [what the engineer corrected or steered]
-- **Learnings**: What both sides learned from this slice
+- **Started**: [timestamp] <!-- optional -->
+- **Commit**: [hash] (or 'pending' if in progress) <!-- required -->
+- **Approach taken**: What was implemented and how <!-- optional -->
+- **Deviations from spec**: Any changes and why <!-- optional -->
+- **Validation**: [pass/fail — lint, typecheck, tests] <!-- required -->
+- **Decisions made**: Engineer choices during implementation <!-- optional -->
+- **Acceptance criteria**: [met/not met with details] <!-- required -->
+- **Engineer feedback incorporated**: [what the engineer corrected or steered] <!-- optional -->
+- **Learnings**: What both sides learned from this slice <!-- required -->
 
 ### Slice 2: [Name] <!-- required -->
 (same structure, appended after slice 1 is committed)
@@ -151,8 +151,7 @@ The triple evolution report. Captures growth across product, agent, and user.
 - **VINE Process Observations**: What worked, what to adjust
 
 ### User Evolution <!-- required -->
-- **Knowledge Highlights**: New patterns or concepts the engineer encountered
-- **Suggested Explorations**: Areas for deeper learning
+- **Engineer Contributions**: Decisions and domain knowledge that shaped the implementation
 
 ### Handoff Package <!-- required -->
 - **PR Description**: [ready to paste]

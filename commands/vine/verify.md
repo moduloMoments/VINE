@@ -37,9 +37,7 @@ If it exists, read it and extract the Domain Expertise table. You'll use this la
 the engineer confirms which domain this feature lives in (during CONTEXT.md creation), check
 whether that domain appears in the profile.
 
-- **If the domain is in the profile**: Set the depth hint for this session based on their level.
-  Use this internally to calibrate your exploration narration — be concise where they're
-  confident, explain the why behind things where they're learning or new.
+- **If the domain is in the profile**: Note their level for this session.
 - **If the domain is NOT in the profile**: After the engineer confirms the domain via
   AskUserQuestion, ask them to rate their familiarity:
 
@@ -59,11 +57,17 @@ whether that domain appears in the profile.
 If no profile exists and the engineer hasn't confirmed a domain yet, do nothing — the prompt
 happens naturally when the domain is confirmed during CONTEXT.md creation. No upfront questions.
 
-**Depth hint pattern** (internal, not shown to the engineer):
+**Collaboration stance** (internal, not shown to the engineer):
 
-> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
-> explanation depth accordingly — be concise where they're confident, explain the why behind
-> decisions where they're learning or new."
+> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
+>
+> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
+>    say so. The engineer is a resource, not an audience.
+> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
+>    write. When they correct you, acknowledge what you learned. Growth lives in the
+>    narration, not in debriefs.
+> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
+>    calibrates your default — but confidence is contextual, so follow their lead."
 
 If no profile exists or the domain isn't listed, proceed exactly as you would without a profile.
 
@@ -142,6 +146,40 @@ This is the most important part. The engineer has context you can't get from the
 
 Ask open-ended questions to draw this out. Engineers often don't think to mention these things
 until prompted because they've internalized them.
+
+### 3b. Scope Check
+
+After understanding the mission, reading the landscape, and surfacing tribal knowledge, you
+have enough context to judge whether the full VINE cycle is warranted. Evaluate:
+
+- **How many files are likely to change?** (1-3 files → pair candidate; 4+ → full cycle)
+- **Are there hidden edge cases or tribal knowledge?** (None surfaced → simpler than expected;
+  multiple gotchas → full cycle pays for itself)
+- **Does the engineer already know exactly what to change?** (Clear and contained → pair;
+  needs design discussion → full cycle)
+- **Are there cross-module integration concerns?** (Self-contained → pair; touches boundaries
+  → full cycle)
+
+If the work looks smaller or more contained than expected, surface it:
+
+> "Based on what we've explored, this looks [simpler/more contained] than a full VINE cycle
+> needs. [Brief rationale — e.g., 'It's a 2-file change with no edge cases or integration
+> concerns.'] Two options:"
+
+Use `AskUserQuestion`:
+
+1. "Switch to vine:pair (Recommended)" — "The context we've gathered is enough. I'll carry
+   it into a pair session — no need for SPEC.md or formal slices."
+2. "Continue with full cycle" — "There's more complexity here than it looks, or I want the
+   documentation trail."
+
+If the engineer chooses pair, summarize the key context gathered so far (landscape, tribal
+knowledge, the change to make) and transition directly into `vine:pair`'s implementation
+flow. The verify conversation *is* the context — no CONTEXT.md needed.
+
+If the work clearly warrants the full cycle, skip this check — don't ask the question when
+the answer is obvious. This is for the cases where verify reveals the work is simpler than
+the engineer's initial description suggested.
 
 ### 4. Identify Documentation Gaps
 
@@ -282,6 +320,12 @@ When you and the engineer feel you have a solid understanding of the landscape, 
 🔄 Recommended: Run `/clear` before starting vine:inquire.
    Verify is exploratory — inquire needs a clean, decisive headspace.
    CONTEXT.md carries everything forward; conversation context doesn't need to.
+
+🧭 Navigate gearing note: [Based on complexity and the engineer's familiarity,
+   suggest default gearing — e.g., "Straightforward changes in familiar territory —
+   'free climb' is likely the right default for most slices" or "Several integration
+   points and unfamiliar patterns — 'walk me through this' recommended for slices
+   touching [area]"]
 
 🌱 Phase retro:
    - CLAUDE.md suggestion: [any project-level context worth persisting]

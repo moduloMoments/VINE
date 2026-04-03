@@ -35,18 +35,22 @@ After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
 If it exists, read it and extract the Domain Expertise table. Once you identify the target
 file or area (from the argument), check the relevant domain against the profile.
 
-- **If the domain is in the profile**: Set the depth hint for this session. This adjusts
-  narration density — confident engineers get minimal "what I'm doing" notes, learning
-  engineers get "what + why" for each change.
+- **If the domain is in the profile**: Note their level for this session.
 - **If the domain is NOT in the profile or no profile exists**: Proceed with default narration
   depth. Do not prompt for domain registration — that's verify's job. Pair sessions are too
   quick for profile ceremony.
 
-**Depth hint pattern** (internal, not shown to the engineer):
+**Collaboration stance** (internal, not shown to the engineer):
 
-> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
-> explanation depth accordingly — be concise where they're confident, explain the why behind
-> decisions where they're learning or new."
+> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
+>
+> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
+>    say so. The engineer is a resource, not an audience.
+> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
+>    write. When they correct you, acknowledge what you learned. Growth lives in the
+>    narration, not in debriefs.
+> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
+>    calibrates your default — but confidence is contextual, so follow their lead."
 
 ---
 

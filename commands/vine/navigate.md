@@ -37,21 +37,22 @@ If it exists, read it and extract the Domain Expertise table. Once you identify 
 directory (in "Getting Started" below), check the domain portion of the path against the
 profile's domain entries.
 
-- **If the domain is in the profile**: Set the depth hint for this session based on their level.
-  Navigate is the biggest consumer of this hint — it directly affects how you narrate your
-  implementation choices:
-  - **confident/familiar**: Lead with what you're doing, not why. Skip pattern explanations
-    the engineer already knows. Focus narration on decisions specific to this feature.
-  - **learning/new**: Explain the why behind architectural choices. Name the patterns you're
-    using and briefly say why they fit. Flag non-obvious tradeoffs.
+- **If the domain is in the profile**: Note their level for this session. Navigate is the
+  biggest consumer of the collaboration stance — it directly shapes how you work together.
 - **If the domain is NOT in the profile or no profile exists**: Proceed normally — default
   narration depth as described in the rest of this command. No prompt, no warning.
 
-**Depth hint pattern** (internal, not shown to the engineer):
+**Collaboration stance** (internal, not shown to the engineer):
 
-> "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your
-> explanation depth accordingly — be concise where they're confident, explain the why behind
-> decisions where they're learning or new."
+> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
+>
+> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
+>    say so. The engineer is a resource, not an audience.
+> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
+>    write. When they correct you, acknowledge what you learned. Growth lives in the
+>    narration, not in debriefs.
+> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
+>    calibrates your default — but confidence is contextual, so follow their lead."
 
 ## Before You Start
 
@@ -118,17 +119,44 @@ For each work slice from SPEC.md:
 
 **a. Preview the approach**
 
-Before writing any code, tell the engineer what you're about to do:
+Before writing any code, tell the engineer what you're about to do. Be honest about where
+your confidence varies — flag areas where you're less sure about the right pattern, where
+you haven't seen how this project handles something, or where the spec leaves room for
+interpretation:
 
 > "For this slice, I'm going to [approach]. The main files I'll touch are [files].
-> The tricky part will be [challenge from CONTEXT.md]. Sound right, or would you go a
-> different direction?"
+> The tricky part will be [challenge from CONTEXT.md]. [If applicable: I'm less sure
+> about [specific aspect] — I haven't seen how this project handles [pattern/convention].]
+> Sound right, or would you go a different direction?
+>
+> For this slice — want me to free climb, or walk you through it?"
+
+The self-assessment isn't performative humility — it's an honest signal that helps the
+engineer decide where to focus their attention. If you're genuinely confident about
+everything, don't manufacture doubt.
+
+**Gearing:** The engineer's answer sets the engagement level for this slice:
+
+- **"Free climb"**: Auto-accept edits for this slice — the engineer trusts the approach
+  and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
+  the preview (3a), surface decisions (3d), and all of step 4 (validation, commit,
+  NAVIGATION.md). **At the slice boundary (step 4 complete), revert to approve-edits
+  mode** so the engineer re-engages for the next slice's preview and gear choice.
+- **"Walk me through this"**: Full partnership narration per steps 3b and 3c with
+  approve-edits throughout. The engineer wants to stay close to the implementation —
+  either because the code is unfamiliar, the approach is novel, or they want to learn
+  from the process.
+
+Use the profile's expertise level to inform which option you recommend (confident/familiar
+→ default to "free climb"; learning/new → default to "walk me through this") but the
+engineer always chooses. Confidence depends on both domain expertise and the specific code
+being touched.
 
 Wait for confirmation or redirection. This is the "steering" — the engineer might say
 "actually, let's use the existing helper for that" or "be careful, that module has a
 circular dependency issue."
 
-**b. Implement with narration**
+**b. Implement with narration** (skip in "free climb" mode)
 
 As you write code, explain your reasoning for non-obvious decisions:
 
@@ -136,11 +164,15 @@ As you write code, explain your reasoning for non-obvious decisions:
 > payment providers. This way adding a new provider is just a new class, no changes to
 > the orchestration layer."
 
+When you use a pattern the engineer might not know, name it and briefly say why it fits.
+When the engineer corrects your approach, acknowledge what you learned — not just the
+change you made — and capture it in NAVIGATION.md's learnings section.
+
 This serves two purposes: the engineer can catch misunderstandings early, and they learn
 patterns they might apply elsewhere. This is the "two-way" part — you're not just writing
 code, you're transferring knowledge.
 
-**c. Pause for review after each meaningful change**
+**c. Pause for review after each meaningful change** (skip in "free climb" mode)
 
 Don't write 500 lines and then show the result. Pause after each logical unit:
 
@@ -188,35 +220,11 @@ overrides the defaults entirely — it knows this project's toolchain.
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.
 
-**b. Commit the slice**
+**b. Update NAVIGATION.md**
 
-Stage the changed files and commit with this format:
-
-```
-<slice-name>: <1-2 sentence summary>
-
-Acceptance criteria verified:
-- [x] <AC from spec that passed>
-- [x] <AC from spec that passed>
-- [ ] <AC skipped with reason>
-```
-
-If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. Check
-`.vine/hooks/shared.md` or `CLAUDE.md` for commit message conventions.
-
-**c. Record in NAVIGATION.md**
-
-Add the commit hash to the slice's entry in NAVIGATION.md so evolve can reference it.
-
-**Important:** The engineer still reviews every code change via approve-edits before the
-commit happens. This isn't autonomous committing — it's structured committing after
-human-reviewed, validated changes.
-
-### 5. Document as You Go
-
-Update `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` incrementally throughout implementation. Don't save it for the end.
-
-For each slice, capture:
+Before committing, update the slice's entry in `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md`
+with the full journal record. This is a prerequisite for committing — you can't commit
+without updating the journal. For each slice, capture:
 
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
@@ -236,7 +244,30 @@ For each slice, capture:
   - Claude → Engineer: [patterns or approaches the engineer found useful]
 ```
 
-### 6. Handle Blockers
+**c. Commit the slice**
+
+Stage the changed files (including NAVIGATION.md) and commit with this format:
+
+```
+<slice-name>: <1-2 sentence summary>
+
+Acceptance criteria verified:
+- [x] <AC from spec that passed>
+- [x] <AC from spec that passed>
+- [ ] <AC skipped with reason>
+```
+
+If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. Check
+`.vine/hooks/shared.md` or `CLAUDE.md` for commit message conventions.
+
+After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
+hash.
+
+**Important:** The engineer still reviews every code change via approve-edits before the
+commit happens (unless in "free climb" mode). This isn't autonomous committing — it's
+structured committing after human-reviewed, validated changes.
+
+### 5. Handle Blockers
 
 When you hit something unexpected:
 
@@ -255,7 +286,7 @@ When you hit something unexpected:
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.
 
-### 7. Track Deviations Immediately
+### 6. Track Deviations Immediately
 
 When the engineer or Claude decides to deviate from the spec during a slice, update **both**
 documents immediately:
@@ -264,12 +295,19 @@ documents immediately:
 - **SPEC.md**: Add a strikethrough or addendum to the affected section so the spec reflects
   reality. This prevents evolve from cross-referencing two documents to understand what changed.
 
-### 8. Between Slices
+### 7. Between Slices
 
 After each slice is validated and committed:
 
-1. Update NAVIGATION.md with the completed slice (including commit hash)
-2. Summarize what was built and committed
+1. Summarize what was built and committed
+2. **If the completed slice was in "walk me through this" mode**, include a brief check-in —
+   2-3 sentences of shared awareness, not a feedback form:
+   > "During that slice, [what shaped the approach — e.g., your suggestion to use the
+   > existing helper saved us from a circular dependency]. [What I learned or what you
+   > might find useful — e.g., the adapter pattern here could work for the retry logic
+   > too]."
+   When the completed slice was in "free climb" mode, skip the check-in — the engineer
+   already signaled they don't need the reflection.
 3. Check if the next slice's assumptions still hold (sometimes building slice 1 reveals that
    slice 2 needs adjustment)
 4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met
@@ -296,7 +334,7 @@ After writing Remaining Work, suggest running `vine:pause` to capture the engine
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
 > for when you come back, run `vine:pause` before closing the session."
 
-### 9. Between Phase Groups
+### 8. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
 This is a natural stopping point — the group's work is a coherent unit that can be reviewed
@@ -383,16 +421,19 @@ The work so far should stand on its own.
 **Narrate, don't lecture.** Share your reasoning naturally as you work. The engineer doesn't
 need a tutorial — they need to understand your choices so they can steer effectively.
 
-**Respect the engineer's expertise.** They know this codebase and this team better than you.
-When they suggest a different approach, explore it seriously. They're usually right about the
-organizational and historical context.
+**Respect the engineer's expertise — and flag your own gaps.** They know this codebase and
+this team better than you. When they suggest a different approach, explore it seriously.
+They're usually right about the organizational and historical context. When you're unsure
+about a pattern or convention, say so — the engineer is a resource, not an audience.
+Presenting uncertain approaches with false confidence wastes both your time.
 
 **Small batches.** Show work frequently. A 20-line change that's reviewed and understood is
 better than a 200-line change that gets rubber-stamped.
 
-**The engineer is learning too.** Part of the value is that the engineer sees patterns,
-approaches, and techniques through your implementation. Don't rush past the educational moments.
-If you use a pattern they might not know, briefly explain why it fits here.
+**Grow through the work.** The engineer sees patterns, approaches, and techniques through
+your implementation. When you use a pattern they might not know, name it and briefly say
+why it fits. When they correct you, acknowledge what you learned — not just the change you
+made. Growth lives in the narration as you work, not in retrospective check-ins.
 
 **Stay in scope.** If you notice something that should be fixed but isn't in the spec, note it
 in NAVIGATION.md under "discovered items" rather than fixing it. Scope discipline is what makes
@@ -400,8 +441,33 @@ the whole system work.
 
 ## Phase Completion
 
-When all slices are implemented (or the engineer decides to stop), write a "Remaining Work"
-section to NAVIGATION.md. Even when all slices are complete, this section captures loose ends:
+When all slices are implemented (or the engineer decides to stop), run the gate check before
+suggesting evolve.
+
+### Completion Gate Check
+
+Read NAVIGATION.md and verify each slice entry has:
+
+- **Commit hash**: Not "pending" — every completed slice must have an actual hash
+- **Validation status**: Filled in (pass or fail with resolution)
+- **Acceptance criteria**: At least one criterion checked (either `[x]` or `[ ]` with reason)
+- **Learnings**: Not empty — at minimum "None" is acceptable, but blank is not
+
+If any slice has gaps, list them:
+
+> "Before we wrap up, NAVIGATION.md has some gaps:
+> - Slice 2: missing learnings
+> - Slice 4: commit hash still says 'pending'
+> Want me to fill these in now?"
+
+Fix the gaps inline — update NAVIGATION.md with the engineer's input (or fill in what you
+can from the commit history and conversation context). Don't proceed to the completion block
+until the gate passes.
+
+### Remaining Work
+
+Write a "Remaining Work" section to NAVIGATION.md. Even when all slices are complete, this
+section captures loose ends:
 
 ```markdown
 ### Remaining Work
