@@ -189,6 +189,56 @@ thinking, what to pick up first, anything that won't survive a session break]
 - **Ephemeral.** Not part of the permanent artifact chain. Not referenced by evolve's handoff package. Exists only to bridge session gaps.
 - **One per feature.** No history of pause states. The most recent pause is the only one that matters.
 
+### PROJECT-MAP.md (produced by vine:verify, updated by all phases)
+
+The universal progress tracker. Shows at-a-glance where a feature stands in the VINE cycle and, for multi-PR features, which milestones have shipped. Designed for scannability in monospace terminal output — compact tables, short lines, clear status markers.
+
+```markdown
+# Project Map: [Feature Name]
+## Feature: .vine/projects/<domain>/<feature-slug>
+## Created: [YYYY-MM-DD]
+
+### VINE Progress <!-- required -->
+
+| Phase | Status | Updated |
+|-------|--------|---------|
+| verify | ✅ | [YYYY-MM-DD] |
+| inquire | ⬜ | — |
+| navigate | ⬜ | — |
+| evolve | ⬜ | — |
+
+### Milestones <!-- optional -->
+
+| Phase | Slices | Status | PR |
+|-------|--------|--------|----|
+| Phase 1: [Name] | 1-3 | ⬜ Pending | — |
+| Phase 2: [Name] | 4-5 | ⬜ Pending | — |
+```
+
+**Status markers** (three, used in both tables):
+
+| Marker | Meaning | Used in |
+|--------|---------|---------|
+| ✅ | Complete / Shipped | VINE Progress (phase done), Milestones (PR merged) |
+| 🚧 | Active / In Progress | VINE Progress (phase running), Milestones (being implemented) |
+| ⬜ | Pending / Not Started | Both tables (not yet begun) |
+
+**Lifecycle:**
+
+1. **Created** by `vine:verify` — writes PROJECT-MAP.md alongside CONTEXT.md. VINE Progress table has verify=✅, all others=⬜. No Milestones table yet.
+2. **Updated** by `vine:inquire` — sets inquire→🚧 on start, ✅ on completion. If the engineer confirms multi-PR treatment, adds the Milestones table with all phases as ⬜ Pending.
+3. **Updated** by `vine:navigate` — sets navigate→🚧 on start. At phase group boundaries (multi-PR), updates the completed milestone row to ✅ Shipped and records the PR number if known. Sets navigate→✅ on completion.
+4. **Updated** by `vine:evolve` — sets evolve→🚧 on start, ✅ on completion.
+5. **Read** by `vine:resume` — displays VINE Progress and Milestones in the resume summary.
+6. **Read** by `vine:pause` — uses current VINE phase for pause context.
+
+**Design constraints:**
+
+- **Optional.** Every command must work identically without PROJECT-MAP.md. No errors, no warnings. Commands check for its existence before reading or updating.
+- **Created by verify only.** Other phases update it but never create it. If verify didn't create one (e.g., older project), downstream phases skip PROJECT-MAP updates silently.
+- **Milestones table is conditional.** Only added by inquire when the engineer confirms multi-PR treatment. Single-PR features have a VINE Progress table but no Milestones table.
+- **Scannable first.** Tables over prose. Short status markers over verbose descriptions. The whole file should be readable in a terminal glance.
+
 ## Per-Repo Artifacts
 
 ### PROFILE.md (seeded by vine:init, updated by vine:evolve)
