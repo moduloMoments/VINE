@@ -41,12 +41,24 @@ Design the feature on top of verified context. Discuss architecture, weigh trade
 ### vine:navigate — Guided Implementation
 Build the feature together. The engineer steers direction, Claude executes and explains. Both learn. No auto-commits — changes are surfaced for review. Every decision is documented.
 
-**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + staged changes (not committed)
+**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + committed changes (one commit per validated slice)
 
 ### vine:evolve — Triple Evolution
 Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new commands). User growth (knowledge gained, areas to explore).
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
+
+## Multi-PR Features
+
+For features that span multiple PRs, VINE tracks progress across phase groups with milestone
+status. When `vine:inquire` detects a larger feature (>4 slices or phase groups), it offers to
+set up multi-PR tracking in `PROJECT-MAP.md`. Each phase group maps to a milestone with its own
+PR, and `vine:navigate` runs a lightweight verification pass before suggesting a PR at each
+phase boundary.
+
+`vine:evolve` reviews prior PRs via `gh` CLI to surface reviewer feedback that may affect
+cross-phase integration. `gh` CLI is optional — evolve works without it but can't check PR
+status or review comments.
 
 ## Quick Mode: vine:pair
 
@@ -145,6 +157,12 @@ echo '.vine/' >> ~/.gitignore_global
 
 This keeps your `.vine/` artifacts out of version control across all repos. When your team is ready to adopt VINE together, you can remove it from the global gitignore and commit `.vine/hooks/` to the repo instead.
 
+### Optional: GitHub CLI
+
+VINE works without `gh` CLI, but `vine:evolve` uses it to review prior PRs in multi-PR features
+and to suggest opening PRs at the end of a cycle. Install from [cli.github.com](https://cli.github.com)
+if you want those capabilities.
+
 ## Usage
 
 ### First time in a repo
@@ -186,10 +204,12 @@ commands, and conventions without forking the commands themselves.
     │   │   ├── CONTEXT.md
     │   │   ├── SPEC.md
     │   │   ├── NAVIGATION.md
-    │   │   └── EVOLUTION.md
+    │   │   ├── EVOLUTION.md
+    │   │   └── PROJECT-MAP.md     # Progress tracker
     │   └── retry-logic/           # Feature 2 (in progress)
     │       ├── CONTEXT.md
     │       ├── SPEC.md
+    │       ├── PROJECT-MAP.md     # Progress + milestones (multi-PR)
     │       └── PAUSE.md           # Session state (ephemeral)
     └── auth/
         └── sso-migration/         # Feature 3 (in progress)
@@ -235,6 +255,7 @@ should auto-run.
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
+| `PROJECT-MAP.md` | verify (created), all phases (updated) | VINE progress tracker, multi-PR milestone status |
 | `PAUSE.md` | pause | Session state, phase, active slice, engineer notes (ephemeral) |
 | `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo) |
 

@@ -416,6 +416,44 @@ If the engineer chooses to resolve, write an empty `.resolved` file to
 `.vine/projects/<domain>/<feature-slug>/PAUSE.md` if it exists — a resolved project's pause
 state is definitionally stale. No prompt, no message to the engineer.
 
+### Commit Evolve Changes
+
+After resolving (or choosing to keep active), commit all changes generated during the evolve
+phase. These typically include:
+
+- EVOLUTION.md
+- CLAUDE.md updates (if accepted)
+- `.vine/hooks/` updates (if accepted)
+- `.vine/PROFILE.md` updates (if accepted)
+- `.resolved` marker (if resolved)
+
+Stage these files and commit with a message like:
+
+```
+evolve: [feature name] — evolution report and cycle artifacts
+
+VINE cycle complete. Captures product verification, agent evolution
+(CLAUDE.md/hook updates), and user profile growth.
+```
+
+Present the commit message for the engineer's approval before committing.
+
+### Suggest Opening a PR
+
+After committing, suggest opening a PR using the handoff package drafted earlier:
+
+> "Ready to open a PR? I have the description and reviewer notes drafted in EVOLUTION.md."
+
+Use `AskUserQuestion`:
+
+Options (mutually exclusive):
+1. "Open PR (Recommended)" — "Create PR using the drafted description and reviewer notes"
+2. "Skip" — "I'll handle the PR myself"
+
+If the engineer chooses to open a PR, create it using `gh pr create` with the PR description
+from the handoff package. If `.vine/hooks/evolve.md` defines PR workflow conventions, follow
+those.
+
 ## Important Principles
 
 **Verification is not a formality.** Actually check things. Run tests. Read the code against

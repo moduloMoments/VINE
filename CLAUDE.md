@@ -35,6 +35,8 @@ All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `r
 
 `vine:pair` is artifact-free — it produces code changes and a single commit but no CONTEXT/SPEC/NAVIGATION/EVOLUTION files.
 
+`vine:verify` also creates `PROJECT-MAP.md` as a progress tracker. For multi-PR features, `vine:inquire` adds a Milestones table mapping phase groups to PRs.
+
 `vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is deleted when evolve writes `.resolved`.
 
 ## Engineer Profile
