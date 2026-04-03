@@ -60,7 +60,7 @@
 
 ### Slice 4: Phase Completion Gate Check + Gear-Linked Check-ins — Complete
 **Started**: 2026-04-03
-**Commit**: pending
+**Commit**: 5dfacb7
 **Approach taken**: Two additions to navigate.md: (1) Gate check in Phase Completion — reads NAVIGATION.md and verifies per-slice: commit hash not pending, validation filled in, at least one AC checked, learnings not empty. Lists gaps and offers inline fix. (2) Gear-linked check-ins in Between Slices (step 7) — 2-3 sentence shared awareness check-in after partnership-mode slices, skipped after run-with-it slices. Also removed redundant "Update NAVIGATION.md" from Between Slices item 1 since step 4 now handles that.
 **Deviations from spec**: None
 **Validation**: pass — Phase Completion flows gate check → remaining work → PROJECT-MAP update → completion block; Between Slices items renumbered cleanly
@@ -72,6 +72,23 @@
   - [x] Between Slices includes check-in only in partnership mode
   - [x] Check-in skipped in run-with-it mode
   - [x] Check-ins are lightweight (2-3 sentences)
+**Engineer feedback incorporated**: None needed
+**Learnings**:
+  - Engineer → Claude: None
+  - Claude → Engineer: None this slice
+
+### Slice 5: STATE.md Field Requirements — Complete
+**Started**: 2026-04-03
+**Commit**: pending
+**Approach taken**: Added `<!-- required -->` and `<!-- optional -->` markers to each field in the NAVIGATION.md slice template in STATE.md. Required fields match what the gate check verifies: Commit, Validation, Acceptance criteria, Learnings. Optional fields: Started, Approach taken, Deviations from spec, Decisions made, Engineer feedback incorporated.
+**Deviations from spec**: None — condition met (gate check fields unchanged from spec), markers match gate criteria exactly
+**Validation**: pass — markers use existing HTML comment convention from STATE.md
+**Decisions made during implementation**:
+  - None
+**Acceptance criteria**:
+  - [x] NAVIGATION.md template in STATE.md marks each field with required/optional markers
+  - [x] Required fields match what the gate check verifies
+  - [x] Optional fields explicitly marked
 **Engineer feedback incorporated**: None needed
 **Learnings**:
   - Engineer → Claude: None

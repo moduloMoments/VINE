@@ -111,15 +111,15 @@ The implementation journal. Built incrementally — each slice is appended as it
 ## Date: [YYYY-MM-DD]
 
 ### Slice 1: [Name] <!-- required -->
-- **Started**: [timestamp]
-- **Commit**: [hash] (or 'pending' if in progress)
-- **Approach taken**: What was implemented and how
-- **Deviations from spec**: Any changes and why
-- **Validation**: [pass/fail — lint, typecheck, tests]
-- **Decisions made**: Engineer choices during implementation
-- **Acceptance criteria**: [met/not met with details]
-- **Engineer feedback incorporated**: [what the engineer corrected or steered]
-- **Learnings**: What both sides learned from this slice
+- **Started**: [timestamp] <!-- optional -->
+- **Commit**: [hash] (or 'pending' if in progress) <!-- required -->
+- **Approach taken**: What was implemented and how <!-- optional -->
+- **Deviations from spec**: Any changes and why <!-- optional -->
+- **Validation**: [pass/fail — lint, typecheck, tests] <!-- required -->
+- **Decisions made**: Engineer choices during implementation <!-- optional -->
+- **Acceptance criteria**: [met/not met with details] <!-- required -->
+- **Engineer feedback incorporated**: [what the engineer corrected or steered] <!-- optional -->
+- **Learnings**: What both sides learned from this slice <!-- required -->
 
 ### Slice 2: [Name] <!-- required -->
 (same structure, appended after slice 1 is committed)
