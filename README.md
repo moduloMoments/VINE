@@ -261,6 +261,8 @@ should auto-run.
 
 These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
 
+This repo uses VINE on itself — browse [`.vine/projects/`](.vine/projects/) to see real artifacts from completed features. Each resolved project shows how CONTEXT → SPEC → NAVIGATION → EVOLUTION builds up across the four phases.
+
 ## Engineer Profile
 
 With AI assistance, engineers at every level are moving into unfamiliar domains at increasing speed. A principal exploring a new area of the codebase deserves the same depth of explanation as a junior encountering it for the first time. A junior who's built confidence in their domain deserves the same concise respect as a senior. The profile tracks domain expertise, not seniority — helping juniors to principals grow in areas both new and familiar.
