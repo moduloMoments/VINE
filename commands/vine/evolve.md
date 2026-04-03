@@ -56,9 +56,14 @@ Read all VINE artifacts for this feature:
 - `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
 - `.vine/projects/<domain>/<feature-slug>/SPEC.md` (the design)
 - `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` (the implementation journal)
+- `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` (progress tracker, if it exists)
 
 If any are missing, work with what you have. NAVIGATION.md is the most critical — it tells you
 what was actually built versus what was planned.
+
+If PROJECT-MAP.md exists, update the evolve row to 🚧 with today's date. If it has a Milestones
+table, note which phases shipped in prior PRs — evolve's verification should focus on the final
+phase group and cross-phase integration, not re-verify already-shipped work.
 
 ## Evolution 1: Product
 
@@ -83,6 +88,16 @@ This is where evolve adds value. Verify that the slices work together as a whole
 - Check for cross-cutting concerns: error handling paths, edge cases that span slices,
   performance implications of the combined changes
 - If `.vine/hooks/evolve.md` defines integration validation commands, run those
+
+**For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
+`gh` CLI is available, review the prior PRs as part of integration verification:
+
+- Run `gh pr view <number>` for each shipped phase's PR to check status and review comments
+- Run `gh api repos/{owner}/{repo}/pulls/<number>/comments` to surface reviewer feedback
+  that may affect the current phase
+- Flag any unresolved review comments or requested changes from prior PRs — these could
+  indicate integration issues or concerns that carry forward
+- Include a summary of cross-PR review findings in the Product Evolution section
 
 ### Review Spec Deviations
 
@@ -353,9 +368,15 @@ Compile everything into `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md`:
 
 #### Commit Suggestions
 [Suggested structure]
+
+#### Multi-PR Summary (if PROJECT-MAP.md has Milestones)
+[Table from PROJECT-MAP.md showing all phases, their PR numbers, and status.
+ Gives reviewers of the final PR context on what shipped previously.]
 ```
 
 ## Phase Completion
+
+Update PROJECT-MAP.md (if it exists) — set the evolve row to ✅ with today's date.
 
 ```
 ---
