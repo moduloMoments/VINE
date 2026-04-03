@@ -1,14 +1,13 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
@@ -21,14 +20,32 @@ jobs:
       - name: Update npm
         run: npm install -g npm@10
 
-      - name: Verify package version matches release tag
+      - name: Read version from package.json
+        id: version
         run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::package.json version ($PKG_VERSION) does not match release tag ($TAG_VERSION)"
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag does not already exist
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "::error::Tag v${{ steps.version.outputs.version }} already exists"
             exit 1
           fi
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Extract content between this version's header and the next version header
+          NOTES=$(awk "/^## \\[$VERSION\\]/{found=1; next} /^## \\[/{if(found) exit} found{print}" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            echo "::error::No changelog entry found for version $VERSION"
+            exit 1
+          fi
+          # Write to file for gh release to consume
+          echo "$NOTES" > /tmp/release-notes.md
 
       - name: Smoke test
         run: |
@@ -37,5 +54,15 @@ jobs:
           test -f .claude/commands/vine/verify.md
           echo "Smoke test passed"
 
-      - name: Publish with provenance
+      - name: Publish to npm with provenance
         run: npm publish --provenance --access public
+
+      - name: Create git tag and GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes-file /tmp/release-notes.md
