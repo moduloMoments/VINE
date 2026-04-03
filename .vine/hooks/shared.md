@@ -27,7 +27,7 @@
 ## Project Conventions
 
 ### Repository Structure
-- `commands/vine/` — The 8 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume). These ARE the product.
+- `commands/vine/` — The 10 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
 - `.github/` — PR template, issue templates (bug, friction, idea)
