@@ -80,6 +80,9 @@ tell the engineer and suggest starting a new cycle with `vine:verify`.
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` and `.vine/projects/<domain>/<feature-slug>/SPEC.md`. If either is
 missing, tell the engineer which prior phase needs to run first.
 
+Also read `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` if it exists. If present, update the
+navigate row to 🚧 with today's date. If it doesn't exist, skip — older projects won't have one.
+
 Also check for `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` — if it exists, you're resuming a
 previous session. Read it to understand what's already been done and pick up where you left off.
 
@@ -299,6 +302,23 @@ If SPEC.md defines phase groups, suggest a context clear when you reach the end 
 This is a natural stopping point — the group's work is a coherent unit that can be reviewed
 and committed independently.
 
+**If PROJECT-MAP.md has a Milestones table** (multi-PR feature), do the following at each
+phase group boundary before showing the completion block:
+
+1. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
+   `✅ Shipped` (or `✅ Complete` if no PR yet).
+2. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.
+3. If there's a next phase, update its Milestones row to `🚧 Active`.
+4. Suggest opening a PR for the completed phase group:
+
+   > "Phase [N: name] is complete. This is a good point to open a PR for this work.
+   > Want to open a PR now, or continue to the next phase first?"
+
+   If the engineer opens a PR, record the PR number in PROJECT-MAP.md's Milestones table
+   (the PR column for this phase row). Don't create the PR automatically — just suggest it.
+
+**Whether or not it's a multi-PR feature**, show the phase group completion block:
+
 ```
 ---
 ✅ Phase group [N: name] complete
@@ -347,6 +367,8 @@ section to NAVIGATION.md. Even when all slices are complete, this section captur
 - **Blockers encountered**: [unresolved blockers, or "None"]
 - **Handoff context**: [discovered items, deferred decisions, things evolve should review]
 ```
+
+Update PROJECT-MAP.md (if it exists) — set the navigate row to ✅ with today's date.
 
 Then present the completion block:
 
