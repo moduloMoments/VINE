@@ -1,6 +1,6 @@
 {
   "name": "create-vine",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Install VINE — AI-assisted feature development commands for Claude Code",
   "bin": {
     "create-vine": "bin/cli.js"
