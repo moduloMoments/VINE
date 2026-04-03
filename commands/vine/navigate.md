@@ -119,17 +119,44 @@ For each work slice from SPEC.md:
 
 **a. Preview the approach**
 
-Before writing any code, tell the engineer what you're about to do:
+Before writing any code, tell the engineer what you're about to do. Be honest about where
+your confidence varies — flag areas where you're less sure about the right pattern, where
+you haven't seen how this project handles something, or where the spec leaves room for
+interpretation:
 
 > "For this slice, I'm going to [approach]. The main files I'll touch are [files].
-> The tricky part will be [challenge from CONTEXT.md]. Sound right, or would you go a
-> different direction?"
+> The tricky part will be [challenge from CONTEXT.md]. [If applicable: I'm less sure
+> about [specific aspect] — I haven't seen how this project handles [pattern/convention].]
+> Sound right, or would you go a different direction?
+>
+> For this slice — want me to run with it, or walk you through it?"
+
+The self-assessment isn't performative humility — it's an honest signal that helps the
+engineer decide where to focus their attention. If you're genuinely confident about
+everything, don't manufacture doubt.
+
+**Gearing:** The engineer's answer sets the engagement level for this slice:
+
+- **"Run with it"**: Auto-accept edits for this slice — the engineer trusts the approach
+  and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
+  the preview (3a), surface decisions (3d), and all of step 4 (validation, commit,
+  NAVIGATION.md). **At the slice boundary (step 4 complete), revert to approve-edits
+  mode** so the engineer re-engages for the next slice's preview and gear choice.
+- **"Walk me through this"**: Full partnership narration per steps 3b and 3c with
+  approve-edits throughout. The engineer wants to stay close to the implementation —
+  either because the code is unfamiliar, the approach is novel, or they want to learn
+  from the process.
+
+Use the profile's expertise level to inform which option you recommend (confident/familiar
+→ default to "run with it"; learning/new → default to "walk me through this") but the
+engineer always chooses. Confidence depends on both domain expertise and the specific code
+being touched.
 
 Wait for confirmation or redirection. This is the "steering" — the engineer might say
 "actually, let's use the existing helper for that" or "be careful, that module has a
 circular dependency issue."
 
-**b. Implement with narration**
+**b. Implement with narration** (skip in "run with it" mode)
 
 As you write code, explain your reasoning for non-obvious decisions:
 
@@ -137,11 +164,15 @@ As you write code, explain your reasoning for non-obvious decisions:
 > payment providers. This way adding a new provider is just a new class, no changes to
 > the orchestration layer."
 
+When you use a pattern the engineer might not know, name it and briefly say why it fits.
+When the engineer corrects your approach, acknowledge what you learned — not just the
+change you made — and capture it in NAVIGATION.md's learnings section.
+
 This serves two purposes: the engineer can catch misunderstandings early, and they learn
 patterns they might apply elsewhere. This is the "two-way" part — you're not just writing
 code, you're transferring knowledge.
 
-**c. Pause for review after each meaningful change**
+**c. Pause for review after each meaningful change** (skip in "run with it" mode)
 
 Don't write 500 lines and then show the result. Pause after each logical unit:
 
@@ -384,16 +415,19 @@ The work so far should stand on its own.
 **Narrate, don't lecture.** Share your reasoning naturally as you work. The engineer doesn't
 need a tutorial — they need to understand your choices so they can steer effectively.
 
-**Respect the engineer's expertise.** They know this codebase and this team better than you.
-When they suggest a different approach, explore it seriously. They're usually right about the
-organizational and historical context.
+**Respect the engineer's expertise — and flag your own gaps.** They know this codebase and
+this team better than you. When they suggest a different approach, explore it seriously.
+They're usually right about the organizational and historical context. When you're unsure
+about a pattern or convention, say so — the engineer is a resource, not an audience.
+Presenting uncertain approaches with false confidence wastes both your time.
 
 **Small batches.** Show work frequently. A 20-line change that's reviewed and understood is
 better than a 200-line change that gets rubber-stamped.
 
-**The engineer is learning too.** Part of the value is that the engineer sees patterns,
-approaches, and techniques through your implementation. Don't rush past the educational moments.
-If you use a pattern they might not know, briefly explain why it fits here.
+**Grow through the work.** The engineer sees patterns, approaches, and techniques through
+your implementation. When you use a pattern they might not know, name it and briefly say
+why it fits. When they correct you, acknowledge what you learned — not just the change you
+made. Growth lives in the narration as you work, not in retrospective check-ins.
 
 **Stay in scope.** If you notice something that should be fixed but isn't in the spec, note it
 in NAVIGATION.md under "discovered items" rather than fixing it. Scope discipline is what makes

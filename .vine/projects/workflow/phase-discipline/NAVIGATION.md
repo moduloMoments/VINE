@@ -3,7 +3,7 @@
 
 ### Slice 1: Lean Collaboration Stance — Complete
 **Started**: 2026-04-02
-**Commit**: pending
+**Commit**: 7a32ebf
 **Approach taken**: Replaced the passive depth hint in "Load Engineer Profile" across 6 commands (inquire, navigate, evolve, pair, pause, resume) with a collaboration stance containing a one-line philosophical anchor and three concrete behaviors: flag uncertainty, grow through work, let expertise shape engagement. Status was excluded per engineer decision — it's a read-only display command where the stance behaviors have nothing to act on. Each command's unique flavor was preserved: evolve keeps its Evolution 3 profile note, pair keeps its "too quick for profile ceremony" note, navigate notes it's the biggest consumer of the stance.
 **Deviations from spec**: Spec says all 7 commands; status excluded (read-only, no interaction surface for the behaviors). Verify also not in the 7 — it has its own profile creation flow that was intentionally not modified.
 **Validation**: pass — /trellis 10/10 commands, 4 artifacts validated
@@ -19,3 +19,23 @@
 **Learnings**:
   - Engineer → Claude: Not every command needs every behavioral instruction; match the stance to the command's interaction surface
   - Claude → Engineer: None this slice — straightforward pattern application
+
+### Slice 2: Navigate Behavioral Integration + Per-Slice Gearing — Complete
+**Started**: 2026-04-03
+**Commit**: pending
+**Approach taken**: Embedded collaboration stance behaviors into navigate's flow across three touchpoints: (1) Step 3a gets self-assessment guidance and per-slice gearing with "run with it" / "walk me through this" — folded into the existing preview confirmation. "Run with it" auto-accepts edits for the slice, reverts at slice boundary. (2) Step 3b gets explicit guidance on naming patterns and acknowledging corrections, with "(skip in run with it mode)" marker. (3) Step 3c marked skippable in run-with-it mode. (4) Important Principles: "Respect the engineer's expertise" strengthened with "flag your own gaps," "The engineer is learning too" replaced with "Grow through the work."
+**Deviations from spec**: Engineer added auto-accept behavior to "run with it" mode — spec only said "lighter narration, fewer pauses" but the engineer wanted mechanical teeth: auto-accept during slice, revert at boundary. This is stronger than spec envisioned.
+**Validation**: pass — frontmatter intact, structural checks pass, no sections added/removed
+**Decisions made during implementation**:
+  - "Run with it" auto-accepts edits for the slice, reverts at boundary: makes the gear choice mechanically real, not just a narration toggle (decided by: engineer)
+**Acceptance criteria**:
+  - [x] Important Principles reinforces flag-uncertainty and grow-through-work behaviors
+  - [x] Step 3a includes self-assessment in preview
+  - [x] Step 3a adds gear choice folded into existing "sound right?" confirmation
+  - [x] "Run with it" skips 3b narration and 3c review pauses, auto-accepts edits; reverts at slice boundary
+  - [x] Profile expertise level informs default recommendation but engineer always chooses
+  - [x] Step 3b adds guidance on naming patterns and acknowledging corrections
+**Engineer feedback incorporated**: Added auto-accept edits behavior to "run with it" mode — originally just narration/pause reduction, engineer wanted it to actually change the edit approval flow
+**Learnings**:
+  - Engineer → Claude: Gearing needs mechanical teeth, not just narration differences — auto-accept makes "run with it" a real mode shift
+  - Claude → Engineer: None — engineer drove the key design insight here
