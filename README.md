@@ -303,6 +303,21 @@ Most AI coding frameworks optimize for autonomous speed — the AI writes code, 
 | **Best for** | Greenfield / scripted tasks | Established codebases |
 | **Learning model** | One-way (AI executes) | Partnership (both sides learn and teach) |
 
+## Is VINE for you?
+
+**VINE is a good fit if:**
+- You're working in an **established codebase** with accumulated complexity, undocumented edge cases, or tribal knowledge that lives in people's heads rather than in docs
+- You want to **stay engaged** with the code the AI writes — steering decisions, catching issues, understanding the implementation — not just reviewing a finished PR
+- You've been burned by AI-generated code that **looked right but missed context** — the pagination bug nobody documented, the service that's mid-migration, the module with a circular dependency
+- You want the AI to get **smarter about your specific codebase** over time, not start from scratch every session
+
+**VINE is probably not for you if:**
+- You're doing greenfield development with no existing patterns to navigate
+- You prefer fully autonomous AI coding where you review the output at the end
+- Your changes are consistently small and self-contained (though `vine:pair` handles quick fixes without the full cycle)
+
+**VINE stays out of your way when you don't need it.** Verify evaluates scope early — if the work is simpler than expected, it suggests switching to `vine:pair` instead of the full cycle. Navigate's free climb mode lets you hand off slices where you trust the approach. Skip is always an option. The framework gets rigorous when complexity demands it and lightweight when it doesn't.
+
 ## Tips
 
 - [Auto-preview artifacts with glow](docs/artifact-preview.md) — opens a formatted terminal preview when VINE writes phase artifacts
