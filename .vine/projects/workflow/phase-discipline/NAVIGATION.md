@@ -42,7 +42,7 @@
 
 ### Slice 3: Merge Step 5 into Step 4 — Complete
 **Started**: 2026-04-03
-**Commit**: pending
+**Commit**: f925037
 **Approach taken**: Restructured step 4 to make NAVIGATION.md updates a prerequisite before committing: old step 4c ("Record in NAVIGATION.md" — one line about adding the commit hash) replaced with new step 4b ("Update NAVIGATION.md" — full journal template, explicit prerequisite). Old step 4b (commit) becomes 4c and now includes NAVIGATION.md in the staged files. Old step 5 ("Document as You Go") removed entirely — its journal template moved into 4b. Steps 6-9 renumbered to 5-8. Also added "run with it" mode parenthetical to the Important note about approve-edits.
 **Deviations from spec**: None
 **Validation**: pass — step numbering sequential 1-8, no dangling step references, frontmatter intact
@@ -57,3 +57,22 @@
 **Learnings**:
   - Engineer → Claude: None
   - Claude → Engineer: None — mechanical restructure
+
+### Slice 4: Phase Completion Gate Check + Gear-Linked Check-ins — Complete
+**Started**: 2026-04-03
+**Commit**: pending
+**Approach taken**: Two additions to navigate.md: (1) Gate check in Phase Completion — reads NAVIGATION.md and verifies per-slice: commit hash not pending, validation filled in, at least one AC checked, learnings not empty. Lists gaps and offers inline fix. (2) Gear-linked check-ins in Between Slices (step 7) — 2-3 sentence shared awareness check-in after partnership-mode slices, skipped after run-with-it slices. Also removed redundant "Update NAVIGATION.md" from Between Slices item 1 since step 4 now handles that.
+**Deviations from spec**: None
+**Validation**: pass — Phase Completion flows gate check → remaining work → PROJECT-MAP update → completion block; Between Slices items renumbered cleanly
+**Decisions made during implementation**:
+  - None — spec was precise on both the gate criteria and check-in behavior
+**Acceptance criteria**:
+  - [x] Phase Completion verifies per-slice: commit hash, validation, AC checked, learnings
+  - [x] Gaps listed per-slice with what's missing; engineer offered inline fix
+  - [x] Between Slices includes check-in only in partnership mode
+  - [x] Check-in skipped in run-with-it mode
+  - [x] Check-ins are lightweight (2-3 sentences)
+**Engineer feedback incorporated**: None needed
+**Learnings**:
+  - Engineer → Claude: None
+  - Claude → Engineer: None

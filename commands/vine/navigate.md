@@ -299,8 +299,15 @@ documents immediately:
 
 After each slice is validated and committed:
 
-1. Update NAVIGATION.md with the completed slice (including commit hash)
-2. Summarize what was built and committed
+1. Summarize what was built and committed
+2. **If the completed slice was in "walk me through this" mode**, include a brief check-in —
+   2-3 sentences of shared awareness, not a feedback form:
+   > "During that slice, [what shaped the approach — e.g., your suggestion to use the
+   > existing helper saved us from a circular dependency]. [What I learned or what you
+   > might find useful — e.g., the adapter pattern here could work for the retry logic
+   > too]."
+   When the completed slice was in "run with it" mode, skip the check-in — the engineer
+   already signaled they don't need the reflection.
 3. Check if the next slice's assumptions still hold (sometimes building slice 1 reveals that
    slice 2 needs adjustment)
 4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met
@@ -434,8 +441,33 @@ the whole system work.
 
 ## Phase Completion
 
-When all slices are implemented (or the engineer decides to stop), write a "Remaining Work"
-section to NAVIGATION.md. Even when all slices are complete, this section captures loose ends:
+When all slices are implemented (or the engineer decides to stop), run the gate check before
+suggesting evolve.
+
+### Completion Gate Check
+
+Read NAVIGATION.md and verify each slice entry has:
+
+- **Commit hash**: Not "pending" — every completed slice must have an actual hash
+- **Validation status**: Filled in (pass or fail with resolution)
+- **Acceptance criteria**: At least one criterion checked (either `[x]` or `[ ]` with reason)
+- **Learnings**: Not empty — at minimum "None" is acceptable, but blank is not
+
+If any slice has gaps, list them:
+
+> "Before we wrap up, NAVIGATION.md has some gaps:
+> - Slice 2: missing learnings
+> - Slice 4: commit hash still says 'pending'
+> Want me to fill these in now?"
+
+Fix the gaps inline — update NAVIGATION.md with the engineer's input (or fill in what you
+can from the commit history and conversation context). Don't proceed to the completion block
+until the gate passes.
+
+### Remaining Work
+
+Write a "Remaining Work" section to NAVIGATION.md. Even when all slices are complete, this
+section captures loose ends:
 
 ```markdown
 ### Remaining Work
