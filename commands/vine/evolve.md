@@ -133,6 +133,18 @@ Compile from NAVIGATION.md's "discovered items" and any gaps found during verifi
 
 Suggest concrete backlog items with enough context that someone else could pick them up.
 
+If there are actionable follow-up items (not just "consider someday" notes), offer to create
+GitHub issues. Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which
+items should become issues. For each selected item, create an issue via `gh issue create` with:
+
+- A title that stands alone (not "follow-up from [feature]")
+- Body with enough context from CONTEXT.md and NAVIGATION.md that someone could pick it up
+  without reading the VINE artifacts
+- Labels if the project uses them (check existing issues for conventions)
+
+If `gh` CLI isn't available or the engineer skips, just leave the items in EVOLUTION.md —
+they're still captured.
+
 ### Prep the Handoff
 
 Generate the materials the engineer needs to ship:
