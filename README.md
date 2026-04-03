@@ -39,7 +39,7 @@ Design the feature on top of verified context. Discuss architecture, weigh trade
 **Output:** `.vine/projects/<domain>/<feature-slug>/SPEC.md`
 
 ### vine:navigate — Guided Implementation
-Build the feature together. For each slice, choose your engagement level: **"run with it"** (Claude cranks, you review at the end) or **"walk me through this"** (full narration, pauses for feedback). Claude flags its own uncertainty in the preview so you know where to focus. Every decision is documented, every slice is committed with its acceptance criteria.
+Build the feature together. For each slice, choose your engagement level: **"free climb"** (Claude cranks, you review at the end) or **"walk me through this"** (full narration, pauses for feedback). Claude flags its own uncertainty in the preview so you know where to focus. Every decision is documented, every slice is committed with its acceptance criteria.
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + committed changes (one commit per validated slice)
 
@@ -102,7 +102,7 @@ your notes and explicit phase tracking, but it's not required.
 
 **Partnership, not delegation.** Claude flags its own uncertainty, names patterns as it uses them, and acknowledges when the engineer corrects its approach. The engineer steers, Claude executes, and both sides learn through the work — not in retrospective debriefs.
 
-**Approve-edits mode.** Run with approve-edits enabled so the engineer reviews every change as it happens. In "run with it" mode, edits auto-accept for the current slice and revert at the boundary — speed when you trust the approach, control when you don't.
+**Approve-edits mode.** Run with approve-edits enabled so the engineer reviews every change as it happens. In "free climb" mode, edits auto-accept for the current slice and revert at the boundary — speed when you trust the approach, control when you don't.
 
 **Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
 
@@ -298,7 +298,7 @@ Most AI coding frameworks optimize for autonomous speed — the AI writes code, 
 | **Optimizes for** | Speed | Growth (product + agent + user) |
 | **Human role** | Approves at the end | Steers throughout |
 | **AI transparency** | Confident by default | Flags its own uncertainty |
-| **Engagement** | One mode fits all | Per-slice gearing (run with it / walk me through) |
+| **Engagement** | One mode fits all | Per-slice gearing (free climb / walk me through) |
 | **Commits** | Auto | Engineer commits per slice |
 | **Best for** | Greenfield / scripted tasks | Established codebases |
 | **Learning model** | One-way (AI executes) | Partnership (both sides learn and teach) |

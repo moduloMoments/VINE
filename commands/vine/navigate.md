@@ -129,7 +129,7 @@ interpretation:
 > about [specific aspect] — I haven't seen how this project handles [pattern/convention].]
 > Sound right, or would you go a different direction?
 >
-> For this slice — want me to run with it, or walk you through it?"
+> For this slice — want me to free climb, or walk you through it?"
 
 The self-assessment isn't performative humility — it's an honest signal that helps the
 engineer decide where to focus their attention. If you're genuinely confident about
@@ -137,7 +137,7 @@ everything, don't manufacture doubt.
 
 **Gearing:** The engineer's answer sets the engagement level for this slice:
 
-- **"Run with it"**: Auto-accept edits for this slice — the engineer trusts the approach
+- **"Free climb"**: Auto-accept edits for this slice — the engineer trusts the approach
   and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
   the preview (3a), surface decisions (3d), and all of step 4 (validation, commit,
   NAVIGATION.md). **At the slice boundary (step 4 complete), revert to approve-edits
@@ -148,7 +148,7 @@ everything, don't manufacture doubt.
   from the process.
 
 Use the profile's expertise level to inform which option you recommend (confident/familiar
-→ default to "run with it"; learning/new → default to "walk me through this") but the
+→ default to "free climb"; learning/new → default to "walk me through this") but the
 engineer always chooses. Confidence depends on both domain expertise and the specific code
 being touched.
 
@@ -156,7 +156,7 @@ Wait for confirmation or redirection. This is the "steering" — the engineer mi
 "actually, let's use the existing helper for that" or "be careful, that module has a
 circular dependency issue."
 
-**b. Implement with narration** (skip in "run with it" mode)
+**b. Implement with narration** (skip in "free climb" mode)
 
 As you write code, explain your reasoning for non-obvious decisions:
 
@@ -172,7 +172,7 @@ This serves two purposes: the engineer can catch misunderstandings early, and th
 patterns they might apply elsewhere. This is the "two-way" part — you're not just writing
 code, you're transferring knowledge.
 
-**c. Pause for review after each meaningful change** (skip in "run with it" mode)
+**c. Pause for review after each meaningful change** (skip in "free climb" mode)
 
 Don't write 500 lines and then show the result. Pause after each logical unit:
 
@@ -264,7 +264,7 @@ After committing, update the slice's `**Commit**` field in NAVIGATION.md with th
 hash.
 
 **Important:** The engineer still reviews every code change via approve-edits before the
-commit happens (unless in "run with it" mode). This isn't autonomous committing — it's
+commit happens (unless in "free climb" mode). This isn't autonomous committing — it's
 structured committing after human-reviewed, validated changes.
 
 ### 5. Handle Blockers
@@ -306,7 +306,7 @@ After each slice is validated and committed:
    > existing helper saved us from a circular dependency]. [What I learned or what you
    > might find useful — e.g., the adapter pattern here could work for the retry logic
    > too]."
-   When the completed slice was in "run with it" mode, skip the check-in — the engineer
+   When the completed slice was in "free climb" mode, skip the check-in — the engineer
    already signaled they don't need the reflection.
 3. Check if the next slice's assumptions still hold (sometimes building slice 1 reveals that
    slice 2 needs adjustment)
