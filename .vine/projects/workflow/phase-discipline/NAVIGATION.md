@@ -79,7 +79,7 @@
 
 ### Slice 5: STATE.md Field Requirements — Complete
 **Started**: 2026-04-03
-**Commit**: pending
+**Commit**: c43fc87
 **Approach taken**: Added `<!-- required -->` and `<!-- optional -->` markers to each field in the NAVIGATION.md slice template in STATE.md. Required fields match what the gate check verifies: Commit, Validation, Acceptance criteria, Learnings. Optional fields: Started, Approach taken, Deviations from spec, Decisions made, Engineer feedback incorporated.
 **Deviations from spec**: None — condition met (gate check fields unchanged from spec), markers match gate criteria exactly
 **Validation**: pass — markers use existing HTML comment convention from STATE.md
@@ -93,3 +93,8 @@
 **Learnings**:
   - Engineer → Claude: None
   - Claude → Engineer: None
+
+### Remaining Work
+- **Incomplete slices**: All slices complete
+- **Blockers encountered**: None
+- **Handoff context**: Spec deviation on AC #5 (status excluded from stance update) is annotated in SPEC.md. Verify's profile section still has the old depth hint — intentionally untouched per spec (verify has its own profile creation flow). The auto-accept behavior added to "run with it" mode in slice 2 goes beyond what the original spec described — evolve should review whether this deviation warrants a STATE.md update or just stays as a navigate-specific behavior.
