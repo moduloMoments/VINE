@@ -120,7 +120,7 @@ your notes and explicit phase tracking, but it's not required.
 npx create-vine --global
 ```
 
-This installs all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:help`) to `~/.claude/commands/vine/`, making them available in every project.
+This installs all VINE commands (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:help`) to `~/.claude/commands/vine/`, making them available in every project.
 
 ### Project-level
 

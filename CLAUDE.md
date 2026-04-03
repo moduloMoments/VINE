@@ -19,8 +19,8 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 
 - YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
 - Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion
-- Every command starts with a "Load Project Hooks" section (reads `.vine/hooks/shared.md` + `.vine/hooks/<phase>.md`)
-- Every command (except init) follows hooks with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates hooks/profile rather than loading them.
+- Every command (except help) starts with a "Load Project Hooks" section (reads `.vine/hooks/shared.md` + `.vine/hooks/<phase>.md`)
+- Every command (except init and help) follows hooks with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates hooks/profile rather than loading them. Help is a pure reference command that doesn't need project context.
 - Load Project Hooks must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
