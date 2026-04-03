@@ -80,6 +80,8 @@ Read whichever artifacts exist to build the full picture:
 - **SPEC.md**: Total slice count, phase groups (if any), acceptance criteria overview
 - **NAVIGATION.md**: Per-slice completion status, commit hashes, deviations from spec,
   remaining work section (if written)
+- **PROJECT-MAP.md**: VINE Progress table and Milestones (if multi-PR). This is the most
+  compact view of overall status — use it to enrich the status display.
 - **EVOLUTION.md**: If this exists, evolve has run — check if the project should be resolved
 
 Cross-reference NAVIGATION.md's slice entries against SPEC.md's slice list to determine
@@ -110,6 +112,12 @@ exists.
 📝 Your notes from last session:
    [Engineer's notes from PAUSE.md]
 
+[If PROJECT-MAP.md exists:]
+📊 VINE Progress: verify ✅ → inquire ✅ → navigate 🚧 → evolve ⬜
+[If PROJECT-MAP.md has Milestones table:]
+📦 Milestones:
+   [Compact milestone summary — e.g., "Phase 1: ✅ PR #42 | Phase 2: 🚧 | Phase 3: ⬜"]
+
 [If navigate in progress and NAVIGATION.md has Remaining Work section:]
 📋 Remaining work from last session:
    [Remaining work items]
@@ -123,6 +131,18 @@ exists.
 ---
 ```
 
+### PR Number Backfill
+
+If PROJECT-MAP.md has a Milestones table and any shipped phases (✅ status) have `—` in the
+PR column, prompt the engineer to fill them in:
+
+> "These shipped phases don't have PR numbers recorded. Want to add them?"
+
+Use `AskUserQuestion` with one question per missing PR (up to 4). For each answer, update the
+PR column in PROJECT-MAP.md. This keeps the project map accurate for evolve's cross-PR review.
+
+Skip this if no Milestones table exists or all PR numbers are already filled in.
+
 ### Without PAUSE.md (artifact-only fallback)
 
 ```
@@ -133,6 +153,12 @@ exists.
    Branch: [current branch — with warning if it doesn't match]
 
    No pause state found — reconstructing from artifacts.
+
+[If PROJECT-MAP.md exists:]
+📊 VINE Progress: verify ✅ → inquire ✅ → navigate 🚧 → evolve ⬜
+[If PROJECT-MAP.md has Milestones table:]
+📦 Milestones:
+   [Compact milestone summary — e.g., "Phase 1: ✅ PR #42 | Phase 2: 🚧 | Phase 3: ⬜"]
 
 [If navigate in progress:]
 📋 Navigation progress:

@@ -65,6 +65,9 @@ there's only one active feature directory, use that. If there are multiple, use
 `AskUserQuestion` to let the engineer pick which feature to work on. If all projects are
 resolved or archived, tell the engineer and suggest starting a new cycle with `vine:verify`.
 
+Also read `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` if it exists. If present, update the
+inquire row to 🚧 with today's date. If it doesn't exist, skip — older projects won't have one.
+
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` from the project. If it doesn't exist, tell the engineer:
 
 > "I don't see a CONTEXT.md from a verify phase. We can either run vine:verify first to map the
@@ -191,6 +194,42 @@ clear between phases.
 
 For smaller features (4 or fewer slices), skip grouping. Everything fits in one navigate session.
 
+### 6c. Multi-PR Detection (if PROJECT-MAP.md exists)
+
+After slicing (and grouping, if applicable), check whether this feature is a multi-PR candidate.
+The heuristic: **more than 4 slices or phase groups exist.** If either condition is met, use
+`AskUserQuestion` to ask the engineer:
+
+> "This feature has [N slices / N phase groups] — large enough that it might benefit from
+> shipping in multiple PRs. Should we set up multi-PR tracking?"
+
+Options (mutually exclusive):
+1. "Yes, track milestones (Recommended)" — "Each phase group becomes a milestone with its own PR"
+2. "No, single PR" — "We'll ship everything in one PR"
+
+If the engineer confirms multi-PR tracking:
+
+1. Add a Milestones table to PROJECT-MAP.md mapping each phase group to a milestone row:
+
+   ```markdown
+   ### Milestones
+
+   | Phase | Slices | Status | PR |
+   |-------|--------|--------|----|
+   | Phase 1: [Name] | [slice range] | ⬜ Pending | — |
+   | Phase 2: [Name] | [slice range] | ⬜ Pending | — |
+   ```
+
+2. Add status markers to SPEC.md phase group headers — append `⬜` to each phase heading:
+
+   ```markdown
+   ## Phase 1: Data Layer (Slices 1-3) ⬜
+   ```
+
+   Navigate will update these markers as phases complete.
+
+If no PROJECT-MAP.md exists, skip this step entirely — backward compatible.
+
 ### 7. Suggest Backlog Updates
 
 Based on everything you've discussed, suggest updates to the project backlog:
@@ -256,6 +295,8 @@ exact how-many-spaces-of-indentation. Navigate needs latitude to make tactical d
 ## Phase Completion
 
 When the spec is solid and the engineer has signed off:
+
+1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 
 ```
 ---

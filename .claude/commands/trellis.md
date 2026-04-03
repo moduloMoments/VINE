@@ -59,25 +59,27 @@ Where `<stem>` is the filename without `.md` (e.g., `verify.md` → `# vine:veri
 The subtitle can be any text. The separator must be ` — ` (space, em dash, space) — not a
 hyphen, not a dash without spaces.
 
-### Check 4: Load Project Hooks Section (non-init only)
+### Check 4: Load Project Hooks Section (non-init, non-help only)
 
 **Skip this check for `init.md`** — init creates hooks rather than loading them.
+**Skip this check for `help.md`** — help is a pure reference command that doesn't need project context.
 
 The command must contain a `## Load Project Hooks` heading. Between that heading and the next
 `##` heading, the text must contain the string `.vine/hooks/<phase>.md` where `<phase>` matches
 the command's stem name (e.g., `verify.md` must contain `.vine/hooks/verify.md` in its hooks
 section).
 
-### Check 5: Load Engineer Profile Section (non-init only)
+### Check 5: Load Engineer Profile Section (non-init, non-help only)
 
 **Skip this check for `init.md`** — init introduces the profile concept but doesn't load it.
+**Skip this check for `help.md`** — help is a pure reference command.
 
 The command must contain a section with heading `## Load Engineer Profile` (or a heading that
 starts with `## Load Engineer Profile`).
 
-### Check 6: Section Ordering (non-init only)
+### Check 6: Section Ordering (non-init, non-help only)
 
-**Skip this check for `init.md`.**
+**Skip this check for `init.md` and `help.md`.**
 
 When both hooks and profile sections are present, the `## Load Project Hooks` heading must
 appear before `## Load Engineer Profile` in the file. This matches the convention: load hooks

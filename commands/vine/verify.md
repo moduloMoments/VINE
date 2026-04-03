@@ -247,12 +247,32 @@ review? Are there teams whose work intersects? This matters for inquire and navi
 When you and the engineer feel you have a solid understanding of the landscape, wrap up with:
 
 1. Review CONTEXT.md together — make sure nothing's missing
-2. Highlight the open questions that need resolution in inquire
-3. Suggest next step:
+2. Write PROJECT-MAP.md alongside CONTEXT.md to track VINE progress for this feature:
+
+   ```markdown
+   # Project Map: [Feature Name]
+   ## Feature: .vine/projects/<domain>/<feature-slug>
+   ## Created: [YYYY-MM-DD]
+
+   ### VINE Progress
+
+   | Phase | Status | Updated |
+   |-------|--------|---------|
+   | verify | ✅ | [today's date] |
+   | inquire | ⬜ | — |
+   | navigate | ⬜ | — |
+   | evolve | ⬜ | — |
+   ```
+
+   Save to `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md`. No Milestones table yet —
+   that's added by inquire if the feature needs multi-PR treatment.
+
+3. Highlight the open questions that need resolution in inquire
+4. Suggest next step:
 
 ```
 ---
-✅ vine:verify complete → CONTEXT.md written to .vine/projects/<domain>/<feature-slug>/CONTEXT.md
+✅ vine:verify complete → CONTEXT.md + PROJECT-MAP.md written to .vine/projects/<domain>/<feature-slug>/
 📋 Suggested next step: Run `vine:inquire` to build the feature spec.
    Key items to address:
    - [open question 1]

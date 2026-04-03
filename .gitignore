@@ -9,11 +9,13 @@ Thumbs.db
 *.swo
 
 # VINE workflow artifacts (dogfooding)
-# Track hooks for contributor context, ignore everything else
+# Track hooks and resolved projects for contributor context
+# Ignore active work, profile, and ephemeral state
 .vine/*
 !.vine/hooks/
-.vine/hooks/*
-!.vine/hooks/shared.md
+!.vine/projects/
+.vine/projects/*/*/PAUSE.md
+.vine/PROFILE.md
 
 # Claude Code worktrees
 .claude/worktrees/

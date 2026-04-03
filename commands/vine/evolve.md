@@ -56,9 +56,14 @@ Read all VINE artifacts for this feature:
 - `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
 - `.vine/projects/<domain>/<feature-slug>/SPEC.md` (the design)
 - `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` (the implementation journal)
+- `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` (progress tracker, if it exists)
 
 If any are missing, work with what you have. NAVIGATION.md is the most critical — it tells you
 what was actually built versus what was planned.
+
+If PROJECT-MAP.md exists, update the evolve row to 🚧 with today's date. If it has a Milestones
+table, note which phases shipped in prior PRs — evolve's verification should focus on the final
+phase group and cross-phase integration, not re-verify already-shipped work.
 
 ## Evolution 1: Product
 
@@ -83,6 +88,20 @@ This is where evolve adds value. Verify that the slices work together as a whole
 - Check for cross-cutting concerns: error handling paths, edge cases that span slices,
   performance implications of the combined changes
 - If `.vine/hooks/evolve.md` defines integration validation commands, run those
+
+> **Cross-reference:** Navigate step 9 runs a lighter version of this check at phase group
+> boundaries. If you change the verification approach here, check navigate.md's phase group
+> verification for consistency.
+
+**For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
+`gh` CLI is available, review the prior PRs as part of integration verification:
+
+- Run `gh pr view <number>` for each shipped phase's PR to check status and review comments
+- Run `gh api repos/{owner}/{repo}/pulls/<number>/comments` to surface reviewer feedback
+  that may affect the current phase
+- Flag any unresolved review comments or requested changes from prior PRs — these could
+  indicate integration issues or concerns that carry forward
+- Include a summary of cross-PR review findings in the Product Evolution section
 
 ### Review Spec Deviations
 
@@ -353,9 +372,15 @@ Compile everything into `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md`:
 
 #### Commit Suggestions
 [Suggested structure]
+
+#### Multi-PR Summary (if PROJECT-MAP.md has Milestones)
+[Table from PROJECT-MAP.md showing all phases, their PR numbers, and status.
+ Gives reviewers of the final PR context on what shipped previously.]
 ```
 
 ## Phase Completion
+
+Update PROJECT-MAP.md (if it exists) — set the evolve row to ✅ with today's date.
 
 ```
 ---
@@ -394,6 +419,44 @@ If the engineer chooses to resolve, write an empty `.resolved` file to
 `.vine/projects/<domain>/<feature-slug>/.resolved`. Also silently delete
 `.vine/projects/<domain>/<feature-slug>/PAUSE.md` if it exists — a resolved project's pause
 state is definitionally stale. No prompt, no message to the engineer.
+
+### Commit Evolve Changes
+
+After resolving (or choosing to keep active), commit all changes generated during the evolve
+phase. These typically include:
+
+- EVOLUTION.md
+- CLAUDE.md updates (if accepted)
+- `.vine/hooks/` updates (if accepted)
+- `.vine/PROFILE.md` updates (if accepted)
+- `.resolved` marker (if resolved)
+
+Stage these files and commit with a message like:
+
+```
+evolve: [feature name] — evolution report and cycle artifacts
+
+VINE cycle complete. Captures product verification, agent evolution
+(CLAUDE.md/hook updates), and user profile growth.
+```
+
+Present the commit message for the engineer's approval before committing.
+
+### Suggest Opening a PR
+
+After committing, suggest opening a PR using the handoff package drafted earlier:
+
+> "Ready to open a PR? I have the description and reviewer notes drafted in EVOLUTION.md."
+
+Use `AskUserQuestion`:
+
+Options (mutually exclusive):
+1. "Open PR (Recommended)" — "Create PR using the drafted description and reviewer notes"
+2. "Skip" — "I'll handle the PR myself"
+
+If the engineer chooses to open a PR, create it using `gh pr create` with the PR description
+from the handoff package. If `.vine/hooks/evolve.md` defines PR workflow conventions, follow
+those.
 
 ## Important Principles
 

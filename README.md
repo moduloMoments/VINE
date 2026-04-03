@@ -41,12 +41,24 @@ Design the feature on top of verified context. Discuss architecture, weigh trade
 ### vine:navigate — Guided Implementation
 Build the feature together. The engineer steers direction, Claude executes and explains. Both learn. No auto-commits — changes are surfaced for review. Every decision is documented.
 
-**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + staged changes (not committed)
+**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + committed changes (one commit per validated slice)
 
 ### vine:evolve — Triple Evolution
 Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new commands). User growth (knowledge gained, areas to explore).
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
+
+## Multi-PR Features
+
+For features that span multiple PRs, VINE tracks progress across phase groups with milestone
+status. When `vine:inquire` detects a larger feature (>4 slices or phase groups), it offers to
+set up multi-PR tracking in `PROJECT-MAP.md`. Each phase group maps to a milestone with its own
+PR, and `vine:navigate` runs a lightweight verification pass before suggesting a PR at each
+phase boundary.
+
+`vine:evolve` reviews prior PRs via `gh` CLI to surface reviewer feedback that may affect
+cross-phase integration. `gh` CLI is optional — evolve works without it but can't check PR
+status or review comments.
 
 ## Quick Mode: vine:pair
 
@@ -64,19 +76,24 @@ just you and Claude working together on a small change.
 
 If the work grows beyond a quick fix, pair suggests escalating to the full cycle.
 
-## Session Management: vine:pause + vine:resume
+## Session Management: vine:pause + vine:resume + vine:status
 
 Long-running features span multiple sessions. `vine:pause` captures where you stopped and why,
-`vine:resume` picks it back up.
+`vine:resume` picks it back up, and `vine:status` gives a quick progress check.
 
 ```
 > /vine:pause                    # saves session state + your notes to PAUSE.md
 > /vine:resume                   # shows status, progress, and recommends next command
+> /vine:status                   # quick read-only progress check
 ```
 
 vine:pause detects your current phase from artifacts, asks for free-form notes, and writes a
 lightweight `PAUSE.md` to the feature directory. vine:resume reads it (plus existing artifacts)
 to tell you exactly where you are — no re-reading everything yourself.
+
+vine:status is lighter than resume — it reads `PROJECT-MAP.md` (or detects artifacts) and
+displays progress without loading session state or recommending next steps. Useful for a quick
+check or when deciding which feature to pick up next.
 
 Resume also works without PAUSE.md by reconstructing state from artifacts alone. PAUSE.md adds
 your notes and explicit phase tracking, but it's not required.
@@ -103,7 +120,7 @@ your notes and explicit phase tracking, but it's not required.
 npx create-vine --global
 ```
 
-This installs all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`) to `~/.claude/commands/vine/`, making them available in every project.
+This installs all VINE commands (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:help`) to `~/.claude/commands/vine/`, making them available in every project.
 
 ### Project-level
 
@@ -144,6 +161,12 @@ echo '.vine/' >> ~/.gitignore_global
 ```
 
 This keeps your `.vine/` artifacts out of version control across all repos. When your team is ready to adopt VINE together, you can remove it from the global gitignore and commit `.vine/hooks/` to the repo instead.
+
+### Optional: GitHub CLI
+
+VINE works without `gh` CLI, but `vine:evolve` uses it to review prior PRs in multi-PR features
+and to suggest opening PRs at the end of a cycle. Install from [cli.github.com](https://cli.github.com)
+if you want those capabilities.
 
 ## Usage
 
@@ -186,10 +209,12 @@ commands, and conventions without forking the commands themselves.
     │   │   ├── CONTEXT.md
     │   │   ├── SPEC.md
     │   │   ├── NAVIGATION.md
-    │   │   └── EVOLUTION.md
+    │   │   ├── EVOLUTION.md
+    │   │   └── PROJECT-MAP.md     # Progress tracker
     │   └── retry-logic/           # Feature 2 (in progress)
     │       ├── CONTEXT.md
     │       ├── SPEC.md
+    │       ├── PROJECT-MAP.md     # Progress + milestones (multi-PR)
     │       └── PAUSE.md           # Session state (ephemeral)
     └── auth/
         └── sso-migration/         # Feature 3 (in progress)
@@ -235,10 +260,13 @@ should auto-run.
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
+| `PROJECT-MAP.md` | verify (created), all phases (updated) | VINE progress tracker, multi-PR milestone status |
 | `PAUSE.md` | pause | Session state, phase, active slice, engineer notes (ephemeral) |
 | `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo) |
 
 These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
+
+This repo uses VINE on itself — browse [`.vine/projects/`](.vine/projects/) to see real artifacts from completed features. Each resolved project shows how CONTEXT → SPEC → NAVIGATION → EVOLUTION builds up across the four phases.
 
 ## Engineer Profile
 
