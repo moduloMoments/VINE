@@ -343,6 +343,10 @@ phase group boundary before showing the completion block:
    This is lighter than evolve's full pass — no deviation review, no follow-up triage, no
    handoff prep — but thorough enough that a PR opened after this step is shippable.
 
+   > **Cross-reference:** This verification mirrors steps a-d of evolve's Cross-Slice
+   > Integration Check. If you change the verification approach here, check evolve.md's
+   > product verification for consistency.
+
 2. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
    `✅ Shipped` (or `✅ Complete` if no PR yet).
 3. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.

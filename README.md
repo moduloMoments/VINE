@@ -76,19 +76,24 @@ just you and Claude working together on a small change.
 
 If the work grows beyond a quick fix, pair suggests escalating to the full cycle.
 
-## Session Management: vine:pause + vine:resume
+## Session Management: vine:pause + vine:resume + vine:status
 
 Long-running features span multiple sessions. `vine:pause` captures where you stopped and why,
-`vine:resume` picks it back up.
+`vine:resume` picks it back up, and `vine:status` gives a quick progress check.
 
 ```
 > /vine:pause                    # saves session state + your notes to PAUSE.md
 > /vine:resume                   # shows status, progress, and recommends next command
+> /vine:status                   # quick read-only progress check
 ```
 
 vine:pause detects your current phase from artifacts, asks for free-form notes, and writes a
 lightweight `PAUSE.md` to the feature directory. vine:resume reads it (plus existing artifacts)
 to tell you exactly where you are — no re-reading everything yourself.
+
+vine:status is lighter than resume — it reads `PROJECT-MAP.md` (or detects artifacts) and
+displays progress without loading session state or recommending next steps. Useful for a quick
+check or when deciding which feature to pick up next.
 
 Resume also works without PAUSE.md by reconstructing state from artifacts alone. PAUSE.md adds
 your notes and explicit phase tracking, but it's not required.
@@ -115,7 +120,7 @@ your notes and explicit phase tracking, but it's not required.
 npx create-vine --global
 ```
 
-This installs all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`) to `~/.claude/commands/vine/`, making them available in every project.
+This installs all VINE commands (`/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`) to `~/.claude/commands/vine/`, making them available in every project.
 
 ### Project-level
 

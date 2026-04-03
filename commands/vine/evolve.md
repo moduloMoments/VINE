@@ -89,6 +89,10 @@ This is where evolve adds value. Verify that the slices work together as a whole
   performance implications of the combined changes
 - If `.vine/hooks/evolve.md` defines integration validation commands, run those
 
+> **Cross-reference:** Navigate step 9 runs a lighter version of this check at phase group
+> boundaries. If you change the verification approach here, check navigate.md's phase group
+> verification for consistency.
+
 **For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
 `gh` CLI is available, review the prior PRs as part of integration verification:
 

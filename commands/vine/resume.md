@@ -131,6 +131,18 @@ exists.
 ---
 ```
 
+### PR Number Backfill
+
+If PROJECT-MAP.md has a Milestones table and any shipped phases (✅ status) have `—` in the
+PR column, prompt the engineer to fill them in:
+
+> "These shipped phases don't have PR numbers recorded. Want to add them?"
+
+Use `AskUserQuestion` with one question per missing PR (up to 4). For each answer, update the
+PR column in PROJECT-MAP.md. This keeps the project map accurate for evolve's cross-PR review.
+
+Skip this if no Milestones table exists or all PR numbers are already filled in.
+
 ### Without PAUSE.md (artifact-only fallback)
 
 ```

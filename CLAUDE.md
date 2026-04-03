@@ -2,13 +2,13 @@
 
 ## What This Repo Is
 
-VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 8 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, pair, pause, resume), a state reference at `references/STATE.md`, and a README.
+VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 9 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, pair, pause, resume, status), a state reference at `references/STATE.md`, and a README.
 
 **Editing a command file changes the tool itself.** Test changes by running the modified command on a real repo.
 
 ## Repository Structure
 
-- `commands/vine/` — The 8 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume). These ARE the product.
+- `commands/vine/` — The 9 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
 - `.vine/hooks/shared.md` — Contributor context hook (tracked; per-phase hooks gitignored)
