@@ -305,11 +305,49 @@ and committed independently.
 **If PROJECT-MAP.md has a Milestones table** (multi-PR feature), do the following at each
 phase group boundary before showing the completion block:
 
-1. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
+1. **Phase group verification** — Before suggesting a PR, run a lightweight product check
+   modeled on evolve's verification. This catches gaps before code leaves the branch.
+
+   **a. Run validation across the phase group's changes:**
+   - Lint all files changed in this phase group (not just the last slice)
+   - Run typecheck if the project uses one
+   - Run the full test suite (not just per-file tests from slice validation)
+   - If `.vine/hooks/navigate.md` defines custom validation commands, use those
+
+   **b. Check test coverage:**
+   - Review whether the phase group's slices have corresponding tests. If any slice
+     introduced behavior without tests, flag it:
+
+     > "Slice [N] added [behavior] but I don't see tests covering it. Want to add
+     > tests before we PR this phase, or defer to a follow-up?"
+
+   - Use `AskUserQuestion` if there are untested slices — let the engineer decide
+     per-slice whether to add tests now or defer.
+
+   **c. Verify acceptance criteria:**
+   - Review the acceptance criteria for each slice in this phase group against the
+     committed code. Present a rollup:
+
+     > "Phase [N] acceptance criteria:
+     > - [x] [criterion] — verified in [commit/file]
+     > - [ ] [criterion] — not met: [reason]"
+
+   - If any criteria are unmet, resolve them before proceeding.
+
+   **d. Check cross-slice integration within this phase group:**
+   - Do the slices work together? (imports resolve, data flows between modules, no
+     broken references across slice boundaries)
+   - Flag anything that looks fragile or inconsistent.
+
+   If verification surfaces issues, fix them within the current session before moving on.
+   This is lighter than evolve's full pass — no deviation review, no follow-up triage, no
+   handoff prep — but thorough enough that a PR opened after this step is shippable.
+
+2. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
    `✅ Shipped` (or `✅ Complete` if no PR yet).
-2. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.
-3. If there's a next phase, update its Milestones row to `🚧 Active`.
-4. Suggest opening a PR for the completed phase group:
+3. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.
+4. If there's a next phase, update its Milestones row to `🚧 Active`.
+5. Suggest opening a PR for the completed phase group:
 
    > "Phase [N: name] is complete. This is a good point to open a PR for this work.
    > Want to open a PR now, or continue to the next phase first?"
