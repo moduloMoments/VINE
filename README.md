@@ -266,6 +266,10 @@ Most AI coding frameworks optimize for autonomous speed — the AI writes code, 
 | **Best for** | Greenfield / scripted tasks | Established codebases |
 | **Learning model** | One-way (AI executes) | Two-way (both learn) |
 
+## Tips
+
+- [Auto-preview artifacts with glow](docs/artifact-preview.md) — opens a formatted terminal preview when VINE writes phase artifacts
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. The short version: open an issue or [Discussion](../../discussions) before submitting a PR.
