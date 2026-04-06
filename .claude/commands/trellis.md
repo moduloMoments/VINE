@@ -320,3 +320,7 @@ After both the command table (Step 4) and artifact table (Step 7), print a combi
 
 Follow any failure summary with the detailed list of failures (command name or artifact path,
 check name, what was wrong).
+
+If all checks pass and there are uncommitted changes to command files, suggest:
+
+> "All checks pass. If you're ready to submit, run `/pr` to create a pull request."
