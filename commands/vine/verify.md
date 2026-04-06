@@ -1,6 +1,6 @@
 ---
 name: vine:verify
-description: "Context-building spike — explore the codebase together before designing or building"
+description: "Explore and map the codebase before designing — research architecture, patterns, edge cases, and constraints to build a verified context document for your feature"
 argument-hint: "[feature description, e.g., 'webhook support for payments']"
 allowed-tools:
   - Read

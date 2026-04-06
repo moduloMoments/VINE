@@ -1,6 +1,6 @@
 ---
 name: vine:pause
-description: "Pause a VINE session — capture where you stopped and why"
+description: "Pause a VINE session — save progress, capture current state and blockers so you can pick up exactly where you left off later"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read

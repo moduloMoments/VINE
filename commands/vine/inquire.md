@@ -1,6 +1,6 @@
 ---
 name: vine:inquire
-description: "Feature specification and design — build the spec on top of verified context"
+description: "Design and spec a feature — define requirements, make architecture decisions, and break work into implementation slices after verifying codebase context"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read

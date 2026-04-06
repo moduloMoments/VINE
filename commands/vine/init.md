@@ -1,6 +1,6 @@
 ---
 name: vine:init
-description: "Scaffold .vine/hooks/ with project-specific templates based on repo discovery"
+description: "Set up VINE for this repo — scan the codebase for tools, agents, and conventions, then create project hooks and engineer profile for your first feature workflow"
 argument-hint: ""
 allowed-tools:
   - Read

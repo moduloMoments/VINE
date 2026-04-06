@@ -1,6 +1,6 @@
 ---
 name: vine:navigate
-description: "Guided implementation — build the feature together one slice at a time"
+description: "Implement a feature slice by slice — write code together, run tests, review changes, and commit each validated slice with its acceptance criteria"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read

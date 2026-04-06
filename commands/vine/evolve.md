@@ -1,6 +1,6 @@
 ---
 name: vine:evolve
-description: "Triple evolution — verify, capture learnings, and prep the handoff"
+description: "Wrap up a feature — run final verification against acceptance criteria, update CLAUDE.md and hooks, capture engineer growth, and prepare the PR handoff"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read

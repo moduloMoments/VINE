@@ -1,6 +1,6 @@
 ---
 name: vine:help
-description: "Show available VINE commands and quick usage guide"
+description: "Show all VINE commands with usage examples — find the right command for your workflow, from setup to implementation to PR"
 argument-hint: ""
 allowed-tools:
   - Read

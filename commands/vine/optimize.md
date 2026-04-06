@@ -1,6 +1,6 @@
 ---
 name: vine:optimize
-description: "Analyze and optimize skill matching, workflow chains, and command descriptions for Claude Code discovery"
+description: "Audit and improve command discoverability — score descriptions for skill matching, detect workflow chains, reduce token waste, and optimize interactivity patterns"
 argument-hint: ""
 allowed-tools:
   - Read

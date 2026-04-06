@@ -1,6 +1,6 @@
 ---
 name: trellis
-description: "Validate structural conventions across VINE command files"
+description: "Lint and validate VINE command files — check frontmatter, section ordering, artifact format compliance, and structural conventions before committing"
 argument-hint: ""
 allowed-tools:
   - Read
