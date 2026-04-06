@@ -127,15 +127,21 @@ interpretation:
 > "For this slice, I'm going to [approach]. The main files I'll touch are [files].
 > The tricky part will be [challenge from CONTEXT.md]. [If applicable: I'm less sure
 > about [specific aspect] — I haven't seen how this project handles [pattern/convention].]
-> Sound right, or would you go a different direction?
->
-> For this slice — want me to free climb, or walk you through it?"
+> Sound right, or would you go a different direction?"
 
 The self-assessment isn't performative humility — it's an honest signal that helps the
 engineer decide where to focus their attention. If you're genuinely confident about
 everything, don't manufacture doubt.
 
-**Gearing:** The engineer's answer sets the engagement level for this slice:
+After the preview, use `AskUserQuestion` for the gearing decision:
+
+- Use `multiSelect: false` with 2 options
+- Put the recommended option first based on the profile's expertise level
+  (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
+- **"Free climb"** description: "I trust the approach — move fast, I'll review at the slice boundary"
+- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation"
+
+**Gearing:** The engineer's choice sets the engagement level for this slice:
 
 - **"Free climb"**: Auto-accept edits for this slice — the engineer trusts the approach
   and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
@@ -273,15 +279,12 @@ When you hit something unexpected:
 
 **If it's a quick question**: Ask the engineer directly. They probably know the answer.
 
-**If it's a significant blocker**: Stop, document it, and discuss:
+**If it's a significant blocker**: Stop, document it, and use `AskUserQuestion` to present
+options. Describe the blocker clearly, then offer concrete resolution paths:
 
-> "I've hit a problem. The spec assumes we can call the notification service directly, but
-> it's behind an internal API gateway that requires a service token we don't have in this
-> environment. Three options:
-> 1. Mock it for now, create a follow-up ticket
-> 2. Request the token (blocks this slice)
-> 3. Use the legacy direct connection (tech debt but works)
-> What's your call?"
+- Use `multiSelect: false` with up to 4 options grounded in the specific situation
+- Put the recommended option first with "(Recommended)" suffix
+- Common patterns: "Mock and defer", "Block and resolve", "Work around (tech debt)", "Descope"
 
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.

@@ -144,19 +144,16 @@ Fix any issues before moving to the commit step.
 
 ## Commit
 
-Suggest a single commit covering all changes. Present the commit message for the engineer's
-approval:
+Suggest a single commit covering all changes. Show the proposed commit message, then use
+`AskUserQuestion` to confirm:
 
-> "Here's what I'd commit:"
-> ```
-> <short summary of the change>
->
-> <1-2 sentences on what was changed and why>
-> ```
-> "Want to adjust the message, or good to commit?"
+- Use `multiSelect: false` with 3 options:
+  - "Commit as drafted (Recommended)" — with the commit message as the description
+  - "Edit message" — "I'll help adjust the wording"
+  - "Skip commit" — "Don't commit yet, I'll handle it"
 
 If the project uses a ticket prefix convention (check `.vine/hooks/shared.md` or `CLAUDE.md`),
-include it.
+include it in the drafted message.
 
 Stage the relevant files and commit after the engineer approves. Don't stage unrelated files.
 
