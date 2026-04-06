@@ -82,6 +82,11 @@ When contributing to the VINE framework itself:
 2. `/vine:optimize` — re-score descriptions and update workflow map
 3. `/pr` — create PR using repo template
 
+### Available Agents
+Shipped in `agents/vine/`, auto-delegated by description matching:
+- **codebase-explorer** — deep research on a code area (architecture, patterns, edge cases)
+- **verification** — run lint/typecheck/tests and check acceptance criteria against code
+
 ### State-Based Suggestions
 - No `.vine/` directory exists — suggest `/vine:init`
 - CONTEXT.md exists, no SPEC.md — suggest `/vine:inquire`
