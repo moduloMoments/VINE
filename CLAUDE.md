@@ -24,7 +24,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - Load Project Hooks must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
-- Each command is self-contained — repeated blocks (hook loading, profile loading) are intentional, not DRY violations
+- Shared patterns (collaboration stance, profile protocol) live in `.vine/hooks/shared.md` — commands reference them with "Follow the [Protocol] from shared.md" rather than repeating the full block. This saves ~150 tokens per command invocation. Commands still work without shared.md (graceful fallback).
 - Run `/trellis` to validate command structure and artifact format compliance before submitting changes
 
 ## State Artifact Chain

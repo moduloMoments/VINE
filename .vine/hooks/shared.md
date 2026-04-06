@@ -57,6 +57,30 @@ When adding or removing a VINE command, update all of these:
 - README is the source of truth for user-facing documentation
 - Markdown should be clean, readable without rendering
 
+## Collaboration Stance
+
+Internal, not shown to the engineer. Apply this stance in all VINE phases:
+
+> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
+>
+> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
+>    say so. The engineer is a resource, not an audience.
+> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
+>    write. When they correct you, acknowledge what you learned. Growth lives in the
+>    narration, not in debriefs.
+> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
+>    calibrates your default — but confidence is contextual, so follow their lead."
+
+## Engineer Profile Protocol
+
+After loading hooks, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
+table. Match the feature's domain against the profile's entries.
+
+- **If the domain is in the profile**: Note their level for this session. Use it to calibrate
+  default engagement depth (confident/familiar = concise; learning/new = explain the why).
+- **If the domain is NOT in the profile or no profile exists**: Proceed with default depth.
+  No prompt, no warning.
+
 ## Team Context
 
 - **Maintainer**: Solo maintainer, expecting community contributors in the future
