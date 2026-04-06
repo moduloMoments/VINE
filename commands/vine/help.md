@@ -35,6 +35,9 @@ Session management:
   /vine:resume   [feature]    Pick up where you left off with full context
   /vine:status   [feature]    Quick read-only progress check
 
+Maintenance:
+  /vine:optimize              Analyze and optimize skill matching, workflows, and token usage
+
 Setup:
   /vine:init                  Scaffold .vine/hooks/ for this repo
   /vine:help                  This reference

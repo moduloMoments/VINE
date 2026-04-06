@@ -184,5 +184,8 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
 
 💡 Tip: As you complete VINE cycles, `/vine:evolve` will suggest
    updates to your hook files and profile based on what you learn.
+
+🔧 Run `/vine:optimize` to analyze your skills and commands for
+   better matching, workflow chains, and token efficiency.
 ---
 ```

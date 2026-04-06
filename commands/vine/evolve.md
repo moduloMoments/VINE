@@ -242,6 +242,12 @@ Reflect on how the VINE process itself went:
 
 Note these for the engineer. They might want to customize VINE for their team.
 
+If this cycle produced new skills, commands, or significant hook changes, suggest running
+`/vine:optimize` to update the workflow map and re-score descriptions:
+
+> "This cycle [added new skills / changed commands / updated hooks]. Running `/vine:optimize`
+> would update the workflow map in CLAUDE.md and check if descriptions still match well."
+
 ### Hook Update Suggestions
 
 Review what tools, agents, and patterns proved useful during this VINE cycle and suggest

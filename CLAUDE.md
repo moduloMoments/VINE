@@ -2,13 +2,13 @@
 
 ## What This Repo Is
 
-VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 10 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help), a state reference at `references/STATE.md`, and a README.
+VINE is a pure-markdown AI-assisted development framework. There is no build step, no runtime code, no compilation. The product is 11 command files in `commands/vine/` (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize), a state reference at `references/STATE.md`, and a README.
 
 **Editing a command file changes the tool itself.** Test changes by running the modified command on a real repo.
 
 ## Repository Structure
 
-- `commands/vine/` — The 10 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help). These ARE the product.
+- `commands/vine/` — The 11 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
 - `.vine/hooks/shared.md` — Contributor context hook (tracked; per-phase hooks gitignored)
@@ -34,6 +34,8 @@ Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLU
 All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`. Section headings in STATE.md templates use `<!-- required -->` / `<!-- optional -->` HTML comment markers — new sections must include a marker to prevent validation drift.
 
 `vine:pair` is artifact-free — it produces code changes and a single commit but no CONTEXT/SPEC/NAVIGATION/EVOLUTION files.
+
+`vine:optimize` is also artifact-free in the VINE project sense — it doesn't produce feature artifacts. Instead it analyzes and improves skill descriptions, workflow chains, token efficiency, and interactivity patterns across all commands and skills in the repo, writing a workflow map to CLAUDE.md.
 
 `vine:verify` also creates `PROJECT-MAP.md` as a progress tracker. For multi-PR features, `vine:inquire` adds a Milestones table mapping phase groups to PRs.
 
