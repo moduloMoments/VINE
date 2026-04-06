@@ -194,7 +194,7 @@ broken state forward.
 
 **a. Run validation**
 
-Delegate to the `verification` agent to run checks on the changed files and verify
+Delegate to the `vine-verification` agent to run checks on the changed files and verify
 acceptance criteria for this slice. The agent runs lint, typecheck, and tests, then checks
 each criterion against the code and reports findings.
 

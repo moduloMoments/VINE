@@ -78,7 +78,7 @@ navigate couldn't verify:
 
 ### Cross-Slice Integration Check
 
-This is where evolve adds value. Delegate to the `verification` agent in feature verification
+This is where evolve adds value. Delegate to the `vine-verification` agent in feature verification
 mode to check that slices work together as a whole:
 
 - Do the pieces integrate correctly? (data flows between modules, imports resolve, etc.)

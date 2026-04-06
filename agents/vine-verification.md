@@ -1,5 +1,5 @@
 ---
-name: verification
+name: vine-verification
 description: "Verify code changes against acceptance criteria by running lint, typecheck, and tests, then checking each criterion against the implementation. Use after completing a code change to validate it before committing."
 tools: Read, Glob, Grep, Bash
 model: sonnet

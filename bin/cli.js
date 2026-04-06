@@ -6,7 +6,7 @@ const os = require('os');
 
 const pkg = require('../package.json');
 const sourceDir = path.join(__dirname, '..', 'commands', 'vine');
-const agentSourceDir = path.join(__dirname, '..', 'agents', 'vine');
+const agentSourceDir = path.join(__dirname, '..', 'agents');
 
 const args = process.argv.slice(2);
 const isGlobal = args.includes('--global') || args.includes('-g');
@@ -40,8 +40,8 @@ const destDir = isGlobal
   : path.join(process.cwd(), '.claude', 'commands', 'vine');
 
 const agentDestDir = isGlobal
-  ? path.join(os.homedir(), '.claude', 'agents', 'vine')
-  : path.join(process.cwd(), '.claude', 'agents', 'vine');
+  ? path.join(os.homedir(), '.claude', 'agents')
+  : path.join(process.cwd(), '.claude', 'agents');
 
 // Count source files
 const sourceFiles = fs.readdirSync(sourceDir).filter(f => f.endsWith('.md'));

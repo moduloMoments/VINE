@@ -100,7 +100,7 @@ vine:inquire is for. You just need enough direction to know where to look.
 ### 2. Read the Landscape
 
 Once you have direction, explore the relevant code. For larger features touching multiple
-areas, delegate to the `codebase-explorer` agent to research specific areas in parallel
+areas, delegate to the `vine-codebase-explorer` agent to research specific areas in parallel
 while you and the engineer discuss what you're finding. For each area:
 
 - Read the key files and understand the patterns in use

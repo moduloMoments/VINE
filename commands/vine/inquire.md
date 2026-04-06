@@ -79,7 +79,7 @@ The goal is informed decisions, not decision theater.
 ### 3. Design the Approach
 
 Now propose the architecture. When a design decision requires deeper understanding of how
-existing code handles a similar problem, delegate to the `codebase-explorer` agent to
+existing code handles a similar problem, delegate to the `vine-codebase-explorer` agent to
 research the specific area rather than reading broadly yourself.
 
 For each significant design decision:

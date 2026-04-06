@@ -1,5 +1,5 @@
 ---
-name: codebase-explorer
+name: vine-codebase-explorer
 description: "Explore a specific area of a codebase and return structured findings about architecture, patterns, dependencies, edge cases, and conventions. Use when you need to deeply understand a code area before designing or building."
 tools: Read, Glob, Grep, Bash
 model: sonnet

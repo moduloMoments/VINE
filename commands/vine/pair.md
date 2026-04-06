@@ -113,7 +113,7 @@ choosing silently. Keep it lightweight — one question, concrete options ground
 
 ## Validate
 
-After implementing the change, delegate to the `verification` agent to run checks on the
+After implementing the change, delegate to the `vine-verification` agent to run checks on the
 affected files (lint, typecheck, tests). If `.vine/hooks/pair.md` defines custom validation
 commands, pass those to the agent instead.
 
