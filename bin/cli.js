@@ -6,6 +6,7 @@ const os = require('os');
 
 const pkg = require('../package.json');
 const sourceDir = path.join(__dirname, '..', 'commands', 'vine');
+const agentSourceDir = path.join(__dirname, '..', 'agents', 'vine');
 
 const args = process.argv.slice(2);
 const isGlobal = args.includes('--global') || args.includes('-g');
@@ -38,21 +39,36 @@ const destDir = isGlobal
   ? path.join(os.homedir(), '.claude', 'commands', 'vine')
   : path.join(process.cwd(), '.claude', 'commands', 'vine');
 
+const agentDestDir = isGlobal
+  ? path.join(os.homedir(), '.claude', 'agents', 'vine')
+  : path.join(process.cwd(), '.claude', 'agents', 'vine');
+
 // Count source files
 const sourceFiles = fs.readdirSync(sourceDir).filter(f => f.endsWith('.md'));
+const agentFiles = fs.existsSync(agentSourceDir)
+  ? fs.readdirSync(agentSourceDir).filter(f => f.endsWith('.md'))
+  : [];
 
 // Check if this is an upgrade
 const isUpgrade = fs.existsSync(destDir);
 
-// Create destination and copy
+// Create destinations and copy commands
 fs.mkdirSync(destDir, { recursive: true });
 for (const file of sourceFiles) {
   fs.copyFileSync(path.join(sourceDir, file), path.join(destDir, file));
 }
 
-const location = isGlobal ? '~/.claude/commands/vine/' : '.claude/commands/vine/';
+// Copy agents
+if (agentFiles.length > 0) {
+  fs.mkdirSync(agentDestDir, { recursive: true });
+  for (const file of agentFiles) {
+    fs.copyFileSync(path.join(agentSourceDir, file), path.join(agentDestDir, file));
+  }
+}
+
+const location = isGlobal ? '~/.claude/' : '.claude/';
 const action = isUpgrade ? 'Updated' : 'Installed';
-console.log(`\n  ${action} VINE v${pkg.version} to ${location} (${sourceFiles.length} commands)\n`);
+console.log(`\n  ${action} VINE v${pkg.version} to ${location} (${sourceFiles.length} commands, ${agentFiles.length} agents)\n`);
 
 if (isUpgrade) {
   console.log('  Run /vine:init to discover new tools added in this version.');
