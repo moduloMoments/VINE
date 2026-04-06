@@ -462,16 +462,6 @@ The workflow map in CLAUDE.md includes a generation date so staleness is visible
 
 ## Important Principles
 
-**Optimize existing mechanisms.** Claude Code already has ToolSearch and description-based
-skill matching. This command improves the data those mechanisms consume rather than building
-a parallel discovery layer.
-
-**CLAUDE.md is the highest-leverage file.** It's read every session. The workflow map there
-gives Claude chain awareness without loading any specific skill.
-
-**Descriptions are the matching surface.** Claude's skill auto-invocation runs against
-description text. A well-written description is worth more than any amount of metadata.
-
 **Don't break what works.** If a command currently triggers correctly, preserve those
 matching patterns even while improving the description.
 
