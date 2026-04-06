@@ -113,13 +113,9 @@ choosing silently. Keep it lightweight — one question, concrete options ground
 
 ## Validate
 
-After implementing the change, run validation on the affected files:
-
-1. Lint the changed files (if a linter is configured)
-2. Run typecheck (if the project uses TypeScript or similar)
-3. Run tests for the changed files (if tests exist)
-
-If `.vine/hooks/pair.md` defines custom validation commands, use those instead.
+After implementing the change, delegate to the `verification` agent to run checks on the
+affected files (lint, typecheck, tests). If `.vine/hooks/pair.md` defines custom validation
+commands, pass those to the agent instead.
 
 Fix any issues before moving to the commit step.
 

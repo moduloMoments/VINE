@@ -194,14 +194,12 @@ broken state forward.
 
 **a. Run validation**
 
-Run relevant checks on the changed files. The default validation sequence is:
+Delegate to the `verification` agent to run checks on the changed files and verify
+acceptance criteria for this slice. The agent runs lint, typecheck, and tests, then checks
+each criterion against the code and reports findings.
 
-1. Lint the changed files (if a linter is configured)
-2. Run typecheck (if the project uses TypeScript or similar)
-3. Run tests for the changed files (if tests exist)
-
-If `.vine/hooks/navigate.md` defines custom validation commands, use those instead. The hook
-overrides the defaults entirely — it knows this project's toolchain.
+If `.vine/hooks/navigate.md` defines custom validation commands, pass those to the agent.
+The hook overrides the defaults entirely — it knows this project's toolchain.
 
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.

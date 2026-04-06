@@ -78,7 +78,11 @@ The goal is informed decisions, not decision theater.
 
 ### 3. Design the Approach
 
-Now propose the architecture. For each significant design decision:
+Now propose the architecture. When a design decision requires deeper understanding of how
+existing code handles a similar problem, delegate to the `codebase-explorer` agent to
+research the specific area rather than reading broadly yourself.
+
+For each significant design decision:
 
 **Use AskUserQuestion for all design decisions.** Never print markdown option lists — use the
 interactive `AskUserQuestion` tool instead. This gives the engineer a clean UI with selectable

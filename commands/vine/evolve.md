@@ -78,13 +78,14 @@ navigate couldn't verify:
 
 ### Cross-Slice Integration Check
 
-This is where evolve adds value. Verify that the slices work together as a whole:
+This is where evolve adds value. Delegate to the `verification` agent in feature verification
+mode to check that slices work together as a whole:
 
 - Do the pieces integrate correctly? (data flows between modules, imports resolve, etc.)
 - Run the full test suite (not just per-file tests from navigate's validation)
 - Check for cross-cutting concerns: error handling paths, edge cases that span slices,
   performance implications of the combined changes
-- If `.vine/hooks/evolve.md` defines integration validation commands, run those
+- If `.vine/hooks/evolve.md` defines integration validation commands, pass those to the agent
 
 > **Cross-reference:** Navigate step 9 runs a lighter version of this check at phase group
 > boundaries. If you change the verification approach here, check navigate.md's phase group
