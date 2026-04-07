@@ -4,6 +4,26 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-06
+
+### Added
+- **vine:optimize** — New command that audits skill descriptions, detects workflow chains, analyzes token efficiency, and optimizes interactivity patterns across all commands and skills.
+- **Reusable agents** — `vine-codebase-explorer` (deep codebase research) and `vine-verification` (lint/typecheck/test + acceptance criteria checking) shipped in `agents/`, installed flat to `.claude/agents/` by the CLI.
+- **Skill Workflows in CLAUDE.md** — 5 named workflows (Feature Delivery, Quick Fix, Session Management, Maintenance, Contributor PR Flow) with state-based suggestions for command routing.
+- **Agent delegation** — verify, inquire, navigate, and evolve now delegate to the reusable agents for codebase exploration and validation.
+- **Evolve-to-optimize chain** — Evolve suggests running `/vine:optimize` when a cycle produces new skills or command changes.
+- **Trellis-to-PR chain** — Trellis suggests `/pr` when all checks pass and command files have uncommitted changes.
+
+### Changed
+- **Description rewrites** — 12 command/skill descriptions rewritten for Claude's ~250 char matching window (+78% matching surface).
+- **Token consolidation** — Collaboration stance and engineer profile protocol moved from 7 command files into `.vine/hooks/shared.md` (~150 tokens/session saved). Commands reference shared.md instead of repeating the blocks.
+- **Navigate gearing** — Changed from free-text response to structured `AskUserQuestion` with 2 options. Recommended default follows profile expertise level.
+- **Navigate blocker handling** — Changed from prose option lists to structured `AskUserQuestion` with concrete resolution paths.
+- **Pair commit confirmation** — Changed from free-text approval to structured `AskUserQuestion` with 3 options.
+- **Navigate principles trimmed** — Removed principles that restated what the command steps already demonstrate.
+- **CLI install output** — Now reports agent count alongside command count.
+- Command count updated from 10 to 11 across CLAUDE.md, README, hooks, and trellis.
+
 ## [0.2.0] - 2026-04-03
 
 ### Added
@@ -60,7 +80,8 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 - **Trellis** — Structural validation for command files and artifact format compliance.
 - **npx installer** — `npx create-vine` for project-level, `npx create-vine --global` for user-level install.
 
-[Unreleased]: https://github.com/moduloMoments/VINE/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/moduloMoments/VINE/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/moduloMoments/VINE/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/moduloMoments/VINE/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/moduloMoments/VINE/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/moduloMoments/VINE/compare/v0.1.0...v0.1.1
