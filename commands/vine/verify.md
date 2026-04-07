@@ -31,7 +31,7 @@ first VINE run — suggest running `/vine:init` to scaffold the hooks directory.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol from `.vine/hooks/shared.md`. Additionally, verify is the command
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Additionally, verify is the command
 that seeds new domains:
 
 - **If the domain is NOT in the profile**: After the engineer confirms the domain via
