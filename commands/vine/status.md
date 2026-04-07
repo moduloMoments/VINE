@@ -1,6 +1,6 @@
 ---
 name: vine:status
-description: "Quick progress check — see where a feature stands without loading full context"
+description: "Check feature progress — see which phase you're in, what's done, what's next, and artifact status without loading full session context"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read

@@ -1,6 +1,6 @@
 ---
 name: vine:navigate
-description: "Guided implementation — build the feature together one slice at a time"
+description: "Implement a feature slice by slice — write code together, run tests, review changes, and commit each validated slice with its acceptance criteria"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read
@@ -31,28 +31,8 @@ If neither file exists, proceed normally. If `.vine/` doesn't exist at all, sugg
 
 ## Load Engineer Profile
 
-After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
-
-If it exists, read it and extract the Domain Expertise table. Once you identify the feature
-directory (in "Getting Started" below), check the domain portion of the path against the
-profile's domain entries.
-
-- **If the domain is in the profile**: Note their level for this session. Navigate is the
-  biggest consumer of the collaboration stance — it directly shapes how you work together.
-- **If the domain is NOT in the profile or no profile exists**: Proceed normally — default
-  narration depth as described in the rest of this command. No prompt, no warning.
-
-**Collaboration stance** (internal, not shown to the engineer):
-
-> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
->
-> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
->    say so. The engineer is a resource, not an audience.
-> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
->    write. When they correct you, acknowledge what you learned. Growth lives in the
->    narration, not in debriefs.
-> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
->    calibrates your default — but confidence is contextual, so follow their lead."
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Navigate is
+the biggest consumer of the stance — it directly shapes how you work together on every slice.
 
 ## Before You Start
 
@@ -127,15 +107,21 @@ interpretation:
 > "For this slice, I'm going to [approach]. The main files I'll touch are [files].
 > The tricky part will be [challenge from CONTEXT.md]. [If applicable: I'm less sure
 > about [specific aspect] — I haven't seen how this project handles [pattern/convention].]
-> Sound right, or would you go a different direction?
->
-> For this slice — want me to free climb, or walk you through it?"
+> Sound right, or would you go a different direction?"
 
 The self-assessment isn't performative humility — it's an honest signal that helps the
 engineer decide where to focus their attention. If you're genuinely confident about
 everything, don't manufacture doubt.
 
-**Gearing:** The engineer's answer sets the engagement level for this slice:
+After the preview, use `AskUserQuestion` for the gearing decision:
+
+- Use `multiSelect: false` with 2 options
+- Put the recommended option first based on the profile's expertise level
+  (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
+- **"Free climb"** description: "I trust the approach — move fast, I'll review at the slice boundary"
+- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation"
+
+**Gearing:** The engineer's choice sets the engagement level for this slice:
 
 - **"Free climb"**: Auto-accept edits for this slice — the engineer trusts the approach
   and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
@@ -208,14 +194,12 @@ broken state forward.
 
 **a. Run validation**
 
-Run relevant checks on the changed files. The default validation sequence is:
+Delegate to the `vine-verification` agent to run checks on the changed files and verify
+acceptance criteria for this slice. The agent runs lint, typecheck, and tests, then checks
+each criterion against the code and reports findings.
 
-1. Lint the changed files (if a linter is configured)
-2. Run typecheck (if the project uses TypeScript or similar)
-3. Run tests for the changed files (if tests exist)
-
-If `.vine/hooks/navigate.md` defines custom validation commands, use those instead. The hook
-overrides the defaults entirely — it knows this project's toolchain.
+If `.vine/hooks/navigate.md` defines custom validation commands, pass those to the agent.
+The hook overrides the defaults entirely — it knows this project's toolchain.
 
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.
@@ -273,15 +257,12 @@ When you hit something unexpected:
 
 **If it's a quick question**: Ask the engineer directly. They probably know the answer.
 
-**If it's a significant blocker**: Stop, document it, and discuss:
+**If it's a significant blocker**: Stop, document it, and use `AskUserQuestion` to present
+options. Describe the blocker clearly, then offer concrete resolution paths:
 
-> "I've hit a problem. The spec assumes we can call the notification service directly, but
-> it's behind an internal API gateway that requires a service token we don't have in this
-> environment. Three options:
-> 1. Mock it for now, create a follow-up ticket
-> 2. Request the token (blocks this slice)
-> 3. Use the legacy direct connection (tech debt but works)
-> What's your call?"
+- Use `multiSelect: false` with up to 4 options grounded in the specific situation
+- Put the recommended option first with "(Recommended)" suffix
+- Common patterns: "Mock and defer", "Block and resolve", "Work around (tech debt)", "Descope"
 
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.
@@ -418,26 +399,12 @@ The work so far should stand on its own.
 
 ## Important Principles
 
-**Narrate, don't lecture.** Share your reasoning naturally as you work. The engineer doesn't
-need a tutorial — they need to understand your choices so they can steer effectively.
-
-**Respect the engineer's expertise — and flag your own gaps.** They know this codebase and
-this team better than you. When they suggest a different approach, explore it seriously.
-They're usually right about the organizational and historical context. When you're unsure
-about a pattern or convention, say so — the engineer is a resource, not an audience.
-Presenting uncertain approaches with false confidence wastes both your time.
-
-**Small batches.** Show work frequently. A 20-line change that's reviewed and understood is
-better than a 200-line change that gets rubber-stamped.
-
-**Grow through the work.** The engineer sees patterns, approaches, and techniques through
-your implementation. When you use a pattern they might not know, name it and briefly say
-why it fits. When they correct you, acknowledge what you learned — not just the change you
-made. Growth lives in the narration as you work, not in retrospective check-ins.
+**Respect the engineer's expertise — and flag your own gaps.** They know this codebase better
+than you. When they suggest a different approach, explore it seriously. When you're unsure,
+say so — the engineer is a resource, not an audience.
 
 **Stay in scope.** If you notice something that should be fixed but isn't in the spec, note it
-in NAVIGATION.md under "discovered items" rather than fixing it. Scope discipline is what makes
-the whole system work.
+in NAVIGATION.md under "discovered items" rather than fixing it.
 
 ## Phase Completion
 

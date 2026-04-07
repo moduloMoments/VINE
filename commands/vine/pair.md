@@ -30,27 +30,8 @@ If neither file exists, proceed normally. If `.vine/` doesn't exist at all, sugg
 
 ## Load Engineer Profile
 
-After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
-
-If it exists, read it and extract the Domain Expertise table. Once you identify the target
-file or area (from the argument), check the relevant domain against the profile.
-
-- **If the domain is in the profile**: Note their level for this session.
-- **If the domain is NOT in the profile or no profile exists**: Proceed with default narration
-  depth. Do not prompt for domain registration — that's verify's job. Pair sessions are too
-  quick for profile ceremony.
-
-**Collaboration stance** (internal, not shown to the engineer):
-
-> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
->
-> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
->    say so. The engineer is a resource, not an audience.
-> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
->    write. When they correct you, acknowledge what you learned. Growth lives in the
->    narration, not in debriefs.
-> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
->    calibrates your default — but confidence is contextual, so follow their lead."
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Do not prompt
+for domain registration — that's verify's job. Pair sessions are too quick for profile ceremony.
 
 ---
 
@@ -132,31 +113,24 @@ choosing silently. Keep it lightweight — one question, concrete options ground
 
 ## Validate
 
-After implementing the change, run validation on the affected files:
-
-1. Lint the changed files (if a linter is configured)
-2. Run typecheck (if the project uses TypeScript or similar)
-3. Run tests for the changed files (if tests exist)
-
-If `.vine/hooks/pair.md` defines custom validation commands, use those instead.
+After implementing the change, delegate to the `vine-verification` agent to run checks on the
+affected files (lint, typecheck, tests). If `.vine/hooks/pair.md` defines custom validation
+commands, pass those to the agent instead.
 
 Fix any issues before moving to the commit step.
 
 ## Commit
 
-Suggest a single commit covering all changes. Present the commit message for the engineer's
-approval:
+Suggest a single commit covering all changes. Show the proposed commit message, then use
+`AskUserQuestion` to confirm:
 
-> "Here's what I'd commit:"
-> ```
-> <short summary of the change>
->
-> <1-2 sentences on what was changed and why>
-> ```
-> "Want to adjust the message, or good to commit?"
+- Use `multiSelect: false` with 3 options:
+  - "Commit as drafted (Recommended)" — with the commit message as the description
+  - "Edit message" — "I'll help adjust the wording"
+  - "Skip commit" — "Don't commit yet, I'll handle it"
 
 If the project uses a ticket prefix convention (check `.vine/hooks/shared.md` or `CLAUDE.md`),
-include it.
+include it in the drafted message.
 
 Stage the relevant files and commit after the engineer approves. Don't stage unrelated files.
 

@@ -1,6 +1,6 @@
 ---
 name: vine:inquire
-description: "Feature specification and design — build the spec on top of verified context"
+description: "Design and spec a feature — define requirements, make architecture decisions, and break work into implementation slices after verifying codebase context"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read
@@ -29,27 +29,7 @@ If neither file exists, proceed normally. If `.vine/` doesn't exist at all, sugg
 
 ## Load Engineer Profile
 
-After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
-
-If it exists, read it and extract the Domain Expertise table. Once you identify the feature
-directory (in "Load the Context" below), check the domain portion of the path against the
-profile's domain entries.
-
-- **If the domain is in the profile**: Note their level for this session.
-- **If the domain is NOT in the profile or no profile exists**: Proceed normally — no prompt,
-  no warning. The profile is opt-in and verify handles seeding.
-
-**Collaboration stance** (internal, not shown to the engineer):
-
-> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
->
-> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
->    say so. The engineer is a resource, not an audience.
-> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
->    write. When they correct you, acknowledge what you learned. Growth lives in the
->    narration, not in debriefs.
-> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
->    calibrates your default — but confidence is contextual, so follow their lead."
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`.
 
 ---
 
@@ -98,7 +78,11 @@ The goal is informed decisions, not decision theater.
 
 ### 3. Design the Approach
 
-Now propose the architecture. For each significant design decision:
+Now propose the architecture. When a design decision requires deeper understanding of how
+existing code handles a similar problem, delegate to the `vine-codebase-explorer` agent to
+research the specific area rather than reading broadly yourself.
+
+For each significant design decision:
 
 **Use AskUserQuestion for all design decisions.** Never print markdown option lists — use the
 interactive `AskUserQuestion` tool instead. This gives the engineer a clean UI with selectable

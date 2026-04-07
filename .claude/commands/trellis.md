@@ -1,6 +1,6 @@
 ---
 name: trellis
-description: "Validate structural conventions across VINE command files"
+description: "Lint and validate VINE command files — check frontmatter, section ordering, artifact format compliance, and structural conventions before committing"
 argument-hint: ""
 allowed-tools:
   - Read
@@ -320,3 +320,7 @@ After both the command table (Step 4) and artifact table (Step 7), print a combi
 
 Follow any failure summary with the detailed list of failures (command name or artifact path,
 check name, what was wrong).
+
+If all checks pass and there are uncommitted changes to command files, suggest:
+
+> "All checks pass. If you're ready to submit, run `/pr` to create a pull request."

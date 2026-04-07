@@ -1,6 +1,6 @@
 ---
 name: triage
-description: "Check GitHub issues, surface priorities, and discuss next steps"
+description: "Scan GitHub issues to find what to work on next — surface open bugs, feature requests, and priorities, then discuss which to tackle"
 allowed-tools:
   - Bash
   - Read

@@ -1,6 +1,6 @@
 ---
 name: vine:help
-description: "Show available VINE commands and quick usage guide"
+description: "Show all VINE commands with usage examples — find the right command for your workflow, from setup to implementation to PR"
 argument-hint: ""
 allowed-tools:
   - Read
@@ -34,6 +34,9 @@ Session management:
   /vine:pause    [feature]    Capture where you stopped and why
   /vine:resume   [feature]    Pick up where you left off with full context
   /vine:status   [feature]    Quick read-only progress check
+
+Maintenance:
+  /vine:optimize              Analyze and optimize skill matching, workflows, and token usage
 
 Setup:
   /vine:init                  Scaffold .vine/hooks/ for this repo

@@ -1,6 +1,6 @@
 ---
 name: vine:evolve
-description: "Triple evolution — verify, capture learnings, and prep the handoff"
+description: "Wrap up a feature — run final verification against acceptance criteria, update CLAUDE.md and hooks, capture engineer growth, and prepare the PR handoff"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read
@@ -31,24 +31,9 @@ If neither file exists, proceed normally. If `.vine/` doesn't exist at all, sugg
 
 ## Load Engineer Profile
 
-After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
-
-If it exists, read it and note the current domain expertise entries. You'll use this during
-Evolution 3 to propose updates based on the completed cycle.
-
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Note the
+current domain expertise entries — you'll use this during Evolution 3 to propose updates.
 If no profile exists, you'll offer to create one during Evolution 3.
-
-**Collaboration stance** (internal, not shown to the engineer):
-
-> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
->
-> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
->    say so. The engineer is a resource, not an audience.
-> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
->    write. When they correct you, acknowledge what you learned. Growth lives in the
->    narration, not in debriefs.
-> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
->    calibrates your default — but confidence is contextual, so follow their lead."
 
 ---
 
@@ -93,13 +78,14 @@ navigate couldn't verify:
 
 ### Cross-Slice Integration Check
 
-This is where evolve adds value. Verify that the slices work together as a whole:
+This is where evolve adds value. Delegate to the `vine-verification` agent in feature verification
+mode, passing it these checks to perform:
 
 - Do the pieces integrate correctly? (data flows between modules, imports resolve, etc.)
 - Run the full test suite (not just per-file tests from navigate's validation)
 - Check for cross-cutting concerns: error handling paths, edge cases that span slices,
   performance implications of the combined changes
-- If `.vine/hooks/evolve.md` defines integration validation commands, run those
+- If `.vine/hooks/evolve.md` defines integration validation commands, include those
 
 > **Cross-reference:** Navigate step 9 runs a lighter version of this check at phase group
 > boundaries. If you change the verification approach here, check navigate.md's phase group
@@ -241,6 +227,12 @@ Reflect on how the VINE process itself went:
 - Did you wish you had information in one phase that you only got in another?
 
 Note these for the engineer. They might want to customize VINE for their team.
+
+If this cycle produced new skills, commands, or significant hook changes, suggest running
+`/vine:optimize` to update the workflow map and re-score descriptions:
+
+> "This cycle [added new skills / changed commands / updated hooks]. Running `/vine:optimize`
+> would update the workflow map in CLAUDE.md and check if descriptions still match well."
 
 ### Hook Update Suggestions
 

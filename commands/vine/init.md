@@ -1,6 +1,6 @@
 ---
 name: vine:init
-description: "Scaffold .vine/hooks/ with project-specific templates based on repo discovery"
+description: "Set up VINE for this repo — scan the codebase for tools, agents, and conventions, then create project hooks and engineer profile for your first feature workflow"
 argument-hint: ""
 allowed-tools:
   - Read
@@ -85,6 +85,30 @@ Never create project directories as siblings of `hooks/`.
 
 [Key conventions from CLAUDE.md or discovered patterns — testing, linting, naming, etc.]
 
+## Collaboration Stance
+
+Internal, not shown to the engineer. Apply this stance in all VINE phases:
+
+> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
+>
+> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
+>    say so. The engineer is a resource, not an audience.
+> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
+>    write. When they correct you, acknowledge what you learned. Growth lives in the
+>    narration, not in debriefs.
+> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
+>    calibrates your default — but confidence is contextual, so follow their lead."
+
+## Engineer Profile Protocol
+
+After loading hooks, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
+table. Match the feature's domain against the profile's entries.
+
+- **If the domain is in the profile**: Note their level for this session. Use it to calibrate
+  default engagement depth (confident/familiar = concise; learning/new = explain the why).
+- **If the domain is NOT in the profile or no profile exists**: Proceed with default depth.
+  No prompt, no warning.
+
 ## Team Context
 
 [Ownership, review patterns, external integrations — from engineer's answers]
@@ -153,11 +177,15 @@ If `.vine/hooks/` already exists (from a previous `/vine:init` or manual setup),
 1. Read all existing hook files
 2. Re-run repo discovery to find new tools, agents, commands, or conventions added since
    the last init
-3. Present a diff of what's new vs what's already in the hooks using `AskUserQuestion`:
+3. Check for required shared.md sections that may be missing from older installs:
+   - "Collaboration Stance" — if missing, add it (commands now reference this from shared.md)
+   - "Engineer Profile Protocol" — if missing, add it
+4. Present a diff of what's new vs what's already in the hooks using `AskUserQuestion`:
    - New tools/agents discovered that aren't in hooks yet
    - Existing hook entries that reference tools/agents no longer present
    - Convention changes detected
-4. Merge accepted changes into existing hook files — don't overwrite custom content the
+   - New required sections added to shared.md
+5. Merge accepted changes into existing hook files — don't overwrite custom content the
    engineer has added
 
 This makes upgrading after installing new skills, agents, or commands a one-command operation.
@@ -184,5 +212,8 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
 
 💡 Tip: As you complete VINE cycles, `/vine:evolve` will suggest
    updates to your hook files and profile based on what you learn.
+
+🔧 Run `/vine:optimize` to analyze your skills and commands for
+   better matching, workflow chains, and token efficiency.
 ---
 ```
