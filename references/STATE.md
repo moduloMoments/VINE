@@ -218,6 +218,17 @@ Its consumers are native hook scripts (see `.vine/scripts/`): they test the sent
 - **Local-only.** Gitignored, never committed, never part of any handoff.
 - **Optional.** Nothing breaks if it's absent — hooks exit as no-ops, and no command requires it to function.
 
+### .vine/scripts/ (native hook scripts)
+
+Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (each hook independently declinable). All scripts are POSIX sh, treat `.vine/ACTIVE`'s feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
+
+| Script | Hook event | Behavior |
+|--------|------------|----------|
+| `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine/ACTIVE` escape hatch. |
+| `post-edit-lint.sh` | PostToolUse (Edit\|Write) | Runs the project's validation command after each edit during an active session; failures surface to Claude (exit 2). |
+
+The lint script's command source is an opt-in marker line in the navigate overlay — `hook-validation: <command>` in `.vine/context/navigate.md` (legacy `.vine/hooks/navigate.md` honored through 0.4.x). No marker, no execution: prose-mentioned commands are never run. This is an interim convention — when the overlay Validation block (#54) lands, the scripts read from it instead.
+
 ### PROJECT-MAP.md (produced by vine:verify, updated by all phases)
 
 The universal progress tracker. Shows at-a-glance where a feature stands in the VINE cycle and, for multi-PR features, which milestones have shipped. Designed for scannability in monospace terminal output — compact tables, short lines, clear status markers.
