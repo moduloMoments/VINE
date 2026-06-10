@@ -229,6 +229,8 @@ Shell-script home for VINE's native hook scripts — the enforcement layer behin
 
 The lint script's command source is an opt-in marker line in the navigate overlay — `hook-validation: <command>` in `.vine/context/navigate.md` (legacy `.vine/hooks/navigate.md` honored through 0.4.x). No marker, no execution: prose-mentioned commands are never run. This is an interim convention — when the overlay Validation block (#54) lands, the scripts read from it instead.
 
+A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps `trellis-gate.sh` (a contributor-only commit gate, never shipped by `create-vine`) in the same directory. The table above documents only the scaffold scripts.
+
 ### PROJECT-MAP.md (produced by vine:verify, updated by all phases)
 
 The universal progress tracker. Shows at-a-glance where a feature stands in the VINE cycle and, for multi-PR features, which milestones have shipped. Designed for scannability in monospace terminal output — compact tables, short lines, clear status markers.
