@@ -74,6 +74,25 @@ previous session. Read it to understand what's already been done and pick up whe
 Check if SPEC.md organizes slices into phase groups. If it does, you're working on one phase
 group per session. Identify which group is next based on NAVIGATION.md progress.
 
+**Mark the session active.** Write `.vine/ACTIVE` (repo root, gitignored — format in
+`references/STATE.md`) before starting work:
+
+```
+feature: .vine/projects/<domain>/<feature-slug>
+phase: [phase group or slice being started]
+started: [YYYY-MM-DD HH:MM]
+```
+
+The sentinel is deliberately minimal — feature path, phase, timestamp, nothing else. It is
+not a mini-PAUSE.md; handoff state lives in PAUSE.md. Its only job is to mark "a navigate
+session is active on this feature" so installed native hooks can scope their checks to
+active work. It never leaves the machine.
+
+**Consume any pause state.** If the feature directory contains a PAUSE.md, picking the work
+back up consumes it: surface its notes in your starting-point summary, then delete the file.
+A consumed pause must not linger — it would keep suggesting `vine:resume` for work that has
+already resumed.
+
 Summarize your starting point:
 
 > "We're implementing [feature]. Based on the spec, I'm picking up at [Phase N: name /
@@ -319,6 +338,9 @@ After writing Remaining Work, suggest running `vine:pause` to capture the engine
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
 > for when you come back, run `vine:pause <domain>/<feature-slug>` before closing the session."
 
+Then delete `.vine/ACTIVE` — the navigate session is ending. (`vine:pause` also clears the
+sentinel; deleting it here covers the engineer who pauses without running the command.)
+
 ### 8. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
@@ -382,7 +404,10 @@ phase group boundary before showing the completion block:
    If the engineer opens a PR, record the PR number in PROJECT-MAP.md's Milestones table
    (the PR column for this phase row). Don't create the PR automatically — just suggest it.
 
-**Whether or not it's a multi-PR feature**, show the phase group completion block:
+**Whether or not it's a multi-PR feature**, handle the sentinel before showing the completion
+block: if the session ends here (the recommended path — the next group gets a fresh session),
+delete `.vine/ACTIVE`; if the engineer continues into the next phase group immediately, update
+the sentinel's `phase` line instead. Then show the phase group completion block:
 
 ```
 ---
@@ -448,6 +473,9 @@ section captures loose ends:
 ```
 
 Update PROJECT-MAP.md (if it exists) — set the navigate row to ✅ with today's date.
+
+Delete `.vine/ACTIVE` — the navigate session is over, and a stale sentinel keeps installed
+hooks firing against work that's no longer active.
 
 Persist actionable retro items before presenting the completion block. The retro is
 conversation output and doesn't survive `/clear` — anything evolve should act on belongs

@@ -66,6 +66,12 @@ If PROJECT-MAP.md exists, update the evolve row to 🚧 with today's date. If it
 table, note which phases shipped in prior PRs — evolve's verification should focus on the final
 phase group and cross-phase integration, not re-verify already-shipped work.
 
+If the feature directory contains a PAUSE.md, picking the work back up consumes it: surface
+its notes, then delete the file — a consumed pause must not linger suggesting `vine:resume`.
+Also delete `.vine/ACTIVE` (repo root) if it exists: any navigate session on this feature is
+over, and a stale sentinel keeps installed hooks firing against work that's no longer active
+(format and lifecycle in `references/STATE.md`).
+
 ## Evolution 1: Product
 
 This is the verification and quality pass. The product should be better than when you started.

@@ -162,7 +162,7 @@ The triple evolution report. Captures growth across product, agent, and user.
 
 ### PAUSE.md (produced by vine:pause, consumed by vine:resume)
 
-An ephemeral session artifact. Captures where the engineer stopped and why — the context that existing artifacts don't preserve. Unlike other state files, PAUSE.md is temporary: it's deleted when `vine:evolve` writes `.resolved`, and it's overwritten each time `vine:pause` runs (only one pause state per feature).
+An ephemeral session artifact. Captures where the engineer stopped and why — the context that existing artifacts don't preserve. Unlike other state files, PAUSE.md is **consumed-once**: it exists only between the pause and whatever picks the work back up. The command that resumes the work deletes it — a consumed pause that lingers keeps firing the "PAUSE.md exists → suggest `vine:resume`" suggestion and re-presents stale notes on the next resume.
 
 ```markdown
 # Paused: [Feature Name]
@@ -178,15 +178,45 @@ thinking, what to pick up first, anything that won't survive a session break]
 **Lifecycle:**
 
 1. **Created** by `vine:pause` — detects current phase from artifact presence, asks the engineer for notes, writes PAUSE.md to the feature directory.
-2. **Read** by `vine:resume` — combines PAUSE.md with existing artifacts to display a status summary and recommend the next command.
-3. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
-4. **Deleted** by `vine:evolve` when writing `.resolved` — a resolved project's pause state is definitionally stale.
+2. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
+3. **Consumed** (read, surfaced, then deleted) by whatever picks the work back up. Every deletion trigger:
+   - `vine:resume` — after displaying the notes (deletion mechanics land with resume's task-awareness update).
+   - `vine:navigate` — at session start, the same moment `.vine/ACTIVE` is written; notes are surfaced in the starting-point summary first.
+   - `vine:evolve` — at session start, after reading the feature's artifacts; notes are surfaced first.
+   - `vine:evolve` when writing `.resolved` — backstop; a resolved project's pause state is definitionally stale.
+
+   No consumed pause survives a restarted session: if PAUSE.md still exists, the pause hasn't been picked back up yet.
 
 **Design constraints:**
 
 - **Optional.** Resume works without PAUSE.md by falling back to artifact-only detection. PAUSE.md adds engineer notes and explicit phase tracking but isn't required.
 - **Ephemeral.** Not part of the permanent artifact chain. Not referenced by evolve's handoff package. Exists only to bridge session gaps.
 - **One per feature.** No history of pause states. The most recent pause is the only one that matters.
+- **Consumed-once.** Picking the work back up deletes the file. Notes worth keeping beyond the resume belong in NAVIGATION.md's Remaining Work, not in PAUSE.md.
+
+### .vine/ACTIVE (active-session sentinel, written by vine:navigate)
+
+An ephemeral repo-level sentinel marking "a navigate session is active on this feature right now." It lives at `.vine/ACTIVE` (repo root, not under a feature directory), is covered by the standard `.vine/*` gitignore, and never leaves the machine — so pulled In-Progress journals from teammates can never make installed hooks fire.
+
+```
+feature: .vine/projects/<domain>/<feature-slug>
+phase: [phase group or slice being worked]
+started: [YYYY-MM-DD HH:MM]
+```
+
+Its consumers are native hook scripts (see `.vine/scripts/`): they test the sentinel's existence to scope their checks to active work, and read the `feature:` line to find the journal. Hooks treat the feature path as an **opaque repo-relative string** — no domain/slug parsing, no assumption it lives under `.vine/projects/`.
+
+**Lifecycle:**
+
+1. **Written** by `vine:navigate` at session start, the same moment any PAUSE.md is consumed. At a phase group boundary where the engineer continues immediately, navigate updates the `phase:` line instead of rewriting.
+2. **Deleted** at every session end: navigate's completion and pause-between-slices paths, `vine:pause`, and `vine:evolve` at session start (an evolve session means no navigate session is active).
+3. **Stale sentinel escape hatch:** if a session dies without cleanup (crash, closed terminal), hooks may fire against inactive work. The fix is `rm .vine/ACTIVE` — hook block messages name this command.
+
+**Design constraints:**
+
+- **Deliberately minimal.** Feature path, phase, timestamp — nothing else. It is NOT a mini-PAUSE.md; handoff state lives in PAUSE.md.
+- **Local-only.** Gitignored, never committed, never part of any handoff.
+- **Optional.** Nothing breaks if it's absent — hooks exit as no-ops, and no command requires it to function.
 
 ### PROJECT-MAP.md (produced by vine:verify, updated by all phases)
 
