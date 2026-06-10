@@ -3,52 +3,23 @@
 
 ## Available Tools & Agents
 
-### VINE Commands (in `commands/vine/`)
-- `/vine:init` — Scaffold .vine/context/ for a project
-- `/vine:verify` — Context-building spike for a feature
-- `/vine:inquire` — Feature specification and design
-- `/vine:navigate` — Guided implementation with per-slice commits
-- `/vine:evolve` — Triple evolution: product, agent, user
-- `/vine:pair` — Lightweight pair programming for quick fixes
-- `/vine:pause` — Capture session state when stopping work
-- `/vine:resume` — See where you left off and what's next
-- `/vine:status` — Quick read-only progress check
-- `/vine:optimize` — Analyze and optimize skill matching, workflows, token efficiency, and interactivity
-- `/vine:help` — Command reference and usage guide
+The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
 
-### Contributor Tools (in `.claude/commands/`)
-- `/trellis` — Validate structural conventions across VINE command files
-- `/triage` — Check GitHub issues, surface priorities, and discuss next steps
-- `/pr` — Create a PR using the repo's template and contributing guidelines
-
-### Notes
-- This repo IS the VINE framework — commands in `commands/vine/` are symlinked to `.claude/commands/vine/`
-- Editing a command file changes the tool itself. Test changes by running the modified command on this repo or another project.
+- This repo IS the VINE framework — commands in `commands/vine/` are symlinked into `.claude/commands/vine/`, so running a command runs your working-tree edits.
 
 ## Project Conventions
 
 ### Repository Structure
-- `commands/vine/` — The 11 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize). These ARE the product.
-- `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
-- `references/STATE.md` — State artifact contracts between phases
-- `.github/` — PR template, issue templates (bug, friction, idea)
-- `README.md` — Primary documentation, installation, philosophy
-- `CONTRIBUTING.md` — Contribution guidelines
-- `.vine/context/shared.md` — This file (tracked in git for contributor onboarding)
+See `CLAUDE.md` — repo facts live there (Knowledge Boundary rule, `references/STATE.md`). This file (`.vine/context/shared.md`) is tracked in git for contributor onboarding; the other overlays are gitignored.
 
 ### Writing Style
-- Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
-- Each command has YAML frontmatter: name, description, argument-hint, allowed-tools
-- Sections use `##` headers for major steps, `###` for substeps
-- Anti-patterns and constraints are called out explicitly
-- AskUserQuestion is preferred over markdown lists for decision points
+Command authoring conventions live in `CLAUDE.md` (Knowledge Boundary rule: repo facts every contributor session needs).
 
 ### Command Addition Checklist
 When adding or removing a VINE command, update all of these:
 - `CLAUDE.md` — command count and list
 - `README.md` — command references, install text, hooks table
 - `references/STATE.md` — if the command affects the artifact chain
-- `.vine/context/shared.md` — command list and count
 - `.vine/context/verify.md` — command count reference
 
 ### Content Standards

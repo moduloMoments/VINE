@@ -11,6 +11,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `commands/vine/` — The 11 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
+- `.github/` — PR template, issue templates (bug, friction, idea)
 - `.vine/context/shared.md` — Contributor shared context overlay (tracked; per-phase overlays gitignored)
 - `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
@@ -23,6 +24,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - Every command (except init and help) follows overlays with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates overlays/profile rather than loading them. Help is a pure reference command that doesn't need project context.
 - Load Context Overlays must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
+- Sections use `##` headers for major steps, `###` for substeps; anti-patterns and constraints are called out explicitly
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
 - Shared patterns (collaboration stance, profile protocol) live in `.vine/context/shared.md` — commands reference them with "Follow the [Protocol] from shared.md" rather than repeating the full block. This saves ~150 tokens per command invocation. Commands still work without shared.md (graceful fallback).
 - Run `/trellis` to validate command structure and artifact format compliance before submitting changes
