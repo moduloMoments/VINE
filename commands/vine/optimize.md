@@ -45,7 +45,13 @@ parallel systems.
 Three phases:
 1. **Discover** — Scan for all commands, skills, agents, and MCP servers
 2. **Analyze** — Score descriptions, detect chains, identify workflow patterns
-3. **Apply** — Improve descriptions, write workflow map to CLAUDE.md, add chain links to prose
+3. **Apply** — Improve descriptions, write the workflow map to shared.md, verify CLAUDE.md's
+   pointer, add chain links to prose
+
+Knowledge placement follows the Knowledge Boundary rule in `references/STATE.md`: the
+workflow map is VINE routing knowledge, so it lives in `.vine/context/shared.md`; CLAUDE.md
+carries only an availability-gated pointer; the command/agent inventory lives in the
+harness's native skill list, never in files.
 
 ## Phase 1: Discover
 
@@ -99,12 +105,14 @@ scan the command prose for how it spawns agents:
 - Commands that could benefit from agent parallelization but currently run sequentially
 - Agents whose descriptions don't match what they actually do (stale definitions)
 
-### 1d. CLAUDE.md Context
+### 1d. CLAUDE.md and shared.md Context
 
-Read `CLAUDE.md` (project root) if it exists. Note:
-- Any existing workflow sections or command references
-- Conventions that affect skill behavior
-- Whether there's already a skill workflow map (to update rather than create)
+Read `CLAUDE.md` (project root) and `.vine/context/shared.md` if they exist. Note:
+- Whether CLAUDE.md contains the availability-gated VINE pointer block (see 3e)
+- Whether CLAUDE.md still carries a full workflow map or command inventory (pre-0.4 layout —
+  a move candidate for 3d/3e)
+- Whether shared.md already has a workflow map (to update rather than create)
+- Conventions in either file that affect skill behavior
 
 Present the inventory:
 
@@ -118,6 +126,11 @@ Present the inventory:
 Wait for confirmation before proceeding.
 
 ## Phase 2: Analyze
+
+Phase 2 is a set of named, self-contained audit checks. Each check defines what it
+inspects and what it reports; none depends on another's internals. Future audits (e.g., a
+validation-contract check) slot in as additional subsections — extend the list, don't
+restructure it.
 
 ### 2a. Description Quality
 
@@ -192,9 +205,11 @@ across every phase invocation.
 
 | Anti-pattern | What to check |
 |-------------|--------------|
-| **shared.md / CLAUDE.md overlap** | Both are loaded every session. Content that appears in both is read twice per invocation. Identify duplicated information and recommend which file should own it. |
+| **shared.md / CLAUDE.md overlap** | Content that appears in both is read twice per invocation. Apply the Knowledge Boundary rule (`references/STATE.md`) to pick the single home and leave a one-line pointer at the other. |
+| **Inventory in files** | Any command or agent enumeration in shared.md, CLAUDE.md, or an overlay is a finding, not a feature — the harness's native skill list is the inventory's home, and file copies can only drift. |
 | **Inter-command duplication** | Multiple commands explaining the same convention independently. Could a shared reference (context overlays, CLAUDE.md) carry this once? |
 | **Overlay redundancy** | Per-phase overlays that restate what the command prose already says. Overlays should add project-specific context, not echo the command's own instructions. |
+| **Overlay coverage** | Each phase overlay should point at its phase-relevant tools, agents, and validation commands. A phase whose project-specific tooling is undiscoverable from its overlay is a gap — never fixed by adding a file-based inventory. |
 
 **Context loading analysis:**
 
@@ -333,9 +348,10 @@ instruction quality was lost.
 - Show estimated token savings for each proposed reduction
 
 For cross-file duplication, recommend which file should own the content and propose removing
-it from the other. shared.md and CLAUDE.md overlap is the most common case — generally
-CLAUDE.md should own repo-wide conventions (loaded every session regardless of phase) while
-shared.md should own VINE-specific context (only loaded during VINE phases).
+it from the other, leaving a one-line pointer at the old home. The Knowledge Boundary rule in
+`references/STATE.md` decides ownership: CLAUDE.md owns repo facts every session needs (paid
+by every teammate, VINE or not); shared.md owns cross-phase VINE knowledge; phase overlays own
+phase-specific mappings; the native skill list owns the inventory.
 
 ### 3c. Improve Interactivity
 
@@ -356,10 +372,12 @@ a single `multiSelect: true` call.
 If a command makes a reasonable default and the user can override by speaking up, that's
 often better than a blocking prompt.
 
-### 3d. Write Workflow Map to CLAUDE.md
+### 3d. Write Workflow Map to shared.md
 
-Add or update a `## Skill Workflows` section in CLAUDE.md. This is the highest-leverage
-change — Claude reads CLAUDE.md every session.
+Add or update a `## Skill Workflows` section in `.vine/context/shared.md`. The map is VINE
+routing knowledge — workflow chains plus state-based suggestions — so it lives on the VINE
+surface, loaded only by VINE sessions (Knowledge Boundary rule, `references/STATE.md`).
+CLAUDE.md carries only the pointer verified in 3e.
 
 Format:
 
@@ -380,13 +398,35 @@ Format:
 ```
 
 **Rules for the workflow map:**
+- Chains and state-based suggestions ONLY — no command or agent inventory. The harness's
+  native skill list is the inventory's home; an enumeration in the map can only drift.
 - Keep it concise — this is routing context, not documentation
 - Each workflow should be 3-7 steps max
 - State-based suggestions use observable conditions (file exists, git state, etc.)
 - Include the generation date so staleness is visible
 - If a workflow map already exists, update it rather than duplicating
+- If CLAUDE.md still carries a full workflow map (pre-0.4 layout), offer to move it here
+  and replace it with the pointer block from 3e
 
-### 3e. Add Chain Links to Command Prose
+### 3e. Verify the CLAUDE.md Pointer
+
+CLAUDE.md gets a pointer, never the map. Check that CLAUDE.md contains an availability-gated
+VINE pointer block; if it's missing, offer to add it:
+
+```markdown
+## VINE
+
+This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
+has active features, suggest the matching phase — routing details in
+`.vine/context/shared.md`.
+```
+
+The gate is command availability — visible to Claude in its own skill list — so the block
+works whether VINE is installed repo-level or globally, and a teammate who doesn't use VINE
+pays only these few lines. Verify the pointer exists and is accurate; never expand it into
+a map.
+
+### 3f. Add Chain Links to Command Prose
 
 For commands that don't already suggest their next step, add a brief suggestion at the
 natural completion point. This is the lightest touch — one line that tells Claude what
@@ -402,7 +442,7 @@ Only add chain links where:
 Use `AskUserQuestion` to confirm which chain links to add if the engineer chose
 "Review individually."
 
-### 3f. Summary
+### 3g. Summary
 
 After applying changes, present a summary:
 
@@ -420,7 +460,8 @@ After applying changes, present a summary:
 
 📝 Changes applied:
    - [list of files modified with what changed]
-   - CLAUDE.md: [added/updated] Skill Workflows section
+   - shared.md: [added/updated] Skill Workflows map
+   - CLAUDE.md: pointer [verified / added / replaced a full map]
    - Token savings: ~[N] tokens per session across [N] commands
 
 🔄 To re-run after adding or changing commands: /vine:optimize
@@ -446,7 +487,7 @@ workflows. The engineer can:
 3. **Scheduled**: Use Claude Code's `/schedule` to run optimize on a cron (e.g., weekly)
 
 The command is idempotent — re-running it updates existing analysis rather than duplicating.
-The workflow map in CLAUDE.md includes a generation date so staleness is visible.
+The workflow map in shared.md includes a generation date so staleness is visible.
 
 ## Important Principles
 
