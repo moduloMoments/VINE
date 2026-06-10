@@ -102,7 +102,7 @@ your notes and explicit phase tracking, but it's not required.
 
 **Partnership, not delegation.** Claude flags its own uncertainty, names patterns as it uses them, and acknowledges when the engineer corrects its approach. The engineer steers, Claude executes, and both sides learn through the work — not in retrospective debriefs.
 
-**Approve-edits mode.** Run with approve-edits enabled so the engineer reviews every change as it happens. In "free climb" mode, edits auto-accept for the current slice and revert at the boundary — speed when you trust the approach, control when you don't.
+**Approve-edits mode recommended.** Run with approve-edits enabled so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Choosing "free climb" for a slice means you switch to auto-accept yourself and back at the slice boundary — speed when you trust the approach, control when you don't.
 
 **Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
 

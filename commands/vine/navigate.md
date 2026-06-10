@@ -40,9 +40,16 @@ the biggest consumer of the stance — it directly shapes how you work together 
 
 ## Before You Start
 
-**VINE requires approve-edits mode.** This phase especially — the engineer needs to see and approve
-every code change as it happens. If running in auto-accept, suggest switching before writing any code.
-Navigate without review is just autonomous coding with extra documentation, which defeats the purpose.
+**Approve-edits mode recommended.** This phase especially — navigate works best when the engineer
+sees and approves every code change as it happens. If running in auto-accept, ask before writing
+any code:
+
+> "I'd recommend approve-edits mode for navigate so you review each change as we go. It's not
+> required — want to continue in auto-accept?"
+
+Don't block on this. The mode toggle is the engineer's action: you can ask, never switch it
+yourself or assume it happened. Navigate without review drifts toward autonomous coding with
+extra documentation — fine if the engineer chooses it deliberately, not as a default.
 
 You and the engineer are building a feature together. The landscape is mapped (CONTEXT.md), the
 design is approved (SPEC.md) — now you're implementing it. This isn't autonomous coding. You're
@@ -141,20 +148,22 @@ After the preview, use `AskUserQuestion` for the gearing decision:
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
   (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
-- **"Free climb"** description: "I trust the approach — move fast, I'll review at the slice boundary"
+- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself"
 - **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation"
 
 **Gearing:** The engineer's choice sets the engagement level for this slice:
 
-- **"Free climb"**: Auto-accept edits for this slice — the engineer trusts the approach
-  and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
-  the preview (3a), surface decisions (3d), and all of step 4 (validation, commit,
-  NAVIGATION.md). **At the slice boundary (step 4 complete), revert to approve-edits
-  mode** so the engineer re-engages for the next slice's preview and gear choice.
-- **"Walk me through this"**: Full partnership narration per steps 3b and 3c with
-  approve-edits throughout. The engineer wants to stay close to the implementation —
-  either because the code is unfamiliar, the approach is novel, or they want to learn
-  from the process.
+- **"Free climb"**: The engineer trusts the approach and wants to move faster. They may
+  switch to auto-accept for this slice — that's their toggle, not yours; you can suggest
+  it, never flip it or assume it happened. Skip step 3b narration and step 3c review
+  pauses. Still do the preview (3a), surface decisions (3d), and all of step 4
+  (validation, commit, NAVIGATION.md). **At the slice boundary (step 4 complete), ask the
+  engineer to switch back to approve-edits** so they re-engage for the next slice's
+  preview and gear choice.
+- **"Walk me through this"**: Full partnership narration per steps 3b and 3c, with the
+  engineer reviewing each edit as it lands. The engineer wants to stay close to the
+  implementation — either because the code is unfamiliar, the approach is novel, or they
+  want to learn from the process.
 
 Use the profile's expertise level to inform which option you recommend (confident/familiar
 → default to "free climb"; learning/new → default to "walk me through this") but the
@@ -225,13 +234,18 @@ If `.vine/context/navigate.md` defines custom validation commands, pass those to
 The overlay overrides the defaults entirely — it knows this project's toolchain.
 
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
-failures to the next slice.
+failures to the next slice. (When the post-edit lint scaffold hook is installed and the
+project configured a `hook-validation:` command, edits were already validated as they landed
+— this step is still the full per-slice check, not a repeat of those spot checks.)
 
 **b. Update NAVIGATION.md**
 
 Before committing, update the slice's entry in `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md`
-with the full journal record. This is a prerequisite for committing — you can't commit
-without updating the journal. For each slice, capture:
+with the full journal record. This is a prerequisite for committing — update the journal
+first, every time. It's mechanically enforced when the scaffold hooks are installed:
+`journal-check.sh` blocks `git commit` while NAVIGATION.md is older than the last commit
+(see `references/STATE.md`). Without the scaffold, honoring the ordering is on you — never
+stronger than that. For each slice, capture:
 
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
@@ -270,9 +284,10 @@ If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. 
 After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
 hash.
 
-**Important:** The engineer still reviews every code change via approve-edits before the
-commit happens (unless in "free climb" mode). This isn't autonomous committing — it's
-structured committing after human-reviewed, validated changes.
+**Important:** Review depth is set by the engineer's gear choice: in approve-edits they
+review each change before it lands; in free climb they review at the slice boundary. Either
+way the commit follows validation and a journal update — structured committing, not
+autonomous committing.
 
 ### 5. Handle Blockers
 

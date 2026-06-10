@@ -59,10 +59,14 @@ happens naturally when the domain is confirmed during CONTEXT.md creation. No up
 
 ## Before You Start
 
-**VINE requires approve-edits mode.** This is a cooperative framework — the engineer reviews every
-change as it happens, not after the fact. If the session is running in auto-accept mode, suggest
-switching before proceeding. The whole point is that both human and AI stay engaged with every
-decision.
+**Approve-edits mode recommended.** This is a cooperative framework — the engineer reviews every
+change as it happens, not after the fact. If the session is running in auto-accept mode:
+
+> "I'd recommend switching to approve-edits mode so you can review what verify writes as we go.
+> It's not required — want to continue in auto-accept?"
+
+Don't block on this — if the engineer prefers auto-accept, proceed. The mode toggle is the
+engineer's action: you can ask, never switch it yourself or assume it happened.
 
 **Use AskUserQuestion for all decision points.** Never print markdown lists for the engineer to
 respond to. Instead, use the `AskUserQuestion` tool to present interactive prompts. This gives
