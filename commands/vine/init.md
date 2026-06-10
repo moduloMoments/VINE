@@ -171,6 +171,39 @@ this message entirely.
 
 ## Step 7: Upgrade Existing Projects
 
+### Legacy Directory Migration
+
+If `.vine/hooks/` exists and `.vine/context/` does **not**, this is a pre-0.4 install.
+Before anything else in this step, offer the directory move via `AskUserQuestion`
+(`multiSelect: false`, 2 options):
+
+- **"Migrate to .vine/context/ (Recommended)"** — description: "One-time directory rename;
+  file contents unchanged"
+- **"Not now"** — description: "Keep .vine/hooks/ — commands keep working through the
+  legacy fallback"
+
+**If the engineer accepts:**
+
+1. Move the directory: `git mv .vine/hooks .vine/context` if the overlay files are tracked,
+   plain `mv .vine/hooks .vine/context` otherwise.
+2. **Gitignore caveat**: check the repo's `.gitignore` for patterns referencing
+   `.vine/hooks` — most commonly a `!.vine/hooks/` negation in repos that track their
+   overlays. Update them to `.vine/context` in the same commit as the move; if the negation
+   lags the rename, the tracked overlay files silently fall out of the index. Repos that
+   ignore `.vine/` entirely need no gitignore change.
+3. Run the rest of this step in upgrade mode against the new `.vine/context/` path.
+
+**If the engineer declines:** this is a no-op — nothing on disk changes. No move, no
+gitignore edit. Commands keep working through the legacy `.vine/hooks/` fallback (with a
+once-per-session migration nudge), and this offer appears again the next time `/vine:init`
+runs. Run the rest of this step in upgrade mode against the existing `.vine/hooks/` files.
+
+Don't show this offer in any other condition. If both directories exist, `.vine/context/`
+is canonical (commands read it first) — point out the leftover `.vine/hooks/` directory to
+the engineer instead of guessing which one they meant to keep.
+
+### Upgrade Mode
+
 If `.vine/context/` already exists (from a previous `/vine:init` or manual setup), run in
 **upgrade mode** instead of overwriting:
 
