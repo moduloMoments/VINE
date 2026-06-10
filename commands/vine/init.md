@@ -7,6 +7,7 @@ allowed-tools:
   - Glob
   - Grep
   - Write
+  - Edit
   - Bash
   - Agent
   - AskUserQuestion
@@ -26,6 +27,8 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
 5. Introduces the engineer profile (builds organically through vine:verify)
 6. Offers the native hook scaffold — mechanical enforcement of the journal-before-commit
    guarantee, declinable
+7. In upgrade mode, offers single-homing of CLAUDE.md/shared.md duplicates per the
+   Knowledge Boundary rule — declinable
 
 ## Step 1: Discover Repo Capabilities
 
@@ -81,7 +84,11 @@ Never create project directories as siblings of `context/`.
 
 ## Available Tools & Agents
 
-[List discovered commands, skills, agents with brief descriptions of when to use each]
+[Repo-specific notes the native skill list can't carry — tool topology, integration caveats,
+which discovered capabilities matter for this repo's workflows. Do NOT enumerate commands or
+agents: the harness's native skill list is the inventory's home, and a file copy can only
+drift (Knowledge Boundary rule, references/STATE.md). Phase-specific tool/agent mappings
+belong in the per-phase overlays below, not here.]
 
 ## Project Conventions
 
@@ -224,6 +231,30 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
    engineer has added
 
 This makes upgrading after installing new skills, agents, or commands a one-command operation.
+
+### Knowledge Boundary Dedup
+
+In upgrade mode, after the overlay diff above, compare `CLAUDE.md` and
+`.vine/context/shared.md` for content that violates the Knowledge Boundary rule
+(`references/STATE.md`):
+
+- Sections appearing near-verbatim in both files
+- A full workflow map or command/agent inventory still homed in CLAUDE.md (pre-0.4 layout —
+  the map belongs in shared.md, maintained by `/vine:optimize`; CLAUDE.md gets the
+  availability-gated pointer)
+
+If no overlap is found, skip silently — no offer, no mention. If overlap exists, show a
+concrete diff preview **before** asking: for each duplicate, which file keeps the content
+(per the rule), the one-line pointer the other file gets, and the exact lines that would be
+removed. Then offer via `AskUserQuestion` (`multiSelect: false`, 2 options):
+
+- **"Single-home the duplicates (Recommended)"** — description: "Apply the previewed moves;
+  each old location keeps a one-line pointer"
+- **"Not now"** — description: "Keep both copies — nothing changes on disk"
+
+**If the engineer accepts**, apply exactly the previewed moves — nothing beyond what the
+preview showed. **Declining is a no-op** — no file changes, and the offer repeats on the
+next `/vine:init`.
 
 ### Native Hook Scaffold
 
