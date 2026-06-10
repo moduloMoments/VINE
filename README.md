@@ -279,6 +279,10 @@ sentinel means the hook is a silent no-op, so non-VINE work in the same repo is 
 affected. If a crashed session leaves the sentinel behind, `rm .vine/ACTIVE` disables the
 hook (the block message says exactly that).
 
+The staleness check compares the journal's file modification time against the last commit
+— deliberately not git state — so it works identically whether your repo commits `.vine/`
+artifacts or keeps them gitignored and personal.
+
 **Installing**: project-level `npx create-vine` puts the script in `.vine/scripts/`;
 `/vine:init` then offers to wire it into `.claude/settings.json`. **Declining changes
 nothing on disk**, and every guarantee below stays advisory.

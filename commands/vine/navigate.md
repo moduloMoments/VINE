@@ -265,7 +265,10 @@ stronger than that. For each slice, capture:
 
 **c. Commit the slice**
 
-Stage the changed files (including NAVIGATION.md) and commit with this format:
+Stage the changed files and commit with this format. Include NAVIGATION.md in the commit
+only when the repo tracks `.vine/` artifacts — many repos gitignore them (or keep them in
+a personal scope), which is fine: the journal-before-commit guarantee compares file
+modification time, not commit contents, so it holds either way.
 
 ```
 <slice-name>: <1-2 sentence summary>
