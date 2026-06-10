@@ -1,4 +1,4 @@
-# VINE Pair Hooks — VINE Framework
+# VINE Pair Context Overlay — VINE Framework
 
 ## Validation Commands
 

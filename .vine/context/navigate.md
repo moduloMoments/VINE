@@ -1,4 +1,4 @@
-# VINE Navigate Hooks — VINE Framework
+# VINE Navigate Context Overlay — VINE Framework
 
 ## After Code Changes
 
@@ -20,4 +20,4 @@
 
 - If changing a phase command: mentally trace a feature through the full chain (verify -> inquire -> navigate -> evolve) to confirm the change doesn't break handoff
 - If changing STATE.md: check that all commands that produce or consume that artifact section are updated
-- If modifying command files: preserve the "Load Engineer Profile" block (after hooks). If adding new sections, place them after profile loading.
+- If modifying command files: preserve the "Load Engineer Profile" block (after the Load Context Overlays section). If adding new sections, place them after profile loading.

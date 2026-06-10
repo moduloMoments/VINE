@@ -1,4 +1,4 @@
-# VINE Verify Hooks — VINE Framework
+# VINE Verify Context Overlay — VINE Framework
 
 ## Areas to Always Explore
 
