@@ -66,9 +66,29 @@ if (agentFiles.length > 0) {
   }
 }
 
+// Copy native hook scripts (project installs only — they're per-repo enforcement
+// state, so a global install has nowhere to put them). Explicit allowlist:
+// contributor-only scripts like trellis-gate.sh never ship to user repos.
+const SCAFFOLD_SCRIPTS = ['journal-check.sh', 'post-edit-lint.sh'];
+const scriptsSourceDir = path.join(__dirname, '..', '.vine', 'scripts');
+let scriptsCopied = 0;
+if (!isGlobal && fs.existsSync(scriptsSourceDir)) {
+  const scriptsDestDir = path.join(process.cwd(), '.vine', 'scripts');
+  for (const file of SCAFFOLD_SCRIPTS) {
+    const src = path.join(scriptsSourceDir, file);
+    if (fs.existsSync(src)) {
+      if (scriptsCopied === 0) fs.mkdirSync(scriptsDestDir, { recursive: true });
+      fs.copyFileSync(src, path.join(scriptsDestDir, file));
+      fs.chmodSync(path.join(scriptsDestDir, file), 0o755);
+      scriptsCopied++;
+    }
+  }
+}
+
 const location = isGlobal ? '~/.claude/' : '.claude/';
 const action = isUpgrade ? 'Updated' : 'Installed';
-console.log(`\n  ${action} VINE v${pkg.version} to ${location} (${sourceFiles.length} commands, ${agentFiles.length} agents)\n`);
+const scriptsNote = scriptsCopied > 0 ? `, ${scriptsCopied} hook scripts` : '';
+console.log(`\n  ${action} VINE v${pkg.version} to ${location} (${sourceFiles.length} commands, ${agentFiles.length} agents${scriptsNote})\n`);
 
 if (isUpgrade) {
   console.log('  Run /vine:init to discover new tools added in this version.');

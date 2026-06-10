@@ -6,6 +6,7 @@ allowed-tools:
   - Read
   - Glob
   - Grep
+  - Write
   - AskUserQuestion
 ---
 
@@ -356,3 +357,26 @@ check name, what was wrong).
 If all checks pass and there are uncommitted changes to command files, suggest:
 
 > "All checks pass. If you're ready to submit, run `/pr` to create a pull request."
+
+## Step 8: Write the Pass Stamp
+
+Write `.vine/.trellis-ok` (gitignored via `.vine/*`) recording this run's command-validation
+outcome. The contributor trellis gate (`.vine/scripts/trellis-gate.sh`, wired in this repo's
+`.claude/settings.json`) reads it before allowing commits that touch `commands/vine/` — a
+green trellis run is the commit ticket for command changes.
+
+- **If command validation (Steps 1–4) finished with zero failures**, write:
+
+  ```
+  status: pass
+  checked: [YYYY-MM-DD HH:MM]
+  summary: [the Step 4 summary line]
+  ```
+
+- **If any command check failed**, write the same format with `status: fail` — overwriting a
+  previous pass stamp so a red tree can't ride through the gate on a stale green.
+
+Scope notes: warnings (legacy references, unmarked headings) do not block a pass stamp.
+Artifact validation failures don't either — artifacts are often work-in-progress journals,
+and gating command commits on artifact state would block unrelated work. The stamp certifies
+command structure only.

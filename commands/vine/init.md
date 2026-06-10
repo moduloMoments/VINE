@@ -24,6 +24,8 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
 3. Generates `.vine/context/shared.md` and per-phase overlay files pre-filled with relevant context
 4. Optionally adds `.vine/` to `.gitignore`
 5. Introduces the engineer profile (builds organically through vine:verify)
+6. Offers the native hook scaffold — mechanical enforcement of the journal and lint
+   guarantees, each hook independently declinable
 
 ## Step 1: Discover Repo Capabilities
 
@@ -223,6 +225,55 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
 
 This makes upgrading after installing new skills, agents, or commands a one-command operation.
 
+### Native Hook Scaffold
+
+VINE ships two native hook scripts that mechanically enforce guarantees the commands
+otherwise only request (full behavior in `references/STATE.md`):
+
+- **journal-before-commit** (`journal-check.sh`, PreToolUse on Bash) — blocks `git commit`
+  while a navigate session is active and the feature's NAVIGATION.md hasn't been updated
+  since the last commit.
+- **post-edit lint** (`post-edit-lint.sh`, PostToolUse on Edit|Write) — runs the project's
+  validation command after each edit during an active session. It only executes a command
+  given on an opt-in `hook-validation: <command>` marker line in
+  `.vine/context/navigate.md`; without the marker it's a silent no-op.
+
+Offer to install them whenever `.claude/settings.json` doesn't already wire them (fresh
+init or upgrade):
+
+1. **Check the scripts exist** at `.vine/scripts/journal-check.sh` and
+   `.vine/scripts/post-edit-lint.sh`. Project-level `npx create-vine` installs them; if
+   they're missing (global-only install, pre-0.4 install), offer to run `npx create-vine`
+   first — or skip the scaffold offer entirely if the engineer declines that.
+
+2. **Offer the hooks** via `AskUserQuestion` (`multiSelect: true` — each hook is
+   independently declinable):
+   - **"Journal-before-commit hook (Recommended)"** — description: "Blocks commits during
+     navigate until NAVIGATION.md is updated — makes the journal guarantee real"
+   - **"Post-edit lint hook"** — description: "Runs your validation command after each edit
+     during navigate; no-op until you add a hook-validation: line to the navigate overlay"
+
+3. **Merge accepted hooks into `.claude/settings.json`** (tracked — these enforce
+   team-advertised guarantees; an engineer's personal opt-out is declining this offer or
+   `settings.local.json`). Merge carefully, never clobber:
+   - If the file doesn't exist, create it with just the accepted hook entries.
+   - If it exists, read it first and add to the existing structure: append to an existing
+     `PreToolUse`/`PostToolUse` matcher group if one matches, otherwise add the group.
+     Leave every unrelated key and existing hook untouched.
+   - Each hook entry is `{"type": "command", "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/<script>\""}`
+     under matcher `Bash` (journal-check) or `Edit|Write` (post-edit-lint).
+   - Tell the engineer hooks load at session start — the scaffold takes effect next session.
+
+4. **Declining changes nothing on disk** — no settings edit, no script copy, and VINE keeps
+   working exactly as before; the prose-level guarantees just stay advisory. The offer
+   repeats on the next `/vine:init`.
+
+If the engineer accepted the lint hook, remind them it stays inert until they add the
+`hook-validation:` marker line with their project's lint/test command to
+`.vine/context/navigate.md` (on a legacy install that declined the directory migration,
+the same navigate.md under the legacy directory works — the lint script honors both
+locations through 0.4.x).
+
 ## Output
 
 ```
@@ -236,6 +287,7 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
    - .vine/context/evolve.md (if applicable)
    - .vine/context/pair.md (if applicable)
    - .vine/projects/ (project artifacts directory)
+   - .claude/settings.json hooks (if the scaffold offer was accepted)
 
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your context overlays will be loaded automatically.

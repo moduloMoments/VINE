@@ -73,7 +73,7 @@ Internal, not shown to the engineer. Apply this stance in all VINE phases:
 
 ## Engineer Profile Protocol
 
-After loading hooks, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
+After loading overlays, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
 table. Match the feature's domain against the profile's entries.
 
 - **If the domain is in the profile**: Note their level for this session. Use it to calibrate
@@ -90,6 +90,11 @@ table. Match the feature's domain against the profile's entries.
 
 ## CI/CD
 
+- **Trellis gate hook**: this repo's `.claude/settings.json` wires `.vine/scripts/trellis-gate.sh`
+  (PreToolUse on Bash) — commits touching `commands/vine/` are blocked unless `/trellis` has
+  passed since the last command edit (a green run writes `.vine/.trellis-ok`). Contributor-only:
+  `create-vine` never ships this script. The journal-check and post-edit-lint scaffold hooks are
+  wired here too (dogfooding).
 - **Publish workflow**: `.github/workflows/publish.yml` — manual dispatch, publishes `create-vine` to npm with provenance
   - Reads version from `package.json`, extracts release notes from `CHANGELOG.md`
   - Runs smoke test (`bin/cli.js` in temp dir, verifies command files are installed)
