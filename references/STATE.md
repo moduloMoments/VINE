@@ -331,6 +331,33 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 - **Domain matching is exact.** The domain in PROFILE.md must match the `.vine/projects/<domain>/` namespace exactly. No fuzzy matching.
 - **Engineer controls updates.** Evolve suggests changes; the engineer approves or modifies them. VINE never silently updates the profile.
 
+## Knowledge Boundary
+
+Repo knowledge has four homes, keyed to reader scope: every fact lives on the narrowest surface whose readers all need it, and appears there exactly once.
+
+| Surface | Holds | Who pays the tokens |
+|---------|-------|---------------------|
+| `CLAUDE.md` | Repo facts every session needs — any teammate, any tool, VINE or not | Every session, every teammate |
+| Native skill/agent list | The command and agent **inventory** — names and descriptions the harness already surfaces to Claude | Nobody — the harness provides it |
+| `.vine/context/shared.md` | Cross-phase VINE knowledge: protocols, project-development context, inter-phase routing | VINE sessions only |
+| `.vine/context/<phase>.md` | Phase-specific mappings: which agents, validation commands, and checks this phase uses | One phase's sessions only |
+
+The cost framing is the rule's teeth: anything homed in CLAUDE.md is paid by every session of every teammate — including teammates who never run VINE. A non-VINE teammate should pay at most a few pointer lines for VINE's existence; workflow knowledge they'd never use belongs in shared.md, which only VINE sessions load.
+
+The native-surface row has two consequences:
+
+- **Inventories live nowhere in files.** A file-based list of available commands or agents duplicates what the harness already shows Claude, and can only drift. Files keep only what the native list can't carry (repo-specific topology, caveats).
+- **Routing is not inventory.** "When X, run Y" chains and state-based suggestions are workflow knowledge — they live in shared.md (cross-phase) or a phase overlay (phase-specific), naming commands without enumerating them.
+
+shared.md's identity in one line: cross-phase protocols + project-development context + inter-phase routing — nothing phase-specific, nothing the harness already surfaces.
+
+When a fact moves homes, leave a one-line pointer at the old location.
+
+**Forward references** (conventions defined now, implemented in later cycles):
+
+- `.vine/knowledge/<domain>.md` (#51, cycle 3) — durable per-domain knowledge. When it lands, other surfaces reference a domain's knowledge file with a one-line pointer (`See .vine/knowledge/<domain>.md`), never by inlining it.
+- `.vine.local/` (backlog idea) — the sharing boundary for projects: tracked `.vine/projects/` is team-shared; personal work lives outside the shared tree in a gitignored sibling root mirroring `.vine/`'s structure.
+
 ## Artifact-Free Commands
 
 Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode that compresses verify → navigate → evolve into a single session without writing CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. Its only outputs are code changes and a single commit.

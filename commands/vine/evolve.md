@@ -242,7 +242,7 @@ If this cycle produced new skills, commands, or significant overlay changes, sug
 `/vine:optimize` to update the workflow map and re-score descriptions:
 
 > "This cycle [added new skills / changed commands / updated overlays]. Running `/vine:optimize`
-> would update the workflow map in CLAUDE.md and check if descriptions still match well."
+> would update the workflow map in shared.md and check if descriptions still match well."
 
 ### Context Overlay Update Suggestions
 
