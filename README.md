@@ -102,11 +102,11 @@ your notes and explicit phase tracking, but it's not required.
 
 **Partnership, not delegation.** Claude flags its own uncertainty, names patterns as it uses them, and acknowledges when the engineer corrects its approach. The engineer steers, Claude executes, and both sides learn through the work — not in retrospective debriefs.
 
-**Approve-edits mode recommended.** Run with approve-edits enabled so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Choosing "free climb" for a slice means you switch to auto-accept yourself and back at the slice boundary — speed when you trust the approach, control when you don't.
+**Approve-edits mode recommended.** Run with approve-edits enabled so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Choosing "free climb" for a slice means you switch to auto-accept yourself and back at the slice boundary — speed when you trust the approach, control when you don't. (See [Enforced vs Advisory](#enforced-vs-advisory) for which guarantees are mechanical.)
 
 **Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
 
-**Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought.
+**Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought (and mechanically [enforced when the scaffold hooks are installed](#enforced-vs-advisory)).
 
 **Chain, don't rush.** Each phase suggests the next step but doesn't auto-trigger. The engineer decides when to move forward. Each phase completion suggests a fresh session for the next phase — state flows through `.vine/` files, not chat context.
 
@@ -260,6 +260,45 @@ command. Overlay instructions take precedence when they conflict with defaults.
 As you complete VINE cycles, `/vine:evolve` suggests updates to your overlay files based on
 what you learn — tools that proved useful, patterns that should be default, agents that
 should auto-run.
+
+## Enforced vs Advisory
+
+VINE is honest about what it can and can't make a session do. Most of its guarantees are
+advisory — behaviors the commands request and Claude follows, with nothing blocking the
+alternative. Two become mechanical when you install the native hook scaffold.
+
+### Enforced — when the scaffold hooks are installed
+
+| Guarantee | Mechanism |
+|-----------|-----------|
+| **Journal before commit** — `git commit` is blocked during an active navigate session until the feature's NAVIGATION.md has been updated | `journal-check.sh` (PreToolUse hook); blocks with the journal path and escape hatch in the message |
+| **Post-edit validation** — your lint/test command runs after each edit during an active navigate session, surfacing failures immediately | `post-edit-lint.sh` (PostToolUse hook); inert until you add a `hook-validation: <command>` line to `.vine/context/navigate.md` |
+
+Both hooks scope themselves to active VINE sessions via the `.vine/ACTIVE` sentinel —
+navigate writes it at session start; navigate, pause, and evolve clear it at session end.
+No sentinel means both hooks are silent no-ops, so non-VINE work in the same repo is never
+affected. If a crashed session leaves the sentinel behind, `rm .vine/ACTIVE` disables both
+hooks (the block message says exactly that).
+
+**Installing**: project-level `npx create-vine` puts the two scripts in `.vine/scripts/`;
+`/vine:init` then offers to wire them into `.claude/settings.json` — each hook a separate,
+independently declinable choice. **Declining changes nothing on disk**, and every guarantee
+below stays advisory.
+
+### Advisory — always
+
+| Guarantee | What actually backs it |
+|-----------|------------------------|
+| Approve-edits mode during phases | A recommendation and a soft ask — the mode toggle is always yours |
+| Free-climb boundary review | You switch to auto-accept and back yourself; Claude asks at the slice boundary |
+| Per-slice validation via the verification agent | Command instructions; nothing blocks skipping them |
+| Acceptance criteria checked before each commit | Command instructions, honor system |
+| One commit per validated slice | Command structure, not enforcement |
+| `/clear` between phases | A printed suggestion |
+
+Advisory doesn't mean unreliable — it means the command asks and Claude follows
+instructions, rather than a hook blocking the alternative. The distinction matters most
+when deciding how much to trust a long or lightly-attended session.
 
 ## State Artifacts
 
