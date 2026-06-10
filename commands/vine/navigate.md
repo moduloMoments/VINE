@@ -40,9 +40,16 @@ the biggest consumer of the stance — it directly shapes how you work together 
 
 ## Before You Start
 
-**VINE requires approve-edits mode.** This phase especially — the engineer needs to see and approve
-every code change as it happens. If running in auto-accept, suggest switching before writing any code.
-Navigate without review is just autonomous coding with extra documentation, which defeats the purpose.
+**Approve-edits mode recommended.** This phase especially — navigate works best when the engineer
+sees and approves every code change as it happens. If running in auto-accept, ask before writing
+any code:
+
+> "I'd recommend approve-edits mode for navigate so you review each change as we go. It's not
+> required — want to continue in auto-accept?"
+
+Don't block on this. The mode toggle is the engineer's action: you can ask, never switch it
+yourself or assume it happened. Navigate without review drifts toward autonomous coding with
+extra documentation — fine if the engineer chooses it deliberately, not as a default.
 
 You and the engineer are building a feature together. The landscape is mapped (CONTEXT.md), the
 design is approved (SPEC.md) — now you're implementing it. This isn't autonomous coding. You're
@@ -73,6 +80,25 @@ previous session. Read it to understand what's already been done and pick up whe
 
 Check if SPEC.md organizes slices into phase groups. If it does, you're working on one phase
 group per session. Identify which group is next based on NAVIGATION.md progress.
+
+**Mark the session active.** Write `.vine/ACTIVE` (repo root, gitignored — format in
+`references/STATE.md`) before starting work:
+
+```
+feature: .vine/projects/<domain>/<feature-slug>
+phase: [phase group or slice being started]
+started: [YYYY-MM-DD HH:MM]
+```
+
+The sentinel is deliberately minimal — feature path, phase, timestamp, nothing else. It is
+not a mini-PAUSE.md; handoff state lives in PAUSE.md. Its only job is to mark "a navigate
+session is active on this feature" so installed native hooks can scope their checks to
+active work. It never leaves the machine.
+
+**Consume any pause state.** If the feature directory contains a PAUSE.md, picking the work
+back up consumes it: surface its notes in your starting-point summary, then delete the file.
+A consumed pause must not linger — it would keep suggesting `vine:resume` for work that has
+already resumed.
 
 Summarize your starting point:
 
@@ -122,20 +148,22 @@ After the preview, use `AskUserQuestion` for the gearing decision:
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
   (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
-- **"Free climb"** description: "I trust the approach — move fast, I'll review at the slice boundary"
+- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself"
 - **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation"
 
 **Gearing:** The engineer's choice sets the engagement level for this slice:
 
-- **"Free climb"**: Auto-accept edits for this slice — the engineer trusts the approach
-  and wants to move faster. Skip step 3b narration and step 3c review pauses. Still do
-  the preview (3a), surface decisions (3d), and all of step 4 (validation, commit,
-  NAVIGATION.md). **At the slice boundary (step 4 complete), revert to approve-edits
-  mode** so the engineer re-engages for the next slice's preview and gear choice.
-- **"Walk me through this"**: Full partnership narration per steps 3b and 3c with
-  approve-edits throughout. The engineer wants to stay close to the implementation —
-  either because the code is unfamiliar, the approach is novel, or they want to learn
-  from the process.
+- **"Free climb"**: The engineer trusts the approach and wants to move faster. They may
+  switch to auto-accept for this slice — that's their toggle, not yours; you can suggest
+  it, never flip it or assume it happened. Skip step 3b narration and step 3c review
+  pauses. Still do the preview (3a), surface decisions (3d), and all of step 4
+  (validation, commit, NAVIGATION.md). **At the slice boundary (step 4 complete), ask the
+  engineer to switch back to approve-edits** so they re-engage for the next slice's
+  preview and gear choice.
+- **"Walk me through this"**: Full partnership narration per steps 3b and 3c, with the
+  engineer reviewing each edit as it lands. The engineer wants to stay close to the
+  implementation — either because the code is unfamiliar, the approach is novel, or they
+  want to learn from the process.
 
 Use the profile's expertise level to inform which option you recommend (confident/familiar
 → default to "free climb"; learning/new → default to "walk me through this") but the
@@ -211,8 +239,11 @@ failures to the next slice.
 **b. Update NAVIGATION.md**
 
 Before committing, update the slice's entry in `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md`
-with the full journal record. This is a prerequisite for committing — you can't commit
-without updating the journal. For each slice, capture:
+with the full journal record. This is a prerequisite for committing — update the journal
+first, every time. It's mechanically enforced when the scaffold hooks are installed:
+`journal-check.sh` blocks `git commit` while NAVIGATION.md is older than the last commit
+(see `references/STATE.md`). Without the scaffold, honoring the ordering is on you — never
+stronger than that. For each slice, capture:
 
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
@@ -234,7 +265,10 @@ without updating the journal. For each slice, capture:
 
 **c. Commit the slice**
 
-Stage the changed files (including NAVIGATION.md) and commit with this format:
+Stage the changed files and commit with this format. Include NAVIGATION.md in the commit
+only when the repo tracks `.vine/` artifacts — many repos gitignore them (or keep them in
+a personal scope), which is fine: the journal-before-commit guarantee compares file
+modification time, not commit contents, so it holds either way.
 
 ```
 <slice-name>: <1-2 sentence summary>
@@ -251,9 +285,10 @@ If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. 
 After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
 hash.
 
-**Important:** The engineer still reviews every code change via approve-edits before the
-commit happens (unless in "free climb" mode). This isn't autonomous committing — it's
-structured committing after human-reviewed, validated changes.
+**Important:** Review depth is set by the engineer's gear choice: in approve-edits they
+review each change before it lands; in free climb they review at the slice boundary. Either
+way the commit follows validation and a journal update — structured committing, not
+autonomous committing.
 
 ### 5. Handle Blockers
 
@@ -319,6 +354,9 @@ After writing Remaining Work, suggest running `vine:pause` to capture the engine
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
 > for when you come back, run `vine:pause <domain>/<feature-slug>` before closing the session."
 
+Then delete `.vine/ACTIVE` — the navigate session is ending. (`vine:pause` also clears the
+sentinel; deleting it here covers the engineer who pauses without running the command.)
+
 ### 8. Between Phase Groups
 
 If SPEC.md defines phase groups, suggest a context clear when you reach the end of a group.
@@ -382,7 +420,10 @@ phase group boundary before showing the completion block:
    If the engineer opens a PR, record the PR number in PROJECT-MAP.md's Milestones table
    (the PR column for this phase row). Don't create the PR automatically — just suggest it.
 
-**Whether or not it's a multi-PR feature**, show the phase group completion block:
+**Whether or not it's a multi-PR feature**, handle the sentinel before showing the completion
+block: if the session ends here (the recommended path — the next group gets a fresh session),
+delete `.vine/ACTIVE`; if the engineer continues into the next phase group immediately, update
+the sentinel's `phase` line instead. Then show the phase group completion block:
 
 ```
 ---
@@ -448,6 +489,9 @@ section captures loose ends:
 ```
 
 Update PROJECT-MAP.md (if it exists) — set the navigate row to ✅ with today's date.
+
+Delete `.vine/ACTIVE` — the navigate session is over, and a stale sentinel keeps installed
+hooks firing against work that's no longer active.
 
 Persist actionable retro items before presenting the completion block. The retro is
 conversation output and doesn't survive `/clear` — anything evolve should act on belongs

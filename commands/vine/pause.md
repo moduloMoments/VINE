@@ -7,6 +7,7 @@ allowed-tools:
   - Glob
   - Grep
   - Write
+  - Bash
   - AskUserQuestion
 ---
 
@@ -101,6 +102,13 @@ Write PAUSE.md to the feature directory, matching the template defined in `refer
 
 If a PAUSE.md already exists in the feature directory, overwrite it — only the most recent
 pause state matters.
+
+## Clear the Active-Session Sentinel
+
+If `.vine/ACTIVE` exists at the repo root, delete it. The sentinel marks an active navigate
+session (format and lifecycle in `references/STATE.md`); pausing ends the session, and a
+lingering sentinel keeps installed hooks firing against work that's no longer active. If the
+file doesn't exist, skip silently — pausing from a non-navigate phase is normal.
 
 ## Completion
 

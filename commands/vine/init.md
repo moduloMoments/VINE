@@ -24,6 +24,8 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
 3. Generates `.vine/context/shared.md` and per-phase overlay files pre-filled with relevant context
 4. Optionally adds `.vine/` to `.gitignore`
 5. Introduces the engineer profile (builds organically through vine:verify)
+6. Offers the native hook scaffold — mechanical enforcement of the journal-before-commit
+   guarantee, declinable
 
 ## Step 1: Discover Repo Capabilities
 
@@ -223,6 +225,48 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
 
 This makes upgrading after installing new skills, agents, or commands a one-command operation.
 
+### Native Hook Scaffold
+
+VINE ships one native hook script that mechanically enforces a guarantee the commands
+otherwise only request (full behavior in `references/STATE.md`):
+
+- **journal-before-commit** (`journal-check.sh`, PreToolUse on Bash) — blocks `git commit`
+  while a navigate session is active and the feature's NAVIGATION.md hasn't been updated
+  since the last commit.
+
+Validation and lint enforcement are deliberately NOT part of the scaffold — when and how
+to run a project's checks depends on its tooling, and that decision belongs to the repo
+(native hooks are available directly in `.claude/settings.json` for teams that want them).
+
+Offer to install it whenever `.claude/settings.json` doesn't already wire it (fresh init
+or upgrade):
+
+1. **Check the script exists** at `.vine/scripts/journal-check.sh`. Project-level
+   `npx create-vine` installs it; if it's missing (global-only install, pre-0.4 install),
+   offer to run `npx create-vine` first — or skip the scaffold offer entirely if the
+   engineer declines that.
+
+2. **Offer the hook** via `AskUserQuestion` (`multiSelect: false`, 2 options):
+   - **"Install journal-before-commit hook (Recommended)"** — description: "Blocks commits
+     during navigate until NAVIGATION.md is updated — makes the journal guarantee real"
+   - **"Not now"** — description: "Keep the journal guarantee advisory — nothing changes
+     on disk"
+
+3. **Merge the accepted hook into `.claude/settings.json`** (tracked — it enforces a
+   team-advertised guarantee; an engineer's personal opt-out is declining this offer or
+   `settings.local.json`). Merge carefully, never clobber:
+   - If the file doesn't exist, create it with just the new hook entry.
+   - If it exists, read it first and add to the existing structure: append to an existing
+     `PreToolUse` matcher group for `Bash` if one exists, otherwise add the group.
+     Leave every unrelated key and existing hook untouched.
+   - The hook entry is `{"type": "command", "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/journal-check.sh\""}`
+     under matcher `Bash`.
+   - Tell the engineer hooks load at session start — the scaffold takes effect next session.
+
+4. **Declining changes nothing on disk** — no settings edit, no script copy, and VINE keeps
+   working exactly as before; the journal guarantee just stays advisory. The offer repeats
+   on the next `/vine:init`.
+
 ## Output
 
 ```
@@ -236,6 +280,7 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
    - .vine/context/evolve.md (if applicable)
    - .vine/context/pair.md (if applicable)
    - .vine/projects/ (project artifacts directory)
+   - .claude/settings.json hooks (if the scaffold offer was accepted)
 
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your context overlays will be loaded automatically.

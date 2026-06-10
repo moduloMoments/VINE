@@ -54,7 +54,7 @@ Quick fix:
 
 Tips:
   • Run /clear between phases — state flows through .vine/ files, not chat context
-  • Use approve-edits mode — VINE is cooperative, not autonomous
+  • Approve-edits mode recommended — VINE is cooperative, not autonomous (the toggle is yours)
   • Feature arguments are optional — VINE finds active projects automatically
   • Browse .vine/projects/ to see artifacts from past features
 ---

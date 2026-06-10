@@ -39,7 +39,7 @@ All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `r
 
 `vine:verify` also creates `PROJECT-MAP.md` as a progress tracker. For multi-PR features, `vine:inquire` adds a Milestones table mapping phase groups to PRs.
 
-`vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is deleted when evolve writes `.resolved`.
+`vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is consumed-once: whatever picks the work back up deletes it (resume after displaying the notes, navigate or evolve at session start), with evolve's `.resolved` write as the backstop. `vine:navigate` also maintains `.vine/ACTIVE`, a gitignored active-session sentinel that installed hooks use to scope their checks — full lifecycle in `references/STATE.md`.
 
 ## Engineer Profile
 
