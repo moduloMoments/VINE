@@ -93,8 +93,8 @@ table. Match the feature's domain against the profile's entries.
 - **Trellis gate hook**: this repo's `.claude/settings.json` wires `.vine/scripts/trellis-gate.sh`
   (PreToolUse on Bash) — commits touching `commands/vine/` are blocked unless `/trellis` has
   passed since the last command edit (a green run writes `.vine/.trellis-ok`). Contributor-only:
-  `create-vine` never ships this script. The journal-check and post-edit-lint scaffold hooks are
-  wired here too (dogfooding).
+  `create-vine` never ships this script. The journal-check scaffold hook is wired here too
+  (dogfooding).
 - **Publish workflow**: `.github/workflows/publish.yml` — manual dispatch, publishes `create-vine` to npm with provenance
   - Reads version from `package.json`, extracts release notes from `CHANGELOG.md`
   - Runs smoke test (`bin/cli.js` in temp dir, verifies command files are installed)

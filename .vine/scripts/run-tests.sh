@@ -50,41 +50,6 @@ check "journal-check: fresh journal (same-second tie fails open) -> allow" 0 $?
 
 rm -rf "$T"
 
-# ---------- post-edit-lint.sh ----------
-L="$SCRIPTS_DIR/post-edit-lint.sh"
-T=$(mktemp -d)
-export CLAUDE_PROJECT_DIR="$T"
-
-printf '{}' | sh "$L" >/dev/null 2>&1
-check "post-edit-lint: no sentinel -> allow" 0 $?
-
-mkdir -p "$T/.vine"
-printf 'feature: x\nphase: t\nstarted: now\n' > "$T/.vine/ACTIVE"
-
-printf '{}' | sh "$L" >/dev/null 2>&1
-check "post-edit-lint: no overlay -> allow" 0 $?
-
-mkdir -p "$T/.vine/context"
-printf '## Validation Commands\n\n- `false` (once configured)\n' > "$T/.vine/context/navigate.md"
-printf '{}' | sh "$L" >/dev/null 2>&1
-check "post-edit-lint: prose backtick without marker -> allow" 0 $?
-
-printf 'hook-validation: true\n' >> "$T/.vine/context/navigate.md"
-printf '{}' | sh "$L" >/dev/null 2>&1
-check "post-edit-lint: passing marker command -> allow" 0 $?
-
-printf 'hook-validation: false\n' > "$T/.vine/context/navigate.md"
-printf '{}' | sh "$L" >/dev/null 2>&1
-check "post-edit-lint: failing marker command -> block (exit 2)" 2 $?
-
-rm -rf "$T/.vine/context"
-mkdir -p "$T/.vine/hooks"
-printf 'hook-validation: false\n' > "$T/.vine/hooks/navigate.md"
-printf '{}' | sh "$L" >/dev/null 2>&1
-check "post-edit-lint: legacy overlay location honored -> block (exit 2)" 2 $?
-
-rm -rf "$T"
-
 # ---------- trellis-gate.sh ----------
 G="$SCRIPTS_DIR/trellis-gate.sh"
 T=$(mktemp -d)

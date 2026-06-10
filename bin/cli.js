@@ -69,7 +69,7 @@ if (agentFiles.length > 0) {
 // Copy native hook scripts (project installs only — they're per-repo enforcement
 // state, so a global install has nowhere to put them). Explicit allowlist:
 // contributor-only scripts like trellis-gate.sh never ship to user repos.
-const SCAFFOLD_SCRIPTS = ['journal-check.sh', 'post-edit-lint.sh'];
+const SCAFFOLD_SCRIPTS = ['journal-check.sh'];
 const scriptsSourceDir = path.join(__dirname, '..', '.vine', 'scripts');
 let scriptsCopied = 0;
 if (!isGlobal && fs.existsSync(scriptsSourceDir)) {

@@ -234,9 +234,7 @@ If `.vine/context/navigate.md` defines custom validation commands, pass those to
 The overlay overrides the defaults entirely — it knows this project's toolchain.
 
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
-failures to the next slice. (When the post-edit lint scaffold hook is installed and the
-project configured a `hook-validation:` command, edits were already validated as they landed
-— this step is still the full per-slice check, not a repeat of those spot checks.)
+failures to the next slice.
 
 **b. Update NAVIGATION.md**
 

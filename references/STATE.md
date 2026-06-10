@@ -220,14 +220,13 @@ Its consumers are native hook scripts (see `.vine/scripts/`): they test the sent
 
 ### .vine/scripts/ (native hook scripts)
 
-Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (each hook independently declinable). All scripts are POSIX sh, treat `.vine/ACTIVE`'s feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
+Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (declinable; declining changes nothing on disk). All scripts are POSIX sh, treat `.vine/ACTIVE`'s feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
 
 | Script | Hook event | Behavior |
 |--------|------------|----------|
 | `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine/ACTIVE` escape hatch. |
-| `post-edit-lint.sh` | PostToolUse (Edit\|Write) | Runs the project's validation command after each edit during an active session; failures surface to Claude (exit 2). |
 
-The lint script's command source is an opt-in marker line in the navigate overlay — `hook-validation: <command>` in `.vine/context/navigate.md` (legacy `.vine/hooks/navigate.md` honored through 0.4.x). No marker, no execution: prose-mentioned commands are never run. This is an interim convention — when the overlay Validation block (#54) lands, the scripts read from it instead.
+Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). If VINE grows a validation contract, the Validation block proposed in #54 is its home.
 
 A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps `trellis-gate.sh` (a contributor-only commit gate, never shipped by `create-vine`) in the same directory. The table above documents only the scaffold scripts.
 

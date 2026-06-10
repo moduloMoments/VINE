@@ -9,8 +9,7 @@
     "bin",
     "commands/vine",
     "agents",
-    ".vine/scripts/journal-check.sh",
-    ".vine/scripts/post-edit-lint.sh"
+    ".vine/scripts/journal-check.sh"
   ],
   "keywords": [
     "claude",

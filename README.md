@@ -265,25 +265,28 @@ should auto-run.
 
 VINE is honest about what it can and can't make a session do. Most of its guarantees are
 advisory — behaviors the commands request and Claude follows, with nothing blocking the
-alternative. Two become mechanical when you install the native hook scaffold.
+alternative. One becomes mechanical when you install the native hook scaffold.
 
-### Enforced — when the scaffold hooks are installed
+### Enforced — when the scaffold hook is installed
 
 | Guarantee | Mechanism |
 |-----------|-----------|
 | **Journal before commit** — `git commit` is blocked during an active navigate session until the feature's NAVIGATION.md has been updated | `journal-check.sh` (PreToolUse hook); blocks with the journal path and escape hatch in the message |
-| **Post-edit validation** — your lint/test command runs after each edit during an active navigate session, surfacing failures immediately | `post-edit-lint.sh` (PostToolUse hook); inert until you add a `hook-validation: <command>` line to `.vine/context/navigate.md` |
 
-Both hooks scope themselves to active VINE sessions via the `.vine/ACTIVE` sentinel —
-navigate writes it at session start; navigate, pause, and evolve clear it at session end.
-No sentinel means both hooks are silent no-ops, so non-VINE work in the same repo is never
-affected. If a crashed session leaves the sentinel behind, `rm .vine/ACTIVE` disables both
-hooks (the block message says exactly that).
+The hook scopes itself to active VINE sessions via the `.vine/ACTIVE` sentinel — navigate
+writes it at session start; navigate, pause, and evolve clear it at session end. No
+sentinel means the hook is a silent no-op, so non-VINE work in the same repo is never
+affected. If a crashed session leaves the sentinel behind, `rm .vine/ACTIVE` disables the
+hook (the block message says exactly that).
 
-**Installing**: project-level `npx create-vine` puts the two scripts in `.vine/scripts/`;
-`/vine:init` then offers to wire them into `.claude/settings.json` — each hook a separate,
-independently declinable choice. **Declining changes nothing on disk**, and every guarantee
-below stays advisory.
+**Installing**: project-level `npx create-vine` puts the script in `.vine/scripts/`;
+`/vine:init` then offers to wire it into `.claude/settings.json`. **Declining changes
+nothing on disk**, and every guarantee below stays advisory.
+
+Lint and test enforcement are deliberately not part of the scaffold: when to run a
+project's checks depends entirely on its tooling, so that decision stays with the repo —
+native Claude Code hooks in `.claude/settings.json` are available directly to teams that
+want them.
 
 ### Advisory — always
 
