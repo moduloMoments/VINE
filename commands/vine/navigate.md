@@ -15,23 +15,27 @@ allowed-tools:
 
 # vine:navigate — Guided Implementation
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting this phase, check for project-level VINE hooks:
+Before starting this phase, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
    tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/navigate.md` if it exists — navigate-specific extensions for this project
+2. Read `.vine/context/navigate.md` if it exists — navigate-specific extensions for this project
    (agents to invoke after code changes, test commands to run, lint/format requirements,
    review tools to use per domain).
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Navigate is
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Navigate is
 the biggest consumer of the stance — it directly shapes how you work together on every slice.
 
 ## Before You Start
@@ -198,8 +202,8 @@ Delegate to the `vine-verification` agent to run checks on the changed files and
 acceptance criteria for this slice. The agent runs lint, typecheck, and tests, then checks
 each criterion against the code and reports findings.
 
-If `.vine/hooks/navigate.md` defines custom validation commands, pass those to the agent.
-The hook overrides the defaults entirely — it knows this project's toolchain.
+If `.vine/context/navigate.md` defines custom validation commands, pass those to the agent.
+The overlay overrides the defaults entirely — it knows this project's toolchain.
 
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.
@@ -242,7 +246,7 @@ Acceptance criteria verified:
 ```
 
 If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. Check
-`.vine/hooks/shared.md` or `CLAUDE.md` for commit message conventions.
+`.vine/context/shared.md` or `CLAUDE.md` for commit message conventions.
 
 After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
 hash.
@@ -313,7 +317,7 @@ stopping. This ensures the next session (or vine:resume) has structured handoff 
 After writing Remaining Work, suggest running `vine:pause` to capture the engineer's notes:
 
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
-> for when you come back, run `vine:pause` before closing the session."
+> for when you come back, run `vine:pause <domain>/<feature-slug>` before closing the session."
 
 ### 8. Between Phase Groups
 
@@ -331,7 +335,7 @@ phase group boundary before showing the completion block:
    - Lint all files changed in this phase group (not just the last slice)
    - Run typecheck if the project uses one
    - Run the full test suite (not just per-file tests from slice validation)
-   - If `.vine/hooks/navigate.md` defines custom validation commands, use those
+   - If `.vine/context/navigate.md` defines custom validation commands, use those
 
    **b. Check test coverage:**
    - Review whether the phase group's slices have corresponding tests. If any slice
@@ -445,6 +449,11 @@ section captures loose ends:
 
 Update PROJECT-MAP.md (if it exists) — set the navigate row to ✅ with today's date.
 
+Persist actionable retro items before presenting the completion block. The retro is
+conversation output and doesn't survive `/clear` — anything evolve should act on belongs
+in NAVIGATION.md (a slice's Learnings or the Remaining Work handoff context), not just
+the retro.
+
 Then present the completion block:
 
 ```
@@ -453,7 +462,7 @@ Then present the completion block:
    Slices completed: [N of M]
    Commits: [list of commit hashes]
 
-📋 Suggested next step: Run `vine:evolve` to verify integration and capture learnings.
+📋 Suggested next step: Run `vine:evolve <domain>/<feature-slug>` to verify integration and capture learnings.
    Key items for evolve:
    - [spec deviations to review]
    - [cross-slice integration to verify]

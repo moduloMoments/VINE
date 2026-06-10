@@ -10,8 +10,8 @@ allowed-tools:
 
 # vine:help — VINE Command Reference
 
-Display a quick reference of all VINE commands, what they do, and when to use them. No hooks
-or profile loading needed — this is a pure reference command.
+Display a quick reference of all VINE commands, what they do, and when to use them. No context
+overlays or profile loading needed — this is a pure reference command.
 
 ## Display Command Reference
 
@@ -39,7 +39,7 @@ Maintenance:
   /vine:optimize              Analyze and optimize skill matching, workflows, and token usage
 
 Setup:
-  /vine:init                  Scaffold .vine/hooks/ for this repo
+  /vine:init                  Scaffold .vine/context/ for this repo
   /vine:help                  This reference
 
 Typical flow:

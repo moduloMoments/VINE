@@ -11,21 +11,25 @@ allowed-tools:
 
 # vine:resume — Resume a VINE Session
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting, check for project-level VINE hooks:
+Before starting, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
    tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/resume.md` if it exists — resume-specific extensions for this project.
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+2. Read `.vine/context/resume.md` if it exists — resume-specific extensions for this project.
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
 
 ---
 
@@ -113,7 +117,7 @@ exists.
 ⚠️  Spec deviations so far:
    [List of deviations]
 
-📋 Recommended next step: Run /clear, then run /vine:[next command]
+📋 Recommended next step: Run /clear, then run /vine:[next command] <domain>/<feature-slug>
    [1-2 sentence explanation of why this is the right next step]
 ---
 ```
@@ -151,7 +155,7 @@ Skip this if no Milestones table exists or all PR numbers are already filled in.
 📋 Navigation progress:
    [List slices with status: ✅ complete / 🔲 pending / ▶️ in progress]
 
-📋 Recommended next step: Run /clear, then run /vine:[next command]
+📋 Recommended next step: Run /clear, then run /vine:[next command] <domain>/<feature-slug>
    [1-2 sentence explanation of why this is the right next step]
 ---
 ```
@@ -163,11 +167,11 @@ Based on the detected phase, recommend the appropriate command:
 | Phase | Recommendation |
 |---|---|
 | pre-verify | `vine:verify` — start the context-building spike |
-| verify complete | `vine:inquire` — build the feature spec |
-| inquire complete | `vine:navigate` — start implementation |
-| navigate in progress | `vine:navigate` — resume implementation (it reads NAVIGATION.md) |
-| navigate complete | `vine:evolve` — verify integration and capture learnings |
-| evolve in progress | `vine:evolve` — finish the evolution report |
+| verify complete | `vine:inquire <domain>/<feature-slug>` — build the feature spec |
+| inquire complete | `vine:navigate <domain>/<feature-slug>` — start implementation |
+| navigate in progress | `vine:navigate <domain>/<feature-slug>` — resume implementation (it reads NAVIGATION.md) |
+| navigate complete | `vine:evolve <domain>/<feature-slug>` — verify integration and capture learnings |
+| evolve in progress | `vine:evolve <domain>/<feature-slug>` — finish the evolution report |
 | evolve complete | Consider resolving the project or re-running evolve |
 
 **Do not auto-launch the recommended command.** The engineer decides when to proceed. Resume
