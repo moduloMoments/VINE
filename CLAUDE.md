@@ -11,7 +11,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `commands/vine/` — The 11 VINE command files (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize). These ARE the product.
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `references/STATE.md` — State artifact contracts between phases
-- `.vine/hooks/shared.md` — Contributor context hook (tracked; per-phase hooks gitignored)
+- `.vine/context/shared.md` — Contributor shared context overlay (tracked; per-phase overlays gitignored)
 - `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
@@ -19,12 +19,12 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 
 - YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
 - Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion
-- Every command (except help) starts with a "Load Project Hooks" section (reads `.vine/hooks/shared.md` + `.vine/hooks/<phase>.md`)
-- Every command (except init and help) follows hooks with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates hooks/profile rather than loading them. Help is a pure reference command that doesn't need project context.
-- Load Project Hooks must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
+- Every command (except help) starts with a "Load Context Overlays" section (reads `.vine/context/shared.md` + `.vine/context/<phase>.md`, with a legacy `.vine/hooks/` fallback through 0.4.x)
+- Every command (except init and help) follows overlays with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates overlays/profile rather than loading them. Help is a pure reference command that doesn't need project context.
+- Load Context Overlays must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
-- Shared patterns (collaboration stance, profile protocol) live in `.vine/hooks/shared.md` — commands reference them with "Follow the [Protocol] from shared.md" rather than repeating the full block. This saves ~150 tokens per command invocation. Commands still work without shared.md (graceful fallback).
+- Shared patterns (collaboration stance, profile protocol) live in `.vine/context/shared.md` — commands reference them with "Follow the [Protocol] from shared.md" rather than repeating the full block. This saves ~150 tokens per command invocation. Commands still work without shared.md (graceful fallback).
 - Run `/trellis` to validate command structure and artifact format compliance before submitting changes
 
 ## State Artifact Chain
@@ -55,7 +55,7 @@ If no profile exists or the domain isn't listed, commands behave exactly as they
 
 ### Feature Delivery (full cycle)
 When starting a new feature or significant change:
-1. `/vine:init` — set up hooks and profile (once per repo)
+1. `/vine:init` — set up context overlays and profile (once per repo)
 2. `/vine:verify [feature]` — explore landscape, write CONTEXT.md
 3. `/vine:inquire [feature]` — design and spec, write SPEC.md
 4. `/vine:navigate [feature]` — implement slice by slice, write NAVIGATION.md
@@ -72,7 +72,7 @@ When pausing or resuming work across sessions:
 3. `/vine:status` — read-only progress check (lighter than resume)
 
 ### Maintenance
-After adding or changing commands, skills, or hooks:
+After adding or changing commands, skills, or overlays:
 1. `/vine:optimize` — audit descriptions, detect chains, reduce token waste
 2. `/trellis` — validate command structure before committing
 
