@@ -12,21 +12,25 @@ allowed-tools:
 
 # vine:pause — Pause a VINE Session
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting, check for project-level VINE hooks:
+Before starting, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
    tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/pause.md` if it exists — pause-specific extensions for this project.
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+2. Read `.vine/context/pause.md` if it exists — pause-specific extensions for this project.
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
 
 ---
 
@@ -107,7 +111,7 @@ pause state matters.
    Phase: [phase]
    Active slice: [slice or N/A]
 
-📋 To pick up where you left off: /clear, then run /vine:resume
+📋 To pick up where you left off: /clear, then run /vine:resume <domain>/<feature-slug>
    Resume will read your pause state and recommend the next step.
 ---
 ```

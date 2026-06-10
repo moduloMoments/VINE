@@ -15,21 +15,25 @@ allowed-tools:
 
 # vine:optimize — Skill & Workflow Optimizer
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting, check for project-level VINE hooks:
+Before starting, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases.
-2. Read `.vine/hooks/optimize.md` if it exists — optimize-specific extensions for this project
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases.
+2. Read `.vine/context/optimize.md` if it exists — optimize-specific extensions for this project
    (custom discovery paths, description conventions, workflow patterns to enforce).
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
 
 ## What This Does
 
@@ -177,7 +181,7 @@ across every phase invocation.
 
 | Anti-pattern | What to check |
 |-------------|--------------|
-| **Boilerplate bloat** | Repeated blocks (hook loading, profile loading) that are longer than they need to be. Could the same instruction be conveyed in fewer lines without losing clarity? |
+| **Boilerplate bloat** | Repeated blocks (overlay loading, profile loading) that are longer than they need to be. Could the same instruction be conveyed in fewer lines without losing clarity? |
 | **Over-explanation** | Instructions for things Claude already knows how to do (e.g., explaining what `git commit` does, restating tool behavior that's in Claude's training). |
 | **Prose vs structure** | Paragraphs that convey tabular information. A 10-line paragraph explaining 4 options costs more tokens than a 4-row table saying the same thing. |
 | **Redundant examples** | Examples that illustrate something the instruction already made clear. Examples are high-value when the pattern is novel; they're waste when the instruction is unambiguous. |
@@ -189,8 +193,8 @@ across every phase invocation.
 | Anti-pattern | What to check |
 |-------------|--------------|
 | **shared.md / CLAUDE.md overlap** | Both are loaded every session. Content that appears in both is read twice per invocation. Identify duplicated information and recommend which file should own it. |
-| **Inter-command duplication** | Multiple commands explaining the same convention independently. Could a shared reference (hooks, CLAUDE.md) carry this once? |
-| **Hook redundancy** | Per-phase hooks that restate what the command prose already says. Hooks should add project-specific context, not echo the command's own instructions. |
+| **Inter-command duplication** | Multiple commands explaining the same convention independently. Could a shared reference (context overlays, CLAUDE.md) carry this once? |
+| **Overlay redundancy** | Per-phase overlays that restate what the command prose already says. Overlays should add project-specific context, not echo the command's own instructions. |
 
 **Context loading analysis:**
 
@@ -298,7 +302,7 @@ before/after and get approval before editing:
 
 > "**vine:evolve** (score: 16/25)
 > Current: `Triple evolution — verify, capture learnings, and prep the handoff`
-> Proposed: `Verify feature against acceptance criteria, update CLAUDE.md and hooks, capture engineer growth — run after vine:navigate completes`
+> Proposed: `Verify feature against acceptance criteria, update CLAUDE.md and context overlays, capture engineer growth — run after vine:navigate completes`
 > Weakness: Doesn't mention acceptance criteria verification or when to trigger it"
 
 If the engineer chose "Apply all improvements," apply without individual approval but show
@@ -315,7 +319,7 @@ For commands with density scores below 3, propose tightened versions of their wo
 Show the original and the reduced version side by side so the engineer can verify no
 instruction quality was lost.
 
-> "**vine:navigate** — Hook loading block (38 lines → 15 lines, ~200 token savings)
+> "**vine:navigate** — Overlay loading block (38 lines → 15 lines, ~200 token savings)
 > This block repeats the same pattern as every other command but with more explanation
 > than needed. Here's the tighter version:"
 >
@@ -388,7 +392,7 @@ For commands that don't already suggest their next step, add a brief suggestion 
 natural completion point. This is the lightest touch — one line that tells Claude what
 comes next:
 
-> "📋 Suggested next step: Run `/vine:inquire` to design the feature on top of this context."
+> "📋 Suggested next step: Run `/vine:inquire <domain>/<feature-slug>` to design the feature on top of this context."
 
 Only add chain links where:
 - The chain is a `sequence` or `suggests` type

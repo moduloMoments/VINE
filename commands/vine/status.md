@@ -11,19 +11,23 @@ allowed-tools:
 
 # vine:status — Quick Progress Check
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting, check for project-level VINE hooks:
+Before starting, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases.
-2. Read `.vine/hooks/status.md` if it exists — status-specific extensions for this project.
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases.
+2. Read `.vine/context/status.md` if it exists — status-specific extensions for this project.
 3. Apply the contents of both as additional instructions layered on top of this command.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-After loading hooks, check for the engineer's profile at `.vine/PROFILE.md`.
+After loading overlays, check for the engineer's profile at `.vine/PROFILE.md`.
 
 If it exists, note it for the status display. No depth hint needed — status is a read-only
 display command.
@@ -114,4 +118,4 @@ display. No deep file scanning, no git log analysis.
 
 **No recommendations.** Unlike resume, status doesn't suggest next steps or load PAUSE.md.
 It answers "where does this stand?" and nothing more. If the engineer wants guidance, they
-should run `vine:resume`.
+should run `vine:resume <domain>/<feature-slug>`.

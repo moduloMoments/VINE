@@ -14,22 +14,26 @@ allowed-tools:
 
 # vine:inquire — Feature Specification & Design
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting this phase, check for project-level VINE hooks:
+Before starting this phase, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
    tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/inquire.md` if it exists — inquire-specific extensions for this project
+2. Read `.vine/context/inquire.md` if it exists — inquire-specific extensions for this project
    (design review checklists, architecture decision templates, preferred patterns to recommend).
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
 
 ---
 
@@ -288,10 +292,16 @@ When the spec is solid and the engineer has signed off:
 
 1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 
+2. Persist actionable retro items before printing the completion block. The retro is
+   conversation output and doesn't survive `/clear` — if a retro item should change what
+   navigate builds (a slice criterion, a convention to record, a framing a rule needs),
+   fold it into the relevant slice in SPEC.md now. Only items with no downstream action
+   belong in the retro alone.
+
 ```
 ---
 ✅ vine:inquire complete → SPEC.md written to .vine/projects/<domain>/<feature-slug>/SPEC.md
-📋 Suggested next step: Run `vine:navigate` to begin implementation.
+📋 Suggested next step: Run `vine:navigate <domain>/<feature-slug>` to begin implementation.
    Starting with [Phase 1: name / Slice 1: name]
    [1-2 sentence summary of what's first]
 

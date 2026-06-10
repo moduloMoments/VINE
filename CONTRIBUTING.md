@@ -12,7 +12,7 @@ Good issue topics:
 
 - **Bug reports** — a command broke, produced unexpected output, or lost state
 - **Friction reports** — something felt awkward or confusing during a VINE cycle
-- **Ideas** — new phase behaviors, hook patterns, or workflow improvements
+- **Ideas** — new phase behaviors, overlay patterns, or workflow improvements
 - **Questions** — if something isn't clear, that's a docs bug
 
 ### Share your experience
@@ -21,7 +21,7 @@ The most useful feedback right now is hearing how VINE works (or doesn't) in rea
 
 - What kind of project did you use it on?
 - Which phases worked well? Which felt off?
-- What did you add to your `.vine/hooks/` to make it work for your repo?
+- What did you add to your `.vine/context/` overlays to make it work for your repo?
 
 ## Pull requests
 

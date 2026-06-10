@@ -74,5 +74,5 @@ if (isUpgrade) {
   console.log('  Run /vine:init to discover new tools added in this version.');
   console.log('  See CHANGELOG: https://github.com/moduloMoments/VINE/blob/main/CHANGELOG.md\n');
 } else {
-  console.log('  Next step: run /vine:init in Claude Code to set up project hooks.\n');
+  console.log('  Next step: run /vine:init in Claude Code to set up context overlays.\n');
 }

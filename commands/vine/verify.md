@@ -14,24 +14,28 @@ allowed-tools:
 
 # vine:verify — Context Building Spike
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting this phase, check for project-level VINE hooks:
+Before starting this phase, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — this contains repo-wide context that applies to
+1. Read `.vine/context/shared.md` if it exists — this contains repo-wide context that applies to
    all VINE phases (available tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/verify.md` if it exists — this contains verify-specific extensions for this
+2. Read `.vine/context/verify.md` if it exists — this contains verify-specific extensions for this
    project (preferred exploration patterns, key areas to always check, domain-specific questions).
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict — they represent the team's
    customization of VINE for their codebase.
 
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
+
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, this is likely a
-first VINE run — suggest running `/vine:init` to scaffold the hooks directory.
+first VINE run — suggest running `/vine:init` to scaffold the context overlay directory.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Additionally, verify is the command
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Additionally, verify is the command
 that seeds new domains:
 
 - **If the domain is NOT in the profile**: After the engineer confirms the domain via
@@ -290,12 +294,16 @@ When you and the engineer feel you have a solid understanding of the landscape, 
    that's added by inquire if the feature needs multi-PR treatment.
 
 3. Highlight the open questions that need resolution in inquire
-4. Suggest next step:
+4. Persist actionable retro items before printing the completion block. The retro is
+   conversation output and doesn't survive `/clear` — anything inquire should act on
+   belongs in the relevant CONTEXT.md section (open questions, tribal knowledge,
+   documentation gaps), not just the retro.
+5. Suggest next step:
 
 ```
 ---
 ✅ vine:verify complete → CONTEXT.md + PROJECT-MAP.md written to .vine/projects/<domain>/<feature-slug>/
-📋 Suggested next step: Run `vine:inquire` to build the feature spec.
+📋 Suggested next step: Run `vine:inquire <domain>/<feature-slug>` to build the feature spec.
    Key items to address:
    - [open question 1]
    - [open question 2]

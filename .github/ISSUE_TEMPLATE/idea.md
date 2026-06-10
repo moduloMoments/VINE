@@ -1,6 +1,6 @@
 ---
 name: Idea
-about: Suggest a new behavior, hook pattern, or workflow improvement
+about: Suggest a new behavior, context overlay pattern, or workflow improvement
 labels: idea
 ---
 

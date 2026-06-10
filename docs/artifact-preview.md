@@ -14,7 +14,7 @@ brew install glow jq
 
 ## 1. Create the Hook Script
 
-Save one of the scripts below to `.vine/hooks/artifact-preview.sh` (project-level) or `~/.claude/hooks/vine-artifact-preview.sh` (global).
+Save one of the scripts below to `.vine/scripts/artifact-preview.sh` (project-level) or `~/.claude/hooks/vine-artifact-preview.sh` (global).
 
 ### iTerm2
 
@@ -67,7 +67,7 @@ exit 0
 ### Make it executable
 
 ```bash
-chmod +x .vine/hooks/artifact-preview.sh
+chmod +x .vine/scripts/artifact-preview.sh
 ```
 
 ## 2. Register the Hook

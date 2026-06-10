@@ -15,22 +15,26 @@ allowed-tools:
 
 # vine:pair — Lightweight Pair Programming
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting, check for project-level VINE hooks:
+Before starting, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
    tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/pair.md` if it exists — pair-specific extensions for this project
+2. Read `.vine/context/pair.md` if it exists — pair-specific extensions for this project
    (preferred test commands, lint/format requirements, commit conventions for small changes).
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Do not prompt
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Do not prompt
 for domain registration — that's verify's job. Pair sessions are too quick for profile ceremony.
 
 ---
@@ -114,7 +118,7 @@ choosing silently. Keep it lightweight — one question, concrete options ground
 ## Validate
 
 After implementing the change, delegate to the `vine-verification` agent to run checks on the
-affected files (lint, typecheck, tests). If `.vine/hooks/pair.md` defines custom validation
+affected files (lint, typecheck, tests). If `.vine/context/pair.md` defines custom validation
 commands, pass those to the agent instead.
 
 Fix any issues before moving to the commit step.
@@ -129,7 +133,7 @@ Suggest a single commit covering all changes. Show the proposed commit message, 
   - "Edit message" — "I'll help adjust the wording"
   - "Skip commit" — "Don't commit yet, I'll handle it"
 
-If the project uses a ticket prefix convention (check `.vine/hooks/shared.md` or `CLAUDE.md`),
+If the project uses a ticket prefix convention (check `.vine/context/shared.md` or `CLAUDE.md`),
 include it in the drafted message.
 
 Stage the relevant files and commit after the engineer approves. Don't stage unrelated files.

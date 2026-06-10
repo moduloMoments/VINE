@@ -72,7 +72,7 @@ After multiple slices or an entire feature is complete:
 If the request doesn't specify which commands to run, discover them:
 - Check `package.json` for `scripts` (test, lint, typecheck)
 - Check for config files: `.eslintrc`, `tsconfig.json`, `pyproject.toml`, `Makefile`
-- Check `.vine/hooks/navigate.md` or `.vine/hooks/pair.md` for custom validation commands
+- Check `.vine/context/navigate.md` or `.vine/context/pair.md` for custom validation commands
 - If nothing is configured, report "no automated checks configured" rather than guessing
 
 ## Principles

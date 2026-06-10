@@ -1,10 +1,10 @@
-# VINE Project Hooks — VINE Framework
+# VINE Shared Context Overlay — VINE Framework
 # Edit this file to customize VINE behavior for this repo.
 
 ## Available Tools & Agents
 
 ### VINE Commands (in `commands/vine/`)
-- `/vine:init` — Scaffold .vine/hooks/ for a project
+- `/vine:init` — Scaffold .vine/context/ for a project
 - `/vine:verify` — Context-building spike for a feature
 - `/vine:inquire` — Feature specification and design
 - `/vine:navigate` — Guided implementation with per-slice commits
@@ -34,7 +34,7 @@
 - `.github/` — PR template, issue templates (bug, friction, idea)
 - `README.md` — Primary documentation, installation, philosophy
 - `CONTRIBUTING.md` — Contribution guidelines
-- `.vine/hooks/shared.md` — This file (tracked in git for contributor onboarding)
+- `.vine/context/shared.md` — This file (tracked in git for contributor onboarding)
 
 ### Writing Style
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
@@ -48,8 +48,8 @@ When adding or removing a VINE command, update all of these:
 - `CLAUDE.md` — command count and list
 - `README.md` — command references, install text, hooks table
 - `references/STATE.md` — if the command affects the artifact chain
-- `.vine/hooks/shared.md` — command list and count
-- `.vine/hooks/verify.md` — command count reference
+- `.vine/context/shared.md` — command list and count
+- `.vine/context/verify.md` — command count reference
 
 ### Content Standards
 - Keep command files focused — one phase, one responsibility

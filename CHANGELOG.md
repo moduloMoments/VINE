@@ -4,6 +4,11 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+### Changed
+- **`.vine/hooks/` renamed to `.vine/context/`** — VINE's per-project customization directory is now "context overlays," freeing "hooks" to mean Claude Code's native hooks. All 11 commands load from `.vine/context/` first and fall back to legacy `.vine/hooks/` (with a once-per-session migration nudge) through 0.4.x. The fallback and nudge are removed in 0.5 — see the tracking issue filed with this release.
+- **`/vine:init` legacy migration offer** — On pre-0.4 installs (`.vine/hooks/` exists, `.vine/context/` doesn't), init offers a one-time directory move, handling the gitignore-negation caveat for repos that track their overlays. Declining changes nothing on disk; commands keep working via the fallback.
+- **Trellis legacy detection** — Trellis now validates the `## Load Context Overlays` heading and `.vine/context/` paths, and warns (without failing) on stray `.vine/hooks/` references — the command fallback lines and init's migration section are allowlisted. Warnings are slated to harden to failures with the 0.5 fallback removal.
+
 ## [0.3.0] - 2026-04-06
 
 ### Added

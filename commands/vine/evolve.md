@@ -1,6 +1,6 @@
 ---
 name: vine:evolve
-description: "Wrap up a feature — run final verification against acceptance criteria, update CLAUDE.md and hooks, capture engineer growth, and prepare the PR handoff"
+description: "Wrap up a feature — run final verification against acceptance criteria, update CLAUDE.md and context overlays, capture engineer growth, and prepare the PR handoff"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
 allowed-tools:
   - Read
@@ -15,23 +15,27 @@ allowed-tools:
 
 # vine:evolve — Triple Evolution
 
-## Load Project Hooks
+## Load Context Overlays
 
-Before starting this phase, check for project-level VINE hooks:
+Before starting this phase, check for project-level VINE context overlays:
 
-1. Read `.vine/hooks/shared.md` if it exists — repo-wide context for all VINE phases (available
+1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
    tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/hooks/evolve.md` if it exists — evolve-specific extensions for this project
+2. Read `.vine/context/evolve.md` if it exists — evolve-specific extensions for this project
    (PR creation tools, CI validation commands, repo-level agents and skills to suggest wiring
-   into hooks, Jira/Linear integration for follow-up items).
-3. Apply the contents of both as additional instructions layered on top of this command. Hook
+   into overlays, Jira/Linear integration for follow-up items).
+3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
+
+If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
+`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
+legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
 
 If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/hooks/shared.md`. Note the
+Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Note the
 current domain expertise entries — you'll use this during Evolution 3 to propose updates.
 If no profile exists, you'll offer to create one during Evolution 3.
 
@@ -85,7 +89,7 @@ mode, passing it these checks to perform:
 - Run the full test suite (not just per-file tests from navigate's validation)
 - Check for cross-cutting concerns: error handling paths, edge cases that span slices,
   performance implications of the combined changes
-- If `.vine/hooks/evolve.md` defines integration validation commands, include those
+- If `.vine/context/evolve.md` defines integration validation commands, include those
 
 > **Cross-reference:** Navigate step 9 runs a lighter version of this check at phase group
 > boundaries. If you change the verification approach here, check navigate.md's phase group
@@ -127,7 +131,7 @@ should become tickets. For each selected item:
 - Body with enough context from CONTEXT.md and NAVIGATION.md that someone could pick it up
   without reading the VINE artifacts
 
-If `.vine/hooks/evolve.md` defines a ticket creation workflow (Jira, Linear, etc.), use that.
+If `.vine/context/evolve.md` defines a ticket creation workflow (Jira, Linear, etc.), use that.
 Otherwise, default to `gh issue create` if `gh` CLI is available — include labels if the
 project uses them (check existing issues for conventions).
 
@@ -193,7 +197,7 @@ you draft, they commit.
 
 ### Convention Check for Created Artifacts
 
-Before writing any persistent artifacts (CLAUDE.md entries, skills, commands, hook updates),
+Before writing any persistent artifacts (CLAUDE.md entries, skills, commands, overlay updates),
 verify they follow current project conventions:
 
 1. Check existing examples first (read other CLAUDE.md entries, existing skills/commands)
@@ -228,24 +232,24 @@ Reflect on how the VINE process itself went:
 
 Note these for the engineer. They might want to customize VINE for their team.
 
-If this cycle produced new skills, commands, or significant hook changes, suggest running
+If this cycle produced new skills, commands, or significant overlay changes, suggest running
 `/vine:optimize` to update the workflow map and re-score descriptions:
 
-> "This cycle [added new skills / changed commands / updated hooks]. Running `/vine:optimize`
+> "This cycle [added new skills / changed commands / updated overlays]. Running `/vine:optimize`
 > would update the workflow map in CLAUDE.md and check if descriptions still match well."
 
-### Hook Update Suggestions
+### Context Overlay Update Suggestions
 
 Review what tools, agents, and patterns proved useful during this VINE cycle and suggest
-updates to `.vine/hooks/`:
+updates to `.vine/context/`:
 
-- Tools or agents that should be auto-invoked in future cycles (add to navigate.md or evolve.md hooks)
-- Validation commands that worked well (add to navigate.md hook)
-- Conventions discovered that should apply to all future VINE work (add to shared.md hook)
-- Domain-specific questions that should always be asked in verify (add to verify.md hook)
+- Tools or agents that should be auto-invoked in future cycles (add to the navigate.md or evolve.md overlay)
+- Validation commands that worked well (add to the navigate.md overlay)
+- Conventions discovered that should apply to all future VINE work (add to the shared.md overlay)
+- Domain-specific questions that should always be asked in verify (add to the verify.md overlay)
 
-Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which hook updates
-to apply. For each accepted suggestion, write the update directly to the hook file.
+Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which overlay updates
+to apply. For each accepted suggestion, write the update directly to the overlay file.
 
 ## Evolution 3: User
 
@@ -443,7 +447,7 @@ phase. These typically include:
 
 - EVOLUTION.md
 - CLAUDE.md updates (if accepted)
-- `.vine/hooks/` updates (if accepted)
+- `.vine/context/` updates (if accepted)
 - `.vine/PROFILE.md` updates (if accepted)
 - `.resolved` marker (if resolved)
 
@@ -453,7 +457,7 @@ Stage these files and commit with a message like:
 evolve: [feature name] — evolution report and cycle artifacts
 
 VINE cycle complete. Captures product verification, agent evolution
-(CLAUDE.md/hook updates), and user profile growth.
+(CLAUDE.md/overlay updates), and user profile growth.
 ```
 
 Present the commit message for the engineer's approval before committing.
@@ -471,7 +475,7 @@ Options (mutually exclusive):
 2. "Skip" — "I'll handle the PR myself"
 
 If the engineer chooses to open a PR, create it using `gh pr create` with the PR description
-from the handoff package. If `.vine/hooks/evolve.md` defines PR workflow conventions, follow
+from the handoff package. If `.vine/context/evolve.md` defines PR workflow conventions, follow
 those.
 
 ## Important Principles

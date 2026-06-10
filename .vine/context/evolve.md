@@ -1,4 +1,4 @@
-# VINE Evolve Hooks — VINE Framework
+# VINE Evolve Context Overlay — VINE Framework
 
 ## PR Workflow
 
@@ -19,7 +19,7 @@
 Since this repo uses VINE on itself, evolve phases should pay special attention to:
 - **Meta-friction**: Did VINE feel awkward when used to modify VINE? That's a first-class signal.
 - **Command self-reference**: Did modifying a command while that command was guiding the work create confusion?
-- **Hook improvements**: Update these hook files based on what was learned during the cycle.
+- **Overlay improvements**: Update these context overlay files based on what was learned during the cycle.
 
 ## CLAUDE.md & Documentation
 

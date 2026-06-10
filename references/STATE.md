@@ -147,7 +147,7 @@ The triple evolution report. Captures growth across product, agent, and user.
 - **CLAUDE.md Suggestions**: Updates to project instructions
 - **Command Suggestions**: New commands or improvements identified
 - **Workflow Improvements**: Patterns worth codifying
-- **Hook Update Suggestions**: Updates to .vine/hooks/ based on learnings
+- **Context Overlay Update Suggestions**: Updates to .vine/context/ based on learnings
 - **VINE Process Observations**: What worked, what to adjust
 
 ### User Evolution <!-- required -->
@@ -293,7 +293,7 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 
 Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode that compresses verify → navigate → evolve into a single session without writing CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. Its only outputs are code changes and a single commit.
 
-Artifact-free commands still follow the structural conventions (frontmatter, hooks, profile loading) — they just don't participate in the state artifact chain.
+Artifact-free commands still follow the structural conventions (frontmatter, overlays, profile loading) — they just don't participate in the state artifact chain.
 
 ## Project Lifecycle
 

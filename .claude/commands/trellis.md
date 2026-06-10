@@ -59,15 +59,15 @@ Where `<stem>` is the filename without `.md` (e.g., `verify.md` → `# vine:veri
 The subtitle can be any text. The separator must be ` — ` (space, em dash, space) — not a
 hyphen, not a dash without spaces.
 
-### Check 4: Load Project Hooks Section (non-init, non-help only)
+### Check 4: Load Context Overlays Section (non-init, non-help only)
 
-**Skip this check for `init.md`** — init creates hooks rather than loading them.
+**Skip this check for `init.md`** — init creates overlays rather than loading them.
 **Skip this check for `help.md`** — help is a pure reference command that doesn't need project context.
 
-The command must contain a `## Load Project Hooks` heading. Between that heading and the next
-`##` heading, the text must contain the string `.vine/hooks/<phase>.md` where `<phase>` matches
-the command's stem name (e.g., `verify.md` must contain `.vine/hooks/verify.md` in its hooks
-section).
+The command must contain a `## Load Context Overlays` heading. Between that heading and the next
+`##` heading, the text must contain the string `.vine/context/<phase>.md` where `<phase>` matches
+the command's stem name (e.g., `verify.md` must contain `.vine/context/verify.md` in its
+overlays section).
 
 ### Check 5: Load Engineer Profile Section (non-init, non-help only)
 
@@ -81,8 +81,8 @@ starts with `## Load Engineer Profile`).
 
 **Skip this check for `init.md` and `help.md`.**
 
-When both hooks and profile sections are present, the `## Load Project Hooks` heading must
-appear before `## Load Engineer Profile` in the file. This matches the convention: load hooks
+When both overlays and profile sections are present, the `## Load Context Overlays` heading must
+appear before `## Load Engineer Profile` in the file. This matches the convention: load overlays
 first (they may affect how the rest of the command behaves), then load the profile.
 
 ### Check 7: Allowed Tools Valid
@@ -102,16 +102,37 @@ The string `AskUserQuestion` must appear somewhere in the command body (the cont
 the closing `---` of the frontmatter). This confirms the command references the preferred
 interaction pattern.
 
+### Check 9: Legacy Reference Detection (warning-only)
+
+Scan each command file for the string `.vine/hooks`. Legacy references are **warnings, not
+failures** — they never affect a command's pass/fail status and have no column in the
+Step 4 results table. Through 0.4.x, exactly two locations legitimately name the legacy
+path. Allowlist them precisely:
+
+1. **The fallback paragraph** (loading commands): the paragraph whose opening sentence
+   begins "If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does", including its
+   nudge quote ("Heads up: this project uses the legacy `.vine/hooks/` directory — run
+   `/vine:init` to migrate to `.vine/context/`."). Match the paragraph by its opening
+   sentence, NOT by section position — a stray un-renamed reference elsewhere in the same
+   Load Context Overlays section must still warn.
+2. **init.md's Step 7 "Legacy Directory Migration" section**: every `.vine/hooks` reference
+   between that heading and the next heading of equal or higher level. This section
+   documents the migration offer and legitimately names the legacy path throughout 0.4.x.
+
+Any `.vine/hooks` reference outside these two allowlisted locations produces a warning
+recording the file, line number, and line text. When the 0.5 fallback removal lands, this
+check (and both allowlist entries) is slated to harden to a failure.
+
 ## Step 4: Format Results
 
 Present results as a summary table with commands as rows and checks as columns:
 
 ```
-| Command   | Frontmatter | Name | H1  | Hooks | Profile | Order | Tools | AskUser |
-|-----------|-------------|------|-----|-------|---------|-------|-------|---------|
-| init      | ✅          | ✅   | ✅  | skip  | skip    | skip  | ✅    | ✅      |
-| verify    | ✅          | ✅   | ✅  | ✅    | ✅      | ✅    | ✅    | ✅      |
-| ...       |             |      |     |       |         |       |       |         |
+| Command   | Frontmatter | Name | H1  | Overlays | Profile | Order | Tools | AskUser |
+|-----------|-------------|------|-----|----------|---------|-------|-------|---------|
+| init      | ✅          | ✅   | ✅  | skip     | skip    | skip  | ✅    | ✅      |
+| verify    | ✅          | ✅   | ✅  | ✅       | ✅      | ✅    | ✅    | ✅      |
+| ...       |             |      |     |          |         |       |       |         |
 ```
 
 Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init exceptions).
@@ -122,6 +143,17 @@ After the table, print a command-specific summary line. Skipped checks count as 
 - If all checks pass: **"✅ N/N commands pass all checks"**
 - If any check fails: **"❌ N issues found across M commands"** followed by a brief list of
   each failure with the command name, check name, and what was wrong.
+
+After the summary line, print any legacy-reference warnings from Check 9:
+
+```
+⚠️ Legacy `.vine/hooks/` references (warnings — slated to harden to failures with the 0.5
+fallback removal):
+- <file>:<line> — <line text>
+```
+
+Omit the block entirely when there are no warnings. Warnings never change the pass/fail
+summary line.
 
 The combined summary (covering both command and artifact results) is printed in Step 7.
 
