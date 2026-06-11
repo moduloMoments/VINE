@@ -138,6 +138,10 @@ The implementation journal. Built incrementally — each slice is appended as it
 
 **Remaining Work dependency.** The `### Remaining Work` section stays `<!-- optional -->` because it only exists at session boundaries — `vine:navigate` writes it when pausing between slices and at phase completion, so a mid-implementation journal legitimately won't have it (promoting it to required would fail validation on every in-progress journal). When it *is* present, two readers depend on it: `vine:resume`'s no-PAUSE.md path reconstructs handoff state from it, and native-task rebuild (see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)) uses it for cross-slice context.
 
+**Deviation-closure contract.** When a slice's `**Deviations from spec**` field is anything but "None", `vine:navigate` step 6 also annotates the affected SPEC.md section (strikethrough/addendum), and navigate's completion gate verifies the pair held — an annotated-nowhere deviation is a gate gap, listed like a missing commit hash. The rule is load-bearing and lives in the command (this file is supplementary and doesn't ship via create-vine); it's recorded here so contributors editing the field keep both halves in sync.
+
+**AC-traceability contract.** SPEC.md's top-level `### Acceptance Criteria` is the cycle contract, distinct from the per-slice `**Acceptance criteria**` checklists. `vine:evolve`'s verification rollup maps each cycle-level criterion to the slice/commit that satisfied it, flagging any with no evidence as **unaccounted** — this mapping is the EVOLUTION.md *Acceptance Criteria Results* table. As above, the rule lives in the command; this note keeps the two AC layers legible to contributors.
+
 ### EVOLUTION.md (produced by vine:evolve)
 
 The triple evolution report. Captures growth across product, agent, and user.

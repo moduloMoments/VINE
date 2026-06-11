@@ -86,6 +86,25 @@ validation status).
 Present a rollup of per-slice results from NAVIGATION.md, then focus your effort on what
 navigate couldn't verify:
 
+### Acceptance Criteria Traceability
+
+SPEC.md's top-level `### Acceptance Criteria` is the cycle's contract — distinct from the
+per-slice checklists navigate verified. Nothing else confirms every cycle-level criterion
+actually landed in a slice, so build a two-column mapping of each criterion to its evidence:
+
+| Acceptance criterion (SPEC) | Evidence (slice / commit) |
+|---|---|
+| [criterion text] | Slice N — [commit hash] |
+| [criterion text] | **unaccounted** |
+
+Pull the evidence from NAVIGATION.md's slice entries (their per-slice acceptance criteria and
+commit hashes). This is a lookup against the record, not a re-verification — trust the
+per-slice validation. A criterion with no slice/commit behind it is **unaccounted**: surface
+it rather than letting it silently vanish. Unaccounted usually means one of two things — a
+slice covered it without recording the link (fixable: note the evidence) or the cycle didn't
+deliver it (a real gap for the engineer to decide on before shipping). This table is the
+Acceptance Criteria Results in EVOLUTION.md.
+
 ### Cross-Slice Integration Check
 
 This is where evolve adds value. Delegate to the `vine-verification` agent in feature verification
@@ -107,9 +126,13 @@ mode, passing it these checks to perform:
 - Run `gh pr view <number>` for each shipped phase's PR to check status and review comments
 - Run `gh api repos/{owner}/{repo}/pulls/<number>/comments` to surface reviewer feedback
   that may affect the current phase
+- Run `gh pr checks <number>` for each shipped phase's PR to read CI status — a framework
+  that preps the handoff shouldn't be blind to red checks
 - Flag any unresolved review comments or requested changes from prior PRs — these could
   indicate integration issues or concerns that carry forward
-- Include a summary of cross-PR review findings in the Product Evolution section
+- Flag any failing or still-pending checks from prior PRs — surface them in the Product
+  Evolution section so they're visible before the handoff
+- Include a summary of cross-PR review findings and CI status in the Product Evolution section
 
 ### Review Spec Deviations
 
@@ -473,7 +496,10 @@ Present the commit message for the engineer's approval before committing.
 
 ### Suggest Opening a PR
 
-After committing, suggest opening a PR using the handoff package drafted earlier:
+After committing, suggest opening a PR using the handoff package drafted earlier. First, if
+the cross-slice integration check captured CI status from prior phase PRs (`gh pr checks`),
+restate any failing or still-pending checks here — don't suggest a handoff over red or
+in-flight CI without the engineer seeing it. No-op if `gh` was unavailable or all checks passed.
 
 > "Ready to open a PR? I have the description and reviewer notes drafted in EVOLUTION.md."
 
