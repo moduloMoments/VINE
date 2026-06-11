@@ -517,17 +517,25 @@ Read NAVIGATION.md and verify each slice entry has:
 - **Validation status**: Filled in (pass or fail with resolution)
 - **Acceptance criteria**: At least one criterion checked (either `[x]` or `[ ]` with reason)
 - **Learnings**: Not empty — at minimum "None" is acceptable, but blank is not
+- **Deviation closure**: For every slice whose "Deviations from spec" is not "None" (or
+  blank), confirm SPEC.md carries the matching annotation step 6 requires — a strikethrough
+  or addendum in the affected section. This is a lookup, not a judgment call: like a missing
+  commit hash, a recorded deviation with no SPEC.md annotation is a gap. Grep SPEC.md for the
+  deviation's subject if you're unsure it's there. The point is to never leave evolve
+  cross-referencing two documents to reconstruct what changed.
 
 If any slice has gaps, list them:
 
 > "Before we wrap up, NAVIGATION.md has some gaps:
 > - Slice 2: missing learnings
+> - Slice 3: deviation recorded ('switched to async init') but SPEC.md has no annotation for it
 > - Slice 4: commit hash still says 'pending'
 > Want me to fill these in now?"
 
 Fix the gaps inline — update NAVIGATION.md with the engineer's input (or fill in what you
-can from the commit history and conversation context). Don't proceed to the completion block
-until the gate passes.
+can from the commit history and conversation context). For an unclosed deviation, the fix is
+to add the missing SPEC.md annotation (step 6), not to edit NAVIGATION.md. Don't proceed to
+the completion block until the gate passes.
 
 ### Remaining Work
 

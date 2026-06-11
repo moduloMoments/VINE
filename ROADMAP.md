@@ -30,6 +30,7 @@ declining the migration must change nothing. The rename fallback in
 | # | Cycle | Issues | Mode | Why this order |
 |---|-------|--------|------|----------------|
 | 1 | **Platform alignment** | [#58](https://github.com/moduloMoments/VINE/issues/58) rename hooks→context, [#59](https://github.com/moduloMoments/VINE/issues/59) native hook enforcement, [#60](https://github.com/moduloMoments/VINE/issues/60) CLAUDE.md boundary, [#61](https://github.com/moduloMoments/VINE/issues/61) native task tracking, [#62](https://github.com/moduloMoments/VINE/issues/62) mode/gate/workflow hygiene | Full cycle | Changes vocabulary and structure every later cycle builds on. #58 lands first within the cycle. #62 was reshaped from "plan mode integration" to gearing↔permission-mode + inquire sign-off gate + artifact-commit guidance + between-slice `/clear` — plan mode is harness-owned, so VINE consumes it rather than integrating it (per the guiding principle). |
+| 1.5 | **Cycle-1 polish** | [#66](https://github.com/moduloMoments/VINE/issues/66) artifact-coherence checks, [#68](https://github.com/moduloMoments/VINE/issues/68) evolve CI-status read, [#69](https://github.com/moduloMoments/VINE/issues/69) navigate↔evolve verification reconciliation, [#70](https://github.com/moduloMoments/VINE/issues/70) runnable trellis check script | `vine:pair` (independent sessions) | Small follow-ups surfaced by cycle 1's evolve. Each is scoped + independent, so they run as standalone sessions/PRs rather than a batched cycle — no ordering dependency between them or on Cycle 2. #69 needs a design call on the navigate/evolve verification boundary; the other three are mechanical. |
 | 2 | **Maintenance batch** | [#46](https://github.com/moduloMoments/VINE/issues/46), [#47](https://github.com/moduloMoments/VINE/issues/47), [#48](https://github.com/moduloMoments/VINE/issues/48) consolidation; [#49](https://github.com/moduloMoments/VINE/issues/49), [#50](https://github.com/moduloMoments/VINE/issues/50) descriptions | `vine:pair` | Consolidation targets shared.md, so it lands *after* the rename to avoid double-touching. #49/#50 can go anytime. |
 | 3 | **Knowledge lifecycle** | [#51](https://github.com/moduloMoments/VINE/issues/51) durable knowledge layer, [#56](https://github.com/moduloMoments/VINE/issues/56) archival + backfill | Full cycle (multi-PR) | Promotion and archival share the SUMMARY/knowledge formats. Backfill quality depends on the knowledge format being settled, so they ship together. |
 | 4 | **Agent-native** | [#54](https://github.com/moduloMoments/VINE/issues/54) validation contract, [#53](https://github.com/moduloMoments/VINE/issues/53) headless autonomy contract | Full cycle | Headless agents need discoverable validation, so #54 precedes #53. Builds on native hooks (#59) and headless invocation patterns. |
@@ -39,16 +40,26 @@ declining the migration must change nothing. The rename fallback in
 ### Out of scope for v0.4.0
 
 Open issues not in the milestone ([#36](https://github.com/moduloMoments/VINE/issues/36) vine:grow,
-[#39](https://github.com/moduloMoments/VINE/issues/39) integration-checker,
-[#40](https://github.com/moduloMoments/VINE/issues/40) design-checker,
 [#42](https://github.com/moduloMoments/VINE/issues/42) debugger agent,
 [#43](https://github.com/moduloMoments/VINE/issues/43) UI audit) are deferred — they add agents and
 phases, and the platform-alignment principle says to revisit them after v0.4.0 to see how much the
 native tooling already covers.
 
+Closed during cycle-1 triage as already-covered: #39 integration-checker (the existing
+`vine-verification` agent's feature mode does cross-slice integration — proven in cycle 1's evolve)
+and #40 design-checker (the inquire sign-off gate is VINE's chosen design-validation mechanism; an
+automated checker is the performative-findings pattern #66 rejects).
+
 Also deliberately deferred: parallel slice execution (premature until the headless contract in
 [#53](https://github.com/moduloMoments/VINE/issues/53) exists), HTML output, and org-level agents
 (risk auditors, summary agents) — those live a layer above a per-repo framework.
+
+### Post-0.4.0 cleanup
+
+[#64](https://github.com/moduloMoments/VINE/issues/64) removes the `.vine/hooks/` legacy fallback.
+It is **gated on the 0.5 release**, not schedulable within v0.4.0 — the fallback must ship through
+all of 0.4.x (the one-minor-version compatibility window from #58), then the removal + trellis
+Check 9 hardening land together at 0.5.
 
 ### Process notes
 
