@@ -83,5 +83,86 @@ check "trellis-gate: non-commit -> allow" 0 $?
 
 rm -rf "$T"
 
+# ---------- trellis-check.sh ----------
+C="$SCRIPTS_DIR/trellis-check.sh"
+
+# Writes a minimal command file that passes every command check. Args:
+#   mkcmd <dir> <stem> <name-field> <h1-stem> <extra-overlay-line>
+mkcmd() {
+  cat > "$1/commands/vine/$2.md" <<EOF
+---
+name: $3
+description: "d"
+argument-hint: ""
+allowed-tools:
+  - Read
+  - AskUserQuestion
+---
+
+# vine:$4 — Sub
+
+## Load Context Overlays
+
+Read \`.vine/context/$2.md\` if it exists.
+$5
+
+## Load Engineer Profile
+
+Read the profile. Decisions use AskUserQuestion.
+EOF
+}
+
+T=$(mktemp -d)
+mkdir -p "$T/commands/vine" "$T/.vine"
+export CLAUDE_PROJECT_DIR="$T"
+
+mkcmd "$T" good "vine:good" good ""
+sh "$C" >/dev/null 2>&1
+check "trellis-check: all valid -> pass (exit 0)" 0 $?
+grep -q '^status: pass' "$T/.vine/.trellis-ok"
+check "trellis-check: pass writes 'status: pass' stamp" 0 $?
+
+mkcmd "$T" bad "vine:WRONG" bad ""
+sh "$C" >/dev/null 2>&1
+check "trellis-check: name mismatch -> fail (exit 1)" 1 $?
+grep -q '^status: fail' "$T/.vine/.trellis-ok"
+check "trellis-check: fail overwrites stamp with 'status: fail'" 0 $?
+rm "$T/commands/vine/bad.md"
+
+# init/help skip the overlays/profile/order checks — a stub with neither passes.
+cat > "$T/commands/vine/init.md" <<'EOF'
+---
+name: vine:init
+description: "d"
+argument-hint: ""
+allowed-tools:
+  - Read
+  - AskUserQuestion
+---
+
+# vine:init — Setup
+
+Body uses AskUserQuestion. No overlays/profile sections, by design.
+EOF
+sh "$C" >/dev/null 2>&1
+check "trellis-check: init skips overlays/profile/order -> pass" 0 $?
+rm "$T/commands/vine/init.md"
+
+# Stray legacy .vine/hooks ref outside the allowlist -> warning only, still pass.
+mkcmd "$T" leg "vine:leg" leg 'Stray ref: `.vine/hooks/leg.md`.'
+warnout=$(sh "$C" 2>/dev/null)
+check "trellis-check: stray legacy ref stays a warning -> pass" 0 $?
+printf '%s' "$warnout" | grep -q 'leg.md:.*\.vine/hooks'
+check "trellis-check: stray legacy ref is reported as a warning" 0 $?
+rm "$T/commands/vine/leg.md"
+
+# The allowlisted fallback paragraph must NOT warn.
+mkcmd "$T" fb "vine:fb" fb "If \`.vine/context/\` doesn't exist but legacy \`.vine/hooks/\` does, read from \`.vine/hooks/\` instead."
+warnout=$(sh "$C" 2>/dev/null)
+printf '%s' "$warnout" | grep -q 'fb.md:.*\.vine/hooks'
+check "trellis-check: allowlisted fallback paragraph does not warn" 1 $?
+
+rm -rf "$T"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
