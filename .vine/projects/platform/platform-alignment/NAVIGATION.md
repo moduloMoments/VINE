@@ -480,10 +480,26 @@ research — making verify a documented non-fit and inquire only a partial fit f
   harness plan mode from the cycle entirely** — it's a harness concern the harness already handles
   (Claude calls `ExitPlanMode` itself when it needs to write; a VINE command teaching it that
   narrates behavior VINE doesn't own). Same repo-owned-decision line as the Phase 2 lint-hook removal.
-- **Phase 5 reshaped** (SPEC.md Phase 5 reshape note + Slices 17–19 rewritten):
-  - Slice 17: gearing ↔ permission-mode preference in navigate (was "verify plan-mode integration").
+- **Phase 5 reshaped** (SPEC.md Phase 5 reshape note + slices rewritten):
+  - Slice 17: gearing ↔ permission-mode preference in navigate (was "verify plan-mode integration"). ✅
   - Slice 18: inquire sign-off gate + artifact review links (unchanged — never depended on plan mode).
-  - Slice 19: README gearing↔mode + task docs (plan-mode docs dropped).
+  - Slice 19 (NEW): artifact-commit guidance for tracked repos — see decision below.
+  - Slice 20: README gearing↔mode + task + commit-guidance docs (was Slice 19; plan-mode docs dropped).
+
+### Session decision (between slices) — artifacts tracked + Slice 19 added, 2026-06-10
+After Slice 17 committed, the engineer pulled on what multi-PR flows should commit. Two outcomes:
+- **platform-alignment artifacts now tracked** (commit ff44b4d): every other VINE project commits
+  its CONTEXT/SPEC/NAVIGATION/EVOLUTION (31 tracked files across 6 projects); platform-alignment
+  was the only untracked one, just because it's the in-flight feature. Tracked now for consistency.
+  tool-graph stays untracked (stale, slated for #56 cycle-3 archival). Consequence: from here, this
+  feature dogfoods the Slice 19 principle — slice commits carry their artifact updates.
+- **New Slice 19 — artifact-commit guidance** folded into Phase 5 (decided by: engineer). VINE's
+  commit-contents guidance is inconsistent (navigate step 4c conditionalizes only NAVIGATION.md;
+  evolve stages EVOLUTION.md unconditionally) and incomplete (nothing on SPEC deviations or
+  PROJECT-MAP/Milestones boundary commits). Slice 19 states one principle in STATE.md and aligns
+  navigate + evolve: tracked → include the artifact; untracked/personal scope → unchanged (mtime
+  guarantee). Phase 5 is now Slices 17–20; the docs slice renumbered 19 → 20 and absorbs the
+  commit-guidance docs.
 - Clarified for the engineer: outside plan mode the rendered-review UX is already native (response
   output is rendered GFM, the artifact file opens rendered in the editor, AskUserQuestion is the
   gate) — so SPEC-as-the-plan loses no review UX. Artifact auto-open stays optional repo wiring

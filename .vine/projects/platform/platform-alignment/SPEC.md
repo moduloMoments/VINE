@@ -411,13 +411,14 @@ and changes nothing where they don't. PR 4 stays open for Phase 5.
 
 ---
 
-## Phase 5: Plan-Mode Robustness & Sign-Off Gate (Slices 17–19) — #62, PR 4 (shared) ⬜
+## Phase 5: Mode, Gate & Commit Hygiene (Slices 17–20) — #62, PR 4 (shared) ⬜
 
 Summary: SPEC.md is VINE's plan and the artifact chain + AskUserQuestion sign-offs are the gate —
 harness plan mode is left to the harness, neither narrated nor integrated by VINE. This phase
 sharpens navigate's gearing into an explicit permission-mode preference (free climb →
-auto-accept-edits; walk-me-through → approve-edits), closes inquire's missing sign-off gate, and
-presents each artifact as a rendered, clickable link for review.
+auto-accept-edits; walk-me-through → approve-edits), closes inquire's missing sign-off gate,
+presents each artifact as a rendered, clickable link for review, and makes the artifact-commit
+guidance for tracked repos consistent and complete.
 Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 
 > **Reshape (navigate session, 2026-06-10).** The original Phase 5 made verify and inquire
@@ -447,8 +448,16 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 > (or auto), walk-me-through recommends approve-edits (per-edit permission prompts). The
 > recommendation is explicit; the toggle stays the engineer's action (honest-modes rule). verify
 > and inquire already recommend approve-edits in "Before You Start" (no gearing, single mode), so
-> Slice 17 is navigate-only. Slices 18–19 stand as reshaped (they never depended on plan mode);
-> Slice 19 drops its plan-mode docs and instead documents the gearing↔mode mapping.
+> Slice 17 is navigate-only. Slice 18 (inquire gate + review links) stands as reshaped (it never
+> depended on plan mode).
+>
+> **Scope addition (same session).** Tracking platform-alignment's artifacts mid-cycle (every
+> other VINE project commits its artifacts) surfaced a real gap: VINE's commit-contents guidance
+> for tracked-artifact repos is inconsistent (navigate step 4c conditionalizes only NAVIGATION.md;
+> evolve stages EVOLUTION.md unconditionally) and incomplete (no guidance for SPEC deviations or
+> PROJECT-MAP/Milestones boundary commits). Engineer's call: fold a new **Slice 19 — artifact-
+> commit guidance** into Phase 5. The README/CHANGELOG docs slice renumbers 19 → 20 and now also
+> documents the commit guidance.
 
 ### Slice 17: Gearing ↔ permission-mode preference (navigate)
 **Goal**: navigate's per-slice gearing decision recommends the permission mode that fits the
@@ -481,16 +490,39 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
   artifact as a clickable link; auto-open appears only as a documented optional repo behavior.
 **Complexity signal**: Medium.
 
-### Slice 19: README gearing↔mode + task docs
+### Slice 19: Artifact-commit guidance for tracked repos
+**Goal**: Make VINE's commit-contents guidance consistent and complete for repos that track
+  `.vine/` artifacts (the team-shared choice per the Knowledge Boundary rule). State one principle
+  across the commands: a **slice commit** bundles the code with that slice's artifact mutations
+  (the NAVIGATION.md journal entry and any SPEC.md deviation annotations from step 6); a
+  **phase-group boundary commit** carries the tracker updates (PROJECT-MAP.md navigate row +
+  Milestones row → status/PR#, and the SPEC.md phase header ⬜→✅); a **PR (= one phase group)**
+  therefore carries the group's full artifact state (SPEC plan, NAVIGATION record, PROJECT-MAP
+  tracker) alongside the diff. Align the existing inconsistency: navigate step 4c conditionalizes
+  only NAVIGATION.md while evolve stages EVOLUTION.md unconditionally — both follow the same rule
+  (**tracked → include the artifact; untracked / personal scope → unchanged**, the mtime-based
+  journal guarantee still holds). STATE.md carries the principle as the single source.
+**Depends on**: None (independent of Slices 17–18).
+**Files likely touched**: commands/vine/navigate.md (step 4c + step 8), commands/vine/evolve.md
+  (the EVOLUTION/commit step), references/STATE.md (artifact-commit principle).
+**Acceptance criteria**: navigate and evolve state the same tracked-vs-untracked rule; the
+  slice-commit / boundary-commit / PR split is documented; STATE.md carries the principle as the
+  single source; untracked-repo behavior is explicitly unchanged (mtime guarantee preserved);
+  trellis passes on the edited commands.
+**Complexity signal**: Medium.
+
+### Slice 20: README gearing↔mode + task + commit-guidance docs
 **Goal**: README documents navigate's gearing↔permission-mode mapping (free climb →
   auto-accept-edits; walk-me-through → approve-edits, toggle is the engineer's action), the
-  artifact review-link affordance + optional auto-open repo wiring, and the task-tracking
-  live-view (with the journal as source of truth). CHANGELOG 0.4.0 entry completed for #59–#62.
-**Depends on**: Slices 15–18.
+  artifact review-link affordance + optional auto-open repo wiring, the task-tracking live-view
+  (with the journal as source of truth), and the tracked-repo artifact-commit guidance from
+  Slice 19 (what a slice commit vs a phase-group PR carries). CHANGELOG 0.4.0 entry completed
+  for #59–#62.
+**Depends on**: Slices 15–19.
 **Files likely touched**: README.md, CHANGELOG.md
-**Acceptance criteria**: A reader can predict the recommended permission mode for each gear and
-  how artifact review links behave; docs make no claim about harnesses where the features don't
-  exist and introduce no plan-mode / `ExitPlanMode` claims.
+**Acceptance criteria**: A reader can predict the recommended permission mode for each gear, how
+  artifact review links behave, and what a tracked-repo commit/PR carries; docs make no claim
+  about harnesses where the features don't exist and introduce no plan-mode / `ExitPlanMode` claims.
 **Complexity signal**: Low.
 
 ---
@@ -503,6 +535,7 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 | `Status: In Progress` contract undocumented | Address now | Slice 14 |
 | Remaining Work optional-vs-depended | Address now | Slice 14 |
 | inquire missing sign-off gate | Address now | Slice 18 |
+| navigate/evolve artifact-commit guidance inconsistent + incomplete | Address now | Slice 19 (new) |
 | idea.md "hook pattern" ambiguity | Address during | Slice 5 |
 | status.md "no deep scanning" wording | Address during | Slice 16 |
 | Stale tool-graph artifacts | Defer | #56, cycle 3 |
