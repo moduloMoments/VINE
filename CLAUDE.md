@@ -12,9 +12,10 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `agents/` — Shipped agent definitions, auto-delegated by description matching
 - `references/STATE.md` — State artifact contracts between phases
+- `ROADMAP.md` — Canonical cycle structure; the GitHub milestone is issue-level truth
 - `.github/` — PR template, issue templates (bug, friction, idea)
-- `.vine/context/shared.md` — Contributor shared context overlay (tracked; per-phase overlays gitignored)
-- `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
+- `.vine/context/` — Contributor context overlays (tracked)
+- `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (tracked; PAUSE.md gitignored)
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
 ## Command Authoring Conventions

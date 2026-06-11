@@ -113,7 +113,7 @@ Routing policy lives in overlays, so the overlay matrix is foundation-cycle terr
 
 ### Cycle order
 
-Done so far: cycle 1 (platform alignment,
+Done so far: cycle 1 in the pre-rewrite numbering (platform alignment,
 [#58](https://github.com/moduloMoments/VINE/issues/58)–[#62](https://github.com/moduloMoments/VINE/issues/62))
 shipped, and cycle 1.5 polish is three of four done — the fourth,
 [#69](https://github.com/moduloMoments/VINE/issues/69) (navigate↔evolve verification

@@ -14,6 +14,16 @@
   - Ideas: `.github/ISSUE_TEMPLATE/idea.md`
 - Use GitHub Discussions for broader design questions or community input
 
+## GitHub Issue Edits
+
+When a cycle edits live issue bodies (reshaping, freshness passes):
+- **Verify against the working tree before drafting** — issues old enough to predate a rename
+  or refactor may have silently landed; close-as-landed beats a stale path fix.
+- **Batch-draft all public edits and present them for review before any fires** — issue edits
+  are live and unreviewed; the batch is the draft stage.
+- **"No stale references" means a cold actor wouldn't act wrongly** — not zero occurrences of
+  the old string. Historical/feature-naming mentions are compliant.
+
 ## Dogfooding Feedback Loop
 
 Since this repo uses VINE on itself, evolve phases should pay special attention to:
