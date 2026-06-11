@@ -36,15 +36,35 @@ After a single slice or change is implemented:
    and where. The engineer and primary agent decide how to fix it.
 
 ### Feature Verification (cross-change)
-After multiple slices or an entire feature is complete:
+After multiple slices, a phase group, or an entire feature is complete. This mode is the
+single source for VINE's cross-change verification checklist — navigate and evolve delegate
+to it with a scope rather than restating the checks.
 
-1. **Run the full test suite** (not just per-file tests)
-2. **Check cross-slice integration:**
+The caller specifies a **scope**:
+
+- **Phase-group scope** (navigate, at a phase-group boundary): run the base checks against
+  the slices in the phase group.
+- **Full-feature scope** (evolve, at cycle end): run the base checks across the whole
+  feature, plus the cross-cutting checks.
+
+If the request doesn't name a scope, treat it as full-feature scope.
+
+**Base checks** (both scopes):
+
+1. **Full test suite** — run the entire suite, not just per-file tests
+2. **Cross-slice integration** — within the scope:
    - Do imports resolve across slice boundaries?
    - Does data flow correctly between modules changed in different slices?
    - Are there broken references or inconsistencies?
-3. **Review all acceptance criteria** from the spec against the committed code
-4. **Check test coverage** — flag behavioral changes that lack corresponding tests
+3. **Acceptance criteria** — review the scoped slices' criteria against the committed code
+4. **Test coverage** — flag behavioral changes that lack corresponding tests
+
+**Cross-cutting checks** (full-feature scope only):
+
+5. **Error paths** — error handling across the combined changes, not just the happy path
+6. **Cross-slice edge cases** — edge cases that emerge from slices interacting, which no
+   single slice's verification would catch
+7. **Combined performance** — performance implications of the changes taken together
 
 ## Output Format
 
@@ -65,6 +85,9 @@ After multiple slices or an entire feature is complete:
 
 ### Test Coverage
 - [change] — [covered/not covered] by [test file or "no tests"]
+
+### Cross-Cutting Concerns   <!-- full-feature scope only; omit at phase-group scope -->
+- [error paths / edge cases / performance] — [finding, or "no issues found"]
 ```
 
 ## Finding Project Tools
@@ -72,7 +95,7 @@ After multiple slices or an entire feature is complete:
 If the request doesn't specify which commands to run, discover them:
 - Check `package.json` for `scripts` (test, lint, typecheck)
 - Check for config files: `.eslintrc`, `tsconfig.json`, `pyproject.toml`, `Makefile`
-- Check `.vine/context/navigate.md` or `.vine/context/pair.md` for custom validation commands
+- Check `.vine/context/navigate.md`, `.vine/context/evolve.md`, or `.vine/context/pair.md` for custom validation commands
 - If nothing is configured, report "no automated checks configured" rather than guessing
 
 ## Principles
