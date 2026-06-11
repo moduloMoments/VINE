@@ -4,10 +4,25 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+This is the 0.4.0 "platform alignment" cycle — aligning VINE's vocabulary and mechanics with
+Claude Code's native platform surface: context overlays vs. native hooks, honest enforcement,
+the knowledge boundary, native task tools, and gearing↔permission-mode. The `#` tags below
+are the per-phase tracking issues (#58–#62).
+
+### Added
+- **Honest enforcement scaffold (#59)** — A `.vine/ACTIVE` session sentinel scopes installed hooks to active navigate sessions, and a POSIX `journal-check.sh` hook blocks `git commit` until the feature's NAVIGATION.md is updated (mtime-based, so it works whether `.vine/` is tracked or gitignored). `/vine:init` offers to wire the scaffold into `.claude/settings.json`; declining changes nothing on disk. README gains an **Enforced vs Advisory** section that's honest about which guarantees are mechanical (one, with the scaffold installed) and which are advisory.
+- **Native task tracking (#61)** — When the harness provides task tools, `vine:navigate` builds an ephemeral live view of slice progress, and `vine:resume`/`vine:status` read it for an at-a-glance picture. The live view is a derived mirror of NAVIGATION.md — always rebuilt from the journal, never the reverse. STATE.md adds a **Source of Truth vs Derived Views** contract codifying the split.
+- **Inquire sign-off gate + artifact review links (#62)** — `vine:inquire` now gates completion on an explicit `AskUserQuestion` sign-off on the written SPEC, presented as a clickable link with a request-changes/iterate loop; `vine:verify` presents CONTEXT.md as a clickable link on creation. Auto-opening the file is documented as optional repo wiring, never hardcoded.
+- **Between-slice `/clear` (#62)** — `vine:navigate` step 7 offers a `/clear`-and-continue-fresh path between slices (selective: recommended only when context is heavy or the next slice is independent), re-entering at the next unfinished slice via the journal rebuild.
+
 ### Changed
-- **`.vine/hooks/` renamed to `.vine/context/`** — VINE's per-project customization directory is now "context overlays," freeing "hooks" to mean Claude Code's native hooks. All 11 commands load from `.vine/context/` first and fall back to legacy `.vine/hooks/` (with a once-per-session migration nudge) through 0.4.x. The fallback and nudge are removed in 0.5 — see the tracking issue filed with this release.
-- **`/vine:init` legacy migration offer** — On pre-0.4 installs (`.vine/hooks/` exists, `.vine/context/` doesn't), init offers a one-time directory move, handling the gitignore-negation caveat for repos that track their overlays. Declining changes nothing on disk; commands keep working via the fallback.
-- **Trellis legacy detection** — Trellis now validates the `## Load Context Overlays` heading and `.vine/context/` paths, and warns (without failing) on stray `.vine/hooks/` references — the command fallback lines and init's migration section are allowlisted. Warnings are slated to harden to failures with the 0.5 fallback removal.
+- **`.vine/hooks/` renamed to `.vine/context/` (#58)** — VINE's per-project customization directory is now "context overlays," freeing "hooks" to mean Claude Code's native hooks. All 11 commands load from `.vine/context/` first and fall back to legacy `.vine/hooks/` (with a once-per-session migration nudge) through 0.4.x. The fallback and nudge are removed in 0.5 — see the tracking issue filed with this release.
+- **`/vine:init` legacy migration offer (#58)** — On pre-0.4 installs (`.vine/hooks/` exists, `.vine/context/` doesn't), init offers a one-time directory move, handling the gitignore-negation caveat for repos that track their overlays. Declining changes nothing on disk; commands keep working via the fallback.
+- **Trellis legacy detection (#58)** — Trellis now validates the `## Load Context Overlays` heading and `.vine/context/` paths, and warns (without failing) on stray `.vine/hooks/` references — the command fallback lines and init's migration section are allowlisted. Warnings are slated to harden to failures with the 0.5 fallback removal.
+- **Honest prose pass (#59)** — Command and README language no longer overclaims what a session is forced to do; advisory guarantees are described as recommendations the command makes and Claude follows, not as mechanical blocks.
+- **Knowledge Boundary rule (#60)** — A new rule in `references/STATE.md` draws the line between repo facts (which live in CLAUDE.md / STATE.md) and the harness's native skill inventory (which VINE reads live, never duplicates in files). `vine:optimize` is rewritten around the rule, the "this repo" overlay is deduped, and `/vine:init` offers a dedup pass. The **Skill Workflows** map moved from CLAUDE.md to `.vine/context/shared.md` — superseding the 0.3.0 "Skill Workflows in CLAUDE.md" location — and CLAUDE.md now carries an availability-gated pointer instead of the inline map.
+- **Gearing ↔ permission-mode preference (#62)** — `vine:navigate`'s per-slice gearing now recommends the matching permission mode: **free climb → auto-accept-edits**, **walk me through → approve-edits**. The recommendation is explicit; flipping the toggle stays the engineer's action — VINE recommends, never switches modes for you.
+- **Artifact-commit guidance for tracked repos (#62)** — `vine:navigate` and `vine:evolve` now state a consistent, self-sufficient staging rule: tracked artifacts → bundle the artifact with its commit (slice → NAVIGATION/SPEC deviations; phase-group boundary → PROJECT-MAP/SPEC header); untracked → code only, the mtime guarantee preserved. STATE.md carries the consolidated per-commit-point contract for contributors.
 
 ## [0.3.0] - 2026-04-06
 

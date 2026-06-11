@@ -674,9 +674,68 @@ discussion). The slice itself, the selective-recommendation choice, and the new-
     workflow feature two slices later. Worth noting how the journal-as-source-of-truth investment
     keeps paying out.
 
+### Slice 21: README gearing↔mode + task + commit-guidance docs — Complete
+**Started**: 2026-06-10 23:10
+**Commit**: pending
+**Approach taken**: Docs-only slice — `README.md` (five woven additions, no new top-level
+sections, doc-growth guardrail honored) + `CHANGELOG.md` ([Unreleased] expanded to the full
+0.4.0 cycle). README: (1) **navigate phase blurb** — named the mode pairing inline (free climb →
+auto-accept-edits, walk-me-through → approve-edits, "flipping the toggle is always your move")
+and added the conditional native-task **live-view** sentence ("when your harness provides native
+task tools … mirrors NAVIGATION.md — a derived view, always rebuilt from the journal, never the
+reverse"). (2) **inquire/verify blurbs** — the **artifact review-link** affordance: inquire
+presents SPEC.md as a clickable link and gates completion on explicit sign-off (approve → navigate
+/ request changes → iterate); verify presents CONTEXT.md the same way on creation; auto-open noted
+as optional repo wiring, clickable link the portable default. (3) **Key Principles "Approve-edits
+mode recommended"** — made the gear↔mode mapping symmetric (was free-climb-half only). (4) **State
+Artifacts** — new paragraph on **tracked-repo commit contents** (slice commit bundles code +
+NAVIGATION entry + SPEC deviations; phase-group PR carries SPEC+NAVIGATION+PROJECT-MAP; untracked →
+code only, mtime guarantee holds). (5) **"Chain, don't rush"** principle + **Advisory table** row
+— the selective **between-slice `/clear`**. CHANGELOG: cycle-intro paragraph (#58–#62 are phase
+tracking issues), Added (honest-enforcement scaffold #59, native task tracking #61, inquire
+sign-off + review links #62, between-slice `/clear` #62), Changed (existing rename trio tagged #58,
+honest prose #59, Knowledge Boundary rule #60 **incl. the stale-0.3.0 note** — Skill Workflows map
+moved CLAUDE.md → shared.md, superseding the 0.3.0 "Skill Workflows in CLAUDE.md" entry; gearing↔mode
+#62; artifact-commit guidance #62). Kept `[Unreleased]` (not renamed to `[0.4.0]`) — engineer's
+call, and there's more roadmap before release.
+**Deviations from spec**: None. One self-catch: an initial CHANGELOG gearing parenthetical named
+"plan-mode" (as a negation); removed it — the AC says introduce *no* plan-mode/ExitPlanMode claims,
+and a negation still drops the term into a doc where it didn't exist. Final docs grep-clean of both.
+**Validation**: pass — no markdownlint configured in repo (overlay's "once configured"), so lint is
+N/A; internal anchor `#enforced-vs-advisory` resolves, CHANGELOG `[Unreleased]` compare link
+(v0.3.0...HEAD) still valid; `grep -i 'plan.mode|exitplanmode' README.md CHANGELOG.md` → none.
+trellis stamp 11/11 (23:01) still authoritative — no command files touched this slice.
+**Decisions made during implementation**:
+  - Keep `[Unreleased]`, don't rename to `[0.4.0]` — version stamp + date + package.json bump is a
+    release action; more roadmap remains before 0.4.0 ships (decided by: engineer)
+  - Free-climb gearing for the slice; recommended auto-accept-edits (decided by: engineer)
+  - Weave all five README additions into existing sections rather than add new ones — doc-growth
+    guardrail (decided by: claude, free-climb)
+**Acceptance criteria**:
+  - [x] Reader can predict the recommended permission mode for each gear (navigate blurb + Key Principles, symmetric)
+  - [x] Reader can tell how artifact review links behave (inquire/verify blurbs: clickable link, sign-off gate, request-changes path, optional auto-open)
+  - [x] Reader can tell what a tracked-repo commit/PR carries (State Artifacts paragraph)
+  - [x] Reader can tell when a between-slice `/clear` is suggested (Chain principle + Advisory row)
+  - [x] Task-tracking live-view documented with journal as source of truth (navigate blurb)
+  - [x] CHANGELOG 0.4.0 entry completed for #59–#62, incl. stale-0.3.0 Skill-Workflows note
+  - [x] No claims about harnesses where features don't exist ("when your harness provides…")
+  - [x] No plan-mode / `ExitPlanMode` claims introduced (grep-verified)
+**Engineer feedback incorporated**: Gearing choice (free climb) and the `[Unreleased]` decision,
+both via the opening AskUserQuestion; the "more roadmap before release" note confirmed the version
+handling.
+**Learnings**:
+  - Claude → Engineer: documenting a cycle is also an audit of it — writing the README mode-mapping
+    sentence is what surfaced that Key Principles only had the free-climb half, and writing the
+    CHANGELOG gearing bullet is what surfaced the stray "plan-mode" term. The docs slice quietly
+    closes small consistency gaps the implementation slices leave behind.
+
 ### Remaining Work
-- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — Slices 17–21: Slice 17 ✅, 18 ✅, 19 ✅, 20 ✅ this session; Slice 21 (README/CHANGELOG docs) remaining — the last slice of the cycle.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
-- **Phase 5 design input (this session)**: investigated plan-mode mechanics before implementing Slices 17–19. Key finding — `ExitPlanMode` takes NO content param; it renders the **harness-designated plan file** (the model writes its plan there, ExitPlanMode signals done). To surface an artifact as the plan, write the artifact body into that plan file, then persist to the real path on approval. Also: `ExitPlanMode`'s own guidance says it's for *planning the implementation of a code-writing task*, and explicitly NOT for research — so verify (research) is a documented non-fit, inquire (spec) a partial fit, and **navigate is the textbook fit** (plan the phase-group slices → approve → implement, task list as live view after). This is in tension with the SPEC's verify/inquire-only Phase 5 scope. Desktop has separate `plan` and `tasks` panes (confirmed). **Revisit Slices 17–19 before implementing** — possibly reframe navigate plan-mode integration from backlog to in-scope. Backlog idea NOT yet filed (engineer dismissed the file/continue prompt): "navigate/evolve plan-mode integration — present the phase-group slice plan via ExitPlanMode at session start when in plan mode, then fall to the tasks-pane live view; also fixes navigate breaking when launched in plan mode."
+- **Incomplete slices**: **All slices complete.** Phases 1–3 shipped (PR #63, #65, #67). Phase 4 — Native Tasks (#61, Slices 14–16) complete. Phase 5 — Mode/Gate/Workflow (#62, Slices 17–21) complete this session. Phases 4 and 5 share **PR 4**, which opens after Phase 5's phase-group verification.
 - **Blockers**: None.
 - **Blockers encountered**: None.
-- **Handoff context**: Next session: Phase 4 — Native Tasks (#61, Slices 14–16). After #67 merges, recreate the branch from main (this session's lesson: GitHub auto-deletes the head branch on merge, so the stale local tracking ref made the remote look diverged — the push was clean; `git checkout -B feature/platform-alignment origin/main` after a fetch is the whole dance). Hooks are armed and behaved mechanically all session: journal-check passed on all three commits, the trellis gate consumed fresh stamps for the two command-file commits. Standing context for Phase 4: this session **dogfooded native task tracking ahead of Slice 15** (TaskCreate one task per slice at session start with blockedBy ordering, in_progress/completed at slice transitions) — the pattern worked and matches the spec'd design. Slice 14 also owns the SPEC phase-grouped template drift (trellis artifact validation currently fails SPEC.md on the missing `### Work Slices` heading — slices live under `## Phase N` groups). Slice 16 owns: resume's PAUSE-deletion mechanics + tool grant, the STATE.md parenthetical removal ("deletion mechanics land with resume's task-awareness update"), inquire's missing PAUSE consumption, and status wording. Slice 19 owns the CHANGELOG 0.4.0 entry for #59–#62 — note the Phase 3 verification finding: the 0.3.0 entry ("Skill Workflows in CLAUDE.md") is now stale, so the [Unreleased] entry must document the map's move to shared.md. Evolve candidates carried forward: rename "Available Tools & Agents" (this repo's shared.md + init's template — it now holds notes, not an inventory); coverage-check asymmetry; `gh pr checks` invisible to evolve; evolve's unconditional EVOLUTION.md staging. Retro items persisted here: a `.vine/scripts/`-style mechanical script for trellis's checks would make the stamp reproducible instead of session-interpreted (this session ran them as ad-hoc shell); the boundary rule's "same subject, different reader scope" distinction (Engineer Profile Protocol vs Engineer Profile) may deserve an example in the rule text if it confuses contributors.
+- **Next step**: Phase 5 / cycle is implementation-complete. Run navigate **step 8 (Between Phase Groups)** — the lightweight phase-group verification for Phases 4+5's combined changes (lint/typecheck/test across the group, AC rollup, cross-slice integration) — then open **PR 4** (record its number in PROJECT-MAP Milestones for both the Phase 4 and Phase 5 rows, flip both to ✅ Shipped, set the SPEC phase-5 header ⬜→✅), then `/clear` and run `vine:evolve platform/platform-alignment` for the cycle close.
+- **Handoff context for evolve**:
+  - **Evolve candidates carried forward** (act on these): (1) rename shared.md's "Available Tools & Agents" heading + init's template equivalent — post-Knowledge-Boundary it holds *notes*, not an inventory; (2) coverage-check asymmetry between navigate phase-group verification and evolve; (3) `gh pr checks` is invisible to evolve (no CI-status read); (4) evolve's EVOLUTION.md staging was unconditional — Slice 19 set the tracked/untracked staging rule for navigate+evolve, so confirm evolve's EVOLUTION.md staging now follows it.
+  - **Dropped (intentional)**: plan-mode integration for navigate/evolve. The engineer dropped harness plan mode from the cycle entirely (SPEC Phase 5 reshape) — it's a harness concern the harness already handles; Slice 17 became the gearing↔permission-mode preference instead. The old backlog idea ("present the phase-group slice plan via ExitPlanMode") is deliberately *not* filed; revisit only if the engineer reopens it.
+  - **Retro items**: (1) a `.vine/scripts/`-style mechanical script for trellis's checks would make the stamp reproducible instead of session-interpreted (this cycle ran them as ad-hoc shell); (2) the Knowledge Boundary rule's "same subject, different reader scope" distinction (Engineer Profile Protocol vs Engineer Profile) may deserve a worked example in the rule text if it confuses contributors.
+  - **Branch hygiene note**: GitHub auto-deletes the head branch on merge; after a prior phase PR merges, `git checkout -B feature/platform-alignment origin/main` after a fetch is the clean re-create dance (stale local tracking ref otherwise makes the remote look diverged).
