@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/trellis-gate.sh\""
+          },
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/main-guard.sh\""
           }
         ]
       }

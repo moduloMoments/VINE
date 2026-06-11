@@ -83,6 +83,28 @@ check "trellis-gate: non-commit -> allow" 0 $?
 
 rm -rf "$T"
 
+# ---------- main-guard.sh ----------
+M="$SCRIPTS_DIR/main-guard.sh"
+T=$(mktemp -d)
+( cd "$T" && git init -q -b main . && git commit -q --allow-empty -m init )
+export CLAUDE_PROJECT_DIR="$T"
+
+printf '%s' "$payload_commit" | sh "$M" >/dev/null 2>&1
+check "main-guard: commit on main -> block (exit 2)" 2 $?
+
+printf '%s' "$payload_ls" | sh "$M" >/dev/null 2>&1
+check "main-guard: non-commit on main -> allow" 0 $?
+
+( cd "$T" && git checkout -q -b feat )
+printf '%s' "$payload_commit" | sh "$M" >/dev/null 2>&1
+check "main-guard: commit on feature branch -> allow" 0 $?
+
+( cd "$T" && git checkout -q --detach )
+printf '%s' "$payload_commit" | sh "$M" >/dev/null 2>&1
+check "main-guard: detached HEAD fails open -> allow" 0 $?
+
+rm -rf "$T"
+
 # ---------- trellis-check.sh ----------
 C="$SCRIPTS_DIR/trellis-check.sh"
 
