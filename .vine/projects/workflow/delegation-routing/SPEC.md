@@ -167,6 +167,10 @@ same session).
 - All five bodies reference `.vine/context/`, not `.vine/hooks/`.
 - #49/#50 verified against the live skill descriptions: closed with a comment if already
   landed, updated if not.
+  > **Addendum (2026-06-11, navigate)**: #48 also verified as already landed (7/8 commands
+  > carry the one-line shared.md profile reference; status.md's variant is deliberate) and
+  > closed with the same treatment — engineer's call during slice 3. Surviving side-track
+  > set is #46/#47; roadmap row synced.
 - Each surviving body is actionable cold — correct paths, current file names, no
   references to pre-rename structure.
 **Complexity signal**: Low — verified-mechanical; the #49/#50 check is the only judgment
