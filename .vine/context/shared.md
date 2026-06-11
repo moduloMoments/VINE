@@ -111,6 +111,9 @@ table. Match the feature's domain against the profile's entries.
   passed since the last command edit (a green run writes `.vine/.trellis-ok`). Contributor-only:
   `create-vine` never ships this script. The journal-check scaffold hook is wired here too
   (dogfooding).
+- **Main guard hook**: `.vine/scripts/main-guard.sh` (PreToolUse on Bash, contributor-only) —
+  blocks `git commit` while the checkout is on `main`; sessions that land on the shared
+  checkout get a hard stop telling them to branch or use a worktree.
 - **Publish workflow**: `.github/workflows/publish.yml` — manual dispatch, publishes `create-vine` to npm with provenance
   - Reads version from `package.json`, extracts release notes from `CHANGELOG.md`
   - Runs smoke test (`bin/cli.js` in temp dir, verifies command files are installed)

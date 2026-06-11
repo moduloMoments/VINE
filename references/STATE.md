@@ -241,7 +241,7 @@ Shell-script home for VINE's native hook scripts — the enforcement layer behin
 
 Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). If VINE grows a validation contract, the Validation block proposed in #54 is its home.
 
-A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps `trellis-gate.sh` (a contributor-only commit gate, never shipped by `create-vine`) in the same directory. The table above documents only the scaffold scripts.
+A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps contributor-only gates in the same directory (`trellis-gate.sh`, a command-commit gate, and `main-guard.sh`, which blocks commits on `main`; neither ships via `create-vine`). The table above documents only the scaffold scripts.
 
 ### PROJECT-MAP.md (produced by vine:verify, updated by all phases)
 
