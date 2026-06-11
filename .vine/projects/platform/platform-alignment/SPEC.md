@@ -411,7 +411,7 @@ and changes nothing where they don't. PR 4 stays open for Phase 5.
 
 ---
 
-## Phase 5: Mode, Gate & Commit Hygiene (Slices 17–20) — #62, PR 4 (shared) ⬜
+## Phase 5: Mode, Gate & Workflow Hygiene (Slices 17–21) — #62, PR 4 (shared) ⬜
 
 Summary: SPEC.md is VINE's plan and the artifact chain + AskUserQuestion sign-offs are the gate —
 harness plan mode is left to the harness, neither narrated nor integrated by VINE. This phase
@@ -458,6 +458,12 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 > PROJECT-MAP/Milestones boundary commits). Engineer's call: fold a new **Slice 19 — artifact-
 > commit guidance** into Phase 5. The README/CHANGELOG docs slice renumbers 19 → 20 and now also
 > documents the commit guidance.
+>
+> **Scope addition 2 (same session).** A later request folded in **Slice 20 — between-slice
+> `/clear` suggestion** (navigate step 7, selective): offer `/clear` + re-`/vine:navigate` to start
+> the next slice fresh, recommended only where context is heavy or the next slice is independent —
+> newly safe thanks to the Slice 15–16 journal-rebuild. Docs renumber again 20 → 21. Phase 5 is now
+> Slices 17–21.
 
 ### Slice 17: Gearing ↔ permission-mode preference (navigate)
 **Goal**: navigate's per-slice gearing decision recommends the permission mode that fits the
@@ -534,18 +540,37 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 > `(see STATE.md)` pointer is supplementary, exactly like the existing sentinel/journal-check
 > references. This is the Knowledge Boundary "same subject, different reader scope" case.
 
-### Slice 20: README gearing↔mode + task + commit-guidance docs
+### Slice 20: Between-slice `/clear` suggestion (navigate step 7)
+**Goal**: navigate's between-slices decision (step 7) offers a third path alongside continue/pause:
+  **`/clear` then re-invoke `/vine:navigate <domain>/<feature-slug>`** to pick up the next
+  not-Complete slice with fresh context. Newly safe because Slices 15–16 made navigate/resume
+  rebuild state from NAVIGATION.md (+ SPEC.md), so a mid-phase clear loses nothing. **Selective,
+  not default**: surface the option every time but only mark it Recommended where it makes sense —
+  context has grown heavy (several slices deep / lots of exploration) or the next slice is
+  substantially independent; keep "continue in session" the default for tightly-coupled or
+  still-lean cases. Mirrors the step-8 between-phase-group `/clear` block but at the slice level
+  and selective. The journal carries everything forward regardless.
+**Depends on**: Slices 15–16 (journal-as-source-of-truth rebuild) — already shipped.
+**Files likely touched**: commands/vine/navigate.md (step 7)
+**Acceptance criteria**: step 7 presents a `/clear` + re-`/vine:navigate` option; guidance states
+  the selective heuristic (when to recommend vs not); the suggested re-entry names auto-resume at
+  the next not-Complete slice; "continue in session" remains the default for coupled/lean cases;
+  trellis passes.
+**Complexity signal**: Low.
+
+### Slice 21: README gearing↔mode + task + commit-guidance docs
 **Goal**: README documents navigate's gearing↔permission-mode mapping (free climb →
   auto-accept-edits; walk-me-through → approve-edits, toggle is the engineer's action), the
   artifact review-link affordance + optional auto-open repo wiring, the task-tracking live-view
-  (with the journal as source of truth), and the tracked-repo artifact-commit guidance from
-  Slice 19 (what a slice commit vs a phase-group PR carries). CHANGELOG 0.4.0 entry completed
-  for #59–#62.
-**Depends on**: Slices 15–19.
+  (with the journal as source of truth), the tracked-repo artifact-commit guidance from Slice 19
+  (what a slice commit vs a phase-group PR carries), and the between-slice `/clear` option from
+  Slice 20. CHANGELOG 0.4.0 entry completed for #59–#62.
+**Depends on**: Slices 15–20.
 **Files likely touched**: README.md, CHANGELOG.md
 **Acceptance criteria**: A reader can predict the recommended permission mode for each gear, how
-  artifact review links behave, and what a tracked-repo commit/PR carries; docs make no claim
-  about harnesses where the features don't exist and introduce no plan-mode / `ExitPlanMode` claims.
+  artifact review links behave, what a tracked-repo commit/PR carries, and when a between-slice
+  `/clear` is suggested; docs make no claim about harnesses where the features don't exist and
+  introduce no plan-mode / `ExitPlanMode` claims.
 **Complexity signal**: Low.
 
 ---

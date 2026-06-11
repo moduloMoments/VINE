@@ -588,7 +588,7 @@ at completion rather than before the SPEC write.
 
 ### Slice 19: Artifact-commit guidance for tracked repos — Complete
 **Started**: 2026-06-10 22:30
-**Commit**: pending
+**Commit**: abb8f4d
 **Approach taken**: Three files. **references/STATE.md**: new top-level `## Committing Artifacts`
 section (after *Source of Truth vs Derived Views*) — tracked-vs-untracked is the repo's `.gitignore`
 choice; the mtime journal guarantee holds either way; a per-commit-point table (slice commit = code
