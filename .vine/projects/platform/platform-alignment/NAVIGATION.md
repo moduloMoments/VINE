@@ -539,8 +539,55 @@ walk-me-through)."
     `ExitPlanMode` would narrate behavior it doesn't own. The VINE-level value was never plan-mode
     integration; it was aligning the permission mode with the gearing intent the engineer already signals.
 
+### Slice 18: Inquire sign-off gate + artifact review links — Complete
+**Started**: 2026-06-10 22:19
+**Commit**: pending
+**Approach taken**: Two commands. **inquire.md**: new `### Sign-Off Gate` opening Phase Completion,
+ahead of the existing "Once approved:" steps (PROJECT-MAP ✅ + retro + completion block). The gate
+(1) presents SPEC.md as a clickable markdown link so it opens rendered in the editor plus a short
+decisions/slices summary, and (2) gates *completion* on an AskUserQuestion sign-off ("Approve — hand
+to navigate (Recommended)" / "Request changes" → revise SPEC.md, re-present, loop). Closes the
+missing-gate tech debt without inferring approval from silence. **verify.md**: Phase Completion
+step 1 now gives a clickable CONTEXT.md link for rendered review. Both files note auto-open as
+optional repo wiring (a repo can wire its editor open command in the phase overlay), with the
+clickable link as the portable default and an explicit "don't shell out to an OS-specific opener."
+**Deviations from spec**: **Write-then-review** chosen over the original AC's "no write before
+approval" (engineer's call at the gearing fork). A clickable link needs the file written first, and
+the engineer wanted to review via the file/preview — so the gate moved to *completion* (write draft
+→ review via link → approve/iterate → gate the ✅ + handoff), not the draft write. SPEC.md Slice 18
+Goal + AC reframed and a design note added recording the deviation.
+**Validation**: pass — re-validated inquire.md + verify.md (only changed files): frontmatter 4
+fields, H1, overlays+phase-path, profile, overlays-before-profile ordering, AskUserQuestion all
+intact; both edits are body prose in existing Phase Completion sections (no heading/frontmatter
+change); zero new legacy refs (the `.vine/context/<phase>.md` overlay mentions are not `.vine/hooks`).
+Other 9 commands byte-identical since the prior green run → trellis 11/11; fresh stamp `status:
+pass` 22:22.
+**Decisions made during implementation**:
+  - Gate placed as the first sub-section of Phase Completion (write-then-review), existing
+    completion steps moved under an "Once approved:" lead — keeps the draft write at step 8 and
+    gates the handoff (decided by: engineer, gearing-fork choice)
+  - verify gets the review *link* but no new gate — the gate is inquire-specific; verify keeps its
+    existing wrap-up flow (decided by: claude, free-climb mode)
+  - Auto-open left as documented optional repo wiring, never hardcoded (OS-specific, dead headless)
+    — same repo-owned-decision line as elsewhere this cycle (decided by: engineer, earlier in session)
+**Acceptance criteria**:
+  - [x] inquire does not complete (PROJECT-MAP ✅ / handoff) without an explicit AskUserQuestion sign-off
+  - [x] Sign-off presents SPEC.md as a clickable link + supports a request-changes/iterate loop
+  - [x] Milestones draft is part of the reviewed spec (written by step 6c, before the gate)
+  - [x] verify presents CONTEXT.md as a clickable link on creation
+  - [x] Auto-open appears only as documented optional repo wiring
+  - [x] trellis passes on both edited commands (11/11)
+**Engineer feedback incorporated**: Free-climb gearing; the write-then-review model was the
+engineer's explicit choice at the gearing fork (over review-then-write), which is why the gate sits
+at completion rather than before the SPEC write.
+**Learnings**:
+  - Claude → Engineer: the "no write before approval" framing was a holdover from the dropped
+    plan-mode model; once SPEC.md is the plan and the review surface is the rendered file, the
+    honest gate is on *completion/handoff*, not the draft write — write-then-review matches how
+    design review actually works.
+
 ### Remaining Work
-- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — reshaped (see session note): Slice 17 ✅ complete this session; Slices 18–19 remaining.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
+- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — reshaped to Slices 17–20: Slice 17 ✅, Slice 18 ✅ this session; Slice 19 (artifact-commit guidance) + Slice 20 (README/CHANGELOG docs) remaining.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
 - **Phase 5 design input (this session)**: investigated plan-mode mechanics before implementing Slices 17–19. Key finding — `ExitPlanMode` takes NO content param; it renders the **harness-designated plan file** (the model writes its plan there, ExitPlanMode signals done). To surface an artifact as the plan, write the artifact body into that plan file, then persist to the real path on approval. Also: `ExitPlanMode`'s own guidance says it's for *planning the implementation of a code-writing task*, and explicitly NOT for research — so verify (research) is a documented non-fit, inquire (spec) a partial fit, and **navigate is the textbook fit** (plan the phase-group slices → approve → implement, task list as live view after). This is in tension with the SPEC's verify/inquire-only Phase 5 scope. Desktop has separate `plan` and `tasks` panes (confirmed). **Revisit Slices 17–19 before implementing** — possibly reframe navigate plan-mode integration from backlog to in-scope. Backlog idea NOT yet filed (engineer dismissed the file/continue prompt): "navigate/evolve plan-mode integration — present the phase-group slice plan via ExitPlanMode at session start when in plan mode, then fall to the tasks-pane live view; also fixes navigate breaking when launched in plan mode."
 - **Blockers**: None.
 - **Blockers encountered**: None.

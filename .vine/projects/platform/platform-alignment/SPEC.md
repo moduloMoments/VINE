@@ -478,17 +478,29 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 **Complexity signal**: Low.
 
 ### Slice 18: Inquire sign-off gate + artifact review links
-**Goal**: inquire gains an explicit AskUserQuestion sign-off gate before the
-  SPEC.md/PROJECT-MAP/Milestones writes (closing the missing-gate tech debt). The sign-off
-  presents the SPEC for review as rendered output plus a clickable artifact link. Apply the
-  same review-link affordance to verify's CONTEXT.md creation. Auto-open is documented as
-  optional repo wiring, not hardcoded behavior.
-**Depends on**: Slice 17 (establishes the plan-mode-robust shape).
+**Goal**: inquire gains an explicit AskUserQuestion sign-off gate that closes the missing-gate
+  tech debt. Model (engineer's call): **write-then-review** — the SPEC.md draft is written
+  (step 8), then Phase Completion presents it for review (a clickable link so it opens rendered
+  in the editor, plus a short summary), and an AskUserQuestion gate (Approve → hand to navigate /
+  Request changes → revise + re-present, loop) gates *completion* (the PROJECT-MAP inquire ✅ and
+  the navigate handoff), not the draft write itself. The multi-PR Milestones draft is part of the
+  reviewed spec. Apply the same clickable review-link affordance to verify's CONTEXT.md creation.
+  Auto-open is documented as optional repo wiring (a repo can wire its editor open command in the
+  overlay), never hardcoded — the clickable link is the portable default.
+**Depends on**: None (independent of Slices 17 and 19).
 **Files likely touched**: commands/vine/inquire.md, commands/vine/verify.md
-**Acceptance criteria**: No artifact write precedes an explicit AskUserQuestion approval; the
-  Milestones-table flow sits behind the same gate; the sign-off/creation output presents the
-  artifact as a clickable link; auto-open appears only as a documented optional repo behavior.
+**Acceptance criteria**: inquire does not complete (PROJECT-MAP inquire ✅ / handoff to navigate)
+  without an explicit AskUserQuestion sign-off on the written SPEC; the sign-off presents SPEC.md
+  as a clickable link and supports a request-changes/iterate path; the Milestones draft is part of
+  the reviewed spec; verify presents CONTEXT.md as a clickable link on creation; auto-open appears
+  only as documented optional repo wiring; trellis passes on both edited commands.
 **Complexity signal**: Medium.
+
+> **Slice 18 design note (deviation from original AC).** The original AC read "no artifact write
+> precedes approval" — borrowed from the (since-dropped) plan-mode model. A clickable review link
+> needs the file written first, and the engineer asked to review via the file/preview, so the gate
+> moved to *completion* (write draft → review via link → approve/iterate → gate the ✅ + handoff).
+> SPEC.md as a working draft before sign-off is harmless; it gets revised on a request-changes loop.
 
 ### Slice 19: Artifact-commit guidance for tracked repos
 **Goal**: Make VINE's commit-contents guidance consistent and complete for repos that track
