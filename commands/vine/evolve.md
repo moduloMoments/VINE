@@ -86,6 +86,25 @@ validation status).
 Present a rollup of per-slice results from NAVIGATION.md, then focus your effort on what
 navigate couldn't verify:
 
+### Acceptance Criteria Traceability
+
+SPEC.md's top-level `### Acceptance Criteria` is the cycle's contract — distinct from the
+per-slice checklists navigate verified. Nothing else confirms every cycle-level criterion
+actually landed in a slice, so build a two-column mapping of each criterion to its evidence:
+
+| Acceptance criterion (SPEC) | Evidence (slice / commit) |
+|---|---|
+| [criterion text] | Slice N — [commit hash] |
+| [criterion text] | **unaccounted** |
+
+Pull the evidence from NAVIGATION.md's slice entries (their per-slice acceptance criteria and
+commit hashes). This is a lookup against the record, not a re-verification — trust the
+per-slice validation. A criterion with no slice/commit behind it is **unaccounted**: surface
+it rather than letting it silently vanish. Unaccounted usually means one of two things — a
+slice covered it without recording the link (fixable: note the evidence) or the cycle didn't
+deliver it (a real gap for the engineer to decide on before shipping). This table is the
+Acceptance Criteria Results in EVOLUTION.md.
+
 ### Cross-Slice Integration Check
 
 This is where evolve adds value. Delegate to the `vine-verification` agent in feature verification
