@@ -284,6 +284,12 @@ stronger than that. For each slice, capture:
   - Claude → Engineer: [patterns or approaches the engineer found useful]
 ```
 
+The slice-heading shape and field labels above are the NAVIGATION.md template from
+`references/STATE.md`. Use them verbatim: keep the `Slice N:` prefix, the literal
+`In Progress` / `Complete` status words (pause matches on them), and the field labels as
+written. Resume, pause, and artifact-format validation locate entries by these strings, so
+a custom heading or relabeled field breaks the chain silently.
+
 **c. Commit the slice**
 
 Stage the changed files and commit with this format. **When the repo tracks `.vine/`
