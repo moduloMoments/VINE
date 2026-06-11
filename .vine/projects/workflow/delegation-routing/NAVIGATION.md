@@ -50,7 +50,7 @@
 
 ### Slice 3: #46–50 freshness pass — Complete
 - **Started**: 2026-06-11 (same session)
-- **Commit**: pending
+- **Commit**: 10ec509
 - **Approach taken**: Verified all five bodies against the working tree before drafting. Found #49/#50 landed (live frontmatter matches their proposals) — and #48 landed too (7/8 commands use the one-line shared.md profile reference; status.md's variant is deliberate per the interaction-surface principle). Updated #46 (current section names, the bootstrap-can't-be-externalized constraint, cross-reference to the foundation cycle's precedence work touching the same blocks) and #47 (count corrected 3→4: optimize gained a constraints block). Closed #48/#49/#50 with verification comments. Synced the roadmap's side-track row to #46/#47 only (committed with this slice).
 - **Deviations from spec**: #48 closed as landed — the spec's letter said "update paths" for #46–48 and only anticipated #49/#50 as possibly done. Surfaced to the engineer; closing keeps the delegation-test-case set honest (a cold actor on #48 would find nothing to do). SPEC.md annotated.
 - **Validation**: pass — re-fetched live bodies: #46/#47 reference `.vine/context/`; their two remaining `.vine/hooks/` strings are intentional (one names the live legacy-fallback feature, one documents the rename in the Source line), not stale paths. States verified: #46/#47 OPEN, #48/#49/#50 CLOSED.
@@ -66,3 +66,22 @@
 - **Learnings**:
   - Claude → Engineer: The freshness pass doubled as a drift detector — #48 had silently landed via the shared-pattern convention work, the same way #49/#50 landed via the description rewrites. Verified-against-working-tree before editing is the right default for any issue old enough to predate a rename.
   - Engineer → Claude: The "no stale references" bar is about whether a cold actor would act wrongly, not string presence — confirmed via the #48 closure choice.
+
+### Slice 4: README comparison reposition — Complete
+- **Started**: 2026-06-11 (same session)
+- **Commit**: pending
+- **Approach taken**: Rewrote "How VINE compares" (README.md ~line 342) from a generic autonomous-vs-VINE table into: camps framing with the routing thesis (human attention as the scarce resource), per-product positioning bullets under a section-level "as of June 2026" qualifier (Spec-Kit, Kiro, BMAD v6, Augment Cosmos, agent-context), AGENTS.md/AAIF as substrate, the above-repo layering gap claim linking ROADMAP.md's "Overlay layers and precedence", and the original table retained (trimmed/updated) as the autonomous-camp comparison. Hybrid-parallel/headless attributed to the roadmap in both prose and table — never claimed as shipped.
+- **Deviations from spec**: None.
+- **Validation**: pass — vine-verification agent: all five products consistent with CONTEXT.md's verified claims, no bare star counts (section-level date qualifier), tone check passed (bets not flaws; agent-context seam framed factually), ROADMAP.md link and heading anchor verified, surrounding sections intact.
+- **Decisions made**:
+  - Date-qualify the whole product list with one "as of June 2026" line instead of per-claim qualifiers: (decided by: claude)
+  - Keep the original comparison table as the autonomous-camp half rather than deleting it: (decided by: claude)
+- **Acceptance criteria**:
+  - [x] Spec-Kit, Kiro, BMAD v6, Augment Cosmos, agent-context each positioned accurately per the verified 2026-06 field state — verified
+  - [x] AGENTS.md under Linux Foundation AAIF named as substrate to ride, not a competitor — verified
+  - [x] Field gap claimed: layering above repo scope as the overlay matrix's territory — verified
+  - [x] No stale star counts or product-state claims — all date-qualified — verified
+- **Engineer feedback incorporated**: Free-climb slice — boundary review pending.
+- **Learnings**:
+  - Claude → Engineer: A single section-level date qualifier ("as of June 2026") ages more gracefully than bare claims and reads less defensive than qualifying every number — it also gives the next freshness pass one line to bump.
+  - Engineer → Claude: None this slice (free climb).
