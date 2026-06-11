@@ -168,22 +168,23 @@ After the preview, use `AskUserQuestion` for the gearing decision:
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
   (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
-- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself"
-- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation"
+- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself (pairs with auto-accept-edits)"
+- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation (pairs with approve-edits)"
 
-**Gearing:** The engineer's choice sets the engagement level for this slice:
+**Gearing:** The engineer's choice sets the engagement level for this slice *and* the
+permission mode that fits it. Recommend the matching mode — the toggle is always the
+engineer's action; you can suggest it, never flip it or assume it happened:
 
-- **"Free climb"**: The engineer trusts the approach and wants to move faster. They may
-  switch to auto-accept for this slice — that's their toggle, not yours; you can suggest
-  it, never flip it or assume it happened. Skip step 3b narration and step 3c review
-  pauses. Still do the preview (3a), surface decisions (3d), and all of step 4
-  (validation, commit, NAVIGATION.md). **At the slice boundary (step 4 complete), ask the
-  engineer to switch back to approve-edits** so they re-engage for the next slice's
-  preview and gear choice.
-- **"Walk me through this"**: Full partnership narration per steps 3b and 3c, with the
-  engineer reviewing each edit as it lands. The engineer wants to stay close to the
-  implementation — either because the code is unfamiliar, the approach is novel, or they
-  want to learn from the process.
+- **"Free climb"**: The engineer trusts the approach and wants to move faster. Recommend
+  **auto-accept-edits** (or full auto) for this slice so edits land without a prompt each
+  time. Skip step 3b narration and step 3c review pauses. Still do the preview (3a),
+  surface decisions (3d), and all of step 4 (validation, commit, NAVIGATION.md). **At the
+  slice boundary (step 4 complete), ask the engineer to switch back to approve-edits** so
+  they re-engage for the next slice's preview and gear choice.
+- **"Walk me through this"**: Recommend **approve-edits** (per-edit permission prompts) so
+  the engineer reviews each edit as it lands. Full partnership narration per steps 3b and
+  3c. The engineer wants to stay close to the implementation — either because the code is
+  unfamiliar, the approach is novel, or they want to learn from the process.
 
 Use the profile's expertise level to inform which option you recommend (confident/familiar
 → default to "free climb"; learning/new → default to "walk me through this") but the
