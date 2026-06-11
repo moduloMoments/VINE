@@ -32,7 +32,7 @@ consumes them"), not a new rule.
 moat. The harness optimizes *where human attention is worth spending*. Triple-evolution stays
 the differentiator; the human's delegation judgment is one of the three things growing.
 
-### Repo State vs. Brief — Drift Findings
+### Current State — Repo vs. Brief Drift Findings
 
 The brief was written from a point-in-time read. Verified against live issue bodies and the
 working tree on 2026-06-11:
@@ -89,7 +89,7 @@ not (solo maintainer).
 | SPEC sign-off | inquire completion: explicit approval, never inferred | Interactive, single approver |
 | Verify's gearing note | completion block prose | Advisory, written to no artifact — a routing recommendation with no durable home (relevant: route decisions currently have nowhere to be recorded) |
 
-### Single-Actor Assumption Inventory (expanded — brief had 5, repo has ~14 + structural findings)
+### Edge Cases & Tribal Knowledge — Single-Actor Assumption Inventory (expanded — brief had 5, repo has ~14 + structural findings)
 
 Brief's known five, all confirmed: PAUSE.md consumed-once (5 uncoordinated deletion triggers
 across commands; overwrite-on-re-pause loses a second actor's notes silently); `.vine/ACTIVE`

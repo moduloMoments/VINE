@@ -69,7 +69,7 @@
 
 ### Slice 4: README comparison reposition — Complete
 - **Started**: 2026-06-11 (same session)
-- **Commit**: pending
+- **Commit**: dda866c
 - **Approach taken**: Rewrote "How VINE compares" (README.md ~line 342) from a generic autonomous-vs-VINE table into: camps framing with the routing thesis (human attention as the scarce resource), per-product positioning bullets under a section-level "as of June 2026" qualifier (Spec-Kit, Kiro, BMAD v6, Augment Cosmos, agent-context), AGENTS.md/AAIF as substrate, the above-repo layering gap claim linking ROADMAP.md's "Overlay layers and precedence", and the original table retained (trimmed/updated) as the autonomous-camp comparison. Hybrid-parallel/headless attributed to the roadmap in both prose and table — never claimed as shipped.
 - **Deviations from spec**: None.
 - **Validation**: pass — vine-verification agent: all five products consistent with CONTEXT.md's verified claims, no bare star counts (section-level date qualifier), tone check passed (bets not flaws; agent-context seam framed factually), ROADMAP.md link and heading anchor verified, surrounding sections intact.
@@ -85,3 +85,14 @@
 - **Learnings**:
   - Claude → Engineer: A single section-level date qualifier ("as of June 2026") ages more gracefully than bare claims and reads less defensive than qualifying every number — it also gives the next freshness pass one line to bump.
   - Engineer → Claude: None this slice (free climb).
+
+### Remaining Work
+- **Incomplete slices**: All slices complete (4 of 4).
+- **Blockers encountered**: None.
+- **Handoff context**:
+  - Evolve's feature-level AC rollup: routing loop as organizing thesis (slice 1), issue/milestone consistency (slices 2–3), README field-state accuracy (slice 4), backward-compat verbatim (verified slice 1), and "all eight SPEC decisions findable with rationale by an E3 reader" — the last one spans roadmap + issue bodies and hasn't been checked as a single pass.
+  - The verification-boundary feature (#69) executes in its own session; the rewritten roadmap's foundation cycle assumes the consolidated verification agent it produces. #54's new body was written against the contract, not the file layout, so it reads correctly whether or not #69 has landed.
+  - CONTEXT.md's "Current State" and "Edge Cases & Tribal Knowledge" headings were retitled at navigate close for STATE.md template compliance — verify emitted custom headings. Consider whether vine:verify needs a template nudge (evolve triage item; trellis caught it, but only because this repo runs trellis).
+  - trellis-check.sh covers command checks only; the artifact checks that caught the CONTEXT.md drift remain session-interpreted — possible future scriptable-check candidate.
+  - #46/#47 are now cold-executable delegation test cases, gated on the foundation cycle's #54 work — never schedule them interactively ahead of it (roadmap side-track row).
+  - PR should carry all four commits plus the closing artifact state (this repo tracks `.vine/projects/`).

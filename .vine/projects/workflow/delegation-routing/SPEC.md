@@ -146,6 +146,8 @@ moduloMoments/VINE; milestone description via `gh api`.
   recompose under the backward-compat gate.
 - #55 split: Decision Delegation / Risk Tolerance content moves to routing policy; domain
   levels / Growth Goals stay profile.
+  > **Addendum (2026-06-11, navigate)**: Review Preferences (unnamed in this AC) stayed
+  > profile-side — it's preference-class content per the rule-class taxonomy.
 - #52 reframed: overlay composition at the team layer; tracked-default flip, `.local`
   projects, and conflict-safe conventions explicitly survive.
 - New issue(s) filed for cross-actor live execution state: slice ownership, in-flight
