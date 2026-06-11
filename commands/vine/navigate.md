@@ -362,12 +362,29 @@ After each slice is validated and committed:
    When task tools are available, dispose its task accordingly: if the condition holds, drop
    the `(conditional: …)` prefix and proceed (it becomes a normal slice); if not, `TaskUpdate`
    it to `deleted` and note the skip in NAVIGATION.md.
-5. Ask if the engineer wants to continue or pause
+5. Decide how to proceed. Offer three paths via `AskUserQuestion` — **continue in this
+   session**, **`/clear` and continue fresh**, or **pause**. The `/clear` path means run
+   `/clear` then re-invoke `/vine:navigate <domain>/<feature-slug>`, which auto-resumes at the
+   next not-Complete slice — navigate rebuilds state from NAVIGATION.md + SPEC.md (Slices 15–16),
+   so a mid-phase clear loses nothing. **Surface it selectively**: mark "`/clear` and continue
+   fresh" as Recommended only when the session context has grown heavy (several slices deep, or a
+   lot of exploration this session) or the next slice is substantially independent of what you
+   just built. When the next slice is tightly coupled to the just-finished one, or only a slice or
+   two is done, keep **continue in this session** the default and present `/clear` as the lighter
+   option. The journal carries everything forward either way.
 
 > "Slice 2 committed (abc1234). Before we start Slice 3 (the webhook handler), I want to
 > flag that our implementation of the provider interface is slightly different from what the
 > spec assumed — we added an async initialization step. This means the webhook handler will
 > need to account for that. Want to adjust the plan, or should I adapt as I go?"
+
+**If the engineer chooses `/clear` and continue fresh**, this is a continuation, not an ending.
+NAVIGATION.md is already current (you updated it at the slice commit), so nothing extra to write —
+the re-invoked `/vine:navigate` rebuilds context from it. Leave `.vine/ACTIVE` in place; the next
+invocation refreshes its `phase` line. Then tell the engineer the exact command to run:
+
+> "Slice N committed. Run `/clear`, then `/vine:navigate <domain>/<feature-slug>` — it'll pick up
+> at Slice N+1 with a fresh context. NAVIGATION.md carries everything forward."
 
 **If the engineer chooses to pause**, write a "Remaining Work" section to NAVIGATION.md before
 stopping. This ensures the next session (or vine:resume) has structured handoff context:

@@ -635,8 +635,47 @@ contributor contract.
     must live in `commands/vine/*`, with STATE.md as the contributor map. The "single home" rule
     is always scoped by *which reader loads the file*.
 
+### Slice 20: Between-slice `/clear` suggestion (navigate step 7) — Complete
+**Started**: 2026-06-10 23:00
+**Commit**: pending
+**Approach taken**: `commands/vine/navigate.md` step 7, two edits. (1) Item 5 expanded from "ask
+continue or pause" to a three-path AskUserQuestion — **continue in this session / `/clear` and
+continue fresh / pause** — with the selective heuristic spelled out: recommend `/clear` + re-
+`/vine:navigate <domain>/<feature-slug>` (auto-resumes at the next not-Complete slice via the
+Slice 15–16 journal rebuild) only when context is heavy or the next slice is independent; keep
+"continue in session" the default for coupled/lean cases. (2) New "**If the engineer chooses
+`/clear` and continue fresh**" handling block before the pause block: it's a continuation not an
+ending, NAVIGATION.md is already current (updated at the slice commit), leave `.vine/ACTIVE` in
+place (the re-invocation refreshes its phase line), and give the engineer the exact `/clear` +
+re-navigate command naming the next slice.
+**Deviations from spec**: None — matches the Slice 20 spec written this session.
+**Validation**: pass — navigate.md re-validated (only changed command): H1, overlays + phase path,
+profile, ordering, AskUserQuestion (count 8) all intact; edits are body prose in step 7; no new
+legacy refs. Other 10 commands byte-identical since the prior green run → trellis 11/11; fresh
+stamp `status: pass` 23:01.
+**Decisions made during implementation**:
+  - Selective (not default) recommendation — engineer's explicit choice; mirrors step-8's
+    phase-group `/clear` but the slice level is finer-grained, so always-clear would add re-entry
+    overhead every slice (decided by: engineer)
+  - `/clear` path leaves `.vine/ACTIVE` in place (continuation, not session end) — the re-invoked
+    navigate refreshes the sentinel's phase line; only pause/completion delete it (decided by: claude, free-climb)
+**Acceptance criteria**:
+  - [x] step 7 presents a `/clear` + re-`/vine:navigate` option (three-path AskUserQuestion)
+  - [x] Guidance states the selective heuristic (when to recommend vs not)
+  - [x] Re-entry names auto-resume at the next not-Complete slice
+  - [x] "Continue in session" remains the default for coupled/lean cases
+  - [x] trellis passes (11/11)
+**Engineer feedback incorporated**: Free-climb gearing (chosen for the slice after the design
+discussion). The slice itself, the selective-recommendation choice, and the new-slice scoping
+(Slice 20, docs → 21) were all the engineer's calls during the gearing discussion.
+**Learnings**:
+  - Claude → Engineer: the between-slice `/clear` only became safe once Slices 15–16 made
+    navigate/resume rebuild from the journal — a capability added earlier this cycle unlocked a
+    workflow feature two slices later. Worth noting how the journal-as-source-of-truth investment
+    keeps paying out.
+
 ### Remaining Work
-- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — reshaped to Slices 17–21: Slice 17 ✅, 18 ✅, 19 ✅ this session; Slice 20 (between-slice /clear suggestion) + Slice 21 (README/CHANGELOG docs) remaining.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
+- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — Slices 17–21: Slice 17 ✅, 18 ✅, 19 ✅, 20 ✅ this session; Slice 21 (README/CHANGELOG docs) remaining — the last slice of the cycle.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
 - **Phase 5 design input (this session)**: investigated plan-mode mechanics before implementing Slices 17–19. Key finding — `ExitPlanMode` takes NO content param; it renders the **harness-designated plan file** (the model writes its plan there, ExitPlanMode signals done). To surface an artifact as the plan, write the artifact body into that plan file, then persist to the real path on approval. Also: `ExitPlanMode`'s own guidance says it's for *planning the implementation of a code-writing task*, and explicitly NOT for research — so verify (research) is a documented non-fit, inquire (spec) a partial fit, and **navigate is the textbook fit** (plan the phase-group slices → approve → implement, task list as live view after). This is in tension with the SPEC's verify/inquire-only Phase 5 scope. Desktop has separate `plan` and `tasks` panes (confirmed). **Revisit Slices 17–19 before implementing** — possibly reframe navigate plan-mode integration from backlog to in-scope. Backlog idea NOT yet filed (engineer dismissed the file/continue prompt): "navigate/evolve plan-mode integration — present the phase-group slice plan via ExitPlanMode at session start when in plan mode, then fall to the tasks-pane live view; also fixes navigate breaking when launched in plan mode."
 - **Blockers**: None.
 - **Blockers encountered**: None.
