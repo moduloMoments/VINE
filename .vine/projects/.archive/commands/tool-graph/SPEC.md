@@ -3,6 +3,15 @@
 ## Built on: CONTEXT.md (2026-04-06)
 ## Decisions made by: Rob Bruhn
 
+> **⚠️ Archived — superseded, not abandoned.** This spec was never implemented under the
+> `vine:graph` name. The design evolved during navigate and shipped as **`vine:optimize`**
+> ([PR #38](https://github.com/moduloMoments/VINE/pull/38), v0.3.0) — which delivers this
+> spec's intent (skill-matching description scoring, workflow-chain/routing context, token
+> efficiency) without the `vine:graph` command or a separate graph artifact. The "structured
+> relationship metadata" idea here was dropped in favor of optimizing Claude's native
+> description-matching and the workflow map in `.vine/context/shared.md`. Kept for design
+> provenance; archived in [PR #73](https://github.com/moduloMoments/VINE/pull/73).
+
 ### Problem Statement
 
 VINE commands have no structured relationship metadata — cross-references are implicit in prose. Claude Code already has two discovery mechanisms (ToolSearch for deferred tool loading, description-based skill matching), but VINE doesn't optimize for either. Command descriptions weren't written for Claude's ~250 char matching window. No routing context exists to help Claude suggest the right command at the right time.
