@@ -107,9 +107,13 @@ mode, passing it these checks to perform:
 - Run `gh pr view <number>` for each shipped phase's PR to check status and review comments
 - Run `gh api repos/{owner}/{repo}/pulls/<number>/comments` to surface reviewer feedback
   that may affect the current phase
+- Run `gh pr checks <number>` for each shipped phase's PR to read CI status — a framework
+  that preps the handoff shouldn't be blind to red checks
 - Flag any unresolved review comments or requested changes from prior PRs — these could
   indicate integration issues or concerns that carry forward
-- Include a summary of cross-PR review findings in the Product Evolution section
+- Flag any failing or still-pending checks from prior PRs — surface them in the Product
+  Evolution section so they're visible before the handoff
+- Include a summary of cross-PR review findings and CI status in the Product Evolution section
 
 ### Review Spec Deviations
 
@@ -473,7 +477,10 @@ Present the commit message for the engineer's approval before committing.
 
 ### Suggest Opening a PR
 
-After committing, suggest opening a PR using the handoff package drafted earlier:
+After committing, suggest opening a PR using the handoff package drafted earlier. First, if
+the cross-slice integration check captured CI status from prior phase PRs (`gh pr checks`),
+restate any failing or still-pending checks here — don't suggest a handoff over red or
+in-flight CI without the engineer seeing it. No-op if `gh` was unavailable or all checks passed.
 
 > "Ready to open a PR? I have the description and reviewer notes drafted in EVOLUTION.md."
 
