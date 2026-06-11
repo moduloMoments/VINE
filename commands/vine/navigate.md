@@ -11,6 +11,9 @@ allowed-tools:
   - Bash
   - Agent
   - AskUserQuestion
+  - TaskCreate
+  - TaskUpdate
+  - TaskList
 ---
 
 # vine:navigate — Guided Implementation
@@ -100,6 +103,22 @@ back up consumes it: surface its notes in your starting-point summary, then dele
 A consumed pause must not linger — it would keep suggesting `vine:resume` for work that has
 already resumed.
 
+**Build the live task view (when available).** If native task tools are available in this
+session, create the live view of slice progress (the ephemeral, in-session mirror of the
+journal — see "Source of Truth vs Derived Views" in `references/STATE.md`): `TaskCreate` one
+task per remaining slice in the current phase group, titled by the slice name. (If SPEC.md
+isn't grouped into phases, use every not-yet-complete slice in the feature.) Order them with
+`blockedBy` so each task depends on the one before it. Skip slices already marked `Complete`
+in NAVIGATION.md — they live in the journal, not the live view. For a slice marked CONDITIONAL
+in the spec, prefix the task title `(conditional: <condition>)` and leave it pending; you'll
+evaluate the condition on arrival (step 7) and complete or delete it then.
+
+The task list is a derived view, never a source of truth: it mirrors NAVIGATION.md and
+SPEC.md and is always rebuilt from them, never the reverse. **When task tools aren't
+available, skip this and every other "(when available)" task step below** — navigate then
+behaves exactly as it does without task tracking, and NAVIGATION.md remains the durable
+journal regardless.
+
 Summarize your starting point:
 
 > "We're implementing [feature]. Based on the spec, I'm picking up at [Phase N: name /
@@ -125,7 +144,8 @@ by checking that the commits recorded in NAVIGATION.md are in the current branch
 
 ### 3. Implement One Slice at a Time
 
-For each work slice from SPEC.md:
+For each work slice from SPEC.md (when task tools are available, `TaskUpdate` this slice's
+task to `in_progress` as you begin it):
 
 **a. Preview the approach**
 
@@ -283,7 +303,9 @@ If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. 
 `.vine/context/shared.md` or `CLAUDE.md` for commit message conventions.
 
 After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
-hash.
+hash. When task tools are available, `TaskUpdate` this slice's task to `completed` once the
+commit lands — the live view follows the journal, so it flips only after the durable record is
+written.
 
 **Important:** Review depth is set by the engineer's gear choice: in approve-edits they
 review each change before it lands; in free climb they review at the slice boundary. Either
@@ -330,7 +352,10 @@ After each slice is validated and committed:
    already signaled they don't need the reflection.
 3. Check if the next slice's assumptions still hold (sometimes building slice 1 reveals that
    slice 2 needs adjustment)
-4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met
+4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met.
+   When task tools are available, dispose its task accordingly: if the condition holds, drop
+   the `(conditional: …)` prefix and proceed (it becomes a normal slice); if not, `TaskUpdate`
+   it to `deleted` and note the skip in NAVIGATION.md.
 5. Ask if the engineer wants to continue or pause
 
 > "Slice 2 committed (abc1234). Before we start Slice 3 (the webhook handler), I want to

@@ -20,7 +20,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 ## Command Authoring Conventions
 
 - YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
-- Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion
+- Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion, TaskCreate, TaskUpdate, TaskList (the native task tools are used "when available" by navigate/resume for the live progress view; trellis validates the set by consensus — the union across all commands)
 - Every command (except help) starts with a "Load Context Overlays" section (reads `.vine/context/shared.md` + `.vine/context/<phase>.md`, with a legacy `.vine/hooks/` fallback through 0.4.x)
 - Every command (except init and help) follows overlays with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates overlays/profile rather than loading them. Help is a pure reference command that doesn't need project context.
 - Load Context Overlays must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
