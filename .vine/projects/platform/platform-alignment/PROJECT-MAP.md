@@ -18,5 +18,5 @@
 | Phase 1: The Rename (#58) | 1–5 | ✅ Shipped | #63 |
 | Phase 2: Honest Enforcement (#59) | 6–10 | ✅ Shipped | #65 |
 | Phase 3: Knowledge Boundary (#60) | 11–13 | ✅ Shipped | #67 |
-| Phase 4: Native Tasks (#61) | 14–16 | ✅ Complete | — (PR 4, shared with Phase 5) |
-| Phase 5: Mode/Gate/Workflow (#62) | 17–21 | ✅ Complete | — (PR 4, shared with Phase 4) |
+| Phase 4: Native Tasks (#61) | 14–16 | ✅ Shipped | #72 (shared with Phase 5) |
+| Phase 5: Mode/Gate/Workflow (#62) | 17–21 | ✅ Shipped | #72 (shared with Phase 4) |
