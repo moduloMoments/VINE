@@ -387,6 +387,28 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 
 **When task tools are unavailable** there is simply no live view: `vine:navigate`, `vine:resume`, and `vine:status` behave exactly as they do today, reading progress directly from the durable artifacts. Every consumer degrades to the source of truth.
 
+## Committing Artifacts
+
+Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
+
+- **Tracked** (`.vine/projects/` not gitignored) = the team-shared choice (see the Knowledge Boundary rule). The artifacts travel with the code through history and PRs.
+- **Untracked / personal scope** (gitignored, or a future `.vine.local/` root) = artifacts stay local to the engineer. Fully supported.
+
+The journal-before-commit guarantee holds either way: `journal-check.sh` compares NAVIGATION.md's *modification time*, not commit contents (chosen precisely because the artifacts are gitignored in most repos). Tracking changes only *what each commit carries*, never the mechanics.
+
+**When the repo tracks artifacts**, keep them in sync with the code as it changes — never let a tracked artifact lag the code it describes:
+
+| Commit point | Carries (code) | Carries (tracked artifacts) |
+|--------------|----------------|------------------------------|
+| **Slice commit** (`vine:navigate` step 4c) | the slice's code | that slice's NAVIGATION.md journal entry + any SPEC.md deviation annotations made during the slice (step 6) |
+| **Phase-group boundary** (`vine:navigate` step 8) | — | PROJECT-MAP.md (navigate row, Milestones row → status / PR#) + the SPEC.md phase-group ✅ marker |
+| **Evolve commit** (`vine:evolve`) | — | EVOLUTION.md and the `.resolved` marker |
+| **PR** (= one phase group) | the group's commits | the group's full artifact state — SPEC (plan), NAVIGATION (record), PROJECT-MAP (tracker) — so a reviewer sees plan-vs-result beside the diff |
+
+`CLAUDE.md` and `.vine/context/` overlays are ordinary tracked repo files — commit them whenever they change, regardless of the artifact-tracking choice. `PROFILE.md` is commonly gitignored (it's personal); commit it only if the repo tracks it.
+
+**When the repo does not track artifacts**, commits carry code only; the artifacts still update on disk (for the mtime guarantee and the engineer's own continuity) but never enter a commit. No command should force-add a gitignored artifact.
+
 ## Artifact-Free Commands
 
 Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode that compresses verify → navigate → evolve into a single session without writing CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. Its only outputs are code changes and a single commit.

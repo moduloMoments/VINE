@@ -541,7 +541,7 @@ walk-me-through)."
 
 ### Slice 18: Inquire sign-off gate + artifact review links — Complete
 **Started**: 2026-06-10 22:19
-**Commit**: pending
+**Commit**: 17b8c5e
 **Approach taken**: Two commands. **inquire.md**: new `### Sign-Off Gate` opening Phase Completion,
 ahead of the existing "Once approved:" steps (PROJECT-MAP ✅ + retro + completion block). The gate
 (1) presents SPEC.md as a clickable markdown link so it opens rendered in the editor plus a short
@@ -586,8 +586,57 @@ at completion rather than before the SPEC write.
     honest gate is on *completion/handoff*, not the draft write — write-then-review matches how
     design review actually works.
 
+### Slice 19: Artifact-commit guidance for tracked repos — Complete
+**Started**: 2026-06-10 22:30
+**Commit**: pending
+**Approach taken**: Three files. **references/STATE.md**: new top-level `## Committing Artifacts`
+section (after *Source of Truth vs Derived Views*) — tracked-vs-untracked is the repo's `.gitignore`
+choice; the mtime journal guarantee holds either way; a per-commit-point table (slice commit = code
++ NAVIGATION entry + SPEC deviations; phase-group boundary = PROJECT-MAP/Milestones + SPEC ✅ marker;
+evolve = EVOLUTION + `.resolved`; PR = the group's full artifact state) plus the rule that CLAUDE.md
+/ `.vine/context/` are ordinary tracked files and PROFILE.md is commonly gitignored. **navigate.md**:
+step 4c staging sentence extended to bundle the slice's NAVIGATION entry + SPEC deviations when
+tracked (code-only when untracked; never force-add a gitignored artifact); step 8 gains a
+boundary-commit note for the tracker updates. **evolve.md**: the previously *unconditional* commit
+list reworked to the tracked-vs-untracked rule (CLAUDE/overlays always; EVOLUTION/`.resolved` only
+when tracked; PROFILE only if tracked) — fixes the known inconsistency flagged in Phase 2 review.
+**Deviations from spec**: One refinement (engineer-raised mid-slice): `references/STATE.md` does NOT
+ship via create-vine (package.json `files` = bin, commands/vine, agents, journal-check.sh only), so
+the rule can't be load-bearing in STATE.md alone. Each shipped command now states its own staging
+rule inline/self-sufficiently; STATE.md holds the consolidated cross-command contract for
+contributors; the `(see STATE.md)` pointer is supplementary. SPEC Slice 19 Goal/AC reframed + design
+note added. This dogfoods the slice's own principle (committed with this slice's NAVIGATION + SPEC).
+**Validation**: pass — re-validated navigate.md + evolve.md (only changed commands): H1, overlays +
+phase path, profile, overlays-before-profile ordering, AskUserQuestion all intact; edits are body
+prose in existing sections; zero new legacy refs (the `references/STATE.md` and `.vine/context/`
+mentions are not `.vine/hooks`). Other 9 commands byte-identical since the prior green run → trellis
+11/11; fresh stamp `status: pass` 22:57. STATE.md is a reference doc (not a command; trellis Step 6
+artifact checks don't apply to it).
+**Decisions made during implementation**:
+  - STATE.md is the contributor contract, commands are self-sufficient — driven by the
+    STATE-doesn't-ship finding; same "different reader scope" split as Engineer Profile
+    Protocol/summary (decided by: engineer, raised the shipping question)
+  - evolve's CLAUDE.md / `.vine/context/` overlays stay *always-commit* (ordinary tracked repo
+    files), only the VINE artifacts (EVOLUTION/`.resolved`/PROFILE) are tracking-conditional
+    (decided by: claude, free-climb mode)
+**Acceptance criteria**:
+  - [x] navigate + evolve each state their staging rule inline and self-sufficiently
+  - [x] STATE.md carries the consolidated cross-command contract (per-commit-point table + PR rollup)
+  - [x] The command STATE.md pointer is supplementary / harmless if absent
+  - [x] Untracked-repo behavior explicitly unchanged (mtime guarantee preserved; no force-add)
+  - [x] trellis passes on the edited commands (11/11)
+**Engineer feedback incorporated**: The whole slice's "STATE.md as single source" framing was
+corrected by the engineer's question "does that mean we need to ship STATE?" — answered no
+(STATE is contributor-only), which reshaped the design to self-sufficient commands + STATE
+contributor contract.
+**Learnings**:
+  - Engineer → Claude: before naming any file as "the single source" for shipped behavior, check
+    whether that file ships. `references/STATE.md` is contributor-only — load-bearing user rules
+    must live in `commands/vine/*`, with STATE.md as the contributor map. The "single home" rule
+    is always scoped by *which reader loads the file*.
+
 ### Remaining Work
-- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — reshaped to Slices 17–20: Slice 17 ✅, Slice 18 ✅ this session; Slice 19 (artifact-commit guidance) + Slice 20 (README/CHANGELOG docs) remaining.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
+- **Incomplete slices**: Phases 1–3 shipped (PR #63, PR #65, PR #67). Phase 4 — Native Tasks (#61) complete (Slices 14–16). **Phase 5 — reshaped to Slices 17–21: Slice 17 ✅, 18 ✅, 19 ✅ this session; Slice 20 (between-slice /clear suggestion) + Slice 21 (README/CHANGELOG docs) remaining.** Phases 4 and 5 share PR 4, which opens only after Phase 5.
 - **Phase 5 design input (this session)**: investigated plan-mode mechanics before implementing Slices 17–19. Key finding — `ExitPlanMode` takes NO content param; it renders the **harness-designated plan file** (the model writes its plan there, ExitPlanMode signals done). To surface an artifact as the plan, write the artifact body into that plan file, then persist to the real path on approval. Also: `ExitPlanMode`'s own guidance says it's for *planning the implementation of a code-writing task*, and explicitly NOT for research — so verify (research) is a documented non-fit, inquire (spec) a partial fit, and **navigate is the textbook fit** (plan the phase-group slices → approve → implement, task list as live view after). This is in tension with the SPEC's verify/inquire-only Phase 5 scope. Desktop has separate `plan` and `tasks` panes (confirmed). **Revisit Slices 17–19 before implementing** — possibly reframe navigate plan-mode integration from backlog to in-scope. Backlog idea NOT yet filed (engineer dismissed the file/continue prompt): "navigate/evolve plan-mode integration — present the phase-group slice plan via ExitPlanMode at session start when in plan mode, then fall to the tasks-pane live view; also fixes navigate breaking when launched in plan mode."
 - **Blockers**: None.
 - **Blockers encountered**: None.

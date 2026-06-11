@@ -517,11 +517,22 @@ Session boundary: Feature complete; PR 4 ships; cycle ready for evolve.
 **Depends on**: None (independent of Slices 17–18).
 **Files likely touched**: commands/vine/navigate.md (step 4c + step 8), commands/vine/evolve.md
   (the EVOLUTION/commit step), references/STATE.md (artifact-commit principle).
-**Acceptance criteria**: navigate and evolve state the same tracked-vs-untracked rule; the
-  slice-commit / boundary-commit / PR split is documented; STATE.md carries the principle as the
-  single source; untracked-repo behavior is explicitly unchanged (mtime guarantee preserved);
-  trellis passes on the edited commands.
+**Acceptance criteria**: navigate and evolve each state their own staging rule **inline and
+  self-sufficiently** (a user repo without STATE.md still commits correctly); STATE.md carries the
+  consolidated cross-command contract (the per-commit-point table incl. the PR-level rollup) for
+  contributors; the command `references/STATE.md` pointer is supplementary / harmless-if-absent;
+  untracked-repo behavior is explicitly unchanged (mtime guarantee preserved); trellis passes on
+  the edited commands.
 **Complexity signal**: Medium.
+
+> **Slice 19 design note (refinement).** Original goal said "STATE.md carries the principle as the
+> single source." But `create-vine` ships only `bin`, `commands/vine`, `agents`, and
+> `journal-check.sh` — **not `references/STATE.md`** (confirmed in package.json `files`). So the
+> rule can't be load-bearing in STATE.md alone, or user repos would be pointed at a file they
+> don't have. Resolution (engineer raised it): each shipped command states its own staging rule
+> inline; STATE.md holds the consolidated cross-command contract as the contributor map; the
+> `(see STATE.md)` pointer is supplementary, exactly like the existing sentinel/journal-check
+> references. This is the Knowledge Boundary "same subject, different reader scope" case.
 
 ### Slice 20: README gearing↔mode + task + commit-guidance docs
 **Goal**: README documents navigate's gearing↔permission-mode mapping (free climb →

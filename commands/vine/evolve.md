@@ -448,16 +448,19 @@ state is definitionally stale. No prompt, no message to the engineer.
 
 ### Commit Evolve Changes
 
-After resolving (or choosing to keep active), commit all changes generated during the evolve
-phase. These typically include:
+After resolving (or choosing to keep active), commit the changes generated during the evolve
+phase. What to stage follows the artifact-tracking rule (full breakdown in `references/STATE.md`
+under *Committing Artifacts*):
 
-- EVOLUTION.md
-- CLAUDE.md updates (if accepted)
-- `.vine/context/` updates (if accepted)
-- `.vine/PROFILE.md` updates (if accepted)
-- `.resolved` marker (if resolved)
+- **CLAUDE.md** and **`.vine/context/`** overlay updates (if accepted) — ordinary tracked repo
+  files; commit them whenever they change, regardless of the artifact-tracking choice.
+- **EVOLUTION.md** and the **`.resolved`** marker (if resolved) — VINE artifacts; stage them
+  **only when the repo tracks `.vine/` artifacts**. When artifacts are untracked (gitignored, or
+  a personal scope) they update on disk but stay out of the commit.
+- **`.vine/PROFILE.md`** updates (if accepted) — commonly gitignored (it's personal); stage only
+  if the repo tracks it.
 
-Stage these files and commit with a message like:
+Never force-add a gitignored artifact. Stage the applicable files and commit with a message like:
 
 ```
 evolve: [feature name] — evolution report and cycle artifacts
