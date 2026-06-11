@@ -10,7 +10,7 @@ VINE feature on this repo (dogfooding is the test suite); small mechanical items
 
 **Goal:** make VINE the best framework for individuals and teams of humans, local agents, and
 auto-agents to build and maintain established codebases while sharing context — by building
-*with* Claude Code's native tooling (hooks, plan mode, task tools, CLAUDE.md memory, headless
+*with* Claude Code's native tooling (hooks, task tools, CLAUDE.md memory, headless
 invocation) instead of alongside it.
 
 ### Guiding principle
@@ -29,7 +29,7 @@ declining the migration must change nothing. The rename fallback in
 
 | # | Cycle | Issues | Mode | Why this order |
 |---|-------|--------|------|----------------|
-| 1 | **Platform alignment** | [#58](https://github.com/moduloMoments/VINE/issues/58) rename hooks→context, [#59](https://github.com/moduloMoments/VINE/issues/59) native hook enforcement, [#60](https://github.com/moduloMoments/VINE/issues/60) CLAUDE.md boundary, [#61](https://github.com/moduloMoments/VINE/issues/61) native task tracking, [#62](https://github.com/moduloMoments/VINE/issues/62) plan mode integration | Full cycle | Changes vocabulary and structure every later cycle builds on. #58 lands first within the cycle. |
+| 1 | **Platform alignment** | [#58](https://github.com/moduloMoments/VINE/issues/58) rename hooks→context, [#59](https://github.com/moduloMoments/VINE/issues/59) native hook enforcement, [#60](https://github.com/moduloMoments/VINE/issues/60) CLAUDE.md boundary, [#61](https://github.com/moduloMoments/VINE/issues/61) native task tracking, [#62](https://github.com/moduloMoments/VINE/issues/62) mode/gate/workflow hygiene | Full cycle | Changes vocabulary and structure every later cycle builds on. #58 lands first within the cycle. #62 was reshaped from "plan mode integration" to gearing↔permission-mode + inquire sign-off gate + artifact-commit guidance + between-slice `/clear` — plan mode is harness-owned, so VINE consumes it rather than integrating it (per the guiding principle). |
 | 2 | **Maintenance batch** | [#46](https://github.com/moduloMoments/VINE/issues/46), [#47](https://github.com/moduloMoments/VINE/issues/47), [#48](https://github.com/moduloMoments/VINE/issues/48) consolidation; [#49](https://github.com/moduloMoments/VINE/issues/49), [#50](https://github.com/moduloMoments/VINE/issues/50) descriptions | `vine:pair` | Consolidation targets shared.md, so it lands *after* the rename to avoid double-touching. #49/#50 can go anytime. |
 | 3 | **Knowledge lifecycle** | [#51](https://github.com/moduloMoments/VINE/issues/51) durable knowledge layer, [#56](https://github.com/moduloMoments/VINE/issues/56) archival + backfill | Full cycle (multi-PR) | Promotion and archival share the SUMMARY/knowledge formats. Backfill quality depends on the knowledge format being settled, so they ship together. |
 | 4 | **Agent-native** | [#54](https://github.com/moduloMoments/VINE/issues/54) validation contract, [#53](https://github.com/moduloMoments/VINE/issues/53) headless autonomy contract | Full cycle | Headless agents need discoverable validation, so #54 precedes #53. Builds on native hooks (#59) and headless invocation patterns. |

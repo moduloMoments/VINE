@@ -181,9 +181,9 @@ Each template is enclosed in a markdown code fence (` ```markdown ... ``` `). Fo
 
 **Handling dynamic headings**: Some template headings contain placeholders like `[Name]` or
 `[Feature Name]`. For validation purposes, treat these as pattern prefixes. For example,
-`### Slice 1: [Name]` means "any heading matching `### Slice N: ...`". NAVIGATION slice
-headings are repeating entries — at least one must exist for the `required` marker to be
-satisfied.
+`### Slice 1: [Name]` means "any heading matching `### Slice N: ...`". NAVIGATION and SPEC
+slice headings are repeating entries — at least one must exist for the `required` marker to
+be satisfied.
 
 **Unmarked headings**: If a heading inside a code fence has no `<!-- required -->` or
 `<!-- optional -->` marker, record it as a warning. This catches marker drift when someone
@@ -225,8 +225,13 @@ a matching heading exists in the actual artifact file.
   `### Codebase Landscape` matches `### Codebase Landscape` in CONTEXT.md.
 - For dynamic headings (those with placeholders like `[Name]`), match the fixed prefix.
   For example, `### Slice 1: [Name]` matches any `### Slice N: <anything>` heading.
-  NAVIGATION slice headings are repeating — at least one must exist for the check to pass.
+  NAVIGATION and SPEC slice headings are repeating — at least one must exist for the check
+  to pass.
 - Optional sections are not checked — their absence is fine.
+- **Legacy SPEC heading hint**: `### Slice N:` (h3) is the canonical slice heading. If a SPEC
+  has no `### Slice N:` heading but does contain `#### Slice N:` (h4) headings, report the
+  failure as "legacy h4 slice headings — re-level `#### Slice` → `### Slice`" so the update
+  path is obvious. (Older specs used h4; `vine:inquire` now emits h3.)
 
 ### Check B: PROFILE Table Structure
 
@@ -246,10 +251,12 @@ If the Domain Expertise section exists but contains no table, this check fails.
 
 **Applies to**: SPEC.md only
 
-If a `### Work Slices` section exists (it's required per Check A), find all slice headings
-(any `####` heading under Work Slices, including those prefixed with `CONDITIONAL`).
+Find all SPEC slice headings — any `### Slice N: ...` heading — regardless of layout (flat
+under a `### Work Slices` umbrella, or grouped under `## Phase N:` group headings). A
+conditional slice is one whose heading is suffixed `(CONDITIONAL)`.
 
-For each slice, verify these fields are present as bold-prefixed list items:
+For each slice, verify these fields are present as bold-prefixed items (with or without a
+leading `-` list marker):
 
 - `**Goal**`
 - `**Depends on**`
@@ -257,10 +264,11 @@ For each slice, verify these fields are present as bold-prefixed list items:
 - `**Acceptance criteria**`
 - `**Complexity signal**`
 
-A `CONDITIONAL` slice must also have a `**Condition**` field.
+A `(CONDITIONAL)` slice must also have a `**Condition**` field.
 
-"Present" means the bold-prefixed item exists in the slice's content (between this slice's
-heading and the next heading of equal or higher level). The value after the colon can be
+"Present" means the bold-prefixed item exists in the slice's content — between this slice's
+heading and the next heading of equal or higher level (the next `### Slice N:`, a
+`## Phase N:` group heading, or any higher-level section). The value after the colon can be
 anything — this is a structural check, not a content check.
 
 ### Check D: NAVIGATION Slice Fields

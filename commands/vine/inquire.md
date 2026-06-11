@@ -8,6 +8,7 @@ allowed-tools:
   - Grep
   - Write
   - Edit
+  - Bash
   - Agent
   - AskUserQuestion
 ---
@@ -68,6 +69,12 @@ If CONTEXT.md exists, read it and summarize the key points back to the engineer:
 
 > "Based on our verify phase, here's what I'm working with: [brief summary]. The open questions
 > were: [list]. Let's start by resolving those."
+
+**Consume any pause state.** If the feature directory contains a PAUSE.md (e.g., the engineer
+paused after verify), surface its notes alongside the summary above, then delete it — the
+consumed-once rule (see `references/STATE.md`). A consumed pause must not linger: it would keep
+suggesting `vine:resume` for work that has already resumed. Anything worth keeping past this
+session belongs in the artifacts, not PAUSE.md. (If no PAUSE.md is present, skip.)
 
 ### 2. Resolve Open Questions
 
@@ -288,7 +295,26 @@ exact how-many-spaces-of-indentation. Navigate needs latitude to make tactical d
 
 ## Phase Completion
 
-When the spec is solid and the engineer has signed off:
+### Sign-Off Gate
+
+SPEC.md is written (step 8) — now get explicit sign-off before handing to navigate. Don't infer
+approval from the absence of objections; ask for it. This is the gate that closes inquire, not a
+formality.
+
+1. **Present the spec for review.** Give the engineer a clickable link to the file (e.g.,
+   `[SPEC.md](.vine/projects/<domain>/<feature-slug>/SPEC.md)`) so it opens rendered in their
+   editor, plus a short summary of the key decisions and the slice/phase breakdown. (To open the
+   file automatically, a repo can wire its editor's open command in `.vine/context/inquire.md`;
+   the clickable link is the portable default — don't shell out to an OS-specific opener yourself.)
+
+2. **Gate on explicit sign-off.** Use `AskUserQuestion`:
+   - **"Approve — hand to navigate (Recommended)"**: the spec is ready to implement.
+   - **"Request changes"**: something needs revision first.
+
+   If the engineer requests changes, revise SPEC.md, re-present the link, and ask again. Loop
+   until approved. The spec isn't done until the engineer signs off.
+
+Once approved:
 
 1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 

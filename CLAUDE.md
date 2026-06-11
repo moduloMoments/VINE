@@ -20,7 +20,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 ## Command Authoring Conventions
 
 - YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
-- Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion
+- Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion, TaskCreate, TaskUpdate, TaskList (the native task tools are used "when available" by navigate/resume for the live progress view; trellis validates the set by consensus — the union across all commands)
 - Every command (except help) starts with a "Load Context Overlays" section (reads `.vine/context/shared.md` + `.vine/context/<phase>.md`, with a legacy `.vine/hooks/` fallback through 0.4.x)
 - Every command (except init and help) follows overlays with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates overlays/profile rather than loading them. Help is a pure reference command that doesn't need project context.
 - Load Context Overlays must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
@@ -42,7 +42,7 @@ All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `r
 
 `vine:verify` also creates `PROJECT-MAP.md` as a progress tracker. For multi-PR features, `vine:inquire` adds a Milestones table mapping phase groups to PRs.
 
-`vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is consumed-once: whatever picks the work back up deletes it (resume after displaying the notes, navigate or evolve at session start), with evolve's `.resolved` write as the backstop. `vine:navigate` also maintains `.vine/ACTIVE`, a gitignored active-session sentinel that installed hooks use to scope their checks — full lifecycle in `references/STATE.md`.
+`vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is consumed-once: whatever picks the work back up deletes it (resume after displaying the notes, navigate, inquire, or evolve at session start), with evolve's `.resolved` write as the backstop. `vine:navigate` also maintains `.vine/ACTIVE`, a gitignored active-session sentinel that installed hooks use to scope their checks — full lifecycle in `references/STATE.md`.
 
 ## Engineer Profile
 

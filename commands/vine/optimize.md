@@ -467,8 +467,6 @@ After applying changes, present a summary:
 🔄 To re-run after adding or changing commands: /vine:optimize
    Last optimized: [date]
 
-📋 If command files were modified, run `/trellis` to validate structural compliance.
-
 🌱 Session retro:
    - CLAUDE.md suggestion: [patterns discovered about this repo's skill landscape]
    - Skill suggestion: [any automation worth building based on what was found]

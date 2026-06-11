@@ -1,7 +1,7 @@
 # VINE Shared Context Overlay — VINE Framework
 # Edit this file to customize VINE behavior for this repo.
 
-## Available Tools & Agents
+## Tooling Notes
 
 The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
 

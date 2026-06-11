@@ -11,6 +11,9 @@ allowed-tools:
   - Bash
   - Agent
   - AskUserQuestion
+  - TaskCreate
+  - TaskUpdate
+  - TaskList
 ---
 
 # vine:navigate — Guided Implementation
@@ -100,6 +103,22 @@ back up consumes it: surface its notes in your starting-point summary, then dele
 A consumed pause must not linger — it would keep suggesting `vine:resume` for work that has
 already resumed.
 
+**Build the live task view (when available).** If native task tools are available in this
+session, create the live view of slice progress (the ephemeral, in-session mirror of the
+journal — see "Source of Truth vs Derived Views" in `references/STATE.md`): `TaskCreate` one
+task per remaining slice in the current phase group, titled by the slice name. (If SPEC.md
+isn't grouped into phases, use every not-yet-complete slice in the feature.) Order them with
+`blockedBy` so each task depends on the one before it. Skip slices already marked `Complete`
+in NAVIGATION.md — they live in the journal, not the live view. For a slice marked CONDITIONAL
+in the spec, prefix the task title `(conditional: <condition>)` and leave it pending; you'll
+evaluate the condition on arrival (step 7) and complete or delete it then.
+
+The task list is a derived view, never a source of truth: it mirrors NAVIGATION.md and
+SPEC.md and is always rebuilt from them, never the reverse. **When task tools aren't
+available, skip this and every other "(when available)" task step below** — navigate then
+behaves exactly as it does without task tracking, and NAVIGATION.md remains the durable
+journal regardless.
+
 Summarize your starting point:
 
 > "We're implementing [feature]. Based on the spec, I'm picking up at [Phase N: name /
@@ -125,7 +144,8 @@ by checking that the commits recorded in NAVIGATION.md are in the current branch
 
 ### 3. Implement One Slice at a Time
 
-For each work slice from SPEC.md:
+For each work slice from SPEC.md (when task tools are available, `TaskUpdate` this slice's
+task to `in_progress` as you begin it):
 
 **a. Preview the approach**
 
@@ -148,22 +168,23 @@ After the preview, use `AskUserQuestion` for the gearing decision:
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
   (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
-- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself"
-- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation"
+- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself (pairs with auto-accept-edits)"
+- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation (pairs with approve-edits)"
 
-**Gearing:** The engineer's choice sets the engagement level for this slice:
+**Gearing:** The engineer's choice sets the engagement level for this slice *and* the
+permission mode that fits it. Recommend the matching mode — the toggle is always the
+engineer's action; you can suggest it, never flip it or assume it happened:
 
-- **"Free climb"**: The engineer trusts the approach and wants to move faster. They may
-  switch to auto-accept for this slice — that's their toggle, not yours; you can suggest
-  it, never flip it or assume it happened. Skip step 3b narration and step 3c review
-  pauses. Still do the preview (3a), surface decisions (3d), and all of step 4
-  (validation, commit, NAVIGATION.md). **At the slice boundary (step 4 complete), ask the
-  engineer to switch back to approve-edits** so they re-engage for the next slice's
-  preview and gear choice.
-- **"Walk me through this"**: Full partnership narration per steps 3b and 3c, with the
-  engineer reviewing each edit as it lands. The engineer wants to stay close to the
-  implementation — either because the code is unfamiliar, the approach is novel, or they
-  want to learn from the process.
+- **"Free climb"**: The engineer trusts the approach and wants to move faster. Recommend
+  **auto-accept-edits** (or full auto) for this slice so edits land without a prompt each
+  time. Skip step 3b narration and step 3c review pauses. Still do the preview (3a),
+  surface decisions (3d), and all of step 4 (validation, commit, NAVIGATION.md). **At the
+  slice boundary (step 4 complete), ask the engineer to switch back to approve-edits** so
+  they re-engage for the next slice's preview and gear choice.
+- **"Walk me through this"**: Recommend **approve-edits** (per-edit permission prompts) so
+  the engineer reviews each edit as it lands. Full partnership narration per steps 3b and
+  3c. The engineer wants to stay close to the implementation — either because the code is
+  unfamiliar, the approach is novel, or they want to learn from the process.
 
 Use the profile's expertise level to inform which option you recommend (confident/familiar
 → default to "free climb"; learning/new → default to "walk me through this") but the
@@ -265,10 +286,15 @@ stronger than that. For each slice, capture:
 
 **c. Commit the slice**
 
-Stage the changed files and commit with this format. Include NAVIGATION.md in the commit
-only when the repo tracks `.vine/` artifacts — many repos gitignore them (or keep them in
-a personal scope), which is fine: the journal-before-commit guarantee compares file
-modification time, not commit contents, so it holds either way.
+Stage the changed files and commit with this format. **When the repo tracks `.vine/`
+artifacts**, bundle this slice's artifact updates into the same commit so the tracked spec and
+journal never lag the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation
+annotations you made during the slice (step 6). **When artifacts are untracked** — many repos
+gitignore them, or keep them in a personal scope, which is fine — commit code only; the
+journal-before-commit guarantee compares file modification time, not commit contents, so it holds
+either way. Never force-add a gitignored artifact. (The full per-commit-point breakdown —
+slice / phase-group boundary / evolve / PR — lives in `references/STATE.md` under *Committing
+Artifacts*.)
 
 ```
 <slice-name>: <1-2 sentence summary>
@@ -283,7 +309,9 @@ If the project uses a ticket prefix convention (e.g., `PROJ-1234`), include it. 
 `.vine/context/shared.md` or `CLAUDE.md` for commit message conventions.
 
 After committing, update the slice's `**Commit**` field in NAVIGATION.md with the actual
-hash.
+hash. When task tools are available, `TaskUpdate` this slice's task to `completed` once the
+commit lands — the live view follows the journal, so it flips only after the durable record is
+written.
 
 **Important:** Review depth is set by the engineer's gear choice: in approve-edits they
 review each change before it lands; in free climb they review at the slice boundary. Either
@@ -330,13 +358,33 @@ After each slice is validated and committed:
    already signaled they don't need the reflection.
 3. Check if the next slice's assumptions still hold (sometimes building slice 1 reveals that
    slice 2 needs adjustment)
-4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met
-5. Ask if the engineer wants to continue or pause
+4. If the next slice is marked CONDITIONAL in the spec, evaluate whether the condition is met.
+   When task tools are available, dispose its task accordingly: if the condition holds, drop
+   the `(conditional: …)` prefix and proceed (it becomes a normal slice); if not, `TaskUpdate`
+   it to `deleted` and note the skip in NAVIGATION.md.
+5. Decide how to proceed. Offer three paths via `AskUserQuestion` — **continue in this
+   session**, **`/clear` and continue fresh**, or **pause**. The `/clear` path means run
+   `/clear` then re-invoke `/vine:navigate <domain>/<feature-slug>`, which auto-resumes at the
+   next not-Complete slice — navigate rebuilds state from NAVIGATION.md + SPEC.md (Slices 15–16),
+   so a mid-phase clear loses nothing. **Surface it selectively**: mark "`/clear` and continue
+   fresh" as Recommended only when the session context has grown heavy (several slices deep, or a
+   lot of exploration this session) or the next slice is substantially independent of what you
+   just built. When the next slice is tightly coupled to the just-finished one, or only a slice or
+   two is done, keep **continue in this session** the default and present `/clear` as the lighter
+   option. The journal carries everything forward either way.
 
 > "Slice 2 committed (abc1234). Before we start Slice 3 (the webhook handler), I want to
 > flag that our implementation of the provider interface is slightly different from what the
 > spec assumed — we added an async initialization step. This means the webhook handler will
 > need to account for that. Want to adjust the plan, or should I adapt as I go?"
+
+**If the engineer chooses `/clear` and continue fresh**, this is a continuation, not an ending.
+NAVIGATION.md is already current (you updated it at the slice commit), so nothing extra to write —
+the re-invoked `/vine:navigate` rebuilds context from it. Leave `.vine/ACTIVE` in place; the next
+invocation refreshes its `phase` line. Then tell the engineer the exact command to run:
+
+> "Slice N committed. Run `/clear`, then `/vine:navigate <domain>/<feature-slug>` — it'll pick up
+> at Slice N+1 with a fresh context. NAVIGATION.md carries everything forward."
 
 **If the engineer chooses to pause**, write a "Remaining Work" section to NAVIGATION.md before
 stopping. This ensures the next session (or vine:resume) has structured handoff context:
@@ -412,6 +460,11 @@ phase group boundary before showing the completion block:
    `✅ Shipped` (or `✅ Complete` if no PR yet).
 3. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.
 4. If there's a next phase, update its Milestones row to `🚧 Active`.
+
+   **When the repo tracks artifacts**, commit these tracker updates at the boundary — the
+   PROJECT-MAP.md row changes and the SPEC.md phase-group ✅ marker are the phase group's
+   closing artifact state, so the PR you open next carries them alongside the code. (Untracked
+   repos: they update on disk only, never in a commit.)
 5. Suggest opening a PR for the completed phase group:
 
    > "Phase [N: name] is complete. This is a good point to open a PR for this work.

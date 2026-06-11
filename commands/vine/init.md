@@ -82,7 +82,7 @@ This file is loaded by ALL VINE phases. It should contain:
 All VINE project artifacts MUST be created under `.vine/projects/<domain>/<feature-slug>/`.
 Never create project directories as siblings of `context/`.
 
-## Available Tools & Agents
+## Tooling Notes
 
 [Repo-specific notes the native skill list can't carry — tool topology, integration caveats,
 which discovered capabilities matter for this repo's workflows. Do NOT enumerate commands or

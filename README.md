@@ -34,12 +34,12 @@ Research the codebase together. The engineer brings tribal knowledge, edge cases
 **Output:** `.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
 
 ### vine:inquire — Feature Specification
-Design the feature on top of verified context. Discuss architecture, weigh tradeoffs (always 2-3 options), and get explicit human approval on every decision. Layer the spec on the foundation you built in verify.
+Design the feature on top of verified context. Discuss architecture, weigh tradeoffs (always 2-3 options), and get explicit human approval on every decision. Layer the spec on the foundation you built in verify. When the draft is ready, inquire presents SPEC.md as a clickable link and gates completion on your explicit sign-off — approve to hand off to navigate, or request changes to iterate. (Verify presents CONTEXT.md the same way on creation. Auto-opening the file is optional repo wiring, never hardcoded — the clickable link is the portable default.)
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/SPEC.md`
 
 ### vine:navigate — Guided Implementation
-Build the feature together. For each slice, choose your engagement level: **"free climb"** (Claude cranks, you review at the end) or **"walk me through this"** (full narration, pauses for feedback). Claude flags its own uncertainty in the preview so you know where to focus. Every decision is documented, every slice is committed with its acceptance criteria.
+Build the feature together. For each slice, choose your engagement level: **"free climb"** (Claude cranks, you review the diff at the slice boundary — pairs with **auto-accept-edits**) or **"walk me through this"** (full narration, pauses for feedback — pairs with **approve-edits**). Claude recommends the permission mode that matches your chosen gear, but flipping the toggle is always your move. Claude flags its own uncertainty in the preview so you know where to focus. Every decision is documented, every slice is committed with its acceptance criteria. When your harness provides native task tools, navigate also keeps an ephemeral live view of slice progress that mirrors NAVIGATION.md — a derived view, always rebuilt from the journal, never the reverse.
 
 **Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + committed changes (one commit per validated slice)
 
@@ -102,13 +102,13 @@ your notes and explicit phase tracking, but it's not required.
 
 **Partnership, not delegation.** Claude flags its own uncertainty, names patterns as it uses them, and acknowledges when the engineer corrects its approach. The engineer steers, Claude executes, and both sides learn through the work — not in retrospective debriefs.
 
-**Approve-edits mode recommended.** Run with approve-edits enabled so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Choosing "free climb" for a slice means you switch to auto-accept yourself and back at the slice boundary — speed when you trust the approach, control when you don't. (See [Enforced vs Advisory](#enforced-vs-advisory) for which guarantees are mechanical.)
+**Approve-edits mode recommended.** Run with approve-edits enabled so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Navigate's per-slice gearing maps to a recommended mode: **"free climb"** → switch to **auto-accept-edits** yourself and back at the slice boundary; **"walk me through this"** → stay in **approve-edits** so each edit lands under your review. Speed when you trust the approach, control when you don't. (See [Enforced vs Advisory](#enforced-vs-advisory) for which guarantees are mechanical.)
 
 **Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
 
 **Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought (and mechanically [enforced when the scaffold hooks are installed](#enforced-vs-advisory)).
 
-**Chain, don't rush.** Each phase suggests the next step but doesn't auto-trigger. The engineer decides when to move forward. Each phase completion suggests a fresh session for the next phase — state flows through `.vine/` files, not chat context.
+**Chain, don't rush.** Each phase suggests the next step but doesn't auto-trigger. The engineer decides when to move forward. Each phase completion suggests a fresh session for the next phase — state flows through `.vine/` files, not chat context. Navigate can suggest a `/clear` between slices too, selectively — recommended when context has grown heavy or the next slice is independent; re-invoking `/vine:navigate` auto-resumes at the next unfinished slice, with the journal carrying everything forward.
 
 **Evolve everything.** Every feature is an opportunity to improve the product, make the agent smarter, and help the engineer grow. The retro block at the end of each phase captures all three.
 
@@ -301,7 +301,7 @@ want them.
 | Per-slice validation via the verification agent | Command instructions; nothing blocks skipping them |
 | Acceptance criteria checked before each commit | Command instructions, honor system |
 | One commit per validated slice | Command structure, not enforcement |
-| `/clear` between phases | A printed suggestion |
+| `/clear` between phases (and selectively between slices) | A printed suggestion |
 
 Advisory doesn't mean unreliable — it means the command asks and Claude follows
 instructions, rather than a hook blocking the alternative. The distinction matters most
@@ -320,6 +320,8 @@ when deciding how much to trust a long or lightly-attended session.
 | `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo) |
 
 These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
+
+**When your repo tracks `.vine/` artifacts** (the team-shared choice), VINE keeps the committed artifacts in step with the code: each **slice commit** bundles the code with that slice's NAVIGATION.md journal entry and any SPEC.md deviation notes, and each **phase-group PR** carries the group's full artifact state — SPEC plan, NAVIGATION record, and PROJECT-MAP tracker — alongside the diff. Repos that keep `.vine/` gitignored or personal commit code only; the journal-before-commit guarantee compares file modification time, not commit contents, so it holds either way.
 
 This repo uses VINE on itself — browse [`.vine/projects/`](.vine/projects/) to see real artifacts from completed features. Each resolved project shows how CONTEXT → SPEC → NAVIGATION → EVOLUTION builds up across the four phases.
 

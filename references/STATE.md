@@ -70,23 +70,27 @@ The feature specification. Built on top of CONTEXT.md — not from scratch.
 - Edge cases explicitly handled
 - Performance/security considerations
 
-### Work Slices <!-- required -->
-Ordered, independent units of work:
+### Work Slices <!-- optional -->
+Ordered, independent units of work. The `### Slice N:` headings are the required content;
+`### Work Slices` itself is an optional umbrella (see Layouts below).
 
-#### Slice 1: [Name]
+### Slice 1: [Name] <!-- required -->
 - **Goal**: What this slice accomplishes
 - **Depends on**: Previous slices or nothing
 - **Files likely touched**: [list]
 - **Acceptance criteria**: [specific, verifiable]
 - **Complexity signal**: Low / Medium / High + brief rationale
 
-#### CONDITIONAL Slice: [Name]
-- **Condition**: Only if [condition from verify findings]
-- (same fields as above)
+A **conditional** slice is a `### Slice N:` heading suffixed `(CONDITIONAL)` with one extra
+field — `**Condition**: Only if [condition from verify findings]` — so navigate can evaluate
+it on arrival and skip cleanly when the condition isn't met.
 
-For larger features, slices are grouped into phases:
-- **Phase 1**: Core functionality (slices 1-3)
-- **Phase 2**: Edge cases and polish (slices 4-5)
+**Layouts** — slices appear one of two ways; `### Slice N:` is the invariant either way:
+- **Flat** (4 or fewer slices): `### Slice N:` headings sit under the optional `### Work
+  Slices` umbrella.
+- **Grouped** (larger / multi-PR features): `## Phase N: [Name]` group headings replace the
+  flat umbrella, with the same `### Slice N:` headings under each phase. This is what
+  `vine:inquire` produces for larger features; navigate works one phase group per session.
 
 ### Tech Debt Integration <!-- optional -->
 - Debt items from CONTEXT.md addressed in this work
@@ -110,7 +114,7 @@ The implementation journal. Built incrementally — each slice is appended as it
 # Navigation Log: [Feature Name]
 ## Date: [YYYY-MM-DD]
 
-### Slice 1: [Name] <!-- required -->
+### Slice 1: [Name] — [Status: In Progress / Complete] <!-- required -->
 - **Started**: [timestamp] <!-- optional -->
 - **Commit**: [hash] (or 'pending' if in progress) <!-- required -->
 - **Approach taken**: What was implemented and how <!-- optional -->
@@ -121,7 +125,7 @@ The implementation journal. Built incrementally — each slice is appended as it
 - **Engineer feedback incorporated**: [what the engineer corrected or steered] <!-- optional -->
 - **Learnings**: What both sides learned from this slice <!-- required -->
 
-### Slice 2: [Name] <!-- required -->
+### Slice 2: [Name] — [Status: In Progress / Complete] <!-- required -->
 (same structure, appended after slice 1 is committed)
 
 ### Remaining Work <!-- optional -->
@@ -129,6 +133,10 @@ The implementation journal. Built incrementally — each slice is appended as it
 - Blockers encountered
 - Handoff context for next session
 ```
+
+**Slice-status contract.** The ` — [Status: In Progress / Complete]` suffix on each slice heading is a writer/reader contract: `vine:navigate` writes it (a slice is `In Progress` while being implemented, `Complete` once committed), and `vine:pause` reads it to locate the active slice when capturing pause state. Keep the literal words `In Progress` and `Complete` — pause matches on them. The suffix is part of the heading, so it doesn't affect trellis Check A, which matches slice headings by their `Slice N:` prefix.
+
+**Remaining Work dependency.** The `### Remaining Work` section stays `<!-- optional -->` because it only exists at session boundaries — `vine:navigate` writes it when pausing between slices and at phase completion, so a mid-implementation journal legitimately won't have it (promoting it to required would fail validation on every in-progress journal). When it *is* present, two readers depend on it: `vine:resume`'s no-PAUSE.md path reconstructs handoff state from it, and native-task rebuild (see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)) uses it for cross-slice context.
 
 ### EVOLUTION.md (produced by vine:evolve)
 
@@ -180,8 +188,9 @@ thinking, what to pick up first, anything that won't survive a session break]
 1. **Created** by `vine:pause` — detects current phase from artifact presence, asks the engineer for notes, writes PAUSE.md to the feature directory.
 2. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
 3. **Consumed** (read, surfaced, then deleted) by whatever picks the work back up. Every deletion trigger:
-   - `vine:resume` — after displaying the notes (deletion mechanics land with resume's task-awareness update).
+   - `vine:resume` — after displaying the notes.
    - `vine:navigate` — at session start, the same moment `.vine/ACTIVE` is written; notes are surfaced in the starting-point summary first.
+   - `vine:inquire` — at session start, after reading CONTEXT.md (handles a pause taken after verify); notes are surfaced in the context summary first.
    - `vine:evolve` — at session start, after reading the feature's artifacts; notes are surfaced first.
    - `vine:evolve` when writing `.resolved` — backstop; a resolved project's pause state is definitionally stale.
 
@@ -358,6 +367,48 @@ When a fact moves homes, leave a one-line pointer at the old location.
 - `.vine/knowledge/<domain>.md` (#51, cycle 3) — durable per-domain knowledge. When it lands, other surfaces reference a domain's knowledge file with a one-line pointer (`See .vine/knowledge/<domain>.md`), never by inlining it.
 - `.vine.local/` (backlog idea) — the sharing boundary for projects: tracked `.vine/projects/` is team-shared; personal work lives outside the shared tree in a gitignored sibling root mirroring `.vine/`'s structure.
 
+## Source of Truth vs Derived Views
+
+Project *state* follows the same single-home discipline the Knowledge Boundary rule applies to project *facts*: every piece of state has one authoritative home, and everything that displays it is a **derived view** — a projection that can always be rebuilt from its source and never overrides it. "Derived from the artifacts" and "single source of truth" point the same direction: a view stays in sync precisely because it owns no state of its own.
+
+**Sources of truth** (authoritative; each fact homed once, by altitude):
+
+| State | Source of truth | Lifecycle |
+|-------|-----------------|-----------|
+| The plan — what slices and phase groups exist | `SPEC.md` | durable |
+| Implementation progress — which slices are done, with commits, decisions, learnings | `NAVIGATION.md` | durable |
+| What's active right now | `.vine/ACTIVE` | ephemeral |
+| Handoff notes across a session gap | `PAUSE.md` | ephemeral |
+
+**Derived views** (never authoritative; rebuilt from the sources above):
+
+- **Native tasks** (`TaskCreate`/`TaskUpdate`/`TaskList`, when available) — the ephemeral, in-session **live view** of slice progress. It mirrors NAVIGATION.md: one task per slice in the current phase group, titled by the slice name, status `pending`/`in_progress`/`completed`, ordered to match slice dependencies, with a `(conditional: <condition>)` prefix on conditional slices. It holds the progress *skeleton only* — never the approach, decisions, commits, acceptance criteria, or learnings, which live solely in NAVIGATION.md. `vine:navigate` creates it at session start and updates it at slice transitions; `vine:resume` rebuilds it from NAVIGATION.md (which slices are Complete) plus SPEC.md (the full slice list). **Tasks are rebuilt FROM the journal, never the reverse** — if the session dies nothing is lost, because the live view carries no information the durable artifacts don't already have.
+- **PROJECT-MAP.md** — a **durable** derived view: the scannable phase-level summary (VINE Progress + Milestones). Commands update its rows as a convenience, but every row is reconstructable from the authoritative artifacts (phase status from the artifact chain; slice and milestone status from NAVIGATION.md and SPEC.md). It is a cache for at-a-glance scanning, not a second source of truth — when it disagrees with the journal, the journal wins. This is why its schema stays coarse (phases and phase groups, not slices): pushing slice-level state into it would create a second writer for state the journal already owns.
+
+**When task tools are unavailable** there is simply no live view: `vine:navigate`, `vine:resume`, and `vine:status` behave exactly as they do today, reading progress directly from the durable artifacts. Every consumer degrades to the source of truth.
+
+## Committing Artifacts
+
+Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
+
+- **Tracked** (`.vine/projects/` not gitignored) = the team-shared choice (see the Knowledge Boundary rule). The artifacts travel with the code through history and PRs.
+- **Untracked / personal scope** (gitignored, or a future `.vine.local/` root) = artifacts stay local to the engineer. Fully supported.
+
+The journal-before-commit guarantee holds either way: `journal-check.sh` compares NAVIGATION.md's *modification time*, not commit contents (chosen precisely because the artifacts are gitignored in most repos). Tracking changes only *what each commit carries*, never the mechanics.
+
+**When the repo tracks artifacts**, keep them in sync with the code as it changes — never let a tracked artifact lag the code it describes:
+
+| Commit point | Carries (code) | Carries (tracked artifacts) |
+|--------------|----------------|------------------------------|
+| **Slice commit** (`vine:navigate` step 4c) | the slice's code | that slice's NAVIGATION.md journal entry + any SPEC.md deviation annotations made during the slice (step 6) |
+| **Phase-group boundary** (`vine:navigate` step 8) | — | PROJECT-MAP.md (navigate row, Milestones row → status / PR#) + the SPEC.md phase-group ✅ marker |
+| **Evolve commit** (`vine:evolve`) | — | EVOLUTION.md and the `.resolved` marker |
+| **PR** (= one phase group) | the group's commits | the group's full artifact state — SPEC (plan), NAVIGATION (record), PROJECT-MAP (tracker) — so a reviewer sees plan-vs-result beside the diff |
+
+`CLAUDE.md` and `.vine/context/` overlays are ordinary tracked repo files — commit them whenever they change, regardless of the artifact-tracking choice. `PROFILE.md` is commonly gitignored (it's personal); commit it only if the repo tracks it.
+
+**When the repo does not track artifacts**, commits carry code only; the artifacts still update on disk (for the mtime guarantee and the engineer's own continuity) but never enter a commit. No command should force-add a gitignored artifact.
+
 ## Artifact-Free Commands
 
 Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode that compresses verify → navigate → evolve into a single session without writing CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. Its only outputs are code changes and a single commit.
@@ -411,3 +462,10 @@ Each phase ends with a **Next Step Suggestion** that tells the user exactly what
 ```
 
 This is a suggestion, not an auto-trigger. The engineer decides when to proceed.
+
+**Exception — `vine:resume`.** Resume does *not* suggest `/clear` before its recommended next
+step. The `/clear` convention exists to flush a heavy phase's accumulated chat context so the
+next phase reads state from `.vine/` files; resume is the inverse — it exists to *rebuild* that
+context into the current session, so clearing would immediately discard what it just restored.
+Resume hands the engineer back into the work that was already running, in the same session.
+`vine:status` is also exempt: it neither chains nor suggests next steps.

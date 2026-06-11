@@ -276,7 +276,11 @@ review? Are there teams whose work intersects? This matters for inquire and navi
 
 When you and the engineer feel you have a solid understanding of the landscape, wrap up with:
 
-1. Review CONTEXT.md together — make sure nothing's missing
+1. Review CONTEXT.md together — make sure nothing's missing. Give the engineer a clickable link
+   to the file (e.g., `[CONTEXT.md](.vine/projects/<domain>/<feature-slug>/CONTEXT.md)`) so it
+   opens rendered in their editor for review. (Auto-open is optional repo wiring — a repo can
+   wire its editor's open command in `.vine/context/verify.md`; the clickable link is the
+   portable default, so don't shell out to an OS-specific opener yourself.)
 2. Write PROJECT-MAP.md alongside CONTEXT.md to track VINE progress for this feature:
 
    ```markdown
