@@ -637,7 +637,7 @@ contributor contract.
 
 ### Slice 20: Between-slice `/clear` suggestion (navigate step 7) — Complete
 **Started**: 2026-06-10 23:00
-**Commit**: pending
+**Commit**: 3158608
 **Approach taken**: `commands/vine/navigate.md` step 7, two edits. (1) Item 5 expanded from "ask
 continue or pause" to a three-path AskUserQuestion — **continue in this session / `/clear` and
 continue fresh / pause** — with the selective heuristic spelled out: recommend `/clear` + re-
