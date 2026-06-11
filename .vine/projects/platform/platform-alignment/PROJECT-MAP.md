@@ -8,7 +8,7 @@
 |-------|--------|---------|
 | verify | ✅ | 2026-06-10 |
 | inquire | ✅ | 2026-06-10 |
-| navigate | 🚧 | 2026-06-10 |
+| navigate | ✅ | 2026-06-10 |
 | evolve | ⬜ | — |
 
 ### Milestones
@@ -19,4 +19,4 @@
 | Phase 2: Honest Enforcement (#59) | 6–10 | ✅ Shipped | #65 |
 | Phase 3: Knowledge Boundary (#60) | 11–13 | ✅ Shipped | #67 |
 | Phase 4: Native Tasks (#61) | 14–16 | ✅ Complete | — (PR 4, shared with Phase 5) |
-| Phase 5: Mode/Gate/Workflow (#62) | 17–21 | 🚧 Active | — (PR 4, shared with Phase 4) |
+| Phase 5: Mode/Gate/Workflow (#62) | 17–21 | ✅ Complete | — (PR 4, shared with Phase 4) |

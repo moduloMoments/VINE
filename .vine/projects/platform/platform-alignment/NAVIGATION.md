@@ -676,7 +676,7 @@ discussion). The slice itself, the selective-recommendation choice, and the new-
 
 ### Slice 21: README gearing↔mode + task + commit-guidance docs — Complete
 **Started**: 2026-06-10 23:10
-**Commit**: pending
+**Commit**: 2119dc9
 **Approach taken**: Docs-only slice — `README.md` (five woven additions, no new top-level
 sections, doc-growth guardrail honored) + `CHANGELOG.md` ([Unreleased] expanded to the full
 0.4.0 cycle). README: (1) **navigate phase blurb** — named the mode pairing inline (free climb →

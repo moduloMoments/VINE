@@ -411,7 +411,7 @@ and changes nothing where they don't. PR 4 stays open for Phase 5.
 
 ---
 
-## Phase 5: Mode, Gate & Workflow Hygiene (Slices 17–21) — #62, PR 4 (shared) ⬜
+## Phase 5: Mode, Gate & Workflow Hygiene (Slices 17–21) — #62, PR 4 (shared) ✅
 
 Summary: SPEC.md is VINE's plan and the artifact chain + AskUserQuestion sign-offs are the gate —
 harness plan mode is left to the harness, neither narrated nor integrated by VINE. This phase
