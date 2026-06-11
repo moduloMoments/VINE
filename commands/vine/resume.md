@@ -6,7 +6,12 @@ allowed-tools:
   - Read
   - Glob
   - Grep
+  - Edit
+  - Bash
   - AskUserQuestion
+  - TaskCreate
+  - TaskUpdate
+  - TaskList
 ---
 
 # vine:resume — Resume a VINE Session
@@ -117,7 +122,7 @@ exists.
 ⚠️  Spec deviations so far:
    [List of deviations]
 
-📋 Recommended next step: Run /clear, then run /vine:[next command] <domain>/<feature-slug>
+📋 Recommended next step: Run /vine:[next command] <domain>/<feature-slug>
    [1-2 sentence explanation of why this is the right next step]
 ---
 ```
@@ -155,10 +160,29 @@ Skip this if no Milestones table exists or all PR numbers are already filled in.
 📋 Navigation progress:
    [List slices with status: ✅ complete / 🔲 pending / ▶️ in progress]
 
-📋 Recommended next step: Run /clear, then run /vine:[next command] <domain>/<feature-slug>
+📋 Recommended next step: Run /vine:[next command] <domain>/<feature-slug>
    [1-2 sentence explanation of why this is the right next step]
 ---
 ```
+
+## Restore Session State
+
+**Rebuild the live task view (when available).** If native task tools are available, rebuild
+the in-session task list to match what `vine:navigate` would create (see navigate's "Build the
+live task view" step): `TaskCreate` one task per remaining slice in the current phase group,
+titled by the slice name, `blockedBy`-ordered, skipping slices already `Complete` in
+NAVIGATION.md and prefixing conditional slices `(conditional: <condition>)`. If a slice is
+`In Progress` per its NAVIGATION.md status suffix, `TaskUpdate` it to `in_progress`. The
+rebuilt list is a derived view — it carries no information the journal and spec don't already
+hold, so resume reconstructs it identically every time. When task tools aren't available, skip
+this; the status summary above is the progress view.
+
+**Consume the pause state.** If you read and displayed a PAUSE.md, delete it now — the
+consumed-once rule (see `references/STATE.md`): a lingering pause keeps re-suggesting
+`vine:resume` and re-presents stale notes on the next resume. Its notes have already been
+surfaced in the summary above; anything worth keeping past this resume belongs in
+NAVIGATION.md's Remaining Work, not PAUSE.md. (If no PAUSE.md was present, skip — nothing to
+consume.)
 
 ## Recommend Next Step
 
@@ -175,7 +199,17 @@ Based on the detected phase, recommend the appropriate command:
 | evolve complete | Consider resolving the project or re-running evolve |
 
 **Do not auto-launch the recommended command.** The engineer decides when to proceed. Resume
-is read-only — it shows status and recommends, nothing more.
+**creates no artifacts** — it never writes a CONTEXT/SPEC/NAVIGATION/EVOLUTION file; its job
+is to *restore* context, not produce the artifact chain. It does touch ephemeral and derived
+state: rebuilding the in-session task view (when task tools are available), consuming the
+PAUSE.md it displays, and backfilling PR numbers into the derived PROJECT-MAP view.
+
+**Resume is the `/clear` exception.** Unlike the phase commands, resume does *not* suggest
+`/clear` before the next step. The phase commands recommend a fresh session so heavy context
+flows through `.vine/` files rather than chat; resume is the opposite — it exists to rebuild
+that context into the current session, so clearing would immediately discard what it just
+restored. Resume is a handoff back into the work that was already running: you continue in the
+same session.
 
 ## Handle Edge Cases
 

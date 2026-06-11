@@ -7,6 +7,7 @@ allowed-tools:
   - Glob
   - Grep
   - AskUserQuestion
+  - TaskList
 ---
 
 # vine:status — Quick Progress Check
@@ -113,8 +114,12 @@ compact summary of all active projects before asking which to drill into:
 
 **Read-only.** Status never writes or modifies anything. No artifact updates, no state changes.
 
-**Fast.** This should complete in seconds. Read PROJECT-MAP.md (or detect artifacts) and
-display. No deep file scanning, no git log analysis.
+**Fast.** This should complete in seconds. Read PROJECT-MAP.md (or detect artifacts and count
+slice headings) and display — no deep content analysis, no git log archaeology. Counting
+`Complete` slice headings in NAVIGATION.md is the deepest it reads. When a live task list
+exists in the session (e.g., status run alongside an active navigate), status may read it via
+`TaskList` for the slice count instead; in a fresh session there is no list, so it derives
+`[X of Y]` from NAVIGATION.md as usual.
 
 **No recommendations.** Unlike resume, status doesn't suggest next steps or load PAUSE.md.
 It answers "where does this stand?" and nothing more. If the engineer wants guidance, they

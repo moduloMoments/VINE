@@ -188,8 +188,9 @@ thinking, what to pick up first, anything that won't survive a session break]
 1. **Created** by `vine:pause` — detects current phase from artifact presence, asks the engineer for notes, writes PAUSE.md to the feature directory.
 2. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
 3. **Consumed** (read, surfaced, then deleted) by whatever picks the work back up. Every deletion trigger:
-   - `vine:resume` — after displaying the notes (deletion mechanics land with resume's task-awareness update).
+   - `vine:resume` — after displaying the notes.
    - `vine:navigate` — at session start, the same moment `.vine/ACTIVE` is written; notes are surfaced in the starting-point summary first.
+   - `vine:inquire` — at session start, after reading CONTEXT.md (handles a pause taken after verify); notes are surfaced in the context summary first.
    - `vine:evolve` — at session start, after reading the feature's artifacts; notes are surfaced first.
    - `vine:evolve` when writing `.resolved` — backstop; a resolved project's pause state is definitionally stale.
 
@@ -439,3 +440,10 @@ Each phase ends with a **Next Step Suggestion** that tells the user exactly what
 ```
 
 This is a suggestion, not an auto-trigger. The engineer decides when to proceed.
+
+**Exception — `vine:resume`.** Resume does *not* suggest `/clear` before its recommended next
+step. The `/clear` convention exists to flush a heavy phase's accumulated chat context so the
+next phase reads state from `.vine/` files; resume is the inverse — it exists to *rebuild* that
+context into the current session, so clearing would immediately discard what it just restored.
+Resume hands the engineer back into the work that was already running, in the same session.
+`vine:status` is also exempt: it neither chains nor suggests next steps.

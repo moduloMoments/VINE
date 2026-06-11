@@ -8,6 +8,7 @@ allowed-tools:
   - Grep
   - Write
   - Edit
+  - Bash
   - Agent
   - AskUserQuestion
 ---
@@ -68,6 +69,12 @@ If CONTEXT.md exists, read it and summarize the key points back to the engineer:
 
 > "Based on our verify phase, here's what I'm working with: [brief summary]. The open questions
 > were: [list]. Let's start by resolving those."
+
+**Consume any pause state.** If the feature directory contains a PAUSE.md (e.g., the engineer
+paused after verify), surface its notes alongside the summary above, then delete it — the
+consumed-once rule (see `references/STATE.md`). A consumed pause must not linger: it would keep
+suggesting `vine:resume` for work that has already resumed. Anything worth keeping past this
+session belongs in the artifacts, not PAUSE.md. (If no PAUSE.md is present, skip.)
 
 ### 2. Resolve Open Questions
 
