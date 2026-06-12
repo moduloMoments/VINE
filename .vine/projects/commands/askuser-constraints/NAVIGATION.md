@@ -24,7 +24,7 @@
 ### Slice 2: Re-entry fix — init.md scaffolds Interaction Constraints (F1) — Complete
 
 - **Started**: 2026-06-12
-- **Commit**: pending
+- **Commit**: 030836f
 - **Route**: headless re-entry (Agent-tool subagent, reviewer-triggered) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Actor**: claude (headless re-entry actor) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Approach taken**: Made exactly the two edits reviewer finding F1 requested in `commands/vine/init.md`: (1) added an "Interaction Constraints" section to the Step-3 shared.md scaffold template, carrying this worktree's shared.md constraint set verbatim, placed after "Engineer Profile Protocol" and before "Team Context" to match shared.md's actual section order; (2) added "Interaction Constraints" to the upgrade-mode required-sections checklist alongside the existing two entries.
