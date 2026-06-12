@@ -323,7 +323,12 @@ Once approved:
 
 1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 
-2. Persist actionable retro items before printing the completion block. The retro is
+2. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
+   SPEC.md and the PROJECT-MAP.md update (see "Committing Artifacts" in `references/STATE.md`).
+   If the path is gitignored, skip this step silently — personal-scope artifacts never enter
+   a commit.
+
+3. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — if a retro item should change what
    navigate builds (a slice criterion, a convention to record, a framing a rule needs),
    fold it into the relevant slice in SPEC.md now. Only items with no downstream action

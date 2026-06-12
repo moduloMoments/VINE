@@ -406,6 +406,8 @@ The journal-before-commit guarantee holds either way: `journal-check.sh` compare
 
 | Commit point | Carries (code) | Carries (tracked artifacts) |
 |--------------|----------------|------------------------------|
+| **Verify completion** (`vine:verify` wrap-up, after the engineer approves) | — | CONTEXT.md + PROJECT-MAP.md — their first entry into history |
+| **Inquire completion** (`vine:inquire` sign-off) | — | SPEC.md + the PROJECT-MAP.md inquire row |
 | **Slice commit** (`vine:navigate` step 4c) | the slice's code | that slice's NAVIGATION.md journal entry + any SPEC.md deviation annotations made during the slice (step 6) |
 | **Phase-group boundary** (`vine:navigate` step 8) | — | PROJECT-MAP.md (navigate row, Milestones row → status / PR#) + the SPEC.md phase-group ✅ marker |
 | **Evolve commit** (`vine:evolve`) | — | EVOLUTION.md and the `.resolved` marker |
