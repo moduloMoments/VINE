@@ -97,6 +97,20 @@ table. Match the feature's domain against the profile's entries.
 - **If the domain is NOT in the profile or no profile exists**: Proceed with default depth.
   No prompt, no warning.
 
+## Interaction Constraints
+
+Apply these to every `AskUserQuestion` call, in any phase:
+
+- Max 4 questions per call
+- Max 4 options per question — the tool auto-adds an "Other" escape hatch, so don't include
+  one manually
+- Put the recommended option first with "(Recommended)" appended to its label
+- Use `multiSelect: false` for mutually exclusive choices (pick exactly one path)
+- Use `multiSelect: true` for inclusive choices and for batching related yes-no decisions
+- Use short labels (1-5 words) with descriptions carrying the tradeoff context
+- Batch related decisions into one call when possible
+- If a topic needs more than 4 options, split it by category across multiple questions
+
 ## Team Context
 
 - **Maintainer**: Solo maintainer, expecting community contributors in the future

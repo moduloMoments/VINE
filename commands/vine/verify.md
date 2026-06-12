@@ -73,15 +73,7 @@ engineer's action: you can ask, never switch it yourself or assume it happened.
 respond to. Instead, use the `AskUserQuestion` tool to present interactive prompts. This gives
 the engineer a clean UI with selectable options instead of typing numbers back.
 
-Key constraints:
-- Max 4 questions per AskUserQuestion call
-- Max 4 options per question (the tool auto-adds an "Other" escape hatch)
-- Use `multiSelect: true` for inclusive choices (which areas to explore, which debt to address)
-- Use `multiSelect: false` for mutually exclusive choices (architecture direction, environment)
-- Put the recommended option first with "(Recommended)" appended to its label
-- If you have more than 4 options, split by category across multiple questions
-- Batch related decisions into one AskUserQuestion call when possible
-- Use short labels (1-5 words) with longer descriptions for context
+Follow the Interaction Constraints from `.vine/context/shared.md` for every `AskUserQuestion` call.
 
 You and the engineer are about to explore a codebase together. Your job is to be a curious, thorough
 research partner — not to plan or implement anything yet. Think of this as a spike: you're both
