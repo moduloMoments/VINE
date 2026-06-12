@@ -227,6 +227,12 @@ Structure:
 [Anything unresolved that vine:inquire needs to address]
 ```
 
+The section headings above are the CONTEXT.md template headings from `references/STATE.md`.
+Use them verbatim. Extending a heading with subtitle text after a colon or dash (e.g.,
+`### Current State — Drift Findings`) is fine; replacing or rewording the heading itself is
+not. Downstream phases and artifact-format validation locate sections by these headings, so
+a custom heading breaks the chain silently.
+
 Save this to a domain-namespaced directory under `.vine/projects/`. The path follows the pattern:
 `.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
 

@@ -275,6 +275,11 @@ Compile everything into the spec document:
 [External dependencies, team coordination needed, unknowns]
 ```
 
+The section headings above are the SPEC.md template headings from `references/STATE.md`.
+Use them verbatim. Extending a heading with subtitle text after a colon or dash is fine;
+replacing or rewording the heading itself is not. Navigate and artifact-format validation
+locate sections by these headings, so a custom heading breaks the chain silently.
+
 Save to `.vine/projects/<domain>/<feature-slug>/SPEC.md`.
 
 ## Important Principles
