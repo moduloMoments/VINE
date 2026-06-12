@@ -12,9 +12,10 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
 - `agents/` — Shipped agent definitions, auto-delegated by description matching
 - `references/STATE.md` — State artifact contracts between phases
+- `ROADMAP.md` — Canonical cycle structure; the GitHub milestone is issue-level truth
 - `.github/` — PR template, issue templates (bug, friction, idea)
-- `.vine/context/shared.md` — Contributor shared context overlay (tracked; per-phase overlays gitignored)
-- `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (gitignored)
+- `.vine/context/` — Contributor context overlays (tracked)
+- `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (tracked; PAUSE.md gitignored)
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
 ## Command Authoring Conventions
@@ -51,6 +52,18 @@ All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `r
 > "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your explanation depth accordingly — be concise where they're confident, explain the why behind decisions where they're learning or new."
 
 If no profile exists or the domain isn't listed, commands behave exactly as they do without the feature.
+
+## Pull Requests
+
+PR descriptions are written for a reader with zero context — no VINE artifacts, no issue history, no memory of the session that produced the change. Make them digestible:
+
+- **One screen, max.** If the description needs scrolling, cut it.
+- **Plain language.** No internal shorthand (slice numbers, gearing, E1/E2/E3, cycle labels, "carried constraints") unless the PR is about those concepts — and then define each in a phrase.
+- **What/Why in 2–4 sentences each.** State what changed and the problem it solves. Don't narrate decision trails or per-commit summaries — the commit log and diff already carry that detail.
+- **Link, don't inline.** Point to issues, ROADMAP.md, or EVOLUTION.md for deep context instead of reproducing it.
+- **How to test: 3 steps or fewer.**
+
+This applies to PR bodies drafted anywhere — evolve's handoff package, the `/pr` command, or ad hoc.
 
 ## VINE
 

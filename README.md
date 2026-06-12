@@ -341,15 +341,28 @@ This separation avoids duplication: VINE handles what Claude doesn't cover (per-
 
 ## How VINE compares
 
-Most AI coding frameworks optimize for autonomous speed — the AI writes code, the human approves. VINE takes a different approach:
+The AI-assisted development field has settled into camps. **Spec-as-artifact** frameworks treat the written spec as the unit of work; **role-persona** frameworks orchestrate the work through named agent roles; **autonomous-speed** tools optimize for the AI writing code with the human approving at the end. VINE's bet is different: the scarce resource is **human attention**, so the framework's job is routing it — deciding per scope of work how much engagement it deserves, from walking through every change to trusting a slice entirely (and, on the [roadmap](ROADMAP.md), extending that same axis to parallel and headless execution).
+
+Where the named players stand, as of June 2026:
+
+- **[Spec-Kit](https://github.com/github/spec-kit)** (GitHub, 111k+ stars) anchors the spec-as-artifact camp, with a skills-based install for Claude Code and Codex and a large extension ecosystem. VINE shares the artifact discipline (CONTEXT → SPEC → NAVIGATION → EVOLUTION) but treats artifacts as the *handoff contract* of a routing loop, not the product.
+- **Kiro** (AWS, GA) brings EARS-syntax requirements and a dedicated spec mode at a price premium — spec-as-artifact as a paid IDE feature. VINE is markdown in your repo, on the tooling you already run.
+- **BMAD v6** leads the role-persona camp, building its agent roles on the same skills/subagents substrate VINE consumes. VINE is converging on roles from the opposite direction: a role is an overlay stack plus an entry point plus handoff contracts, earned through the routing loop rather than declared up front.
+- **Augment Cosmos** is the strongest team-level shared-context product, and makes the opposite staleness bet: a persistent semantic index, where VINE (like the platform it rides) bets on live-reading the repo at session time so context is never older than the checkout.
+- **agent-context** is the closest prior art to VINE's knowledge layer. Its multi-author and staleness story is git's defaults; VINE's knowledge lifecycle (promotion, archival, conflict-safe conventions) is the differentiation seam.
+- **AGENTS.md**, now under the Linux Foundation's AAIF, is substrate, not competition — a standard VINE rides, the same way it consumes Claude Code's native hooks, tasks, and memory rather than rebuilding them.
+
+The gap nobody has standardized: **configuration layering above repo scope** — how personal, team, and company context compose, and which layer wins on conflict. That's the territory VINE's overlay matrix targets ([roadmap](ROADMAP.md), "Overlay layers and precedence").
+
+Against the autonomous-speed camp specifically:
 
 | | Autonomous frameworks | VINE |
 |---|---|---|
 | **Optimizes for** | Speed | Growth (product + agent + user) |
-| **Human role** | Approves at the end | Steers throughout |
+| **Human role** | Approves at the end | Routes their own attention, steers where it matters |
 | **AI transparency** | Confident by default | Flags its own uncertainty |
-| **Engagement** | One mode fits all | Per-slice gearing (free climb / walk me through) |
-| **Commits** | Auto | Engineer commits per slice |
+| **Engagement** | One mode fits all | Per-slice gearing (walk me through / free climb; hybrid-parallel and headless on the [roadmap](ROADMAP.md)) |
+| **Commits** | Auto | Validated and journaled per slice |
 | **Best for** | Greenfield / scripted tasks | Established codebases |
 | **Learning model** | One-way (AI executes) | Partnership (both sides learn and teach) |
 
