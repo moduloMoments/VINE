@@ -19,6 +19,10 @@
 #   8 AskUserQuestion referenced in the body
 #   9 Legacy .vine/hooks references outside the two allowlisted spots -> WARNING
 #
+# Plus one repo-level check (not per-command, no table column):
+#  10 Cross-reference anchors resolve (verification-tier contract family:
+#     STATE.md note, agent mode/scope names, command pointers) -> FAILURE
+#
 # Writes .vine/.trellis-ok in the format the gate expects: a "status: pass"
 # (or "status: fail") first line. Warnings never change pass/fail (matches the
 # skill: legacy refs are warnings only). Exit 0 = all command checks pass,
@@ -242,16 +246,62 @@ done
 
 TOTAL=$((PASS_CMDS + FAIL_CMDS))
 
+# ---------- Check 10: cross-reference anchors (repo-level) ----------
+# Literal file|anchor pairs. The same list lives in .claude/commands/trellis.md
+# (Check 10) — keep the two identical. Renaming an anchored section means
+# updating both lists; that is the sync act this check enforces.
+
+ANCHOR_TOTAL=0
+ANCHOR_ISSUES=0
+ANCHORDETAIL=""
+while IFS='|' read -r af anchor; do
+  [ -n "$af" ] || continue
+  ANCHOR_TOTAL=$((ANCHOR_TOTAL + 1))
+  if [ ! -f "$root/$af" ] || ! grep -qF -- "$anchor" "$root/$af"; then
+    ANCHOR_ISSUES=$((ANCHOR_ISSUES + 1))
+    ANCHORDETAIL="$ANCHORDETAIL
+  - $af — missing anchor: $anchor"
+  fi
+done <<'PAIRS'
+references/STATE.md|**Verification-tier contract.**
+agents/vine-verification.md|### Feature Verification (cross-change)
+agents/vine-verification.md|**Phase-group scope**
+agents/vine-verification.md|**Full-feature scope**
+agents/vine-verification.md|**Base checks**
+agents/vine-verification.md|**Cross-cutting checks**
+commands/vine/navigate.md|verification-tier contract note
+commands/vine/evolve.md|verification-tier contract note
+PAIRS
+
+# An emptied pair list must not read as green — zero pairs is a failure.
+if [ "$ANCHOR_TOTAL" -eq 0 ]; then
+  ANCHOR_ISSUES=1
+  ANCHORDETAIL="
+  - PAIRS list is empty — the anchor check verified nothing"
+fi
+
 echo
 if [ "$ISSUE_COUNT" -eq 0 ]; then
   SUMMARY="✅ $TOTAL/$TOTAL commands pass all checks"
-  STATUS="pass"
 else
   SUMMARY="❌ $ISSUE_COUNT issues found across $FAIL_CMDS commands"
-  STATUS="fail"
 fi
 echo "$SUMMARY"
 [ -n "$FAILDETAIL" ] && printf '%s\n' "$FAILDETAIL"
+
+if [ "$ANCHOR_ISSUES" -eq 0 ]; then
+  ANCHOR_SUMMARY="✅ Cross-reference anchors resolve ($ANCHOR_TOTAL pairs)"
+else
+  ANCHOR_SUMMARY="❌ $ANCHOR_ISSUES cross-reference anchor(s) missing"
+fi
+echo "$ANCHOR_SUMMARY"
+[ -n "$ANCHORDETAIL" ] && printf '%s\n' "$ANCHORDETAIL"
+
+if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ]; then
+  STATUS="pass"
+else
+  STATUS="fail"
+fi
 
 if [ -n "$WARNINGS" ]; then
   echo
@@ -266,7 +316,7 @@ mkdir -p "$root/.vine"
 {
   echo "status: $STATUS"
   echo "checked: $when"
-  echo "summary: $SUMMARY"
+  echo "summary: $SUMMARY; $ANCHOR_SUMMARY"
 } > "$STAMP"
 
 [ "$STATUS" = pass ]

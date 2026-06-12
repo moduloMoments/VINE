@@ -142,6 +142,8 @@ The implementation journal. Built incrementally — each slice is appended as it
 
 **AC-traceability contract.** SPEC.md's top-level `### Acceptance Criteria` is the cycle contract, distinct from the per-slice `**Acceptance criteria**` checklists. `vine:evolve`'s verification rollup maps each cycle-level criterion to the slice/commit that satisfied it, flagging any with no evidence as **unaccounted** — this mapping is the EVOLUTION.md *Acceptance Criteria Results* table. As above, the rule lives in the command; this note keeps the two AC layers legible to contributors.
 
+**Verification-tier contract.** VINE runs its cross-change verification at two tiers, both delegated to the `vine-verification` agent's feature-verification mode — the checklist itself lives only in `agents/vine-verification.md` (the one shipped surface both commands can depend on); neither command restates it. `vine:navigate` invokes the mode at **phase-group scope** at each phase-group boundary: the base checks (full test suite, cross-slice integration, acceptance criteria, test coverage) scoped to the phase group — a deliberately lighter pre-PR gate. `vine:evolve` invokes it at **full-feature scope** at cycle end: the base checks across the whole feature plus the cross-cutting checks (error paths, cross-slice edge cases, combined performance). The asymmetry is intentional. Evolve-only scope stays in evolve.md because it isn't agent-runnable: AC traceability, spec deviation review, follow-up triage, handoff prep, and multi-PR prior-PR review + CI status via `gh`. As above, the rules live in the agent and the commands; this note documents the boundary so contributors keep all three in sync.
+
 ### EVOLUTION.md (produced by vine:evolve)
 
 The triple evolution report. Captures growth across product, agent, and user.
@@ -241,7 +243,7 @@ Shell-script home for VINE's native hook scripts — the enforcement layer behin
 
 Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). If VINE grows a validation contract, the Validation block proposed in #54 is its home.
 
-A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps contributor-only tooling in the same directory (`trellis-check.sh`, the mechanical check engine that runs trellis's command checks and writes the `.vine/.trellis-ok` stamp; `trellis-gate.sh`, the command-commit gate that reads that stamp; and `main-guard.sh`, which blocks commits on `main`; none ship via `create-vine`). The table above documents only the scaffold scripts.
+A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps contributor-only tooling in the same directory (`trellis-check.sh`, the mechanical check engine that runs trellis's command and cross-reference anchor checks and writes the `.vine/.trellis-ok` stamp; `trellis-gate.sh`, the command-commit gate that reads that stamp; and `main-guard.sh`, which blocks commits on `main`; none ship via `create-vine`). The table above documents only the scaffold scripts.
 
 ### PROJECT-MAP.md (produced by vine:verify, updated by all phases)
 

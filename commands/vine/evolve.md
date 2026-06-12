@@ -107,18 +107,18 @@ Acceptance Criteria Results in EVOLUTION.md.
 
 ### Cross-Slice Integration Check
 
-This is where evolve adds value. Delegate to the `vine-verification` agent in feature verification
-mode, passing it these checks to perform:
+This is where evolve adds value. Delegate to the `vine-verification` agent in **feature
+verification mode at full-feature scope** — the checklist, including the cross-cutting
+checks that full-feature scope adds, lives in the agent definition; don't restate it here.
+Pass the agent:
 
-- Do the pieces integrate correctly? (data flows between modules, imports resolve, etc.)
-- Run the full test suite (not just per-file tests from navigate's validation)
-- Check for cross-cutting concerns: error handling paths, edge cases that span slices,
-  performance implications of the combined changes
-- If `.vine/context/evolve.md` defines integration validation commands, include those
+- The feature's changed files and the acceptance criteria from SPEC.md
+- Custom integration validation commands from `.vine/context/evolve.md`, if defined
 
-> **Cross-reference:** Navigate step 9 runs a lighter version of this check at phase group
-> boundaries. If you change the verification approach here, check navigate.md's phase group
-> verification for consistency.
+> **Verification tiers:** This is the full-feature tier; navigate runs the phase-group tier
+> at phase group boundaries. The boundary between them — and the intentional asymmetry — is
+> documented in the verification-tier contract note in `references/STATE.md`. The checklist
+> itself lives in `agents/vine-verification.md`.
 
 **For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
 `gh` CLI is available, review the prior PRs as part of integration verification:

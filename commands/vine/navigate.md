@@ -420,47 +420,36 @@ and committed independently.
 **If PROJECT-MAP.md has a Milestones table** (multi-PR feature), do the following at each
 phase group boundary before showing the completion block:
 
-1. **Phase group verification** — Before suggesting a PR, run a lightweight product check
-   modeled on evolve's verification. This catches gaps before code leaves the branch.
+1. **Phase group verification** — Before suggesting a PR, delegate a product check to the
+   `vine-verification` agent in **feature verification mode at phase-group scope**. The
+   checklist lives in the agent definition — don't restate it here. Pass the agent:
 
-   **a. Run validation across the phase group's changes:**
-   - Lint all files changed in this phase group (not just the last slice)
-   - Run typecheck if the project uses one
-   - Run the full test suite (not just per-file tests from slice validation)
-   - If `.vine/context/navigate.md` defines custom validation commands, use those
+   - The files changed across this phase group (not just the last slice)
+   - Each slice in the group with its acceptance criteria from SPEC.md
+   - Custom validation commands from `.vine/context/navigate.md`, if defined
 
-   **b. Check test coverage:**
-   - Review whether the phase group's slices have corresponding tests. If any slice
-     introduced behavior without tests, flag it:
+   The agent runs the base checks for that scope and reports without fixing. When the
+   report comes back:
 
-     > "Slice [N] added [behavior] but I don't see tests covering it. Want to add
-     > tests before we PR this phase, or defer to a follow-up?"
+   - **Acceptance Criteria section**: present the agent's rollup to the engineer. If any
+     criteria are unmet, resolve them before proceeding.
+   - **Test Coverage section**: if the report flags slices that introduced behavior
+     without tests, use `AskUserQuestion` — let the engineer decide per-slice whether to
+     add tests now or defer to a follow-up:
 
-   - Use `AskUserQuestion` if there are untested slices — let the engineer decide
-     per-slice whether to add tests now or defer.
+     > "Slice [N] added [behavior] but the verification report shows no tests covering
+     > it. Want to add tests before we PR this phase, or defer to a follow-up?"
 
-   **c. Verify acceptance criteria:**
-   - Review the acceptance criteria for each slice in this phase group against the
-     committed code. Present a rollup:
+   - **Anything else the report surfaces**: fix it within the current session before
+     moving on — don't carry a failing phase group into a PR.
 
-     > "Phase [N] acceptance criteria:
-     > - [x] [criterion] — verified in [commit/file]
-     > - [ ] [criterion] — not met: [reason]"
-
-   - If any criteria are unmet, resolve them before proceeding.
-
-   **d. Check cross-slice integration within this phase group:**
-   - Do the slices work together? (imports resolve, data flows between modules, no
-     broken references across slice boundaries)
-   - Flag anything that looks fragile or inconsistent.
-
-   If verification surfaces issues, fix them within the current session before moving on.
    This is lighter than evolve's full pass — no deviation review, no follow-up triage, no
    handoff prep — but thorough enough that a PR opened after this step is shippable.
 
-   > **Cross-reference:** This verification mirrors steps a-d of evolve's Cross-Slice
-   > Integration Check. If you change the verification approach here, check evolve.md's
-   > product verification for consistency.
+   > **Verification tiers:** This is the phase-group tier; evolve runs the full-feature
+   > tier. The boundary between them — and the intentional asymmetry — is documented in
+   > the verification-tier contract note in `references/STATE.md`. The checklist itself
+   > lives in `agents/vine-verification.md`.
 
 2. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
    `✅ Shipped` (or `✅ Complete` if no PR yet).

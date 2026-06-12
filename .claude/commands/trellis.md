@@ -124,6 +124,38 @@ Any `.vine/hooks` reference outside these two allowlisted locations produces a w
 recording the file, line number, and line text. When the 0.5 fallback removal lands, this
 check (and both allowlist entries) is slated to harden to a failure.
 
+### Check 10: Cross-Reference Anchors (repo-level)
+
+The verification-tier contract spans three surfaces — `agents/vine-verification.md` (the
+checklist), `commands/vine/navigate.md` and `commands/vine/evolve.md` (the tier pointers),
+and `references/STATE.md` (the contract note) — held together by literal anchor strings.
+This check verifies each anchor still resolves. It catches the drift class where a section
+is renamed but its cross-references aren't updated (the stale "step 9" pointer this check
+was born from).
+
+Unlike Checks 1–8 this is repo-level, not per-command: it has no column in the Step 4 table
+and is reported as its own line after the summary. A missing anchor is a **failure**, not a
+warning — renaming an anchored section legitimately means updating the pair list, which is
+exactly the sync act the old prose cross-references asked for but couldn't enforce.
+
+Verify each file → anchor pair (literal substring match; the same list lives in
+`.vine/scripts/trellis-check.sh` — keep the two lists identical):
+
+| File | Expected anchor |
+|------|-----------------|
+| `references/STATE.md` | `**Verification-tier contract.**` |
+| `agents/vine-verification.md` | `### Feature Verification (cross-change)` |
+| `agents/vine-verification.md` | `**Phase-group scope**` |
+| `agents/vine-verification.md` | `**Full-feature scope**` |
+| `agents/vine-verification.md` | `**Base checks**` |
+| `agents/vine-verification.md` | `**Cross-cutting checks**` |
+| `commands/vine/navigate.md` | `verification-tier contract note` |
+| `commands/vine/evolve.md` | `verification-tier contract note` |
+
+The first six pairs confirm the pointed-at anchors exist (the contract note in STATE.md;
+the mode and scope vocabulary in the agent). The last two confirm both commands still carry
+their pointer to the contract note.
+
 ## Step 4: Format Results
 
 Present results as a summary table with commands as rows and checks as columns:
@@ -155,6 +187,13 @@ fallback removal):
 
 Omit the block entirely when there are no warnings. Warnings never change the pass/fail
 summary line.
+
+After the warnings, print the Check 10 anchor result as its own line:
+
+- All anchors resolve: **"✅ Cross-reference anchors resolve (N pairs)"**
+- Any missing: **"❌ N cross-reference anchor(s) missing"** followed by one line per missing
+  pair (file and expected anchor). Unlike Check 9's warnings, anchor failures count toward
+  the pass/fail status the stamp records (Step 8).
 
 The combined summary (covering both command and artifact results) is printed in Step 7.
 
@@ -375,12 +414,13 @@ check engine so it can't be confused with a hand-written pass ticket — run it 
 sh .vine/scripts/trellis-check.sh
 ```
 
-The script re-runs the command checks (Steps 1–4) mechanically over `commands/vine/*.md`
-and writes `.vine/.trellis-ok` (gitignored via `.vine/*`) itself — `status: pass` and
-exit 0 on a green run, `status: fail` and exit 1 otherwise, overwriting any previous stamp
-so a red tree can't ride through the gate on a stale green. The contributor trellis gate
-(`.vine/scripts/trellis-gate.sh`, wired in this repo's `.claude/settings.json`) reads that
-stamp before allowing commits that touch `commands/vine/` — a green script run is the
+The script re-runs the command checks (Steps 1–4) mechanically over `commands/vine/*.md` —
+including the repo-level Check 10 anchor pairs — and writes `.vine/.trellis-ok` (gitignored
+via `.vine/*`) itself — `status: pass` and exit 0 on a green run, `status: fail` and exit 1
+otherwise (a failed anchor pair flips it like any command check), overwriting any previous
+stamp so a red tree can't ride through the gate on a stale green. The contributor trellis
+gate (`.vine/scripts/trellis-gate.sh`, wired in this repo's `.claude/settings.json`) reads
+that stamp before allowing commits that touch `commands/vine/` — a green script run is the
 commit ticket for command changes.
 
 If the script's verdict disagrees with your Step 4 results, the script wins for gating
@@ -390,5 +430,5 @@ drifted between this skill and `trellis-check.sh` and the drift itself needs fix
 Scope notes: warnings (legacy references, unmarked headings) do not block a pass stamp.
 Artifact validation failures don't either — artifacts are often work-in-progress journals,
 and gating command commits on artifact state would block unrelated work. The stamp certifies
-command structure only; artifact validation (Steps 5–7) stays session-judged and is not
-stamped.
+command structure and cross-reference anchors only; artifact validation (Steps 5–7) stays
+session-judged and is not stamped.
