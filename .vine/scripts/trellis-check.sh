@@ -273,6 +273,13 @@ commands/vine/navigate.md|verification-tier contract note
 commands/vine/evolve.md|verification-tier contract note
 PAIRS
 
+# An emptied pair list must not read as green — zero pairs is a failure.
+if [ "$ANCHOR_TOTAL" -eq 0 ]; then
+  ANCHOR_ISSUES=1
+  ANCHORDETAIL="
+  - PAIRS list is empty — the anchor check verified nothing"
+fi
+
 echo
 if [ "$ISSUE_COUNT" -eq 0 ]; then
   SUMMARY="✅ $TOTAL/$TOTAL commands pass all checks"

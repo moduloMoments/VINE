@@ -53,8 +53,8 @@ Verify against acceptance criteria, then drive three evolutions. Product quality
 For features that span multiple PRs, VINE tracks progress across phase groups with milestone
 status. When `vine:inquire` detects a larger feature (>4 slices or phase groups), it offers to
 set up multi-PR tracking in `PROJECT-MAP.md`. Each phase group maps to a milestone with its own
-PR, and `vine:navigate` runs a lightweight verification pass before suggesting a PR at each
-phase boundary.
+PR, and `vine:navigate` delegates a lightweight verification pass to its verification agent
+before suggesting a PR at each phase boundary.
 
 `vine:evolve` reviews prior PRs via `gh` CLI to surface reviewer feedback that may affect
 cross-phase integration. `gh` CLI is optional — evolve works without it but can't check PR
