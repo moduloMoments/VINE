@@ -3,7 +3,7 @@
 
 ### Slice 1: Eligibility gate run (Q1) — Complete
 - **Started**: 2026-06-11
-- **Commit**: c3dfa6a
+- **Commit**: f8600fd (pre-rebase c3dfa6a; branch rebased onto main 287fd02 at navigate close)
 - **Route**: interactive (shepherd session) <!-- throwaway scaffold (spike Q2/Q6): per-slice route attribution; keep/discard at evolve -->
 - **Actor**: Rob + Claude (shepherd) <!-- throwaway scaffold (spike Q2/Q6): per-slice actor attribution; keep/discard at evolve -->
 - **Approach taken**: Hand-rolled the four-leg eligibility predicate against #47 (consolidate AskUserQuestion constraints block) and recorded the routing decision. Per-leg verdicts (*mechanical* = checkable by tooling/grep today, *judgment* = human/Claude call, *input-absent* = the field the leg needs doesn't exist):
@@ -30,7 +30,7 @@
 
 ### Slice 2: Headless delegation run (Q2) — Complete
 - **Started**: 2026-06-11
-- **Commit**: ca19d79
+- **Commit**: b20a1fe (pre-rebase ca19d79)
 - **Route**: interactive (shepherd session; the *delegated* work runs headless — see Route table in PROJECT-MAP.md) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Actor**: Rob + Claude (shepherd); delegated actor: claude (headless, Agent-tool subagent — 4th mechanism) <!-- throwaway scaffold (spike Q2/Q6); field originally said `claude -p` and went stale when the mechanism diverged mid-slice — staleness caught by the Q6 parse probe (Slice 4), kept here as evidence for the mechanism-token fix -->
 - **Approach taken**: Composed the delegation prompt as a tracked throwaway (`delegation-prompt-47.md` in this feature dir — spike evidence for slices 3–4). It pre-decides every interactive navigate decision point from CONTEXT.md's list: feature pre-supplied (#47), approve-edits skipped, branch pre-verified (`feature/askuser-constraints` off `e017fca`, per slice 1's gate constraint), gearing collapsed to free-climb, always-continue, test-coverage policy pre-set (markdown-only, no tests), PR surfaced-never-acted; plus hard file allowlist, byte-exact heading contracts, Route/Actor scaffold fields, journal-before-commit ordering, trellis-green-before-commit, the known-red `run-tests.sh` baseline (slice 1 finding), default-and-record vs. stop-and-surface split, `DONE:`/`BLOCKED:` exit protocol, and post-commit `Decisions Taken Autonomously` + `Environment Observations` appends left uncommitted for the shepherd. Actor worktree created at `.claude/worktrees/headless-47`; fired via `claude -p` (v2.1.119) in background.
@@ -65,7 +65,7 @@
 
 ### Slice 3: Reviewer leg (Q3–Q5) — Complete
 - **Started**: 2026-06-12
-- **Commit**: ef5d84a
+- **Commit**: d2c4c88 (pre-rebase ef5d84a)
 - **Route**: interactive (shepherd session); the *reviewer* ran headless (Agent-tool subagent, cold context) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Actor**: Rob + Claude (shepherd); reviewer actor: claude (cold subagent, agentId ad2274823037d1e89) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Approach taken**: Scaffolded `.vine/context/review.md` (throwaway-marked) as the reviewer role recipe — deliberately **minimal** (orientation order, authority boundary, five required output sections including a contemporaneous missing-context log) and deliberately **excluding** the tribal artifact-format contracts, so Q3 could measure whether their absence bites rather than pre-filling the gaps. Ran the cold reviewer as an Agent-tool subagent (mechanism chosen by engineer; same precedent as slice 2's 4th mechanism — cold in the context sense, not the session sense). Reviewer inputs: review.md + the headless-47 worktree (commit `bfe5458`, actor journal incl. uncommitted handoff sections) + `gh issue view 47`; hard exclusions enforced in the prompt: `references/STATE.md` (any copy), the spike feature dir, other worktrees. Reviewer's sources-consulted log confirms compliance. Shepherd then re-verified the reviewer's load-bearing claims against the issue comment, the delegation prompt's allowlist, and the pre-edit file (slice 1 lesson: findings-trustworthy, diagnosis-unverified — here both held).
@@ -102,11 +102,11 @@
 - **Learnings**:
   - Claude → Engineer: The reviewer leg's value concentrated exactly where the actor's confidence was lowest *and* where the pipeline had silently narrowed scope — the missing-context log instrument (review.md section 3) is what surfaced the envelope-visibility gap; without forcing contemporaneous logging, the reviewer would likely have reported only F1–F4 and the Q3/Q4 evidence would not exist.
   - Claude → Engineer: Three of the four unpredicted gaps (A–C) point at the same cycle-1 design move: the eligibility gate's output (verdict + constraints + allowlist + validation baseline) must be a durable artifact the reviewer can read — slice 1's "verdict plus constraints" learning, now with reviewer-side evidence.
-  - Engineer → Claude: (pending boundary review)
+  - Engineer → Claude: At the F1 disposition the engineer chose the re-delegation over the faster shepherd-fix — evidence over speed, consistent with the spike's deliverable being answers rather than the #47 code. That choice produced the 5th-mechanism event and the live event-driven re-entry data point that Q2's consolidation leans on.
 
 ### Slice 4: Calibration probe + findings consolidation (Q6) — Complete
 - **Started**: 2026-06-12
-- **Commit**: pending
+- **Commit**: 25129c9 (pre-rebase 9e9541a)
 - **Route**: interactive (shepherd session); the *probe* ran headless (Agent-tool subagent, cold parse) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Actor**: Rob + Claude (shepherd); probe actor: claude (cold subagent, agentId a7714d1c543a3b559) <!-- throwaway scaffold (spike Q2/Q6) -->
 - **Approach taken**: Ran the Q6 parse test as a fresh subagent given ONLY the three scaffolded homes (both NAVIGATION.md journals + PROJECT-MAP.md) — parsing as evolve would, not inspecting — with every extraction classified *mechanical / inferable / absent*. Then consolidated all six roadmap answers with evidence pointers and tagged each scaffold keep/discard. Also closed two journal-accuracy gaps the probe itself surfaced: slice 2's stale Actor field (said `claude -p`; the 4th mechanism delivered — original value preserved in the field comment as evidence) and slice 2's under-recorded mechanism deviation (now recorded, with the SPEC.md decision-2 addendum the deviation-closure contract requires).
@@ -145,3 +145,8 @@
 - **Learnings**:
   - Claude → Engineer: The parse probe earned its cost in one finding class nothing else produced: *mechanically extracted value ≠ truth* (the stale `claude -p` Actor field). Inspection would have read the prose correction and never noticed the field lied — only a parser that refuses to read prose catches schema rot.
   - Claude → Engineer: Every Q3–Q6 failure mode converged on the same cycle-1 artifact: a durable gate record (verdict + constraints + allowlist + validation baseline) that the envelope embeds, the reviewer reads, and the Route table points at. The spike's findings are six answers but arguably one design move.
+
+### Remaining Work
+- **Incomplete slices**: All slices complete (4 of 4; commits f8600fd, b20a1fe, d2c4c88, 25129c9 — rebased onto main `287fd02` at navigate close, pre-rebase hashes preserved per entry).
+- **Blockers encountered**: None outstanding. Three platform failures during slice 2 (headless auth, remote provisioning, scheduled-task permission deadlock) were resolved by mechanism swaps and are recorded as Q2 evidence, not open blockers.
+- **Handoff context**: Evolve's job is compiling the six consolidated answers (Slice 4 entry) into EVOLUTION.md and turning the convergent finding — the durable gate record — into cycle-1 issue input for #54 (gate) and #53 (handoff). The keep/discard tags (Slice 4) are the scaffold dispositions; review.md's promotion from throwaway is the one durable-mechanism call evolve must make against the "no durable mechanism beyond what findings justify" AC. The delegated #47 branch (`feature/askuser-constraints` in the headless-47 worktree, commits bfe5458 + 030836f + 56856d5) is reviewed (request-changes resolved by the re-entry run) and awaits the shepherd's PR call — the reviewer's derived PR description is in its report (Slice 3) and the actor journal's PR suggestion is amended for the init refresh. Tech debt observed-not-fixed per spec: journal-check mtime (never visibly fired across three headless commits — firing indistinguishable from outcomes), ACTIVE lifecycle (clean in all completed runs; the deadlocked scheduled-task session never reached it — feeds #79), run-tests fixture baseline (fixed on main by #89; this branch picked the fix up in the navigate-close rebase — 24/24 green post-rebase — while headless-47 still predates it, so the actor journal's 19/4 records stay checkout-accurate). Retro items persisted here: (1) consider a CLAUDE.md/shared.md note that agent reports are findings-trustworthy, diagnosis-unverified — three subagent reports this feature were accurate in findings while one inverted a root cause; (2) candidate skill/automation: the shepherd's post-run verification sweep (diff-vs-allowlist, stamp freshness, journal-literal checks) repeated near-identically after every delegated run and is mechanizable; (3) the `(decided by:)` convention plus confidence tags carried real calibration weight — schema work in cycle 1 should formalize both, per the Q6 probe's fix list.

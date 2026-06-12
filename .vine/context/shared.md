@@ -6,6 +6,7 @@
 The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
 
 - This repo IS the VINE framework — commands in `commands/vine/` are symlinked into `.claude/commands/vine/`, so running a command runs your working-tree edits.
+- Agent reports are findings-trustworthy, diagnosis-unverified: subagent findings (test counts, file lists, AC checks) are reliable, but re-verify root-cause narratives and load-bearing claims with a cheap direct check before acting on them. (Cycle-0 spike evidence: three accurate reports, one inverted root cause.)
 
 ## Project Conventions
 

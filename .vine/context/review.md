@@ -1,10 +1,10 @@
 # VINE Review Context Overlay — Role Recipe (Reviewer)
 
-<!-- throwaway scaffold (cycle-0 spike, Q3/Q4): reviewer entry point — how a cold
-     reviewer orients over the artifact chain alone; keep/discard at evolve.
+<!-- Promoted from cycle-0 spike scaffold (2026-06-12, Q4 verdict: sufficient entry
+     point first try — evidence in workflow/coordination-spike EVOLUTION.md).
      Deliberately minimal: it tells the reviewer HOW to orient and WHAT to produce,
-     not the artifact-format tribal knowledge — whether that knowledge is missing
-     is exactly what the spike measures. -->
+     not the artifact-format tribal knowledge. Cycle 1 adds "read the durable gate
+     record" to the orientation order once that artifact exists (#54/#53). -->
 
 ## Role
 

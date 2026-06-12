@@ -143,7 +143,7 @@ consolidated verification agent #69 produces.
 
 | # | Cycle | Issues | Mode | Loop stage / why this order |
 |---|-------|--------|------|------------------------------|
-| 0 | **Coordination spike** | none — throwaway scaffolding | Spike (ugly allowed) | The whole loop, end to end, once: one shepherd + one auto-agent + one reviewer, one feature, one full routing decision — scope arrives → eligibility evaluated → route chosen → headless execution → reviewer consumes the handoff. Runs *before* the foundation so its findings can reshape it; it must answer the six questions below. |
+| 0 | **Coordination spike** — ✅ done 2026-06-12 | none — throwaway scaffolding | Spike (ugly allowed) | The whole loop, end to end, once: one shepherd + one auto-agent + one reviewer, one feature, one full routing decision — scope arrives → eligibility evaluated → route chosen → headless execution → reviewer consumes the handoff. Ran before the foundation; all six questions answered with run evidence — see `.vine/projects/workflow/coordination-spike/EVOLUTION.md`. Convergent finding for cycle 1: the gate's output (verdict + constraints + allowlist + validation baseline) needs a durable, reviewer-visible artifact. |
 | 1 | **Foundation** | [#54](https://github.com/moduloMoments/VINE/issues/54) reshaped: routing-layer eligibility gate; [#53](https://github.com/moduloMoments/VINE/issues/53) headless contract; routing policy as overlay content (Decision Delegation pulled forward from [#55](https://github.com/moduloMoments/VINE/issues/55)); rule-class precedence split | Full cycle | The *route* stage. The precedence split lands first within the cycle — promoting any scope class to auto-route is unsafe without it. #54's gate semantic lives at the routing layer: a missing validation contract makes a scope ineligible for the headless route, while interactive routes keep today's graceful fallback. #53 pairs with it — decision classification (human-required vs. default-able) plus the structured handoff block. |
 | 2 | **Knowledge lifecycle** | [#51](https://github.com/moduloMoments/VINE/issues/51) durable knowledge layer, [#56](https://github.com/moduloMoments/VINE/issues/56) archival + backfill | Full cycle (multi-PR) | Supporting subsystem: the calibration substrate. Evolve's routing-criteria updates need a durable home to write to and read from. Durable knowledge only — live cross-actor state is the next cycle's design object, not this one's. |
 | 3 | **Cross-actor state** | [#79](https://github.com/moduloMoments/VINE/issues/79) | Full cycle | The *execute* and *handoff* stages under E2: slice ownership, in-flight state, handoff payload. Redesigns the three broken-under-E2 artifacts (PAUSE.md, `.vine/ACTIVE`, PROFILE.md) as one state model rather than patching them piecemeal. Shaped by the spike's question 2. Unlocks hybrid-parallel. |
@@ -152,6 +152,15 @@ consolidated verification agent #69 produces.
 | — | **Maintenance side-track** | [#46](https://github.com/moduloMoments/VINE/issues/46), [#47](https://github.com/moduloMoments/VINE/issues/47) (#48–#50 closed as already landed) | `vine:pair`, anytime | The first headless test cases. Bodies freshened with this re-scope so a delegated actor can execute them cold; they are never scheduled interactively ahead of the foundation — each one waits for cycle 1's gate, and each delegated run doubles as a contract test. |
 
 ### The spike's six questions
+
+> **Answered 2026-06-12** — evidenced answers and scaffold dispositions live in
+> `.vine/projects/workflow/coordination-spike/EVOLUTION.md`. Short form: Q1 checkable in
+> principle, not with today's fields (0/4 legs mechanical); Q2 yes ×3, and the contract
+> core proved mechanism-portable across four envelope swaps; Q3 yes — the gaps that bite
+> are the gate record and envelope lacking durable homes, not artifact-format schema;
+> Q4 holds, with the gate record promoted into the handoff contracts; Q5 one handoff
+> artifact suffices (the second thing is the durable role recipe); Q6 yes-except-gear,
+> four small schema fixes.
 
 1. Is the composite eligibility predicate (global validation contract + slice ACs + slice
    independence + bounded blast radius) mechanically checkable without per-slice config files?
