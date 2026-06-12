@@ -70,7 +70,8 @@ Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/pa
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
 feature to work on. Filter out resolved projects (directories containing a `.resolved` file) and
 archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
-tell the engineer and suggest starting a new cycle with `vine:verify`.
+tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
+in its own fenced code block so it's copy-pastable.
 
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` and `.vine/projects/<domain>/<feature-slug>/SPEC.md`. If either is
 missing, tell the engineer which prior phase needs to run first.
@@ -100,7 +101,7 @@ active work. It never leaves the machine.
 
 **Consume any pause state.** If the feature directory contains a PAUSE.md, picking the work
 back up consumes it: surface its notes in your starting-point summary, then delete the file.
-A consumed pause must not linger — it would keep suggesting `vine:resume` for work that has
+A consumed pause must not linger — it would keep suggesting `/vine:resume` for work that has
 already resumed.
 
 **Build the live task view (when available).** If native task tools are available in this
@@ -387,10 +388,15 @@ After each slice is validated and committed:
 **If the engineer chooses `/clear` and continue fresh**, this is a continuation, not an ending.
 NAVIGATION.md is already current (you updated it at the slice commit), so nothing extra to write —
 the re-invoked `/vine:navigate` rebuilds context from it. Leave `.vine/ACTIVE` in place; the next
-invocation refreshes its `phase` line. Then tell the engineer the exact command to run:
+invocation refreshes its `phase` line. Then tell the engineer the exact command to run — the
+message, followed by the command in its own fenced code block so it's copy-pastable:
 
-> "Slice N committed. Run `/clear`, then `/vine:navigate <domain>/<feature-slug>` — it'll pick up
-> at Slice N+1 with a fresh context. NAVIGATION.md carries everything forward."
+> "Slice N committed. Run `/clear`, then /vine:navigate — it'll pick up at Slice N+1 with a
+> fresh context. NAVIGATION.md carries everything forward."
+
+```
+/vine:navigate <domain>/<feature-slug>
+```
 
 **If the engineer chooses to pause**, write a "Remaining Work" section to NAVIGATION.md before
 stopping. This ensures the next session (or vine:resume) has structured handoff context:
@@ -403,12 +409,17 @@ stopping. This ensures the next session (or vine:resume) has structured handoff 
   anything that won't be obvious from the slice entries alone]
 ```
 
-After writing Remaining Work, suggest running `vine:pause` to capture the engineer's notes:
+After writing Remaining Work, suggest running `/vine:pause` to capture the engineer's notes —
+the message, followed by the command in its own fenced code block so it's copy-pastable:
 
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
-> for when you come back, run `vine:pause <domain>/<feature-slug>` before closing the session."
+> for when you come back, run /vine:pause before closing the session."
 
-Then delete `.vine/ACTIVE` — the navigate session is ending. (`vine:pause` also clears the
+```
+/vine:pause <domain>/<feature-slug>
+```
+
+Then delete `.vine/ACTIVE` — the navigate session is ending. (`/vine:pause` also clears the
 sentinel; deleting it here covers the engineer who pauses without running the command.)
 
 ### 8. Between Phase Groups
@@ -556,19 +567,23 @@ the retro.
 
 Then present the completion block:
 
-```
+````
 ---
 ✅ vine:navigate complete → .vine/projects/<domain>/<feature-slug>/NAVIGATION.md updated
    Slices completed: [N of M]
    Commits: [list of commit hashes]
 
-📋 Suggested next step: Run `vine:evolve <domain>/<feature-slug>` to verify integration and capture learnings.
+📋 Suggested next step: Run /vine:evolve to verify integration and capture learnings.
    Key items for evolve:
    - [spec deviations to review]
    - [cross-slice integration to verify]
    - [discovered items to triage]
 
-🔄 Recommended: Run `/clear` before starting vine:evolve.
+```
+/vine:evolve <domain>/<feature-slug>
+```
+
+🔄 Recommended: Run `/clear` before starting /vine:evolve.
    Navigate is tactical — evolve needs a reflective, evaluative headspace.
    NAVIGATION.md carries everything forward; conversation context doesn't need to.
 
@@ -577,4 +592,4 @@ Then present the completion block:
    - Skill suggestion: [any implementation pattern worth automating]
    - User note: [techniques or patterns the engineer engaged with most]
 ---
-```
+````

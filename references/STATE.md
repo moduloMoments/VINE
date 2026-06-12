@@ -176,7 +176,7 @@ The triple evolution report. Captures growth across product, agent, and user.
 
 ### PAUSE.md (produced by vine:pause, consumed by vine:resume)
 
-An ephemeral session artifact. Captures where the engineer stopped and why — the context that existing artifacts don't preserve. Unlike other state files, PAUSE.md is **consumed-once**: it exists only between the pause and whatever picks the work back up. The command that resumes the work deletes it — a consumed pause that lingers keeps firing the "PAUSE.md exists → suggest `vine:resume`" suggestion and re-presents stale notes on the next resume.
+An ephemeral session artifact. Captures where the engineer stopped and why — the context that existing artifacts don't preserve. Unlike other state files, PAUSE.md is **consumed-once**: it exists only between the pause and whatever picks the work back up. The command that resumes the work deletes it — a consumed pause that lingers keeps firing the "PAUSE.md exists → suggest `/vine:resume`" suggestion and re-presents stale notes on the next resume.
 
 ```markdown
 # Paused: [Feature Name]
@@ -453,21 +453,25 @@ Commands that present feature directory lists via `AskUserQuestion` must:
 
 1. Skip directories containing a `.resolved` file
 2. Skip anything under `.vine/projects/.archive/`
-3. If all projects are resolved/archived, tell the engineer and suggest starting a new cycle with `vine:verify`
+3. If all projects are resolved/archived, tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command in its own fenced code block so it's copy-pastable
 
 If the engineer needs to access a resolved project, they can pass its path explicitly as an argument.
 
 ## Chaining Protocol
 
-Each phase ends with a **Next Step Suggestion** that tells the user exactly what to run next and why. Each phase also suggests starting a fresh session (`/clear`) so state flows through `.vine/` files rather than chat context:
+Each phase ends with a **Next Step Suggestion** that tells the user exactly what to run next and why. The runnable command gets its own fenced code block so the engineer can copy it directly. Each phase also suggests starting a fresh session (`/clear`) so state flows through `.vine/` files rather than chat context:
 
-```
+````
 ---
 ✅ vine:verify complete → CONTEXT.md written
 📋 Suggested next step: /clear, then run /vine:inquire to build the feature spec on top of this context.
    Key items for inquire to address: [list open questions from CONTEXT.md]
----
+
 ```
+/vine:inquire <domain>/<feature-slug>
+```
+---
+````
 
 This is a suggestion, not an auto-trigger. The engineer decides when to proceed.
 

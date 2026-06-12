@@ -47,7 +47,8 @@ to re-read everything yourself.
 Scan `.vine/projects/` for feature directories. Filter out resolved projects (directories
 containing a `.resolved` file) and archived projects (under `.vine/projects/.archive/`). If all
 projects are resolved or archived, tell the engineer there's nothing to resume and suggest
-starting a new cycle with `vine:verify`.
+starting a new cycle with `/vine:verify` — present the command in its own fenced code block
+so it's copy-pastable.
 
 If a feature path was passed as an argument, use it directly. Otherwise:
 
@@ -96,7 +97,7 @@ exists.
 
 ### With PAUSE.md
 
-```
+````
 ---
 🔄 Resuming: [Feature Name]
    Paused: [timestamp] ([time ago])
@@ -122,10 +123,13 @@ exists.
 ⚠️  Spec deviations so far:
    [List of deviations]
 
-📋 Recommended next step: Run /vine:[next command] <domain>/<feature-slug>
-   [1-2 sentence explanation of why this is the right next step]
----
+📋 Recommended next step: [1-2 sentence explanation of why this is the right next step]
+
 ```
+/vine:[next command] <domain>/<feature-slug>
+```
+---
+````
 
 ### PR Number Backfill
 
@@ -141,7 +145,7 @@ Skip this if no Milestones table exists or all PR numbers are already filled in.
 
 ### Without PAUSE.md (artifact-only fallback)
 
-```
+````
 ---
 🔄 Resuming: [Feature Name]
    Phase: [detected from artifacts]
@@ -160,15 +164,18 @@ Skip this if no Milestones table exists or all PR numbers are already filled in.
 📋 Navigation progress:
    [List slices with status: ✅ complete / 🔲 pending / ▶️ in progress]
 
-📋 Recommended next step: Run /vine:[next command] <domain>/<feature-slug>
-   [1-2 sentence explanation of why this is the right next step]
----
+📋 Recommended next step: [1-2 sentence explanation of why this is the right next step]
+
 ```
+/vine:[next command] <domain>/<feature-slug>
+```
+---
+````
 
 ## Restore Session State
 
 **Rebuild the live task view (when available).** If native task tools are available, rebuild
-the in-session task list to match what `vine:navigate` would create (see navigate's "Build the
+the in-session task list to match what `/vine:navigate` would create (see navigate's "Build the
 live task view" step): `TaskCreate` one task per remaining slice in the current phase group,
 titled by the slice name, `blockedBy`-ordered, skipping slices already `Complete` in
 NAVIGATION.md and prefixing conditional slices `(conditional: <condition>)`. If a slice is
@@ -179,7 +186,7 @@ this; the status summary above is the progress view.
 
 **Consume the pause state.** If you read and displayed a PAUSE.md, delete it now — the
 consumed-once rule (see `references/STATE.md`): a lingering pause keeps re-suggesting
-`vine:resume` and re-presents stale notes on the next resume. Its notes have already been
+`/vine:resume` and re-presents stale notes on the next resume. Its notes have already been
 surfaced in the summary above; anything worth keeping past this resume belongs in
 NAVIGATION.md's Remaining Work, not PAUSE.md. (If no PAUSE.md was present, skip — nothing to
 consume.)
@@ -190,12 +197,12 @@ Based on the detected phase, recommend the appropriate command:
 
 | Phase | Recommendation |
 |---|---|
-| pre-verify | `vine:verify` — start the context-building spike |
-| verify complete | `vine:inquire <domain>/<feature-slug>` — build the feature spec |
-| inquire complete | `vine:navigate <domain>/<feature-slug>` — start implementation |
-| navigate in progress | `vine:navigate <domain>/<feature-slug>` — resume implementation (it reads NAVIGATION.md) |
-| navigate complete | `vine:evolve <domain>/<feature-slug>` — verify integration and capture learnings |
-| evolve in progress | `vine:evolve <domain>/<feature-slug>` — finish the evolution report |
+| pre-verify | `/vine:verify` — start the context-building spike |
+| verify complete | `/vine:inquire <domain>/<feature-slug>` — build the feature spec |
+| inquire complete | `/vine:navigate <domain>/<feature-slug>` — start implementation |
+| navigate in progress | `/vine:navigate <domain>/<feature-slug>` — resume implementation (it reads NAVIGATION.md) |
+| navigate complete | `/vine:evolve <domain>/<feature-slug>` — verify integration and capture learnings |
+| evolve in progress | `/vine:evolve <domain>/<feature-slug>` — finish the evolution report |
 | evolve complete | Consider resolving the project or re-running evolve |
 
 **Do not auto-launch the recommended command.** The engineer decides when to proceed. Resume
@@ -223,7 +230,8 @@ shows Slice 3 is complete, trust the artifacts over PAUSE.md. Note the discrepan
 > "Your pause state says you were on Slice 3, but it looks like it was completed since then.
 > Picking up at Slice 4 instead."
 
-**No active features**: Tell the engineer and suggest `vine:verify` to start a new cycle.
+**No active features**: Tell the engineer and suggest `/vine:verify` to start a new cycle —
+present the command in its own fenced code block so it's copy-pastable.
 
 **Wrong branch**: If the current branch doesn't match the feature, suggest switching:
 

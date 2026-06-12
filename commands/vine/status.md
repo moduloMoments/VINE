@@ -35,7 +35,7 @@ display command.
 
 ---
 
-A lightweight alternative to `vine:resume`. Shows where a feature stands without reconstructing
+A lightweight alternative to `/vine:resume`. Shows where a feature stands without reconstructing
 full session state or recommending next steps. Useful for a quick check between sessions or
 when deciding which feature to pick up.
 
@@ -123,4 +123,4 @@ exists in the session (e.g., status run alongside an active navigate), status ma
 
 **No recommendations.** Unlike resume, status doesn't suggest next steps or load PAUSE.md.
 It answers "where does this stand?" and nothing more. If the engineer wants guidance, they
-should run `vine:resume <domain>/<feature-slug>`.
+should run `/vine:resume <domain>/<feature-slug>`.

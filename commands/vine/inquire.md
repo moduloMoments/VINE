@@ -54,14 +54,15 @@ Identify the feature directory under `.vine/projects/`. Look for the domain/feat
 containing a `.resolved` file) and archived projects (under `.vine/projects/.archive/`). If
 there's only one active feature directory, use that. If there are multiple, use
 `AskUserQuestion` to let the engineer pick which feature to work on. If all projects are
-resolved or archived, tell the engineer and suggest starting a new cycle with `vine:verify`.
+resolved or archived, tell the engineer and suggest starting a new cycle with `/vine:verify` —
+present the command in its own fenced code block so it's copy-pastable.
 
 Also read `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` if it exists. If present, update the
 inquire row to 🚧 with today's date. If it doesn't exist, skip — older projects won't have one.
 
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` from the project. If it doesn't exist, tell the engineer:
 
-> "I don't see a CONTEXT.md from a verify phase. We can either run vine:verify first to map the
+> "I don't see a CONTEXT.md from a verify phase. We can either run /vine:verify first to map the
 > landscape, or if you're confident we have enough context, I can work from what you tell me.
 > What do you prefer?"
 
@@ -73,7 +74,7 @@ If CONTEXT.md exists, read it and summarize the key points back to the engineer:
 **Consume any pause state.** If the feature directory contains a PAUSE.md (e.g., the engineer
 paused after verify), surface its notes alongside the summary above, then delete it — the
 consumed-once rule (see `references/STATE.md`). A consumed pause must not linger: it would keep
-suggesting `vine:resume` for work that has already resumed. Anything worth keeping past this
+suggesting `/vine:resume` for work that has already resumed. Anything worth keeping past this
 session belongs in the artifacts, not PAUSE.md. (If no PAUSE.md is present, skip.)
 
 ### 2. Resolve Open Questions
@@ -334,14 +335,18 @@ Once approved:
    fold it into the relevant slice in SPEC.md now. Only items with no downstream action
    belong in the retro alone.
 
-```
+````
 ---
 ✅ vine:inquire complete → SPEC.md written to .vine/projects/<domain>/<feature-slug>/SPEC.md
-📋 Suggested next step: Run `vine:navigate <domain>/<feature-slug>` to begin implementation.
+📋 Suggested next step: Run /vine:navigate to begin implementation.
    Starting with [Phase 1: name / Slice 1: name]
    [1-2 sentence summary of what's first]
 
-🔄 Recommended: Run `/clear` before starting vine:navigate.
+```
+/vine:navigate <domain>/<feature-slug>
+```
+
+🔄 Recommended: Run `/clear` before starting /vine:navigate.
    Inquire is analytical — navigate needs a tactical, implementation-focused headspace.
    SPEC.md carries everything forward; conversation context doesn't need to.
 
@@ -350,4 +355,4 @@ Once approved:
    - Skill suggestion: [any design pattern that could be templated]
    - User note: [any architectural concepts the engineer found useful to discuss]
 ---
-```
+````
