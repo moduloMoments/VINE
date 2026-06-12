@@ -53,6 +53,18 @@ All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `r
 
 If no profile exists or the domain isn't listed, commands behave exactly as they do without the feature.
 
+## Pull Requests
+
+PR descriptions are written for a reader with zero context — no VINE artifacts, no issue history, no memory of the session that produced the change. Make them digestible:
+
+- **One screen, max.** If the description needs scrolling, cut it.
+- **Plain language.** No internal shorthand (slice numbers, gearing, E1/E2/E3, cycle labels, "carried constraints") unless the PR is about those concepts — and then define each in a phrase.
+- **What/Why in 2–4 sentences each.** State what changed and the problem it solves. Don't narrate decision trails or per-commit summaries — the commit log and diff already carry that detail.
+- **Link, don't inline.** Point to issues, ROADMAP.md, or EVOLUTION.md for deep context instead of reproducing it.
+- **How to test: 3 steps or fewer.**
+
+This applies to PR bodies drafted anywhere — evolve's handoff package, the `/pr` command, or ad hoc.
+
 ## VINE
 
 This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
