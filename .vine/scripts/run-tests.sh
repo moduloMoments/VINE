@@ -134,9 +134,28 @@ Read the profile. Decisions use AskUserQuestion.
 EOF
 }
 
+# Check 10 resolves the PAIRS list in trellis-check.sh against
+# $CLAUDE_PROJECT_DIR, so the fixture stubs every anchor. Keep in sync with
+# that heredoc. The navigate/evolve anchors live in command files, so those
+# stubs must also pass the per-command checks — mkcmd builds them.
+mkanchors() {
+  mkdir -p "$1/references" "$1/agents"
+  printf '%s\n' '**Verification-tier contract.**' > "$1/references/STATE.md"
+  cat > "$1/agents/vine-verification.md" <<'EOF'
+### Feature Verification (cross-change)
+**Phase-group scope**
+**Full-feature scope**
+**Base checks**
+**Cross-cutting checks**
+EOF
+  mkcmd "$1" navigate "vine:navigate" navigate "See the verification-tier contract note."
+  mkcmd "$1" evolve "vine:evolve" evolve "See the verification-tier contract note."
+}
+
 T=$(mktemp -d)
 mkdir -p "$T/commands/vine" "$T/.vine"
 export CLAUDE_PROJECT_DIR="$T"
+mkanchors "$T"
 
 mkcmd "$T" good "vine:good" good ""
 sh "$C" >/dev/null 2>&1
@@ -183,6 +202,11 @@ mkcmd "$T" fb "vine:fb" fb "If \`.vine/context/\` doesn't exist but legacy \`.vi
 warnout=$(sh "$C" 2>/dev/null)
 printf '%s' "$warnout" | grep -q 'fb.md:.*\.vine/hooks'
 check "trellis-check: allowlisted fallback paragraph does not warn" 1 $?
+
+# Check 10: a missing anchor file must flip the run red.
+rm "$T/references/STATE.md"
+sh "$C" >/dev/null 2>&1
+check "trellis-check: missing cross-reference anchor -> fail (exit 1)" 1 $?
 
 rm -rf "$T"
 
