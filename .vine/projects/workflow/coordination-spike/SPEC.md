@@ -31,6 +31,15 @@ calibration probe. Decisions made at inquire:
    escalation channel; `claude -p` has none (the actor can only halt and write). Slice
    2 records whether stop-and-surface fires and how it degrades headless — that
    observation decides whether a supervised-teams route mode belongs in cycle 1's gate.
+   *Addendum (slice 2 deviation, 2026-06-11/12):* `claude -p` failed on auth before
+   touching anything; delivery happened via the **4th mechanism** (Agent-tool subagent
+   into the same worktree) after a remote cloud-agent and a local scheduled-task
+   attempt also failed informatively — full trail in NAVIGATION.md Slice 2. A **5th
+   mechanism event** followed at the slice 3 boundary: a reviewer-triggered headless
+   re-entry run (durable envelope `delegation-prompt-47-reentry.md`) fixed reviewer
+   finding F1 on the #47 branch — the event-driven re-entry route shape from the
+   reference architecture, exercised live. The contract core survived every envelope
+   swap unmodified (mechanism-portability finding, Q2).
 3. **Attribution scaffold: per-slice `**Route**:`/`**Actor**:` field pair on
    NAVIGATION.md entries plus a Route column in PROJECT-MAP.md** — the shape
    delegation-routing's SPEC decision 5 decided but never implemented. Structured, so
