@@ -227,13 +227,7 @@ When you encounter something not covered by the spec (and you will), use `AskUse
 to present the options interactively. Never print markdown option lists for the engineer to
 respond to.
 
-Key constraints for `AskUserQuestion`:
-- Max 4 questions per call, max 4 options per question (auto-adds "Other")
-- Use `multiSelect: false` for mutually exclusive choices (which pattern, which approach)
-- Use `multiSelect: true` when batching yes/no tactical decisions together
-- Put the recommended option first with "(Recommended)" appended to its label
-- Use short labels (1-5 words) with descriptions for tradeoff context
-- Batch related decisions into one call when possible
+Follow the Interaction Constraints from `.vine/context/shared.md` for every `AskUserQuestion` call.
 
 The engineer decides. You document each decision in NAVIGATION.md.
 

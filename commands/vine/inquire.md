@@ -99,15 +99,7 @@ For each significant design decision:
 interactive `AskUserQuestion` tool instead. This gives the engineer a clean UI with selectable
 options.
 
-Key constraints:
-- Max 4 questions per AskUserQuestion call, max 4 options per question
-- The tool auto-adds an "Other" option — don't include one manually
-- Use `multiSelect: true` for inclusive choices (which tech debt to address, which criteria to keep)
-- Use `multiSelect: false` for mutually exclusive choices (architecture direction, pattern to follow)
-- Put the recommended option first with "(Recommended)" appended to its label
-- Use short labels (1-5 words) with longer descriptions for tradeoffs
-- Batch related decisions into one call when possible (e.g., architecture + tech debt triage)
-- If more than 4 options exist for a topic, split by category across multiple questions
+Follow the Interaction Constraints from `.vine/context/shared.md` for every `AskUserQuestion` call.
 
 **Wait for the decision.** Don't assume. Don't proceed. The engineer decides.
 

@@ -264,11 +264,7 @@ via `AskUserQuestion` instead of prose-based option lists or silent assumptions.
 | **Batch decisions** | Multiple independent yes/no decisions presented sequentially. Each round-trip costs tokens and time. | Batch into a single `AskUserQuestion` with `multiSelect: true`. |
 | **Missing confirmation** | Command performs a consequential action (file writes, git operations, external calls) without confirming intent. | Add a confirmation `AskUserQuestion` before the action. |
 
-**Constraints for `AskUserQuestion` recommendations:**
-- Max 4 questions per call, max 4 options per question (auto-adds "Other")
-- Recommended option first with "(Recommended)" appended
-- Short labels (1-5 words) with descriptions for tradeoff context
-- `multiSelect: false` for mutually exclusive choices, `true` for batched yes/no decisions
+Proposed conversions must follow the Interaction Constraints from `.vine/context/shared.md`.
 
 For each command, produce:
 - Number of existing `AskUserQuestion` uses
