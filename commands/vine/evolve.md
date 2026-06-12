@@ -51,7 +51,8 @@ Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/pa
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
 feature to review. Filter out resolved projects (directories containing a `.resolved` file) and
 archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
-tell the engineer and suggest starting a new cycle with `vine:verify`.
+tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
+in its own fenced code block so it's copy-pastable.
 
 Read all VINE artifacts for this feature:
 - `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
@@ -67,7 +68,7 @@ table, note which phases shipped in prior PRs — evolve's verification should f
 phase group and cross-phase integration, not re-verify already-shipped work.
 
 If the feature directory contains a PAUSE.md, picking the work back up consumes it: surface
-its notes, then delete the file — a consumed pause must not linger suggesting `vine:resume`.
+its notes, then delete the file — a consumed pause must not linger suggesting `/vine:resume`.
 Also delete `.vine/ACTIVE` (repo root) if it exists: any navigate session on this feature is
 over, and a stale sentinel keeps installed hooks firing against work that's no longer active
 (format and lifecycle in `references/STATE.md`).

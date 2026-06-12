@@ -167,7 +167,7 @@ Use `AskUserQuestion`:
    documentation trail."
 
 If the engineer chooses pair, summarize the key context gathered so far (landscape, tribal
-knowledge, the change to make) and transition directly into `vine:pair`'s implementation
+knowledge, the change to make) and transition directly into `/vine:pair`'s implementation
 flow. The verify conversation *is* the context — no CONTEXT.md needed.
 
 If the work clearly warrants the full cycle, skip this check — don't ask the question when
@@ -319,16 +319,20 @@ When you and the engineer feel you have a solid understanding of the landscape, 
    documentation gaps), not just the retro.
 6. Suggest next step:
 
-```
+````
 ---
 ✅ vine:verify complete → CONTEXT.md + PROJECT-MAP.md written to .vine/projects/<domain>/<feature-slug>/
-📋 Suggested next step: Run `vine:inquire <domain>/<feature-slug>` to build the feature spec.
+📋 Suggested next step: Run /vine:inquire to build the feature spec.
    Key items to address:
    - [open question 1]
    - [open question 2]
    - [tech debt decision needed]
 
-🔄 Recommended: Run `/clear` before starting vine:inquire.
+```
+/vine:inquire <domain>/<feature-slug>
+```
+
+🔄 Recommended: Run `/clear` before starting /vine:inquire.
    Verify is exploratory — inquire needs a clean, decisive headspace.
    CONTEXT.md carries everything forward; conversation context doesn't need to.
 
@@ -343,7 +347,7 @@ When you and the engineer feel you have a solid understanding of the landscape, 
    - Skill suggestion: [any repeated pattern worth codifying]
    - User note: [anything the engineer mentioned wanting to learn more about]
 ---
-```
+````
 
 The retro block at the end is part of VINE's evolution philosophy. Every phase is an opportunity
 to improve three things: the product, the agent's knowledge, and the user's growth.
