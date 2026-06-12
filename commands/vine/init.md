@@ -118,6 +118,20 @@ table. Match the feature's domain against the profile's entries.
 - **If the domain is NOT in the profile or no profile exists**: Proceed with default depth.
   No prompt, no warning.
 
+## Interaction Constraints
+
+Apply these to every `AskUserQuestion` call, in any phase:
+
+- Max 4 questions per call
+- Max 4 options per question — the tool auto-adds an "Other" escape hatch, so don't include
+  one manually
+- Put the recommended option first with "(Recommended)" appended to its label
+- Use `multiSelect: false` for mutually exclusive choices (pick exactly one path)
+- Use `multiSelect: true` for inclusive choices and for batching related yes-no decisions
+- Use short labels (1-5 words) with descriptions carrying the tradeoff context
+- Batch related decisions into one call when possible
+- If a topic needs more than 4 options, split it by category across multiple questions
+
 ## Team Context
 
 [Ownership, review patterns, external integrations — from engineer's answers]
@@ -222,6 +236,7 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
 3. Check for required shared.md sections that may be missing from older installs:
    - "Collaboration Stance" — if missing, add it (commands now reference this from shared.md)
    - "Engineer Profile Protocol" — if missing, add it
+   - "Interaction Constraints" — if missing, add it
 4. Present a diff of what's new vs what's already in the overlays using `AskUserQuestion`:
    - New tools/agents discovered that aren't in overlays yet
    - Existing overlay entries that reference tools/agents no longer present
