@@ -9,6 +9,7 @@ allowed-tools:
   - Agent
   - WebFetch
   - Write
+  - Bash
   - AskUserQuestion
 ---
 
@@ -307,12 +308,16 @@ When you and the engineer feel you have a solid understanding of the landscape, 
    Save to `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md`. No Milestones table yet —
    that's added by inquire if the feature needs multi-PR treatment.
 
-3. Highlight the open questions that need resolution in inquire
-4. Persist actionable retro items before printing the completion block. The retro is
+3. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
+   CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history (see "Committing
+   Artifacts" in `references/STATE.md`). If the path is gitignored, skip this step silently —
+   personal-scope artifacts never enter a commit.
+4. Highlight the open questions that need resolution in inquire
+5. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — anything inquire should act on
    belongs in the relevant CONTEXT.md section (open questions, tribal knowledge,
    documentation gaps), not just the retro.
-5. Suggest next step:
+6. Suggest next step:
 
 ```
 ---
