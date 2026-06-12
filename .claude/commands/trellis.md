@@ -6,7 +6,7 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Write
+  - Bash
   - AskUserQuestion
 ---
 
@@ -366,25 +366,29 @@ If all checks pass and there are uncommitted changes to command files, suggest:
 
 > "All checks pass. If you're ready to submit, run `/pr` to create a pull request."
 
-## Step 8: Write the Pass Stamp
+## Step 8: Stamp the Run (script-owned)
 
-Write `.vine/.trellis-ok` (gitignored via `.vine/*`) recording this run's command-validation
-outcome. The contributor trellis gate (`.vine/scripts/trellis-gate.sh`, wired in this repo's
-`.claude/settings.json`) reads it before allowing commits that touch `commands/vine/` — a
-green trellis run is the commit ticket for command changes.
+Do **not** write `.vine/.trellis-ok` yourself. The stamp is produced mechanically by the
+check engine so it can't be confused with a hand-written pass ticket — run it with Bash:
 
-- **If command validation (Steps 1–4) finished with zero failures**, write:
+```
+sh .vine/scripts/trellis-check.sh
+```
 
-  ```
-  status: pass
-  checked: [YYYY-MM-DD HH:MM]
-  summary: [the Step 4 summary line]
-  ```
+The script re-runs the command checks (Steps 1–4) mechanically over `commands/vine/*.md`
+and writes `.vine/.trellis-ok` (gitignored via `.vine/*`) itself — `status: pass` and
+exit 0 on a green run, `status: fail` and exit 1 otherwise, overwriting any previous stamp
+so a red tree can't ride through the gate on a stale green. The contributor trellis gate
+(`.vine/scripts/trellis-gate.sh`, wired in this repo's `.claude/settings.json`) reads that
+stamp before allowing commits that touch `commands/vine/` — a green script run is the
+commit ticket for command changes.
 
-- **If any command check failed**, write the same format with `status: fail` — overwriting a
-  previous pass stamp so a red tree can't ride through the gate on a stale green.
+If the script's verdict disagrees with your Step 4 results, the script wins for gating
+purposes — report the divergence to the contributor, since it usually means a check has
+drifted between this skill and `trellis-check.sh` and the drift itself needs fixing.
 
 Scope notes: warnings (legacy references, unmarked headings) do not block a pass stamp.
 Artifact validation failures don't either — artifacts are often work-in-progress journals,
 and gating command commits on artifact state would block unrelated work. The stamp certifies
-command structure only.
+command structure only; artifact validation (Steps 5–7) stays session-judged and is not
+stamped.
