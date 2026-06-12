@@ -25,6 +25,9 @@ When adding or removing a VINE command, update all of these:
 ### Availability-Gated Pointer
 When VINE knowledge must be referenced from a surface non-VINE teammates load (CLAUDE.md), use an availability-gated pointer: gate the suggestion on whether the vine commands are actually present in the session's skill list, and point at this file for routing. The gate is what Claude can see, not where files live — so mixed-adoption teams and global installs both resolve correctly. Future commands reuse this pattern instead of reinventing the mixed-adoption answer.
 
+### Branch Naming
+Feature branches match the VINE project slug: `.vine/projects/<domain>/<feature-slug>` works on `feature/<feature-slug>`. Sessions that arrive on auto-named branches (e.g., worktree sessions) rename to match before the first slice commit.
+
 ### Content Standards
 - Keep command files focused — one phase, one responsibility
 - State artifact formats are defined in `references/STATE.md` — commands must produce artifacts that match
