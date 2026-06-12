@@ -16,4 +16,4 @@
 | Scope | Route | Actor | Gate record | Outcome |
 |-------|-------|-------|-------------|---------|
 | Spike artifacts (this feature) | interactive | Rob + Claude (shepherd) | n/a — shepherd default | in progress |
-| #47 consolidate AskUserQuestion constraints (delegated) | headless — `claude -p`, fresh worktree off `e017fca` | claude (headless) | PERMIT — NAVIGATION.md Slice 1, four-leg verdicts | pending (Slice 2) |
+| #47 consolidate AskUserQuestion constraints (delegated) | headless — Agent-tool subagent into worktree off `e017fca` (4th mechanism; 3 informative failures first — journal Slice 2) | claude (headless subagent) | PERMIT — NAVIGATION.md Slice 1, four-leg verdicts | delivered — `bfe5458`, awaiting reviewer leg (Slice 3) |
