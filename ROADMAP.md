@@ -1,8 +1,29 @@
 # VINE Roadmap
 
-The issue-level source of truth is the
-[v0.4.0 milestone](https://github.com/moduloMoments/VINE/milestone/1). This file names the
-VINE cycles that deliver it, their order, and why the order matters. Each cycle is run as a
+## Where this is headed
+
+VINE today is a workflow for one engineer and Claude building features together, with the
+human reviewing everything. v0.4.0 turns that into a **delegation harness**: for each piece
+of work, VINE helps decide how much human attention it deserves — from "walk me through every
+change" to "run this unattended and hand the result to a reviewer" — and routes it
+accordingly. The human stays the one deciding what's safe to delegate; VINE's job is making
+that decision well-informed, recording it, and learning from how it turns out.
+
+In practice, v0.4.0 builds four things:
+
+- **Routing rules** — clear criteria for which work qualifies for unattended runs, and a
+  default where VINE recommends and the human approves.
+- **Handoff records** — enough written down that a reviewer can check work they didn't
+  watch happen.
+- **Shared configuration** — team conventions that install with the project instead of
+  living in one person's head.
+- **Multi-actor safety** — clear ownership when several people (or agents) work in one
+  repo at once.
+
+The rest of this file is the working contract for the cycles that deliver this — future
+development sessions execute against it, so the detail level below is intentional. Issue-level
+status lives in the [v0.4.0 milestone](https://github.com/moduloMoments/VINE/milestone/1);
+this file names the cycles, their order, and why the order matters. Each cycle is run as a
 VINE feature on this repo (dogfooding is the test suite); small mechanical items go through
 `vine:pair` instead of the full chain.
 
