@@ -17,6 +17,8 @@ Thumbs.db
 !.vine/scripts/
 .vine/projects/*/*/PAUSE.md
 .vine/PROFILE.md
+# Personal overlay layer — gitignored by design (absent .local changes nothing)
+.vine/context/*.local.md
 
 # Claude Code worktrees
 .claude/worktrees/

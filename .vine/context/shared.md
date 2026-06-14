@@ -15,6 +15,12 @@ except an immutable enterprise-policy ceiling:
   or replace it. Policy sections carry team governance the repo enforces regardless of personal
   preference (CI/CD gates, the team operating model).
 
+**Personal layer (`shared.local.md`).** Each command's *Load Context Overlays* step, after
+reading `shared.md` and the phase overlay, reads `.vine/context/shared.local.md` if present and
+composes it by the rule above — it overrides preference content and is ignored where it would
+override a policy-class section. The file is gitignored (personal scope); absent it, nothing
+changes.
+
 Only policy-class sections carry the marker; unmarked means preference. This is the single
 resolution rule — the `.local` load step, init's upgrade pass, and the reviewer orientation
 reference it rather than restating it.
