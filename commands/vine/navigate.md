@@ -559,7 +559,8 @@ conversation output and doesn't survive `/clear` — anything evolve should act 
 in NAVIGATION.md (a slice's Learnings or the Remaining Work handoff context), not just
 the retro.
 
-Then present the completion block:
+Then present the completion block per the Next-Step Suggestions convention in shared.md —
+plain chat text, with only the runnable `/vine:…` command line in a fenced block:
 
 ````
 ---

@@ -93,7 +93,8 @@ Check the current git branch. If it doesn't match the expected feature branch
 ## Present Status
 
 Display a status summary tailored to what you found. The format depends on whether PAUSE.md
-exists.
+exists. Emit it per the Next-Step Suggestions convention in shared.md — plain chat text, with
+only the runnable `/vine:…` command line in a fenced block.
 
 ### With PAUSE.md
 

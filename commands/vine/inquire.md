@@ -327,6 +327,9 @@ Once approved:
    fold it into the relevant slice in SPEC.md now. Only items with no downstream action
    belong in the retro alone.
 
+Then present the completion block per the Next-Step Suggestions convention in shared.md —
+plain chat text, with only the `/vine:navigate` command line in a fenced block:
+
 ````
 ---
 ✅ vine:inquire complete → SPEC.md written to .vine/projects/<domain>/<feature-slug>/SPEC.md

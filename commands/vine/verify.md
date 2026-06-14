@@ -323,7 +323,8 @@ Once approved:
    conversation output and doesn't survive `/clear` — anything inquire should act on
    belongs in the relevant CONTEXT.md section (open questions, tribal knowledge,
    documentation gaps), not just the retro.
-3. Suggest next step:
+3. Suggest next step. Emit the block below per the Next-Step Suggestions convention in
+   shared.md — plain chat text, with only the `/vine:inquire` command line in a fenced block.
 
 ````
 ---
