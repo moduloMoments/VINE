@@ -273,14 +273,8 @@ review? Are there teams whose work intersects? This matters for inquire and navi
 
 ## Phase Completion
 
-When you and the engineer feel you have a solid understanding of the landscape, wrap up with:
-
-1. Review CONTEXT.md together — make sure nothing's missing. Give the engineer a clickable link
-   to the file (e.g., `[CONTEXT.md](.vine/projects/<domain>/<feature-slug>/CONTEXT.md)`) so it
-   opens rendered in their editor for review. (Auto-open is optional repo wiring — a repo can
-   wire its editor's open command in `.vine/context/verify.md`; the clickable link is the
-   portable default, so don't shell out to an OS-specific opener yourself.)
-2. Write PROJECT-MAP.md alongside CONTEXT.md to track VINE progress for this feature:
+When you and the engineer feel you have a solid understanding of the landscape, write
+PROJECT-MAP.md alongside CONTEXT.md to track VINE progress for this feature:
 
    ```markdown
    # Project Map: [Feature Name]
@@ -300,16 +294,37 @@ When you and the engineer feel you have a solid understanding of the landscape, 
    Save to `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md`. No Milestones table yet —
    that's added by inquire if the feature needs multi-PR treatment.
 
-3. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
+### Sign-Off Gate
+
+CONTEXT.md is written — now get explicit sign-off before handing to inquire. Don't infer approval
+from the absence of objections; ask for it. This is the gate that closes verify, not a formality.
+
+1. **Present the context for review.** Give the engineer a clickable link to the file (e.g.,
+   `[CONTEXT.md](.vine/projects/<domain>/<feature-slug>/CONTEXT.md)`) so it opens rendered in their
+   editor, plus a short summary of the landscape and the open questions that need resolution in
+   inquire. (To open the file automatically, a repo can wire its editor's open command in
+   `.vine/context/verify.md`; the clickable link is the portable default — don't shell out to an
+   OS-specific opener yourself.)
+
+2. **Gate on explicit sign-off.** Use `AskUserQuestion`:
+   - **"Approve — hand to inquire (Recommended)"**: the context is ready to design against.
+   - **"Request changes"**: something needs revision first.
+
+   If the engineer requests changes, revise CONTEXT.md, re-present the link, and ask again. Loop
+   until approved. The context isn't done until the engineer signs off.
+
+Once approved:
+
+1. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
    CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history (see "Committing
    Artifacts" in `references/STATE.md`). If the path is gitignored, skip this step silently —
    personal-scope artifacts never enter a commit.
-4. Highlight the open questions that need resolution in inquire
-5. Persist actionable retro items before printing the completion block. The retro is
+2. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — anything inquire should act on
    belongs in the relevant CONTEXT.md section (open questions, tribal knowledge,
    documentation gaps), not just the retro.
-6. Suggest next step:
+3. Suggest next step. Emit the block below per the Next-Step Suggestions convention in
+   shared.md — plain chat text, with only the `/vine:inquire` command line in a fenced block.
 
 ````
 ---
