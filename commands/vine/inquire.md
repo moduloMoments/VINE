@@ -348,6 +348,14 @@ plain chat text, with only the `/vine:navigate` command line in a fenced block:
    Inquire is analytical — navigate needs a tactical, implementation-focused headspace.
    SPEC.md carries everything forward; conversation context doesn't need to.
 
+🧭 Route preview (non-binding): [Based on the four-leg headless predicate read against the
+   spec as written — is there a validation contract, do the slices carry acceptance criteria,
+   do they look independent of in-flight work, is the blast radius bounded — name the likely
+   route, e.g. "Looks headless-eligible — bounded, independent slices with ACs and a validation
+   block" or "Likely interactive — slice 3 overlaps in-flight work / no validation contract yet".
+   This is a preview only, like the gearing note: it does not write ROUTE.md, and navigate's
+   head gate re-evaluates the volatile legs against fresh repo state and makes the binding call.]
+
 🌱 Phase retro:
    - CLAUDE.md suggestion: [any project conventions or decisions worth persisting]
    - Skill suggestion: [any design pattern that could be templated]

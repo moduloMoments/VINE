@@ -255,7 +255,7 @@ PROJECT-MAP pointer.
 
 ### Slice 7: Navigate-head gate evaluation + ROUTE.md write + re-eval — Complete
 - **Started**: 2026-06-14 17:30
-- **Commit**: pending
+- **Commit**: dc60e70
 - **Approach taken**: Added a `### Route the Work — Eligibility Gate (runs once, at head)`
   section to `commands/vine/navigate.md`, placed between step 2 (Create a Feature Branch) and
   step 3 (Implement One Slice at a Time) — navigate-head, after setup, before the slice loop.
@@ -303,3 +303,35 @@ PROJECT-MAP pointer.
     per-slice loop untouched, so the diff *shows* the interactive flow is unchanged rather than
     asserting it. The unnumbered-section choice was the same instinct: change nothing that's
     referenced by position.
+
+### Slice 8: Inquire route preview (non-binding) — Complete
+- **Started**: 2026-06-14 17:36
+- **Commit**: pending
+- **Approach taken**: Added a `🧭 Route preview (non-binding):` line to inquire.md's completion
+  block, placed after the `🔄 /clear` recommendation and before the `🌱 retro` — modeled on
+  verify.md's `🧭 Navigate gearing note:` line. It previews the likely route by reading the
+  four-leg predicate against the spec as written, and states explicitly that it does not write
+  ROUTE.md and that navigate's head gate makes the binding call by re-evaluating volatile legs.
+- **Deviations from spec**: None against the ACs. Note: the spec's file hint says "alongside the
+  existing gearing preview" in inquire, but the gearing preview actually lives in verify.md's
+  completion block (`🧭 Navigate gearing note:`), not inquire's. I modeled the route preview on
+  that verify pattern and placed it in inquire's completion block as the ACs require — the
+  intent (a non-binding preview mirroring the gearing-note style) is met. Not a spec deviation
+  to annotate: the phrase is descriptive context, not an acceptance criterion.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 + 8/8 anchors; grep confirms
+  the non-binding language ("does not write ROUTE.md", "makes the binding call").
+- **Decisions made during implementation**:
+  - Placed the preview before the retro (end of block), matching verify's placement of its
+    `🧭` note at the block tail. (decided by: claude)
+  - Phrased it as a bracketed instruction (like the gearing note) so inquire fills it from the
+    actual spec at runtime, rather than hardcoding a verdict. (decided by: claude)
+- **Acceptance criteria**:
+  - [x] The preview is explicitly non-binding
+  - [x] It does not write ROUTE.md
+  - [x] Navigate's evaluation remains authoritative
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The spec's cross-reference to "inquire's gearing preview" was off by one
+    command (it's verify's) — caught by grepping for `gear` in inquire.md before assuming. Cheap
+    direct check beats trusting a spec's incidental file note (shared.md: diagnosis-unverified).
