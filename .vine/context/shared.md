@@ -147,6 +147,27 @@ Apply these to every `AskUserQuestion` call, in any phase:
 - **Tracking**: GitHub Issues for bugs/friction/ideas, GitHub Discussions for community conversation
 - **Public-first**: Work in public, track tasks in GitHub rather than private tools
 
+## Validation
+
+The machine-readable validation contract consumed by `vine-verification` and the phase
+commands (navigate / evolve / pair). Every key is **optional** — declare only the checks this
+repo actually has. A repo with no `## Validation` block, or with missing keys, falls back to
+prose inference (package.json scripts, config files, the phase overlays). Keys:
+
+- `lint` — linter / formatter check (string command)
+- `typecheck` — static type check (string command)
+- `test` — scoped / per-file tests (string command)
+- `test-all` — the full suite (string command)
+- `build` — build / compile check (string command)
+- `extra` — any additional checks (list of string commands)
+
+```yaml
+# This repo (VINE framework) — pure markdown, no compile/test toolchain, so most keys are
+# omitted (demonstrating graceful partial population; the block degrades to its present keys).
+extra:
+  - sh .vine/scripts/trellis-check.sh   # command structure + cross-reference anchors
+```
+
 ## CI/CD
 <!-- class: policy -->
 

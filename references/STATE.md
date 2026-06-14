@@ -241,7 +241,7 @@ Shell-script home for VINE's native hook scripts — the enforcement layer behin
 |--------|------------|----------|
 | `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine/ACTIVE` escape hatch. |
 
-Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). If VINE grows a validation contract, the Validation block proposed in #54 is its home.
+Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). VINE's validation contract is the optional fenced `## Validation` block in `.vine/context/shared.md` (keys `lint`/`typecheck`/`test`/`test-all`/`build`/`extra`, all optional); `vine-verification` reads it and falls back to prose inference when it is absent.
 
 A repo may carry additional scripts here beyond the user scaffold — the VINE framework repo itself keeps contributor-only tooling in the same directory (`trellis-check.sh`, the mechanical check engine that runs trellis's command and cross-reference anchor checks and writes the `.vine/.trellis-ok` stamp; `trellis-gate.sh`, the command-commit gate that reads that stamp; and `main-guard.sh`, which blocks commits on `main`; none ship via `create-vine`). The table above documents only the scaffold scripts.
 

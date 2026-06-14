@@ -44,7 +44,7 @@ predated main's #92). Authoring stays interactive under engineer review.
 
 ### Slice 2: Personal `.local` layer — load + class-gated override — Complete
 - **Started**: 2026-06-14 16:40
-- **Commit**: pending
+- **Commit**: bc5d5ca
 - **Approach taken**: Defined the personal-layer load+compose rule once in `shared.md`'s
   Overlay Precedence section (file `shared.local.md`, read after `shared.md` + the phase
   overlay, composed by the precedence rule). Added a two-line step 4 referencing that rule to
@@ -75,3 +75,34 @@ predated main's #92). Authoring stays interactive under engineer review.
   - Claude → Engineer: The 9 overlay sections vary in their step 1–3 wording but share a
     verbatim-identical legacy-fallback paragraph — anchoring the insertion on that shared
     paragraph made the 9 edits a single mechanical pattern instead of 9 bespoke ones.
+
+### Slice 3: Validation YAML block — schema + STATE.md home — Complete
+- **Started**: 2026-06-14 16:55
+- **Commit**: pending
+- **Approach taken**: Added a `## Validation` section to `shared.md` documenting six optional
+  keys (`lint`/`typecheck`/`test`/`test-all`/`build`/`extra`) with a fenced YAML instance for
+  this repo. Since VINE is pure markdown with no compile/test toolchain, the instance declares
+  only `extra: [sh .vine/scripts/trellis-check.sh]` — which also demonstrates graceful partial
+  population. Updated STATE.md's line-244 note from a forward reference ("the Validation block
+  proposed in #54 is its home") to a pointer at the now-real block, naming the keys and the
+  prose-inference fallback.
+- **Deviations from spec**: None.
+- **Validation**: pass — structural check: `## Validation` section present in shared.md with
+  all six keys documented and a well-formed YAML block; STATE.md:244 points at the real schema.
+  No `commands/vine/` files touched, so the trellis command gate is not involved.
+- **Decisions made during implementation**:
+  - Placed `## Validation` immediately before `## CI/CD` (operationally adjacent) and left it
+    unmarked = preference: validation commands are personally overridable, unlike the
+    policy-class CI/CD enforcement. (decided by: claude)
+  - This repo's instance populates only `extra` — honest (no lint/test/build exists) and
+    doubles as the canonical partial-population example. (decided by: claude)
+- **Acceptance criteria**:
+  - [x] Block defines lint/typecheck/test/test-all/build/extra keys with documented optionality
+  - [x] STATE.md references the real schema (line 244)
+  - [x] The block is optional (blockless repos fall back — stated in the section + STATE.md note)
+- **Engineer feedback incorporated**: None this slice.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: Defining the schema and shipping this repo's (near-empty) instance in
+    the same block makes the optionality contract self-documenting — the example *is* the
+    blockless-fallback demonstration.
