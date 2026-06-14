@@ -143,7 +143,7 @@ predated main's #92). Authoring stays interactive under engineer review.
 
 ### Slice 5: Wire Validation-block consumers — Complete
 - **Started**: 2026-06-14 16:57
-- **Commit**: pending
+- **Commit**: 3a26f48
 - **Approach taken**: Rewrote `vine-verification`'s tool-discovery section into an explicit
   priority order — (1) the `## Validation` block in shared.md, preferred and authoritative when
   present; (2) prose inference (package.json / config files / phase overlays) as the fallback;
@@ -169,3 +169,34 @@ predated main's #92). Authoring stays interactive under engineer review.
   - Claude → Engineer: Expressing "no regression" as *literally preserving* the old path (as a
     numbered fallback step) is more defensible than rewording it — the diff shows the old
     behavior is still exactly reachable.
+
+### Phase-1 boundary fix: init template precedence (closes the Slice 4 discovered item) — Complete
+- **Started**: 2026-06-14 17:05
+- **Commit**: pending
+- **Approach taken**: The phase-group + backward-compat verification (both via agent fan-out)
+  confirmed all Phase-1 ACs pass and AC-10 is PASS, surfacing one coherence gap: init's
+  shared.md template (fresh repos) lacked the `## Overlay Precedence` section, the Personal-layer
+  rule, and the `<!-- class: policy -->` markers that Slices 1–2 added only to this repo's
+  shared.md. Engineer chose to fix in-phase. Added all three to init's template so fresh repos
+  resolve precedence and their commands' step-4 reference points at a rule their shared.md
+  actually contains.
+- **Deviations from spec**: None — this completes Slices 1–2's intent ("commands reference it",
+  works on fresh installs) for the create-vine distribution path, which the original slices
+  scoped only to this repo.
+- **Validation**: pass — `/trellis` 11/11 commands + 8/8 anchors (stamp 17:06); init template now
+  carries Overlay Precedence + 2 policy markers (grep: 4 hits).
+- **Decisions made during implementation**:
+  - Trimmed the template's Overlay Precedence to the self-contained rule (dropped the
+    "other surfaces reference it" tail that only applies in this repo's fuller context).
+    (decided by: claude)
+- **Acceptance criteria** (re-confirmed at boundary):
+  - [x] Fresh repos now get Overlay Precedence + Personal-layer rule + policy markers from init
+  - [x] A fresh repo's command step-4 reference resolves to a rule its shared.md contains
+- **Engineer feedback incorporated**: Engineer chose "fix now in Phase 1" at the boundary
+  decision over deferring or spinning out a separate task.
+- **Learnings**:
+  - Engineer → Claude: Prefer closing a coherence gap the phase group itself created in-phase,
+    rather than carrying a known-graceful-but-incoherent wart across the cycle's other PRs.
+  - Claude → Engineer: A slice that edits both a repo's live overlay AND the init template needs
+    to touch *both* in the same breath — editing shared.md without the template is the exact
+    drift class the boundary verification caught.
