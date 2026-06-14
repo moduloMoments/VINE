@@ -319,20 +319,21 @@ and shouldn't be committed by default — but `.vine/README.md` is the one excep
 tracked orientation doc meant to be shared. So the ignore rule must exclude `.vine/` **while
 keeping the README tracked**.
 
-Check whether `.vine/` is already covered by `.gitignore` or the user's global gitignore, then:
+The target end-state is always the same two lines (alongside any other `.vine` negations):
 
-- **Not ignored yet:** add this block to the project's `.gitignore`:
-  ```
-  .vine/*
-  !.vine/README.md
-  ```
-  Use `.vine/*` (ignore the directory's *contents*), not `.vine/` (ignore the directory itself) —
-  git can't re-include a file whose parent directory is wholly excluded, so a bare `.vine/` would
-  silently keep `.vine/README.md` ignored despite the negation.
-- **Already ignored as a whole directory** (`.vine/` on its own line): change it to `.vine/*` and
-  add `!.vine/README.md` directly after, so the negation can take effect.
-- **Already ignored with selective negations** (e.g. `.vine/*` plus `!.vine/context/`): just
-  ensure `!.vine/README.md` is present; add it if missing.
+```
+.vine/*
+!.vine/README.md
+```
+
+Use `.vine/*` (ignore the directory's *contents*), not bare `.vine/` (ignore the directory
+itself) — git can't re-include a file whose parent directory is wholly excluded, so a negation
+under a bare `.vine/` silently does nothing. Reconcile whatever's already in `.gitignore` (or the
+user's global gitignore) toward that end-state:
+
+- **No `.vine` ignore yet:** add the two lines.
+- **Already ignored:** normalize a bare `.vine/` to `.vine/*`, then ensure `!.vine/README.md`
+  follows it (add it if missing). Leave any existing negations like `!.vine/context/` in place.
 
 If the engineer wants to commit more VINE artifacts (e.g., overlays for team sharing), they can
 add further negations or `git add -f .vine/<path>` selectively.
