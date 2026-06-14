@@ -136,9 +136,18 @@ Apply these to every `AskUserQuestion` call, in any phase:
 
 [Ownership, review patterns, external integrations — from engineer's answers]
 
+## Validation
+
+[Machine-readable validation contract read by vine-verification and the phase commands. Write
+it as a fenced YAML block with the optional keys lint / typecheck / test / test-all / build /
+extra (schema in references/STATE.md and the framework's own shared.md). Populate from the
+Step-1 discovery — package.json scripts, lint/test config — and keep only the keys this repo
+has. Optional: omit the block and verification falls back to prose inference.]
+
 ## CI/CD
 
-[How to run tests, lint, build — commands the engineer or Claude should use]
+[CI pipeline, required checks, and enforcement context — e.g. which checks gate merges, hook
+setup. Runnable check commands belong in the ## Validation block above, not here.]
 ```
 
 ### Per-phase files (verify.md, inquire.md, navigate.md, evolve.md, pair.md)
@@ -237,6 +246,8 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
    - "Collaboration Stance" — if missing, add it (commands now reference this from shared.md)
    - "Engineer Profile Protocol" — if missing, add it
    - "Interaction Constraints" — if missing, add it
+   - "Validation" — if missing, offer the structured block populated from discovery; declining
+     leaves prose inference in place (nothing changes on disk)
 4. Present a diff of what's new vs what's already in the overlays using `AskUserQuestion`:
    - New tools/agents discovered that aren't in overlays yet
    - Existing overlay entries that reference tools/agents no longer present

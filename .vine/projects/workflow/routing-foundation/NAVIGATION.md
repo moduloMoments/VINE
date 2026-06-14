@@ -78,7 +78,7 @@ predated main's #92). Authoring stays interactive under engineer review.
 
 ### Slice 3: Validation YAML block — schema + STATE.md home — Complete
 - **Started**: 2026-06-14 16:55
-- **Commit**: pending
+- **Commit**: ea8e30b
 - **Approach taken**: Added a `## Validation` section to `shared.md` documenting six optional
   keys (`lint`/`typecheck`/`test`/`test-all`/`build`/`extra`) with a fenced YAML instance for
   this repo. Since VINE is pure markdown with no compile/test toolchain, the instance declares
@@ -106,3 +106,37 @@ predated main's #92). Authoring stays interactive under engineer review.
   - Claude → Engineer: Defining the schema and shipping this repo's (near-empty) instance in
     the same block makes the optionality contract self-documenting — the example *is* the
     blockless-fallback demonstration.
+
+### Slice 4: init scaffolds the Validation block — Complete
+- **Started**: 2026-06-14 16:56
+- **Commit**: pending
+- **Approach taken**: Added a `## Validation` section to init's shared.md template and a
+  Validation bullet to the upgrade-mode required-sections checklist (declinable — declining
+  leaves prose inference and changes nothing on disk). Narrowed the now-overlapping `## CI/CD`
+  placeholder to enforcement/pipeline context so runnable check commands have one home.
+- **Deviations from spec**: None.
+- **Validation**: pass — `/trellis` 11/11 commands + 8/8 anchors (stamp written 16:56).
+- **Decisions made during implementation**:
+  - Template uses a bracketed *instruction* to write the YAML block rather than a literal
+    nested fence — the template is itself inside a ```markdown fence, so a nested ```yaml would
+    terminate it. The instruction points at the canonical schema (STATE.md + framework
+    shared.md). (decided by: claude)
+  - Narrowed the CI/CD placeholder to enforcement context to avoid telling engineers to put
+    check commands in two sections. (decided by: claude)
+- **Discovered item (out of Slice 4 scope)**: init's template does NOT scaffold the
+  `## Overlay Precedence` / Personal-layer sections (Slices 1–2 added those only to this repo's
+  shared.md). A fresh repo's commands (post-Slice-2) therefore reference a "Personal layer rule
+  in shared.md" that a freshly-init'd shared.md won't contain. Common case is graceful (absent
+  `shared.local.md` ⇒ the load step is a no-op), but the reference dangles if a fresh-repo
+  engineer creates a `.local`. Flagged for the Phase-1 boundary — decide whether to fold
+  precedence-template scaffolding into this cycle or defer.
+- **Acceptance criteria**:
+  - [x] Fresh repos get the block from the template
+  - [x] Upgraded repos get it from the checklist
+  - [x] Declining the upgrade changes nothing on disk
+- **Engineer feedback incorporated**: None this slice.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: A template that lives inside a fenced code block can't carry nested
+    fences — instruct-to-generate is the clean pattern there, and it keeps the schema
+    single-homed instead of duplicating the YAML into the template.
