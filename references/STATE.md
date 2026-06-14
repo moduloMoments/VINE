@@ -106,6 +106,74 @@ it on arrival and skip cleanly when the condition isn't met.
 - Dependencies on other work
 ```
 
+### ROUTE.md (produced by vine:navigate at head, previewed by vine:inquire)
+
+The gate record. The durable output of the routing-layer eligibility gate (#54): the verdict on
+how a scope is delivered (interactive vs. headless), the constraints and allowlist a headless
+actor must honor, the validation baseline it runs, and the input basis the decision was computed
+against. It joins the artifact chain between SPEC.md and NAVIGATION.md — the route is decided
+*before* slices execute — and it is the convergent artifact the cycle-0 spike pointed at: the
+record the headless envelope embeds, the reviewer reads, and the PROJECT-MAP Route table points
+at (a derived view — see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)).
+
+`vine:inquire` *previews* a likely route in its completion block (non-binding, like its gearing
+preview); `vine:navigate` runs the *authoritative* gate at its head against fresh repo state and
+writes this file. For a clearly-interactive run the gate is a no-op and the route is simply
+`interactive` — the common path is unchanged.
+
+```markdown
+# Route Record: [Feature Name]
+## Feature: .vine/projects/<domain>/<feature-slug>
+## Computed at: [YYYY-MM-DD HH:MM]
+
+### Verdict <!-- required -->
+- **Route**: [interactive | headless | headless-reentry] — `mechanism: [how it runs, or n/a]`
+- **Scope**: [the phase group or slice this record governs]
+- **Rationale**: [one line — why this route was chosen]
+
+### Eligibility Legs <!-- required -->
+The four-leg headless predicate (#54). All four must hold for a headless verdict; a missing leg
+yields `interactive` and never degrades the interactive route (gate-time check, not
+verification-time).
+- [ ] **Validation contract** — a `## Validation` block (or prose-inferable checks) exists
+- [ ] **Slice ACs present** — the in-scope SPEC.md slices carry acceptance criteria
+- [ ] **Independence** — slices are independent of in-flight work [name the conflict if not]
+- [ ] **Bounded blast radius** — files enumerable, including requirement-implied files (not just
+      occurrence-grep — the spike's F1 root cause)
+
+### Constraints <!-- required -->
+- [What the actor must honor — e.g., modify only the allowlist, run the validation baseline green
+  before each commit, escalate human-required decisions per the Decision Delegation policy]
+
+### Allowlist <!-- required -->
+- [Files / paths the headless actor may modify]
+
+### Validation Baseline <!-- required -->
+- [The checks that must pass, captured from the `## Validation` block at compute time — so the
+  reviewer sees the baseline the actor was held to, even if the block later changes]
+
+### Input Basis <!-- required -->
+- **HEAD SHA**: [commit the gate was evaluated against]
+- **In-flight set**: [open PRs / branches weighed for the independence leg, or "none"]
+
+### Decay <!-- optional -->
+- [Freshness note. Volatile legs (independence, blast radius) are re-evaluated at navigate-head,
+  so the *binding* decision can't decay; the reviewer compares this stamp against the execution
+  state to flag authorization-vs-execution drift.]
+```
+
+**Backward compatibility.** ROUTE.md is optional with graceful absence: an interactive run need
+not write one (or writes a trivial `interactive` record), and every reader treats its absence as
+"interactive, no headless authorization." Older features without a ROUTE.md behave exactly as
+they do today.
+
+**Tracking.** Unlike the personal `.local` overlay (gitignored by design), ROUTE.md travels
+**tracked** with the feature — it lives in the feature directory under `.vine/projects/`, which
+`.gitignore` already negates (`!.vine/projects/`), so it ships with the code through history and
+PRs where the reviewer needs it. No `.gitignore` change is required; a repo that gitignores the
+whole artifact chain keeps ROUTE.md local along with the rest (see [Committing
+Artifacts](#committing-artifacts)).
+
 ### NAVIGATION.md (produced by vine:navigate)
 
 The implementation journal. Built incrementally — each slice is appended as it's completed, with a commit per validated slice.
@@ -437,6 +505,7 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 | State | Source of truth | Lifecycle |
 |-------|-----------------|-----------|
 | The plan — what slices and phase groups exist | `SPEC.md` | durable |
+| The route decision — verdict, constraints, allowlist, validation baseline, input basis | `ROUTE.md` | durable |
 | Implementation progress — which slices are done, with commits, decisions, learnings | `NAVIGATION.md` | durable |
 | What's active right now | `.vine/ACTIVE` | ephemeral |
 | Handoff notes across a session gap | `PAUSE.md` | ephemeral |
@@ -450,7 +519,7 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 
 ## Committing Artifacts
 
-Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
+Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `ROUTE.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
 
 - **Tracked** (`.vine/projects/` not gitignored) = the team-shared choice (see the Knowledge Boundary rule). The artifacts travel with the code through history and PRs.
 - **Untracked / personal scope** (gitignored, or a future `.vine.local/` root) = artifacts stay local to the engineer. Fully supported.
@@ -463,6 +532,7 @@ The journal-before-commit guarantee holds either way: `journal-check.sh` compare
 |--------------|----------------|------------------------------|
 | **Verify completion** (`vine:verify` wrap-up, after the engineer approves) | — | CONTEXT.md + PROJECT-MAP.md — their first entry into history |
 | **Inquire completion** (`vine:inquire` sign-off) | — | SPEC.md + the PROJECT-MAP.md inquire row |
+| **Navigate head** (`vine:navigate`, gate run before the first slice) | — | ROUTE.md — the gate record's entry into history (bundled with the first slice commit of the group) |
 | **Slice commit** (`vine:navigate` step 4c) | the slice's code | that slice's NAVIGATION.md journal entry + any SPEC.md deviation annotations made during the slice (step 6) |
 | **Phase-group boundary** (`vine:navigate` step 8) | — | PROJECT-MAP.md (navigate row, Milestones row → status / PR#) + the SPEC.md phase-group ✅ marker |
 | **Evolve commit** (`vine:evolve`) | — | EVOLUTION.md and the `.resolved` marker |

@@ -200,3 +200,55 @@ predated main's #92). Authoring stays interactive under engineer review.
   - Claude → Engineer: A slice that edits both a repo's live overlay AND the init template needs
     to touch *both* in the same breath — editing shared.md without the template is the exact
     drift class the boundary verification caught.
+
+## Phase 2: Eligibility Gate & Route Record (Slices 6-9)
+
+Resumed 2026-06-14 17:20 in free-climb gearing (engineer choice; profile confident/workflow).
+Branch synced to origin/main (the #94 squash-merge) before starting. Building the route
+decision: the gate record (ROUTE.md), the navigate-head gate, the inquire preview, and the
+PROJECT-MAP pointer.
+
+### Slice 6: ROUTE.md artifact format in STATE.md — Complete
+- **Started**: 2026-06-14 17:25
+- **Commit**: pending
+- **Approach taken**: Added a `### ROUTE.md` State File section to `references/STATE.md`, placed
+  in chain order between SPEC.md and NAVIGATION.md (the route is decided before slices execute).
+  The template carries the six required pieces — Verdict (controlled `interactive |
+  headless | headless-reentry` route + `mechanism:` token), Eligibility Legs (the four-leg #54
+  predicate as a checklist), Constraints, Allowlist, Validation Baseline, Input Basis (HEAD SHA +
+  in-flight set) — plus an optional Decay note and a `## Computed at:` stamp. Reused the spike's
+  validated vocabulary (Route table was its best-performing scaffold; verdict + constraints +
+  allowlist + validation baseline is the convergent finding from EVOLUTION.md:29). Added ROUTE.md
+  to the Source of Truth table (authoritative for the route decision; PROJECT-MAP Route table is
+  its derived view — wired in Slice 9), to the Committing Artifacts artifact list, and as a new
+  "Navigate head" commit-point row. Documented graceful absence and tracked-travel (lives under
+  the already-negated `!.vine/projects/`, so no `.gitignore` change needed).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 cross-reference
+  anchor pairs (the two new internal links — `#source-of-truth-vs-derived-views`,
+  `#committing-artifacts` — resolve to existing headers). Structural check: all six required
+  fields present with `<!-- required -->` markers; Decay carries `<!-- optional -->`. No
+  `commands/vine/` files touched, so the trellis command-commit gate is not involved.
+- **Decisions made during implementation**:
+  - Placed ROUTE.md in chain order between SPEC.md and NAVIGATION.md but labeled it "produced by
+    vine:navigate at head, previewed by vine:inquire" — the artifact's logical position (route
+    decided before implementation) differs from its writer (navigate). (decided by: claude)
+  - Verdict uses the spike's controlled route vocabulary + `mechanism:` token rather than a free
+    field, aligning ahead of the #90 schema work in Slice 13. (decided by: claude)
+  - Kept Slice 6 scoped to `references/STATE.md` per the SPEC's file mapping. CLAUDE.md's
+    "State Artifact Chain" line still reads CONTEXT → SPEC → NAVIGATION → EVOLUTION (no ROUTE);
+    that cross-reference is Slice 17's sweep ("cross-references consistent across CLAUDE.md …").
+    Flagged here so Slice 17 doesn't miss it. (decided by: claude)
+- **Discovered item (for Slice 17)**: CLAUDE.md `## State Artifact Chain` line omits ROUTE.md;
+  fold into the Slice 17 cross-reference sweep alongside the count updates.
+- **Acceptance criteria**:
+  - [x] Format carries verdict + constraints + allowlist + validation baseline + computed-at +
+        input basis (HEAD SHA, in-flight set)
+  - [x] Section headings carry required/optional markers
+  - [x] The record is documented as travelling tracked with the feature
+- **Engineer feedback incorporated**: Gearing set to free climb up front.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: Reusing the spike's already-validated scaffold vocabulary (route verdict,
+    `mechanism:` token, the verdict+constraints+allowlist+baseline quartet) made the format a
+    promotion of proven shapes rather than a fresh design — the de-risking the spike paid for.
