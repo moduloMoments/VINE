@@ -331,7 +331,7 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 
 **Lifecycle:**
 
-1. **Introduced** at vine:init (Step 5) — informational only. Tells the engineer the profile exists and will build through vine:verify. No domain rating at init time.
+1. **Introduced** at vine:init (Step 7) — informational only. Tells the engineer the profile exists and will build through vine:verify. No domain rating at init time.
 2. **Re-prompted** at vine:verify start — if the current feature's domain isn't in the profile, offers to add it.
 3. **Read** by vine:verify, vine:inquire, and vine:navigate — sets a one-sentence depth hint for the session. If no profile exists or the domain isn't listed, commands behave exactly as today.
 4. **Updated** by vine:evolve — proposes domain level changes and growth log entries based on the completed cycle. Engineer approves via AskUserQuestion. Evolve also suggests Claude memory entries and CLAUDE.md lines for general preferences discovered during the cycle.
@@ -345,6 +345,14 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root,
 - **Fully opt-in.** Every command works identically without PROFILE.md. No errors, no warnings, no degraded behavior.
 - **Domain matching is exact.** The domain in PROFILE.md must match the `.vine/projects/<domain>/` namespace exactly. No fuzzy matching.
 - **Engineer controls updates.** Evolve suggests changes; the engineer approves or modifies them. VINE never silently updates the profile.
+
+### README.md (seeded by vine:init)
+
+`.vine/README.md` is a human/agent-facing orientation doc explaining how to *use* VINE inside this repo — what lives under `.vine/`, how context overlays compose (precedence, the `.local` layer), the optional `## Validation` block, and how to customize VINE for the repo. It is the one tracked file under `.vine/` by default (init's gitignore step adds a `!.vine/README.md` negation); everything else is workflow state or gitignored.
+
+Unlike the overlays, the README configures nothing — overlays steer VINE's behavior, the README documents it. It points back to this file (STATE.md) for the authoritative artifact structure rather than duplicating it, so it can't drift from the contract.
+
+**Lifecycle:** written from a template at vine:init (Step 4) for fresh repos; **offered, declinable** in upgrade mode (Step 8) when absent. Declining changes nothing on disk. Like every other scaffold, VINE works identically whether or not the README is present.
 
 ## Knowledge Boundary
 
