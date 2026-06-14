@@ -26,6 +26,9 @@ Before starting, check for project-level VINE context overlays:
 3. Apply the contents of both as additional instructions layered on top of this command. Overlay
    instructions take precedence over defaults when they conflict.
 
+4. Read `.vine/context/shared.local.md` if it exists and compose it per the **Personal layer**
+   rule in `shared.md` (under Overlay Precedence). Absent it, nothing changes.
+
 If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
 `.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
 legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
@@ -118,8 +121,9 @@ choosing silently. Keep it lightweight — one question, concrete options ground
 ## Validate
 
 After implementing the change, delegate to the `vine-verification` agent to run checks on the
-affected files (lint, typecheck, tests). If `.vine/context/pair.md` defines custom validation
-commands, pass those to the agent instead.
+affected files (lint, typecheck, tests) — the agent reads the `## Validation` block in
+`.vine/context/shared.md` (prose-inference fallback when absent). If `.vine/context/pair.md`
+defines custom validation commands, pass those to the agent instead.
 
 Fix any issues before moving to the commit step.
 

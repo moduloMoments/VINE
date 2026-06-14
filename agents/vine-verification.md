@@ -92,11 +92,15 @@ If the request doesn't name a scope, treat it as full-feature scope.
 
 ## Finding Project Tools
 
-If the request doesn't specify which commands to run, discover them:
-- Check `package.json` for `scripts` (test, lint, typecheck)
-- Check for config files: `.eslintrc`, `tsconfig.json`, `pyproject.toml`, `Makefile`
-- Check `.vine/context/navigate.md`, `.vine/context/evolve.md`, or `.vine/context/pair.md` for custom validation commands
-- If nothing is configured, report "no automated checks configured" rather than guessing
+If the request doesn't specify which commands to run, discover them in priority order:
+1. **The `## Validation` block in `.vine/context/shared.md`** (preferred) — a fenced YAML
+   contract with optional keys `lint`/`typecheck`/`test`/`test-all`/`build`/`extra`. Run the
+   keys that are present; ignore absent ones. When the block exists it is authoritative.
+2. **Prose inference** (fallback — no block, or it omits a check you need):
+   - Check `package.json` for `scripts` (test, lint, typecheck)
+   - Check for config files: `.eslintrc`, `tsconfig.json`, `pyproject.toml`, `Makefile`
+   - Check `.vine/context/navigate.md`, `.vine/context/evolve.md`, or `.vine/context/pair.md` for custom validation commands
+3. If neither yields commands, report "no automated checks configured" rather than guessing
 
 ## Principles
 

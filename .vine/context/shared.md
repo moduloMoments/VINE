@@ -1,6 +1,30 @@
 # VINE Shared Context Overlay — VINE Framework
 # Edit this file to customize VINE behavior for this repo.
 
+## Overlay Precedence
+
+VINE composes context from command defaults, this shared overlay (`shared.md`), and the
+engineer's personal layer (`shared.local.md`). They resolve as **flat personal-wins with
+policy carve-outs**, mirroring how Claude's own settings resolve — local overrides project,
+except an immutable enterprise-policy ceiling:
+
+- **Preference content** (every unmarked section) is personal-overridable: where `shared.local.md`
+  and `shared.md` conflict, the personal layer wins.
+- **Policy content** is immutable from the personal layer. A section marked `<!-- class: policy -->`
+  directly under its heading always wins over personal overrides — `shared.local.md` cannot weaken
+  or replace it. Policy sections carry team governance the repo enforces regardless of personal
+  preference (CI/CD gates, the team operating model).
+
+**Personal layer (`shared.local.md`).** Each command's *Load Context Overlays* step, after
+reading `shared.md` and the phase overlay, reads `.vine/context/shared.local.md` if present and
+composes it by the rule above — it overrides preference content and is ignored where it would
+override a policy-class section. The file is gitignored (personal scope); absent it, nothing
+changes.
+
+Only policy-class sections carry the marker; unmarked means preference. This is the single
+resolution rule — the `.local` load step, init's upgrade pass, and the reviewer orientation
+reference it rather than restating it.
+
 ## Tooling Notes
 
 The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
@@ -123,13 +147,36 @@ Apply these to every `AskUserQuestion` call, in any phase:
 - If a topic needs more than 4 options, split it by category across multiple questions
 
 ## Team Context
+<!-- class: policy -->
 
 - **Maintainer**: Solo maintainer, expecting community contributors in the future
 - **PR review**: Self-review and merge for now; will evolve to community review
 - **Tracking**: GitHub Issues for bugs/friction/ideas, GitHub Discussions for community conversation
 - **Public-first**: Work in public, track tasks in GitHub rather than private tools
 
+## Validation
+
+The machine-readable validation contract consumed by `vine-verification` and the phase
+commands (navigate / evolve / pair). Every key is **optional** — declare only the checks this
+repo actually has. A repo with no `## Validation` block, or with missing keys, falls back to
+prose inference (package.json scripts, config files, the phase overlays). Keys:
+
+- `lint` — linter / formatter check (string command)
+- `typecheck` — static type check (string command)
+- `test` — scoped / per-file tests (string command)
+- `test-all` — the full suite (string command)
+- `build` — build / compile check (string command)
+- `extra` — any additional checks (list of string commands)
+
+```yaml
+# This repo (VINE framework) — pure markdown, no compile/test toolchain, so most keys are
+# omitted (demonstrating graceful partial population; the block degrades to its present keys).
+extra:
+  - sh .vine/scripts/trellis-check.sh   # command structure + cross-reference anchors
+```
+
 ## CI/CD
+<!-- class: policy -->
 
 - **Trellis gate hook**: this repo's `.claude/settings.json` wires `.vine/scripts/trellis-gate.sh`
   (PreToolUse on Bash) — commits touching `commands/vine/` are blocked unless `/trellis` has
