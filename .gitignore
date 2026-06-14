@@ -12,6 +12,7 @@ Thumbs.db
 # Track context overlays and resolved projects for contributor context
 # Ignore active work, profile, and ephemeral state
 .vine/*
+!.vine/README.md
 !.vine/context/
 !.vine/projects/
 !.vine/scripts/

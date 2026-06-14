@@ -23,11 +23,13 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
 1. Discovers what's available in the repo (tools, agents, skills, commands, CI, test patterns)
 2. Asks the engineer about team context that can't be derived from code
 3. Generates `.vine/context/shared.md` and per-phase overlay files pre-filled with relevant context
-4. Optionally adds `.vine/` to `.gitignore`
-5. Introduces the engineer profile (builds organically through vine:verify)
-6. Offers the native hook scaffold — mechanical enforcement of the journal-before-commit
+4. Scaffolds `.vine/README.md` — a tracked, human/agent-facing orientation doc for using VINE in
+   this repo (written for fresh repos; offered, not forced, in upgrade mode)
+5. Optionally adds `.vine/` to `.gitignore` (keeping `.vine/README.md` tracked)
+6. Introduces the engineer profile (builds organically through vine:verify)
+7. Offers the native hook scaffold — mechanical enforcement of the journal-before-commit
    guarantee, declinable
-7. In upgrade mode, offers single-homing of CLAUDE.md/shared.md duplicates per the
+8. In upgrade mode, offers single-homing of CLAUDE.md/shared.md duplicates per the
    Knowledge Boundary rule — declinable
 
 ## Step 1: Discover Repo Capabilities
@@ -195,22 +197,148 @@ and agents to suggest wiring into overlays for next time
 **pair.md** — Preferred test commands for quick changes, lint/format requirements,
 commit message conventions for small fixes
 
-## Step 4: Create Projects Directory
+## Step 4: Scaffold the .vine/README.md Orientation Doc
+
+Write `.vine/README.md` — a tracked, human/agent-facing doc that orients anyone opening this
+repo on how to *use* VINE inside it (what lives under `.vine/`, how overlays compose, how to
+customize). It is distinct from the overlays: overlays configure VINE's behavior; this README
+explains it.
+
+Write it from the template below, filling `[Project Name]` and `[date]`. The template points at
+`references/STATE.md` for the authoritative structure rather than duplicating it — keep it that
+way so the README can't drift from the contract.
+
+**Fresh repos:** write the file. **Upgrade mode** (existing `.vine/context/`): don't write it
+here — Step 8 offers it, declinable. Either way, Step 6 keeps `.vine/README.md` tracked even when
+the rest of `.vine/` is gitignored.
+
+The outer four-backtick fence below only delimits the template for *this* doc; write the inner
+content (starting at `# Using VINE in this repo`) to `.vine/README.md`.
+
+````markdown
+# Using VINE in this repo
+
+This directory holds VINE's working state for **[Project Name]**. VINE is a pure-markdown,
+AI-assisted development framework: features flow through phases — **verify → inquire → navigate
+→ evolve** (plus lightweight **pair** for small changes) — and each phase reads shared context
+from here and writes its artifacts back.
+
+New here? Run `/vine:help` for the full command list, or `/vine:status` to see where the current
+feature stands.
+
+## What lives under `.vine/`
+
+| Path | What it is |
+|------|------------|
+| `context/shared.md` | Repo-wide overlay, loaded by every phase |
+| `context/<phase>.md` | Per-phase overlays — `verify.md`, `inquire.md`, `navigate.md`, `evolve.md`, `pair.md` |
+| `context/shared.local.md` | Your personal overlay layer (optional, gitignored) |
+| `projects/<domain>/<feature-slug>/` | Per-feature artifacts: CONTEXT → SPEC → NAVIGATION → EVOLUTION, plus PROJECT-MAP |
+| `PROFILE.md` | Your per-domain expertise, used to tune explanation depth (gitignored) |
+| `scripts/` | Native hook scripts (e.g. `journal-check.sh`) |
+| `ACTIVE`, `projects/**/PAUSE.md` | Ephemeral session state (gitignored) |
+
+`references/STATE.md` in the repo root is the **authoritative** contract for every artifact's
+format and lifecycle. Treat this table as a map; consult STATE.md for the details.
+
+## Context overlays
+
+Each phase composes its context from up to three layers:
+
+1. **`shared.md`** — repo-wide context every phase loads (conventions, tooling notes, the
+   collaboration stance, the validation contract).
+2. **`<phase>.md`** — guidance only one phase needs (which agents `navigate` invokes, what
+   `verify` should always explore). These exist only where there's something to add.
+3. **`shared.local.md`** — your personal layer. Gitignored; absent it, nothing changes.
+
+### Overlay precedence
+
+The layers resolve as **flat personal-wins with policy carve-outs** — like Claude's own
+settings, where local overrides project except for an immutable policy ceiling:
+
+- **Preference content** (every unmarked section) is personal-overridable: where
+  `shared.local.md` and `shared.md` conflict, your personal layer wins.
+- **Policy content** is immutable from the personal layer. A section marked
+  `<!-- class: policy -->` directly under its heading (e.g. **Team Context**, **CI/CD**) always
+  wins; `shared.local.md` can't weaken or replace it.
+
+Only policy-class sections carry the marker — unmarked means preference.
+
+## The `## Validation` block
+
+`shared.md` may carry an optional `## Validation` section: a fenced YAML block that declares how
+this repo's checks run, so verification doesn't have to guess.
+
+```yaml
+lint: <command>          # linter / formatter
+typecheck: <command>     # static type check
+test: <command>          # scoped / per-file tests
+test-all: <command>      # full suite
+build: <command>         # build / compile check
+extra:                   # anything else
+  - <command>
+```
+
+Every key is **optional** — declare only the checks this repo has. The `vine:verify`
+verification agent and the `navigate` / `evolve` / `pair` phases read this block to run the right
+checks; with no block (or missing keys) they fall back to inferring commands from package scripts
+and config. Full schema: `references/STATE.md`.
+
+## Customizing VINE for this repo
+
+- **Edit the overlays.** `shared.md` and the per-phase files are plain markdown — change them to
+  teach VINE this repo's conventions, tools, and gotchas. Re-running `/vine:init` in upgrade mode
+  folds in newly discovered tooling without clobbering your edits.
+- **Add per-phase guidance.** Create or extend `context/<phase>.md` to give one phase context the
+  others don't need.
+- **Keep personal tweaks local.** Drop preferences you don't want to commit into
+  `context/shared.local.md` — it overrides preference sections but never policy ones.
+
+### Plugins & team distribution (forward-looking)
+
+Packaging VINE as a Claude Code plugin and distributing shared team overlays are on the roadmap,
+not yet shipped. Track progress here:
+
+- [VINE #57 — Claude Code plugin: packaging + team-overlay distribution](https://github.com/moduloMoments/VINE/issues/57)
+- [VINE #52 — Team layer](https://github.com/moduloMoments/VINE/issues/52)
+
+Until those land, share overlays the manual way: commit the files under `.vine/context/` you want
+your team to share, and keep personal-only tweaks in the gitignored `.local` layer.
+````
+
+## Step 5: Create Projects Directory
 
 Create `.vine/projects/` — the directory where all VINE project artifacts live. This keeps
 project state (CONTEXT.md, SPEC.md, NAVIGATION.md, etc.) separate from configuration
 (context/, PROFILE.md). All VINE phases read and write project artifacts under this directory.
 
-## Step 5: Gitignore
+## Step 6: Gitignore
 
-Check if `.vine/` is already in `.gitignore` or the user's global gitignore. If neither,
-add `.vine/` to the project's `.gitignore` automatically. VINE artifacts are workflow state,
-not repo artifacts — they shouldn't be committed by default.
+VINE's working state (active projects, profile, ephemera) is workflow state, not repo artifacts,
+and shouldn't be committed by default — but `.vine/README.md` is the one exception: it's a
+tracked orientation doc meant to be shared. So the ignore rule must exclude `.vine/` **while
+keeping the README tracked**.
 
-If the engineer explicitly wants to commit VINE artifacts (e.g., for team sharing), they
-can `git add -f .vine/` selectively.
+The target end-state is always the same two lines (alongside any other `.vine` negations):
 
-## Step 6: Introduce Engineer Profile
+```
+.vine/*
+!.vine/README.md
+```
+
+Use `.vine/*` (ignore the directory's *contents*), not bare `.vine/` (ignore the directory
+itself) — git can't re-include a file whose parent directory is wholly excluded, so a negation
+under a bare `.vine/` silently does nothing. Reconcile whatever's already in `.gitignore` (or the
+user's global gitignore) toward that end-state:
+
+- **No `.vine` ignore yet:** add the two lines.
+- **Already ignored:** normalize a bare `.vine/` to `.vine/*`, then ensure `!.vine/README.md`
+  follows it (add it if missing). Leave any existing negations like `!.vine/context/` in place.
+
+If the engineer wants to commit more VINE artifacts (e.g., overlays for team sharing), they can
+add further negations or `git add -f .vine/<path>` selectively.
+
+## Step 7: Introduce Engineer Profile
 
 After generating overlays, briefly mention the engineer profile to the engineer:
 
@@ -225,7 +353,7 @@ as the engineer works in different domains. This step is purely informational.
 If `.vine/PROFILE.md` already exists (e.g., from a previous init or manual creation), skip
 this message entirely.
 
-## Step 7: Upgrade Existing Projects
+## Step 8: Upgrade Existing Projects
 
 ### Legacy Directory Migration
 
@@ -279,6 +407,15 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
    - New required sections added to shared.md
 5. Merge accepted changes into existing overlay files — don't overwrite custom content the
    engineer has added
+6. If `.vine/README.md` is missing, offer to scaffold it from the Step 4 template via
+   `AskUserQuestion` (`multiSelect: false`, 2 options):
+   - **"Add .vine/README.md (Recommended)"** — description: "Write the orientation doc covering
+     overlays, precedence, and the validation block"
+   - **"Not now"** — description: "Skip it — nothing changes on disk"
+
+   **Declining is a no-op** — no file written, and the offer repeats on the next `/vine:init`.
+   If the README already exists, skip this silently. When writing it, also apply the Step 6
+   gitignore check so the new file is tracked.
 
 This makes upgrading after installing new skills, agents, or commands a one-command operation.
 
@@ -360,6 +497,7 @@ or upgrade):
    - .vine/context/navigate.md (if applicable)
    - .vine/context/evolve.md (if applicable)
    - .vine/context/pair.md (if applicable)
+   - .vine/README.md (orientation doc — tracked; offered, not written, in upgrade mode)
    - .vine/projects/ (project artifacts directory)
    - .claude/settings.json hooks (if the scaffold offer was accepted)
 
