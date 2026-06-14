@@ -210,7 +210,7 @@ PROJECT-MAP pointer.
 
 ### Slice 6: ROUTE.md artifact format in STATE.md — Complete
 - **Started**: 2026-06-14 17:25
-- **Commit**: pending
+- **Commit**: 7271476
 - **Approach taken**: Added a `### ROUTE.md` State File section to `references/STATE.md`, placed
   in chain order between SPEC.md and NAVIGATION.md (the route is decided before slices execute).
   The template carries the six required pieces — Verdict (controlled `interactive |
@@ -252,3 +252,54 @@ PROJECT-MAP pointer.
   - Claude → Engineer: Reusing the spike's already-validated scaffold vocabulary (route verdict,
     `mechanism:` token, the verdict+constraints+allowlist+baseline quartet) made the format a
     promotion of proven shapes rather than a fresh design — the de-risking the spike paid for.
+
+### Slice 7: Navigate-head gate evaluation + ROUTE.md write + re-eval — Complete
+- **Started**: 2026-06-14 17:30
+- **Commit**: pending
+- **Approach taken**: Added a `### Route the Work — Eligibility Gate (runs once, at head)`
+  section to `commands/vine/navigate.md`, placed between step 2 (Create a Feature Branch) and
+  step 3 (Implement One Slice at a Time) — navigate-head, after setup, before the slice loop.
+  The section: (1) frames interactive as the default, never-gated path and the gate as a no-op
+  for ordinary human-driven sessions; (2) runs the real four-leg predicate only when a headless
+  route is on the table (entered headless — Phase 3 — or the engineer asks to delegate);
+  (3) evaluates all four legs against fresh repo state, with blast radius as the reasoned set
+  (Files-likely-touched + requirement-implied files, not raw grep — the spike's F1 root cause);
+  (4) marks independence + blast radius as volatile and mandates recompute (never trust a prior
+  ROUTE.md); (5) writes ROUTE.md with verdict, legs, constraints, allowlist, validation baseline,
+  input basis (`git rev-parse --short HEAD` + in-flight set), and the computed-at stamp;
+  (6) handles resume (recompute volatile legs, rewrite stamp) and graceful absence.
+- **Deviations from spec**: None.
+- **Validation**: pass — `/trellis` (via `sh .vine/scripts/trellis-check.sh`) 11/11 commands +
+  8/8 cross-reference anchors; `.vine/.trellis-ok` stamp written `status: pass` 17:33 (the commit
+  ticket for this command-file change). Frontmatter intact (4 fields). The new section is
+  unnumbered, so no step renumbering and no broken `step N` cross-references.
+- **Decisions made during implementation**:
+  - Inserted the gate as an **unnumbered** `###` section rather than a new numbered step 3.
+    Renumbering would have rippled through navigate.md (`step 3b/3c/3d`, `step 4`, `step 6`,
+    `step 8`) and `references/STATE.md` (`step 4c`, `step 6`, `step 8` pointers) — the exact
+    rename-without-updating-references drift class trellis Check 10 exists to catch. Unnumbered
+    keeps every cross-reference valid and signals "runs once at head," distinct from the
+    per-slice loop. (decided by: claude)
+  - Made the interactive path the explicit default and the gate a no-op for it — the AC's
+    "no change to today's interactive flow" is satisfied by *not touching* the per-slice loop
+    at all; the gate only ever adds the headless option, never gates interactive. (decided by:
+    claude)
+  - Kept the headless *entry signal* deliberately vague ("a later phase") — entry + the
+    headless contract are Slice 12 (Phase 3); Slice 7 only produces the verdict and record.
+    (decided by: claude)
+- **Acceptance criteria**:
+  - [x] Predicate legs (validation contract, slice ACs, independence, bounded blast radius)
+        evaluated against fresh repo state
+  - [x] Bounded blast radius accounts for requirement-implied files, not just occurrence-grep
+  - [x] A missing leg yields headless-ineligible and routes interactively with no change to
+        today's interactive flow
+  - [x] ROUTE.md is written with the stamp and input basis
+  - [x] The step is a no-op for clearly-interactive runs
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: For the cycle's highest-risk slice, the safest expression of "don't
+    degrade the interactive path" was structural — add a head-only section and leave the entire
+    per-slice loop untouched, so the diff *shows* the interactive flow is unchanged rather than
+    asserting it. The unnumbered-section choice was the same instinct: change nothing that's
+    referenced by position.
