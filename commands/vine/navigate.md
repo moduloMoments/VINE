@@ -195,6 +195,12 @@ basis** — `HEAD SHA` (`git rev-parse --short HEAD`) and the in-flight set cons
 `## Computed at:` stamp. The binding decision can't decay because the volatile legs were just
 recomputed; the stamp lets the reviewer compare authorization-time against execution-time state.
 
+**Point PROJECT-MAP.md at it.** If PROJECT-MAP.md exists, add or update its `### Route` table
+(format in `references/STATE.md`) with a row for this scope — the route verdict and a link to
+ROUTE.md in the `Gate record` cell. The table is a **derived pointer**, not a second source of
+truth: it holds no routing state ROUTE.md doesn't, and is always reconstructable from it. If
+PROJECT-MAP.md doesn't exist (older projects), skip silently.
+
 **Resuming.** If a ROUTE.md already exists from a prior session, don't read its verdict as
 current — recompute the volatile legs (independence, blast radius) against fresh state and
 rewrite the record with a new stamp. The stale stamp stays visible in git history for drift

@@ -337,6 +337,12 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 |-------|--------|--------|----|
 | Phase 1: [Name] | 1-3 | ⬜ Pending | — |
 | Phase 2: [Name] | 4-5 | ⬜ Pending | — |
+
+### Route <!-- optional -->
+
+| Scope | Route | Gate record |
+|-------|-------|-------------|
+| [phase group / slice] | [interactive \| headless \| headless-reentry] | [./ROUTE.md] |
 ```
 
 **Status markers** (three, used in both tables):
@@ -351,7 +357,7 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 
 1. **Created** by `vine:verify` — writes PROJECT-MAP.md alongside CONTEXT.md. VINE Progress table has verify=✅, all others=⬜. No Milestones table yet.
 2. **Updated** by `vine:inquire` — sets inquire→🚧 on start, ✅ on completion. If the engineer confirms multi-PR treatment, adds the Milestones table with all phases as ⬜ Pending.
-3. **Updated** by `vine:navigate` — sets navigate→🚧 on start. At phase group boundaries (multi-PR), updates the completed milestone row to ✅ Shipped and records the PR number if known. Sets navigate→✅ on completion.
+3. **Updated** by `vine:navigate` — sets navigate→🚧 on start. When it writes a ROUTE.md at head, adds/updates the optional Route table row (a derived pointer to ROUTE.md). At phase group boundaries (multi-PR), updates the completed milestone row to ✅ Shipped and records the PR number if known. Sets navigate→✅ on completion.
 4. **Updated** by `vine:evolve` — sets evolve→🚧 on start, ✅ on completion.
 5. **Read** by `vine:resume` — displays VINE Progress and Milestones in the resume summary.
 6. **Read** by `vine:pause` — uses current VINE phase for pause context.
@@ -361,6 +367,7 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 - **Optional.** Every command must work identically without PROJECT-MAP.md. No errors, no warnings. Commands check for its existence before reading or updating.
 - **Created by verify only.** Other phases update it but never create it. If verify didn't create one (e.g., older project), downstream phases skip PROJECT-MAP updates silently.
 - **Milestones table is conditional.** Only added by inquire when the engineer confirms multi-PR treatment. Single-PR features have a VINE Progress table but no Milestones table.
+- **Route table is a derived pointer.** Optional; added by `vine:navigate` when it writes a ROUTE.md (the `Gate record` cell links to it). It holds no authoritative routing state — verdict, legs, constraints, and basis all live in ROUTE.md, and the row is fully reconstructable from it. Absent a ROUTE.md the table is simply omitted; readers treat its absence as "interactive, no headless authorization." Like the rest of PROJECT-MAP, when it disagrees with ROUTE.md, ROUTE.md wins.
 - **Scannable first.** Tables over prose. Short status markers over verbose descriptions. The whole file should be readable in a terminal glance.
 
 ## Per-Repo Artifacts
@@ -513,7 +520,7 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 **Derived views** (never authoritative; rebuilt from the sources above):
 
 - **Native tasks** (`TaskCreate`/`TaskUpdate`/`TaskList`, when available) — the ephemeral, in-session **live view** of slice progress. It mirrors NAVIGATION.md: one task per slice in the current phase group, titled by the slice name, status `pending`/`in_progress`/`completed`, ordered to match slice dependencies, with a `(conditional: <condition>)` prefix on conditional slices. It holds the progress *skeleton only* — never the approach, decisions, commits, acceptance criteria, or learnings, which live solely in NAVIGATION.md. `vine:navigate` creates it at session start and updates it at slice transitions; `vine:resume` rebuilds it from NAVIGATION.md (which slices are Complete) plus SPEC.md (the full slice list). **Tasks are rebuilt FROM the journal, never the reverse** — if the session dies nothing is lost, because the live view carries no information the durable artifacts don't already have.
-- **PROJECT-MAP.md** — a **durable** derived view: the scannable phase-level summary (VINE Progress + Milestones). Commands update its rows as a convenience, but every row is reconstructable from the authoritative artifacts (phase status from the artifact chain; slice and milestone status from NAVIGATION.md and SPEC.md). It is a cache for at-a-glance scanning, not a second source of truth — when it disagrees with the journal, the journal wins. This is why its schema stays coarse (phases and phase groups, not slices): pushing slice-level state into it would create a second writer for state the journal already owns.
+- **PROJECT-MAP.md** — a **durable** derived view: the scannable phase-level summary (VINE Progress + Milestones + the optional Route table). Commands update its rows as a convenience, but every row is reconstructable from the authoritative artifacts (phase status from the artifact chain; slice and milestone status from NAVIGATION.md and SPEC.md; the Route row from ROUTE.md). It is a cache for at-a-glance scanning, not a second source of truth — when it disagrees with the journal or ROUTE.md, those win. This is why its schema stays coarse (phases and phase groups, not slices): pushing slice-level state into it would create a second writer for state the journal already owns.
 
 **When task tools are unavailable** there is simply no live view: `vine:navigate`, `vine:resume`, and `vine:status` behave exactly as they do today, reading progress directly from the durable artifacts. Every consumer degrades to the source of truth.
 

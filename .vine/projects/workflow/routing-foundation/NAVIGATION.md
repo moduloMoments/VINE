@@ -306,7 +306,7 @@ PROJECT-MAP pointer.
 
 ### Slice 8: Inquire route preview (non-binding) — Complete
 - **Started**: 2026-06-14 17:36
-- **Commit**: pending
+- **Commit**: 949145f
 - **Approach taken**: Added a `🧭 Route preview (non-binding):` line to inquire.md's completion
   block, placed after the `🔄 /clear` recommendation and before the `🌱 retro` — modeled on
   verify.md's `🧭 Navigate gearing note:` line. It previews the likely route by reading the
@@ -335,3 +335,55 @@ PROJECT-MAP pointer.
   - Claude → Engineer: The spec's cross-reference to "inquire's gearing preview" was off by one
     command (it's verify's) — caught by grepping for `gear` in inquire.md before assuming. Cheap
     direct check beats trusting a spec's incidental file note (shared.md: diagnosis-unverified).
+
+### Slice 9: PROJECT-MAP Route table as derived pointer — Complete
+- **Started**: 2026-06-14 17:40
+- **Commit**: pending
+- **Approach taken**: Added a `### Route <!-- optional -->` table to the PROJECT-MAP.md template
+  in `references/STATE.md` (after Milestones): columns `Scope | Route | Gate record`, with the
+  Gate-record cell linking to `./ROUTE.md` and Route using the controlled vocabulary
+  (interactive | headless | headless-reentry). Added a "Route table is a derived pointer" design
+  constraint and folded the Route row into the existing PROJECT-MAP derived-view bullet in the
+  Source of Truth section (when it disagrees with ROUTE.md, ROUTE.md wins) and into the
+  navigate-updates lifecycle note. Added a "Point PROJECT-MAP.md at it" instruction to navigate's
+  gate section — when navigate writes ROUTE.md and PROJECT-MAP.md exists, it adds/updates the
+  Route row; skips silently when PROJECT-MAP.md is absent.
+- **Deviations from spec**: None. Kept columns to `Scope | Route | Gate record` (the derived
+  pointer Slice 9 needs); the spike's fuller `Actor`/`Outcome` columns are headless-execution
+  concepts that Slice 13 (#90 journal schema) owns — not added prematurely here.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 + 8/8 anchors; the new
+  template heading carries an `<!-- optional -->` marker (no unmarked-heading warning); the real
+  routing-foundation PROJECT-MAP.md has no Route table (this feature ran interactively — gate is
+  a no-op, no ROUTE.md), exercising the graceful-absence path.
+- **Decisions made during implementation**:
+  - Three columns now, not the spike's five — Actor/Outcome are Phase-3/Slice-13 territory.
+    (decided by: claude)
+  - Wired the row-write into navigate's gate section (where ROUTE.md is written) rather than a
+    separate step, so the pointer and its target are written together. (decided by: claude)
+- **Acceptance criteria**:
+  - [x] The Route table links to ROUTE.md and holds no authoritative state (derived view)
+  - [x] Reconstructable from ROUTE.md
+  - [x] The table is optional/graceful when absent
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: A derived view earns its keep only if it adds no new state — keeping the
+    Route table to three columns (and deferring Actor/Outcome to the slice that owns the
+    underlying journal schema) keeps it a pure pointer, not a second writer.
+
+### Remaining Work
+- **Incomplete slices**: All Phase 2 slices (6-9) complete. Phase 3 (Slices 10-13: Headless
+  Contract & Journaling) and Phase 4 (Slices 14-17: Docs, Reviewer & Trellis) remain.
+- **Blockers encountered**: None.
+- **Handoff context**:
+  - **Slice 17 discovered item**: CLAUDE.md `## State Artifact Chain` line still reads
+    `CONTEXT → SPEC → NAVIGATION → EVOLUTION` (omits ROUTE.md). Fold the ROUTE.md insertion into
+    Slice 17's cross-reference sweep alongside the count updates. (Slice 6 stayed scoped to
+    STATE.md per the spec's file mapping.)
+  - **Spec note for Phase 3**: the spec's Slice 8 file hint ("alongside the existing gearing
+    preview" in inquire) is off — the gearing preview lives in verify.md. No action needed;
+    recorded so it isn't re-investigated.
+  - **Phase 3 builds on this**: ROUTE.md format (Slice 6), the navigate-head gate + verdict
+    (Slice 7), and the Route table (Slice 9) are the substrate the headless contract (Slice 12)
+    and #90 journal schema (Slice 13) consume. The headless *entry signal* was deliberately left
+    vague in navigate's gate section — Slice 12 defines it.
