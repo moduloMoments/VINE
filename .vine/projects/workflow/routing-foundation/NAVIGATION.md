@@ -172,7 +172,7 @@ predated main's #92). Authoring stays interactive under engineer review.
 
 ### Phase-1 boundary fix: init template precedence (closes the Slice 4 discovered item) — Complete
 - **Started**: 2026-06-14 17:05
-- **Commit**: pending
+- **Commit**: 53b0200
 - **Approach taken**: The phase-group + backward-compat verification (both via agent fan-out)
   confirmed all Phase-1 ACs pass and AC-10 is PASS, surfacing one coherence gap: init's
   shared.md template (fresh repos) lacked the `## Overlay Precedence` section, the Personal-layer

@@ -126,7 +126,7 @@ Milestones table in PROJECT-MAP.md). The precedence split lands first within the
 ROADMAP. File references name areas/sections rather than line numbers (the verify map predates
 main's #92, which shifted lines; navigate re-reads the live files).
 
-## Phase 1: Precedence & Validation Foundation (Slices 1-5) ⬜
+## Phase 1: Precedence & Validation Foundation (Slices 1-5) ✅
 Summary: Build the overlay precedence model, the `.local` layer, and the Validation contract —
 the substrate the gate's leg 1 and all auto-routing policy depend on.
 Session boundary: After this phase, overlays resolve by class, `.local` composes, and a
