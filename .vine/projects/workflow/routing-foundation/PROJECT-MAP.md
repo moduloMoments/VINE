@@ -7,6 +7,15 @@
 | Phase | Status | Updated |
 |-------|--------|---------|
 | verify | ✅ | 2026-06-14 |
-| inquire | ⬜ | — |
+| inquire | ✅ | 2026-06-14 |
 | navigate | ⬜ | — |
 | evolve | ⬜ | — |
+
+### Milestones
+
+| Phase | Slices | Status | PR |
+|-------|--------|--------|----|
+| Phase 1: Precedence & Validation Foundation | 1-5 | ⬜ Pending | — |
+| Phase 2: Eligibility Gate & Route Record | 6-9 | ⬜ Pending | — |
+| Phase 3: Headless Contract & Journaling | 10-13 | ⬜ Pending | — |
+| Phase 4: Docs, Reviewer & Trellis | 14-17 | ⬜ Pending | — |
