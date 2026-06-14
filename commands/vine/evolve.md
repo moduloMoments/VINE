@@ -117,7 +117,8 @@ checks that full-feature scope adds, lives in the agent definition; don't restat
 Pass the agent:
 
 - The feature's changed files and the acceptance criteria from SPEC.md
-- Custom integration validation commands from `.vine/context/evolve.md`, if defined
+- Custom integration validation commands from `.vine/context/evolve.md`, if defined (the agent
+  otherwise reads the `## Validation` block in `.vine/context/shared.md`, prose-inference fallback)
 
 > **Verification tiers:** This is the full-feature tier; navigate runs the phase-group tier
 > at phase group boundaries. The boundary between them — and the intentional asymmetry — is

@@ -121,8 +121,9 @@ choosing silently. Keep it lightweight — one question, concrete options ground
 ## Validate
 
 After implementing the change, delegate to the `vine-verification` agent to run checks on the
-affected files (lint, typecheck, tests). If `.vine/context/pair.md` defines custom validation
-commands, pass those to the agent instead.
+affected files (lint, typecheck, tests) — the agent reads the `## Validation` block in
+`.vine/context/shared.md` (prose-inference fallback when absent). If `.vine/context/pair.md`
+defines custom validation commands, pass those to the agent instead.
 
 Fix any issues before moving to the commit step.
 

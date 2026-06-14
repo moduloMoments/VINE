@@ -109,7 +109,7 @@ predated main's #92). Authoring stays interactive under engineer review.
 
 ### Slice 4: init scaffolds the Validation block — Complete
 - **Started**: 2026-06-14 16:56
-- **Commit**: pending
+- **Commit**: b47e71c
 - **Approach taken**: Added a `## Validation` section to init's shared.md template and a
   Validation bullet to the upgrade-mode required-sections checklist (declinable — declining
   leaves prose inference and changes nothing on disk). Narrowed the now-overlapping `## CI/CD`
@@ -140,3 +140,32 @@ predated main's #92). Authoring stays interactive under engineer review.
   - Claude → Engineer: A template that lives inside a fenced code block can't carry nested
     fences — instruct-to-generate is the clean pattern there, and it keeps the schema
     single-homed instead of duplicating the YAML into the template.
+
+### Slice 5: Wire Validation-block consumers — Complete
+- **Started**: 2026-06-14 16:57
+- **Commit**: pending
+- **Approach taken**: Rewrote `vine-verification`'s tool-discovery section into an explicit
+  priority order — (1) the `## Validation` block in shared.md, preferred and authoritative when
+  present; (2) prose inference (package.json / config files / phase overlays) as the fallback;
+  (3) "no automated checks configured". The original prose-inference bullets are preserved
+  verbatim as step 2, so blockless repos are unchanged. Added a one-line reference to the
+  `## Validation` block (with the fallback noted) at each consumer site: navigate step 4a,
+  evolve's cross-slice integration check, and pair's Validate step.
+- **Deviations from spec**: None.
+- **Validation**: pass — `/trellis` 11/11 commands + 8/8 anchors; the fallback path in
+  `vine-verification.md` is intact (prose inference is step 2, "no checks" is step 3), so the
+  blockless-repo behavior is byte-for-byte the prior heuristic.
+- **Decisions made during implementation**:
+  - Kept the existing prose-inference bullets verbatim as the fallback step rather than
+    rewording — the AC requires "no regression for blockless repos", so preserving the exact
+    heuristic is the safest expression of that. (decided by: claude)
+- **Acceptance criteria**:
+  - [x] The agent prefers the block when present and falls back to prose inference when absent
+  - [x] navigate / evolve / pair reference the contract
+  - [x] No regression for blockless repos (fallback preserved unchanged)
+- **Engineer feedback incorporated**: None this slice.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: Expressing "no regression" as *literally preserving* the old path (as a
+    numbered fallback step) is more defensible than rewording it — the diff shows the old
+    behavior is still exactly reachable.

@@ -249,8 +249,10 @@ Delegate to the `vine-verification` agent to run checks on the changed files and
 acceptance criteria for this slice. The agent runs lint, typecheck, and tests, then checks
 each criterion against the code and reports findings.
 
-If `.vine/context/navigate.md` defines custom validation commands, pass those to the agent.
-The overlay overrides the defaults entirely — it knows this project's toolchain.
+The agent reads the `## Validation` block in `.vine/context/shared.md` for the check commands
+(prose-inference fallback when there's no block). If `.vine/context/navigate.md` defines custom
+validation commands, pass those to the agent — the overlay overrides the defaults entirely, it
+knows this project's toolchain.
 
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.
