@@ -338,7 +338,7 @@ PROJECT-MAP pointer.
 
 ### Slice 9: PROJECT-MAP Route table as derived pointer — Complete
 - **Started**: 2026-06-14 17:40
-- **Commit**: pending
+- **Commit**: 9f0f8df
 - **Approach taken**: Added a `### Route <!-- optional -->` table to the PROJECT-MAP.md template
   in `references/STATE.md` (after Milestones): columns `Scope | Route | Gate record`, with the
   Gate-record cell linking to `./ROUTE.md` and Route using the controlled vocabulary
