@@ -63,7 +63,7 @@ PR descriptions are written for a reader with zero context — no VINE artifacts
 - **Link, don't inline.** Point to issues, ROADMAP.md, or EVOLUTION.md for deep context instead of reproducing it.
 - **How to test: 3 steps or fewer.**
 
-This applies to PR bodies drafted anywhere — evolve's handoff package, the `/pr` command, or ad hoc.
+This applies to PR bodies drafted anywhere — evolve's handoff package, the `/pr` command, or ad hoc. The general form — gloss every pointer so it reads without dereferencing — is the **Reference Legibility** rule in `references/STATE.md`, which applies to all durable VINE artifacts, not just PRs.
 
 ## VINE
 

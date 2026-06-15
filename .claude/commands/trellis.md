@@ -156,6 +156,19 @@ The first six pairs confirm the pointed-at anchors exist (the contract note in S
 the mode and scope vocabulary in the agent). The last two confirm both commands still carry
 their pointer to the contract note.
 
+### Check 11: Naked Issue Pointers (warning-only)
+
+Scan each command body for a bare issue pointer — `#<digits>` that is neither a markdown link
+(`[#56](…)`) nor immediately followed by a parenthetical gloss (`#56 (archive resolved
+projects)`). A naked pointer names a location without saying what's there, so a reader has to
+dereference it; the gloss makes the reference legible to humans and self-checking for agents
+(see `references/STATE.md`, "Reference Legibility"). These are **warnings, not failures** — they
+never affect pass/fail and have no column in the Step 4 table.
+
+The floor covers the product surface (command files). The same rule applies by convention to the
+artifact chain and decision records, but enforcement there rides the writing commands, not this
+linter — and never runs retroactively against immutable historical artifacts.
+
 ## Step 4: Format Results
 
 Present results as a summary table with commands as rows and checks as columns:
@@ -187,6 +200,15 @@ fallback removal):
 
 Omit the block entirely when there are no warnings. Warnings never change the pass/fail
 summary line.
+
+Print Check 11's naked-pointer warnings the same way, under their own header:
+
+```
+⚠️ Naked issue pointers (bare #<n> with no gloss — see STATE.md Reference Legibility):
+- <file>:<line> — <line text>
+```
+
+Omit when empty; these never change the pass/fail summary either.
 
 After the warnings, print the Check 10 anchor result as its own line:
 

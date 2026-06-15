@@ -354,6 +354,43 @@ Unlike the overlays, the README configures nothing — overlays steer VINE's beh
 
 **Lifecycle:** written from a template at vine:init (Step 4) for fresh repos; **offered, declinable** in upgrade mode (Step 8) when absent. Declining changes nothing on disk. Like every other scaffold, VINE works identically whether or not the README is present.
 
+## Durable Decisions & Gotchas
+
+A committed, append-only, **one-file-per-record** layer at `.vine/knowledge/<domain>/<slug>.md` for durable *judgment* — the things a cold human or agent cannot recover by reading the code:
+
+- **Decisions** — why an approach was chosen over the alternatives (ADR-style).
+- **Gotchas** — hard-won empirical knowledge ("pagination breaks past 50 items"; "module Y is mid-migration, don't touch it").
+
+**This is not a codebase map and not a cache.** Facts that *can* be recovered from the code — structure, call graphs, where-is-X — are never homed here; they regenerate on demand via agentic search (see "Source of Truth vs Derived Views"), so they can never go stale. Only non-regenerable judgment is durable.
+
+**Why one record per file:** two actors never edit the same file, so concurrent multi-IC writes don't collide (the append-only journal pattern from #52, applied to knowledge). And `ls .vine/knowledge/<domain>/` is the human-readable index — discoverability without a retrieval system.
+
+**Five properties of a record:**
+
+1. **The title is the decision as a declarative sentence — never a bare number.** The filename is its slug, so the directory listing *is* the table of contents.
+2. **Self-contained Context, in its own words.** A reader with zero session memory must understand it from the record. Issue/PR links are supplementary navigation; the gloss carries the meaning (see "Reference Legibility").
+3. **Status + date + source on every record** — so a cold reader knows whether it is still live without cross-checking anything.
+4. **Immutable — supersede, don't edit.** A changed decision is a *new* record linking back (`Supersedes:`); this is what keeps the layer append-only and concurrent-safe. A slightly-aged gloss in an old record is correct — it froze the reference's meaning as of that decision.
+5. **One record per file.**
+
+```markdown
+# Cut the derived-map cache; keep decisions as committed markdown
+
+Status: Accepted   ·   Date: 2026-06-15   ·   Source: workflow/brain-descope   ·   Actor: Rob + Claude
+
+Context: The problem and the forces, in plain words a cold reader can follow here. Links such as
+#51 (durable decisions + gotchas layer) are supplementary navigation; this paragraph carries the
+meaning on its own.
+
+Decision: What was chosen.
+
+Consequences: Trade-offs, what this enables or forecloses, any follow-on.
+
+Supersedes: <slug of the record this replaces, or "none">
+```
+
+**Wiring (#51, cycle 2):** `vine:evolve` distills records on engineer approval (this is also where its routing-criteria calibration updates land); `vine:verify` globs the domain's records as prior judgment before exploring and surfaces — never auto-trusts — any record that contradicts the live code. Until those commands ship, the convention is defined here and records are written by hand. **Tracked by default** — the team's durable judgment travels with the repo.
+
 ## Knowledge Boundary
 
 Repo knowledge has four homes, keyed to reader scope: every fact lives on the narrowest surface whose readers all need it, and appears there exactly once.
@@ -378,7 +415,7 @@ When a fact moves homes, leave a one-line pointer at the old location.
 
 **Forward references** (conventions defined now, implemented in later cycles):
 
-- `.vine/knowledge/<domain>.md` (#51, cycle 3) — durable per-domain knowledge. When it lands, other surfaces reference a domain's knowledge file with a one-line pointer (`See .vine/knowledge/<domain>.md`), never by inlining it.
+- `.vine/knowledge/<domain>/` (#51, cycle 2) — durable decisions + gotchas, one record per file (format: "Durable Decisions & Gotchas" above; command wiring lands in cycle 2). Other surfaces reference a domain's records with a one-line pointer (`See .vine/knowledge/<domain>/`), never by inlining them.
 - `.vine.local/` (backlog idea) — the sharing boundary for projects: tracked `.vine/projects/` is team-shared; personal work lives outside the shared tree in a gitignored sibling root mirroring `.vine/`'s structure.
 
 ## Source of Truth vs Derived Views
@@ -424,6 +461,26 @@ The journal-before-commit guarantee holds either way: `journal-check.sh` compare
 `CLAUDE.md` and `.vine/context/` overlays are ordinary tracked repo files — commit them whenever they change, regardless of the artifact-tracking choice. `PROFILE.md` is commonly gitignored (it's personal); commit it only if the repo tracks it.
 
 **When the repo does not track artifacts**, commits carry code only; the artifacts still update on disk (for the mtime guarantee and the engineer's own continuity) but never enter a commit. No command should force-add a gitignored artifact.
+
+## Reference Legibility
+
+Every reference in a durable artifact carries a short **gloss** the first time it appears in that document. A pointer — `#56`, `Slice 3`, `E2`, a cycle number — names *where* to look; the gloss says *what's there* in a phrase:
+
+- `#56 (archive resolved projects)`
+- `Slice 3 (the freshness pass)`
+- `E2 (committed shared .vine/, multiple actors on one repo)`
+
+**Both readers need it, for different reasons — and the gloss serves both.** A human can't cheaply dereference a bare pointer (they context-switch, recall, or look it up). An agent *can*, but pays a tool call plus context, and risks fetching a stale or wrong target (`#56` today ≠ `#56` after a rescope). The gloss makes the artifact readable for the human *and* self-checking for the agent — pointer and gloss cross-validate, so drift becomes visible. VINE artifacts are the handoff substrate between humans and agents, so legibility-without-dereference is a property of the handoff, not polish.
+
+The cost is asymmetric (same logic as the Knowledge Boundary's "who pays the tokens"): the gloss is a few words written once; its absence is a lookup paid by every reader, every read, forever.
+
+**Scope:**
+
+- Gloss on **first mention per document**; bare thereafter within the same doc. Re-gloss in artifacts read non-linearly (`PROJECT-MAP.md`, `EVOLUTION.md`, decision records).
+- **Absolute dates, never relative** — `2026-06-12`, not "last cycle" / "recently".
+- **Coded vocabulary** (`E1`/`E2`/`E3`, the gearing terms `walk-me-through`/`free-climb`/…) expands or glosses on first use in any artifact read cold.
+
+This is the PR no-shorthand rule (CLAUDE.md, "Pull Requests") generalized to every durable artifact. `/trellis` enforces a mechanical floor on the product surface (Check 11: a bare `#<n>` in a command file with no gloss warns); enforcement inside the artifact chain and decision records rides the writing commands, not the linter — and applies going forward only, never retroactively against immutable historical artifacts.
 
 ## Artifact-Free Commands
 
