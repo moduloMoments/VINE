@@ -210,7 +210,7 @@ PROJECT-MAP pointer.
 
 ### Slice 6: ROUTE.md artifact format in STATE.md — Complete
 - **Started**: 2026-06-14 17:25
-- **Commit**: 7271476
+- **Commit**: 172867b
 - **Approach taken**: Added a `### ROUTE.md` State File section to `references/STATE.md`, placed
   in chain order between SPEC.md and NAVIGATION.md (the route is decided before slices execute).
   The template carries the six required pieces — Verdict (controlled `interactive |
@@ -255,7 +255,7 @@ PROJECT-MAP pointer.
 
 ### Slice 7: Navigate-head gate evaluation + ROUTE.md write + re-eval — Complete
 - **Started**: 2026-06-14 17:30
-- **Commit**: dc60e70
+- **Commit**: 92c13ad
 - **Approach taken**: Added a `### Route the Work — Eligibility Gate (runs once, at head)`
   section to `commands/vine/navigate.md`, placed between step 2 (Create a Feature Branch) and
   step 3 (Implement One Slice at a Time) — navigate-head, after setup, before the slice loop.
@@ -306,7 +306,7 @@ PROJECT-MAP pointer.
 
 ### Slice 8: Inquire route preview (non-binding) — Complete
 - **Started**: 2026-06-14 17:36
-- **Commit**: 949145f
+- **Commit**: 766af0c
 - **Approach taken**: Added a `🧭 Route preview (non-binding):` line to inquire.md's completion
   block, placed after the `🔄 /clear` recommendation and before the `🌱 retro` — modeled on
   verify.md's `🧭 Navigate gearing note:` line. It previews the likely route by reading the
@@ -338,7 +338,7 @@ PROJECT-MAP pointer.
 
 ### Slice 9: PROJECT-MAP Route table as derived pointer — Complete
 - **Started**: 2026-06-14 17:40
-- **Commit**: 9f0f8df
+- **Commit**: 42b576a
 - **Approach taken**: Added a `### Route <!-- optional -->` table to the PROJECT-MAP.md template
   in `references/STATE.md` (after Milestones): columns `Scope | Route | Gate record`, with the
   Gate-record cell linking to `./ROUTE.md` and Route using the controlled vocabulary
@@ -387,3 +387,18 @@ PROJECT-MAP pointer.
     (Slice 7), and the Route table (Slice 9) are the substrate the headless contract (Slice 12)
     and #90 journal schema (Slice 13) consume. The headless *entry signal* was deliberately left
     vague in navigate's gate section — Slice 12 defines it.
+
+### Pre-PR Reconciliation (2026-06-16)
+Before opening the Phase 2 PR, rebased the branch `--onto origin/main` to drop the already-
+squash-merged Phase 1 noise (PR #94) and the merge commits, leaving 6 clean Phase 2 commits.
+Reconciled with two PRs that merged to main while Phase 2 was building:
+- **#95 (init scaffolds `.vine/README.md`)** — touched `references/STATE.md` (PROFILE lifecycle
+  step renumber + new `### README.md` section) in regions after my edits; auto-merged cleanly,
+  no overlap with the ROUTE.md / Route-table additions.
+- **#96 (descope bespoke brain → durable-decisions convention)** — added `## Durable Decisions
+  & Gotchas` and `## Reference Legibility` to STATE.md plus a warning-only trellis Check 11
+  (bare `#<n>` in command files). Verified: my command-file issue refs use the `(#54)` form the
+  check accepts and name what each issue is in surrounding prose, so trellis stays green (11/11
+  + 8 anchors) with no Check 11 warnings. No content conflict — #96's sections sit after mine.
+- The slice **Commit** fields above were rebased: Slice 6 `7271476`→`172867b`, Slice 7
+  `dc60e70`→`92c13ad`, Slice 8 `949145f`→`766af0c`, Slice 9 `9f0f8df`→`42b576a`.
