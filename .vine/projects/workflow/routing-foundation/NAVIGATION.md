@@ -499,7 +499,7 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
 
 ### Slice 12: Headless mode + structured handoff block (#53) — Complete
 - **Started**: 2026-06-16 09:45
-- **Commit**: pending
+- **Commit**: faa4b4e
 - **Approach taken**: Added a `### Running Headless — Decision Protocol & Handoff` section to
   `commands/vine/navigate.md` (unnumbered, placed right after the gate section and before step 3
   — same no-renumber rationale as Slice 7's gate). It defines: (1) **entry** — headless is a
@@ -562,3 +562,62 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
     platform claims rather than trusting the SPEC's summary of them) is exactly where the
     diagnosis-unverified rule pays off — encoding an inverted boundary into an autonomy contract
     would be expensive to catch later.
+
+### Slice 13: #90 journal schema fixes — Complete
+- **Started**: 2026-06-16 10:00
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Applied all five #90 fixes plus Route/Actor/Gear to the journal schema
+  across `references/STATE.md` (NAVIGATION.md template + PROJECT-MAP Route table) and the
+  `commands/vine/navigate.md` writer template, keeping the two templates in lockstep.
+  NAVIGATION.md slice template gained: optional `**Route**` (controlled `interactive | headless
+  | headless-reentry` vocab + labeled `mechanism:` token), `**Actor**`, `**Gear**` fields;
+  `**Commit**` now documents the `+`-separated multi-commit form; `**Validation**` leads with a
+  bare `pass`/`fail` token; `**Decisions made**` formalizes `(decided by: …)` + optional
+  `[confidence: …]`; new `**Decisions Taken Autonomously**` field with section-scoped `(slice N)`
+  attribution. Added a six-rule "journal-schema contract (#90)" note covering token-first
+  validation, multi-commit, controlled Route vocab, autonomous attribution, decided-by/confidence,
+  and the **mechanism-divergence correction rule** (correct the field, not just prose — the #90
+  wrong-extraction gap). PROJECT-MAP Route table gained the `Actor` and `Outcome` columns Slice 9
+  deferred here; updated the derived-pointer note so the execution columns are documented as
+  mirrors of the journal (table stays a pure derived view). All new fields `<!-- optional -->`
+  with graceful absence. This entry itself carries the new Route/Actor/Gear fields as a
+  dogfooding instance.
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors;
+  `.vine/.trellis-ok` stamp written (navigate.md command-file change → command-commit gate).
+  PROJECT-MAP Route table renders with 5 columns; NAVIGATION template headings unchanged (trellis
+  Check A matches on the `Slice N:` prefix, unaffected).
+- **Decisions made during implementation**:
+  - Added `Actor`/`Outcome` to the PROJECT-MAP Route table (the columns Slice 9 explicitly
+    deferred to this slice) and documented them as derived from NAVIGATION.md's per-slice fields +
+    the Headless Handoff — preserving Slice 9's "the Route table holds no authoritative state"
+    invariant. (decided by: claude) [confidence: high]
+  - Kept Route/Actor/Gear optional and made interactive defaults explicit (missing Route ⇒
+    interactive, missing Actor ⇒ human) so older and interactive journals stay valid without
+    backfill — AC-10 backward-compat. (decided by: claude) [confidence: high]
+  - Recorded `Gear` as fillable on *any* run (not just headless): the gearing choice is currently
+    lost to prose, and journaling it is cheap dogfooding value. Route/Actor stay headless-relevant
+    with interactive defaults. (decided by: claude) [confidence: medium]
+  - Expressed the mechanism-divergence fix as "make the field true, not just a prose note" —
+    directly targets the #90 wrong-extraction root cause (mechanical extraction reads the field,
+    not surrounding prose). (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] NAVIGATION.md carries Route/Actor/Gear fields
+  - [x] Validation rollup uses a `pass`/`fail` token first
+  - [x] Multi-commit slices use a `+`-separated Commit field
+  - [x] Autonomous decisions carry section-scoped `(slice N)` attribution
+  - [x] Route uses a controlled vocabulary with a labeled `mechanism:` token
+  - [x] `(decided by:)` and confidence tags are formalized
+  - [x] The schema forces field correction when a mechanism diverges mid-slice
+  - [x] All fields are optional with graceful absence on older journals
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The #90 wrong-extraction gap is really a "single source of mechanical
+    truth" rule — a prose correction and a stale field disagree, and the extractor trusts the
+    field. The fix isn't a richer schema; it's a contract that the *field* is the truth and must
+    be corrected when reality diverges. Same discipline as the derived-view rule, applied to a
+    single field instead of a whole table.

@@ -386,12 +386,17 @@ stronger than that. For each slice, capture:
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
 **Started**: [timestamp]
-**Commit**: [hash] (or "pending" if in progress)
+**Commit**: [hash] (or "pending" if in progress; `+`-separate multiple — `hashA + hashB`)
+**Route**: [interactive | headless | headless-reentry] — `mechanism: [how it ran, or n/a]`
+**Actor**: [human | the headless actor's identifier]
+**Gear**: [free-climb | walk-me-through]
 **Approach taken**: [what you actually did]
 **Deviations from spec**: [anything that changed and why — also annotated in SPEC.md]
-**Validation**: [pass/fail — lint, typecheck, tests]
+**Validation**: [`pass` | `fail` token first, then details — e.g. `pass — lint, typecheck, tests`]
 **Decisions made during implementation**:
-  - [decision]: [rationale] (decided by: [engineer/claude])
+  - [decision]: [rationale] (decided by: [engineer | claude]) [confidence: high | medium | low]
+**Decisions Taken Autonomously**: [headless only — omit when interactive]
+  - [decision]: [rationale] (decided by: claude — autonomous, slice N)
 **Acceptance criteria**:
   - [x] [AC from spec — verified]
   - [ ] [AC skipped — reason]
@@ -406,6 +411,16 @@ The slice-heading shape and field labels above are the NAVIGATION.md template fr
 `In Progress` / `Complete` status words (pause matches on them), and the field labels as
 written. Resume, pause, and artifact-format validation locate entries by these strings, so
 a custom heading or relabeled field breaks the chain silently.
+
+The `**Route**` / `**Actor**` / `**Gear**` fields and `**Decisions Taken Autonomously**` are
+optional — fill them on a headless run, and record `Gear` on any run (it captures the
+gearing choice you'd otherwise lose to prose). An interactive journal may omit Route/Actor
+(readers default a missing `Route` to `interactive`, `Actor` to `human`). Lead `**Validation**`
+with a bare `pass`/`fail` token. The full field contract — controlled Route vocabulary, the
+`+`-separated multi-commit form, section-scoped autonomous attribution, and the
+**mechanism-divergence correction rule** (if the run's mechanism diverges mid-slice, correct the
+`mechanism:` token to what actually ran, not just a prose note) — is in `references/STATE.md`
+under the journal-schema contract.
 
 **c. Commit the slice**
 
