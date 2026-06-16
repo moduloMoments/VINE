@@ -771,7 +771,7 @@ cross-references and counts.
 
 ### Slice 16: Trellis artifact-tier checks — Complete
 - **Started**: 2026-06-16 10:18
-- **Commit**: pending
+- **Commit**: 6983c3f
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human (Rob + Claude)
 - **Gear**: free-climb
@@ -827,3 +827,58 @@ cross-references and counts.
     session-judged artifact tier; putting the new checks in the tier that's *already* unstamped
     made the constraint fall out of the structure instead of needing enforcement. The cleanest way
     to honor a constraint is often to land the work where the constraint already holds.
+
+### Slice 17: Command Addition Checklist + count sweeps — Complete
+- **Started**: 2026-06-16 10:34
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Swept the cross-reference surfaces for the cycle's new artifact (ROUTE.md)
+  and reconciled the carried discovered item. Three real gaps fixed: (1) **CLAUDE.md** State
+  Artifact Chain (line 36) — the carried Slice-6 discovered item — now names ROUTE.md's optional
+  position between SPEC.md and NAVIGATION.md with its graceful-absence note (keeps the canonical
+  four-phase chain visible while placing ROUTE.md); (2) **README.md** State Artifacts table — added
+  a ROUTE.md row in chain order (after SPEC, before NAVIGATION), marked optional/headless-eligible;
+  (3) **`.vine/context/shared.md`** — added a sibling **State Artifact Addition Checklist** next to
+  the Command Addition Checklist, codifying the multi-surface sync this cycle exercised (STATE.md
+  template + chain + tables, CLAUDE.md chain, README table, trellis Step 5a/5b/Check-A + shape
+  check). STATE.md needed no edit — Slices 6/13 already wired ROUTE.md into its chain,
+  Source-of-Truth and Committing-Artifacts tables (verified: 15 ROUTE.md references).
+- **Deviations from spec**: The spec's Slice 17 file hint named `commands/vine/verify.md (count
+  reference)`, but the "all 11 command files" count reference actually lives in
+  `.vine/context/verify.md:8` (where the Command Addition Checklist correctly points) —
+  `commands/vine/verify.md` carries no count. And the command count is **11, unchanged** this cycle
+  (Phase 4 added docs/checks, no commands), so no count edit was needed anywhere. Same descriptive-
+  hint imprecision noted in Slices 8 and 15; not an AC, no SPEC annotation needed.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors.
+  Consistency grep confirms ROUTE.md now appears in CLAUDE.md chain (1), README State Artifacts
+  table (1), STATE.md source (15), and the new shared.md checklist (1). No `commands/vine/` files
+  touched, so the command-commit gate is not involved.
+- **Decisions made during implementation**:
+  - Inserted ROUTE.md into the *enumerating* surfaces (CLAUDE.md chain, README artifacts table)
+    but left the *narrative* "four phases" lines (README:326/:385, init.md:236) unchanged — those
+    describe the four-phase flow, and ROUTE.md is navigate-internal (not a fifth phase), so adding
+    it there would contradict "four phases." Enumerations include it; phase-flow prose doesn't.
+    (decided by: claude) [confidence: high]
+  - Added a separate State Artifact Addition Checklist rather than overloading the Command
+    Addition Checklist — adding an artifact and adding a command touch different surface sets, and
+    this cycle's ROUTE.md work is the concrete worked example to anchor it. (decided by: claude)
+    [confidence: high]
+  - Left `commands/vine/verify.md` untouched — no count reference there, and 11 is unchanged.
+    Verified by grep rather than editing on the spec hint's say-so. (decided by: claude)
+    [confidence: high]
+- **Acceptance criteria**:
+  - [x] Counts and cross-references consistent across CLAUDE.md, README, STATE.md, and verify.md
+        (ROUTE.md in all enumerating surfaces; command count 11 consistent and unchanged)
+  - [x] The checklist reflects the new surfaces (new State Artifact Addition Checklist covering
+        STATE.md, CLAUDE.md, README, and trellis)
+  - [x] `/trellis` passes (11/11 + 8 anchors)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: A "consistency sweep" is really two distinct surface classes — enumerations
+    (which must list every artifact) and narratives (which describe a flow and shouldn't be forced
+    to enumerate). ROUTE.md belongs in the first, not the second; conflating them would have
+    "fixed" the four-phase story into a wrong five-phase one. The sweep's judgment was *which*
+    references are enumerations, not mechanically find-replacing the chain string everywhere.

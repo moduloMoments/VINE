@@ -33,7 +33,10 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 
 ## State Artifact Chain
 
-Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLUTION.md`
+Features flow through: `CONTEXT.md` → `SPEC.md` → `NAVIGATION.md` → `EVOLUTION.md`. A
+`ROUTE.md` (the routing gate record — verdict, allowlist, constraints, validation baseline)
+optionally joins the chain between `SPEC.md` and `NAVIGATION.md`: `vine:navigate` writes it at
+head when a scope is headless-eligible, and an interactive run omits it (graceful absence).
 
 All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `references/STATE.md`. Section headings in STATE.md templates use `<!-- required -->` / `<!-- optional -->` HTML comment markers — new sections must include a marker to prevent validation drift.
 

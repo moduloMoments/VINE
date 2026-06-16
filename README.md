@@ -313,6 +313,7 @@ when deciding how much to trust a long or lightly-attended session.
 |------|-------|---------|
 | `CONTEXT.md` | verify | Codebase landscape, tribal knowledge, tech debt |
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
+| `ROUTE.md` | navigate (head; previewed by inquire) | Routing gate record: verdict, allowlist, constraints, validation baseline — optional, written when a scope is headless-eligible |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
 | `PROJECT-MAP.md` | verify (created), all phases (updated) | VINE progress tracker, multi-PR milestone status |
