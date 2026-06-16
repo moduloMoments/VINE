@@ -453,7 +453,7 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
 
 ### Slice 11: AskUserQuestion site classification — Complete
 - **Started**: 2026-06-16 09:35
-- **Commit**: pending
+- **Commit**: 99e19fb
 - **Approach taken**: Tagged every `AskUserQuestion` decision site across the 7 commands in the
   SPEC's file list with an inline `<!-- decision-class: human-required | default-able -->` HTML
   comment, placed adjacent to the `AskUserQuestion` instruction so a headless actor reading the
@@ -496,3 +496,69 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
     files for every `AskUserQuestion` site and reconciling against the map (rather than tagging
     only the map's list) caught the drift; the policy's ambiguous→human-required default made the
     unenumerated sites a mechanical call, not a judgment one.
+
+### Slice 12: Headless mode + structured handoff block (#53) — Complete
+- **Started**: 2026-06-16 09:45
+- **Commit**: pending
+- **Approach taken**: Added a `### Running Headless — Decision Protocol & Handoff` section to
+  `commands/vine/navigate.md` (unnumbered, placed right after the gate section and before step 3
+  — same no-renumber rationale as Slice 7's gate). It defines: (1) **entry** — headless is a
+  property of how the run was invoked, never a flag VINE stores; an actor never self-asserts
+  authority; provisioning/permissions are a launch-time human authority outside the artifact
+  chain; no `headless` ROUTE.md ⇒ don't run headless; (2) **execute under ROUTE.md** — modify only
+  the Allowlist, run the Validation Baseline green before each commit, an out-of-allowlist touch
+  is itself an escalation; (3) **decision protocol** — read each site's `<!-- decision-class -->`
+  tag (Slice 11) and apply the Decision Delegation policy (Slice 10): default-able → take
+  recommended + journal autonomous `(slice N)`; human-required → write handoff and stop;
+  ambiguous → human-required; (4) **platform boundaries** (verified, see Decisions): no nested
+  Agent tool (run checks directly), `CLAUDE_PROJECT_DIR` may be unset (use `git rev-parse
+  --show-toplevel`), subagents auto-load CLAUDE.md but the route lives in ROUTE.md + journal;
+  (5) **Headless Handoff** — written on escalation or clean completion, one block both directions.
+  Added the `### Headless Handoff <!-- optional -->` block to the NAVIGATION.md template in
+  `references/STATE.md` plus a "Headless Handoff contract" note (single block serves outbound +
+  inbound, points at ROUTE.md per Reference Legibility, mechanism-agnostic, optional/graceful).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors;
+  `.vine/.trellis-ok` stamp written (navigate.md is a command file → command-commit gate applies).
+  The new navigate section is unnumbered, so no step renumber and no broken `step N`
+  cross-references. The STATE.md contract note's `#reference-legibility` link resolves (heading at
+  STATE.md:563).
+- **Decisions made during implementation**:
+  - **Verified the spike's platform-boundary claims before encoding them** (shared.md Tooling
+    Notes: agent diagnoses are unverified). Read `coordination-spike/EVOLUTION.md` directly: Q2
+    (line 23) confirms nested-Agent-unavailable, `CLAUDE_PROJECT_DIR`-unset, `claude setup-token`
+    auth, and actor-permissions-as-provisioning-authority; Q4 (line 25) confirms subagents
+    auto-load CLAUDE.md and the "map, not mechanism" / mechanism-portability finding. All four
+    claims accurate — design encodes them verbatim. (decided by: claude)
+  - Defined the structured handoff as an **optional section of NAVIGATION.md**, not a new file
+    type — the journal already travels tracked and is in the reviewer's orientation order (and
+    Slice 14 adds ROUTE.md to it). One durable home, one block, both directions. (decided by:
+    claude)
+  - Kept **headless as a property of invocation**, not a self-asserted artifact field — directly
+    honors the spike's "actor permissions are a provisioning-time human authority, not a VINE
+    field" boundary. ROUTE.md authorizes *what* is touched; *who* runs is granted at launch.
+    (decided by: claude)
+  - Inserted the section **unnumbered** after the gate (not a numbered step 3) — renumbering
+    would ripple through navigate's `step 3b/c/d`, `step 4/6/8` and STATE.md's pointers (the exact
+    drift trellis Check 10 catches). Same structural choice as Slice 7. (decided by: claude)
+  - The autonomous-decision **journal field** itself (section-scoped `(slice N)` token) is
+    formalized in Slice 13 — Slice 12 introduces the *behavior* and references the field; Slice 13
+    adds it to the slice template. Complementary, dependency-ordered (13 depends on 12). (decided
+    by: claude)
+- **Acceptance criteria**:
+  - [x] In headless mode, default-able decisions take the recommended option and are journaled as
+        autonomous (section-scoped attribution)
+  - [x] Human-required decisions escalate to the structured handoff and stop
+  - [x] One structured handoff block serves both outbound (agent) and inbound (reviewer)
+  - [x] Platform boundaries respected (no nested Agent assumption; actor permissions stay
+        provisioning-time human authority, not a VINE field)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The cycle's highest-risk autonomy slice was safest expressed by *not*
+    inventing mechanism — the spike's "map, not the mechanism" finding meant the contract is a
+    decision protocol + a handoff format, both mechanism-agnostic, so it survives whatever launches
+    the actor. The one place I slowed down (re-reading the spike's EVOLUTION.md to confirm the four
+    platform claims rather than trusting the SPEC's summary of them) is exactly where the
+    diagnosis-unverified rule pays off — encoding an inverted boundary into an autonomy contract
+    would be expensive to catch later.

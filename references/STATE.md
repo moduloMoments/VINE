@@ -200,11 +200,22 @@ The implementation journal. Built incrementally — each slice is appended as it
 - Incomplete slices
 - Blockers encountered
 - Handoff context for next session
+
+### Headless Handoff <!-- optional -->
+- **Stopped at**: [slice / decision that triggered the stop, or "scope complete"]
+- **Needs a human**: [the human-required decision, restated as the options it would have asked +
+  the recommendation — or "none; ready for review"]
+- **State**: commits [hashes], validation [pass/fail], authorized by [./ROUTE.md]
+- **Decisions taken autonomously**: [pointer to the Decision Taken Autonomously entries above, or
+  "none"]
+- **Next step**: [resume after answering / review-and-merge]
 ```
 
 **Slice-status contract.** The ` — [Status: In Progress / Complete]` suffix on each slice heading is a writer/reader contract: `vine:navigate` writes it (a slice is `In Progress` while being implemented, `Complete` once committed), and `vine:pause` reads it to locate the active slice when capturing pause state. Keep the literal words `In Progress` and `Complete` — pause matches on them. The suffix is part of the heading, so it doesn't affect trellis Check A, which matches slice headings by their `Slice N:` prefix.
 
 **Remaining Work dependency.** The `### Remaining Work` section stays `<!-- optional -->` because it only exists at session boundaries — `vine:navigate` writes it when pausing between slices and at phase completion, so a mid-implementation journal legitimately won't have it (promoting it to required would fail validation on every in-progress journal). When it *is* present, two readers depend on it: `vine:resume`'s no-PAUSE.md path reconstructs handoff state from it, and native-task rebuild (see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)) uses it for cross-slice context.
+
+**Headless Handoff contract.** `<!-- optional -->` and present only on a headless run — an interactive journal never has it. `vine:navigate`'s headless decision protocol writes it when it escalates a `human-required` decision (or finishes a scope cleanly) and then stops. It is the single block that serves both the **outbound** contract (what the unattended actor reports on the way out) and the **inbound** contract (what the reviewer, or `vine:resume`, reads on the way in). It points at ROUTE.md — the authorization the run executed under — rather than restating it, per [Reference Legibility](#reference-legibility). It is mechanism-agnostic: the same block regardless of how the actor was launched ("VINE is the map, not the mechanism" — the cycle-0 spike's Q2 finding). Like Remaining Work, it stays `<!-- optional -->` because an interactive or in-progress journal legitimately won't carry it.
 
 **Deviation-closure contract.** When a slice's `**Deviations from spec**` field is anything but "None", `vine:navigate` step 6 also annotates the affected SPEC.md section (strikethrough/addendum), and navigate's completion gate verifies the pair held — an annotated-nowhere deviation is a gate gap, listed like a missing commit hash. The rule is load-bearing and lives in the command (this file is supplementary and doesn't ship via create-vine); it's recorded here so contributors editing the field keep both halves in sync.
 

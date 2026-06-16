@@ -209,6 +209,59 @@ review.
 **Backward compatibility.** ROUTE.md is optional with graceful absence; an interactive run need
 not produce one. Nothing about an existing interactive `.vine/` setup changes.
 
+### Running Headless — Decision Protocol & Handoff
+
+This section governs a **headless** navigate run: an unattended actor executes and a reviewer
+checks after, with no human present to answer prompts. Like the gate above, it is inert for an
+interactive session — a human answers every `AskUserQuestion` as today, and the common path is
+unchanged.
+
+**Entry.** A run is headless when it was launched with no human in the loop — by a delegating
+agent, a scheduled job, or a CI step — under a `headless`-verdict ROUTE.md (the gate above, or a
+prior session's record re-evaluated at this head). Headless is a property of *how the run was
+invoked*, not a flag VINE stores: an actor never self-asserts its own authority. Provisioning and
+permissions are a human authority granted at launch time (`claude setup-token` and the actor's
+configured tool access), outside the VINE artifact chain — ROUTE.md records what the work is
+authorized to *touch*, never *who* may run it. If no `headless` ROUTE.md authorizes this scope,
+don't run headless: there's nothing to execute against, so stop and leave a note.
+
+**Execute under ROUTE.md.** A headless run is bound by its gate record: modify only the
+**Allowlist**, run the **Validation Baseline** green before every commit, and honor every
+**Constraint**. Touching a file outside the allowlist is itself an escalation (write the handoff
+and stop) — the bounded blast radius *was* the authorization.
+
+**Decision protocol.** At every `AskUserQuestion` site, read its `<!-- decision-class: ... -->`
+tag (carried at each site in the commands) and apply the **Decision Delegation** policy from
+`shared.md`:
+
+- **`default-able`** — take the **recommended** option (the first one, the "(Recommended)" one)
+  and record it in NAVIGATION.md as a **Decision Taken Autonomously**, attributed to the slice it
+  was made in (`(slice N)`). Don't stop.
+- **`human-required`** — do **not** choose. Write the **Headless Handoff** block (below) and
+  **stop**. Leave the work in a clean, committed state; never guess the answer, never partially
+  proceed past the decision. Escalation is always safe; silent autonomy is not.
+
+An untagged or genuinely ambiguous site is treated as `human-required` — the policy's safe default.
+
+**Platform boundaries** (cycle-0 spike, Q2 — design against these; don't assume the artifact chain
+alone carries reviewer context):
+
+- **No nested Agent tool.** A headless actor that is itself a subagent cannot spawn the
+  `vine-verification` agent or any other subagent. Run the validation baseline's check commands
+  directly rather than delegating to the agent.
+- **`CLAUDE_PROJECT_DIR` may be unset** in a subagent context. Resolve the repo root with
+  `git rev-parse --show-toplevel`, not that variable.
+- **Subagents auto-load CLAUDE.md**, which carries one orientation for free — but don't lean on it
+  for the route: the reviewer's context lives in ROUTE.md plus this journal, which is why both
+  travel tracked with the feature.
+
+**Headless Handoff.** When you escalate a `human-required` decision — or when the scope completes
+cleanly — write the structured handoff to NAVIGATION.md (format in `references/STATE.md`) and
+stop. One block serves both directions: the actor fills it on the way out, and the reviewer (or
+the next session, via `vine:resume`) reads it on the way in. It states where the run stopped, the
+decision that needs a human (restated as the options it would have asked), the commits and
+validation state, the autonomous decisions taken, and what the reader should do next.
+
 ### 3. Implement One Slice at a Time
 
 For each work slice from SPEC.md (when task tools are available, `TaskUpdate` this slice's
