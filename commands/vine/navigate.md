@@ -146,6 +146,69 @@ branch, confirm it's the right one for this work:
 If resuming (NAVIGATION.md exists), the engineer is likely already on the right branch — verify
 by checking that the commits recorded in NAVIGATION.md are in the current branch's history.
 
+### Route the Work — Eligibility Gate (runs once, at head)
+
+This runs **once at navigate-head**, after setup and before the first slice — not inside the
+per-slice loop below. It is the authoritative routing gate (#54): it decides whether this scope
+is delivered **interactively** (the default — a human drives, reviewing changes as they land) or
+is **eligible to run headless** (an unattended actor executes, a reviewer checks after), and it
+writes that decision to a durable, reviewer-readable gate record (`ROUTE.md`, format in
+`references/STATE.md`).
+
+**The interactive path is the default and is never gated.** For an ordinary human-driven
+session — the common case — this step is a **no-op**: the route is `interactive`, you write
+nothing or a trivial `interactive` ROUTE.md, and you proceed to step 3 exactly as VINE does
+today. The gate withholds the *headless option* when a leg is missing; it never changes,
+blocks, or degrades the interactive route. (This is the gate-time vs. verification-time
+distinction: a missing leg means "not eligible for headless," not "something is wrong with the
+work.")
+
+**Run the real evaluation only when a headless route is on the table** — the session was entered
+headless (the headless contract and its entry signal land in a later phase), or the engineer
+asks whether this scope could be delegated. When it is, evaluate the four-leg predicate against
+**fresh repo state** (not a stale stamp):
+
+1. **Validation contract exists** — a `## Validation` block is present in `.vine/context/shared.md`
+   (or checks are prose-inferable per `vine-verification`'s fallback). Without a baseline an
+   unattended actor can't self-verify.
+2. **Slice ACs present** — every in-scope SPEC.md slice carries acceptance criteria the actor can
+   check its own work against.
+3. **Independence** — the in-scope slices are independent of in-flight work. Check the live
+   in-flight set fresh (`gh pr list --state open`, `git branch`) for overlap with the allowlist.
+   This leg is **volatile** — it decayed within hours during the cycle-0 spike — so always
+   recompute it here; never trust a prior ROUTE.md's value.
+4. **Bounded blast radius** — the files the work will touch are enumerable. Start from each
+   in-scope slice's `**Files likely touched**`, then **add requirement-implied files** the spec
+   names indirectly — a file an acceptance criterion forces you to touch even though no slice
+   lists it (the spike's F1 root cause: occurrence-grep missed exactly these). Blast radius is
+   the reasoned set, not a raw grep. This leg is volatile too — recompute against current state.
+
+**Verdict.** All four legs hold ⇒ the scope is **headless-eligible** (`Route: headless`). Any
+leg missing ⇒ **`Route: interactive`** (headless-ineligible), and you run interactively with no
+change to today's flow — name the missing leg in the record so the reviewer sees why.
+
+**Write `ROUTE.md`** to the feature directory using the STATE.md format: the verdict, the
+four-leg results, the constraints a headless actor must honor (modify only the allowlist, run the
+validation baseline green before each commit, escalate any decision that needs a human), the
+allowlist, the validation baseline captured from the `## Validation` block, and the **input
+basis** — `HEAD SHA` (`git rev-parse --short HEAD`) and the in-flight set considered — plus the
+`## Computed at:` stamp. The binding decision can't decay because the volatile legs were just
+recomputed; the stamp lets the reviewer compare authorization-time against execution-time state.
+
+**Point PROJECT-MAP.md at it.** If PROJECT-MAP.md exists, add or update its `### Route` table
+(format in `references/STATE.md`) with a row for this scope — the route verdict and a link to
+ROUTE.md in the `Gate record` cell. The table is a **derived pointer**, not a second source of
+truth: it holds no routing state ROUTE.md doesn't, and is always reconstructable from it. If
+PROJECT-MAP.md doesn't exist (older projects), skip silently.
+
+**Resuming.** If a ROUTE.md already exists from a prior session, don't read its verdict as
+current — recompute the volatile legs (independence, blast radius) against fresh state and
+rewrite the record with a new stamp. The stale stamp stays visible in git history for drift
+review.
+
+**Backward compatibility.** ROUTE.md is optional with graceful absence; an interactive run need
+not produce one. Nothing about an existing interactive `.vine/` setup changes.
+
 ### 3. Implement One Slice at a Time
 
 For each work slice from SPEC.md (when task tools are available, `TaskUpdate` this slice's

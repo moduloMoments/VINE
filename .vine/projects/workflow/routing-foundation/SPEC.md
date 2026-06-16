@@ -188,7 +188,7 @@ repos.
 **Complexity signal**: Medium — the agent is the single consolidated verification surface (#69);
 the fallback must stay intact.
 
-## Phase 2: Eligibility Gate & Route Record (Slices 6-9) ⬜
+## Phase 2: Eligibility Gate & Route Record (Slices 6-9) ✅
 Summary: Build the route decision — the four-leg predicate at navigate-head, the ROUTE.md record,
 the inquire preview, and the PROJECT-MAP pointer.
 Session boundary: After this phase, a scope can be evaluated, routed, and recorded; the headless
