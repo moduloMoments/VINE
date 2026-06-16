@@ -18,6 +18,7 @@
 #   7 allowed-tools well-formed (single capitalized words) and known (union)
 #   8 AskUserQuestion referenced in the body
 #   9 Legacy .vine/hooks references outside the two allowlisted spots -> WARNING
+#  11 Naked issue pointers in bodies (bare #<n>, not a [link] or glossed) -> WARNING
 #
 # Plus one repo-level check (not per-command, no table column):
 #  10 Cross-reference anchors resolve (verification-tier contract family:
@@ -82,6 +83,7 @@ ISSUE_COUNT=0
 FAIL_CMDS=0
 FAILDETAIL=""
 WARNINGS=""
+GLOSSWARN=""
 
 cell() { # cell <ok 0|1> ; echos a fixed-width status glyph
   if [ "$1" -eq 0 ]; then printf '%-5s' '✅'; else printf '%-5s' '❌'; fi
@@ -230,6 +232,34 @@ $warn
 EOF
   fi
 
+  # --- Check 11: naked issue pointers in the body (warning-only) ---
+  # A bare #<n> that isn't a [#n](link) and isn't immediately glossed by a
+  # parenthetical reads as an opaque pointer (references/STATE.md
+  # "Reference Legibility"). Warning-only; never affects pass/fail.
+  naked=$(awk '/^---$/{c++; next} c>=2{
+    t=$0
+    gsub(/\[[^][]*\]/, " ", t)   # drop [link text]/[placeholders] — legibility there is prose-judged
+    s=t
+    while (match(s, /#[0-9]+/)) {
+      pre = (RSTART>1) ? substr(s, RSTART-1, 1) : ""
+      post = substr(s, RSTART+RLENGTH, 1)
+      if (pre != "(" && post != "(" && post !~ /[A-Za-z0-9]/) {
+        printf "%d\t%s\n", FNR, $0
+        break
+      }
+      s = substr(s, RSTART+RLENGTH)
+    }
+  }' "$f")
+  if [ -n "$naked" ]; then
+    while IFS=$(printf '\t') read -r ln txt; do
+      [ -n "$ln" ] || continue
+      GLOSSWARN="$GLOSSWARN
+- $stem.md:$ln — $txt"
+    done <<EOF
+$naked
+EOF
+  fi
+
   # --- render row ---
   if [ "$c4" = skip ]; then ov_c=$(skipcell); pr_c=$(skipcell); or_c=$(skipcell)
   else ov_c=$(cell "$c4"); pr_c=$(cell "$c5"); or_c=$(cell "$c6"); fi
@@ -308,6 +338,12 @@ if [ -n "$WARNINGS" ]; then
   echo "⚠️ Legacy \`.vine/hooks/\` references (warnings — slated to harden to failures"
   echo "   with the 0.5 fallback removal):"
   printf '%s\n' "$WARNINGS"
+fi
+
+if [ -n "$GLOSSWARN" ]; then
+  echo
+  echo "⚠️ Naked issue pointers (bare #<n> with no gloss — see STATE.md Reference Legibility):"
+  printf '%s\n' "$GLOSSWARN"
 fi
 
 # ---------- Step 8: write the pass stamp ----------
