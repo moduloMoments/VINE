@@ -668,3 +668,57 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
     because a contract forces you to name the field precisely and then someone checks it against
     practice. The phase-group verification earned its keep here: the mismatch was invisible until
     a contract referenced the field by name.
+
+## Phase 4: Docs, Reviewer & Trellis (Slices 14-17)
+
+Resumed 2026-06-16 10:01 in free-climb gearing (engineer choice; profile confident/workflow).
+Branch even with `origin/main` + 1 local tracker commit (919aa56, Phase-3-shipped), clean tree,
+no open PRs in flight. Routing gate at navigate-head is a no-op this session — human-driven,
+route is `interactive`, no ROUTE.md written. Making the routing surfaces discoverable (README),
+reviewable (review.md orientation), and validated (trellis artifact checks), then sweeping
+cross-references and counts.
+
+### Slice 14: review.md gate-record orientation step — Complete
+- **Started**: 2026-06-16 10:01
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Added a new step 2, **The gate record**, to `.vine/context/review.md`'s
+  Orientation Order — placed after the originating scope (intent) and before the artifact
+  directory / journal / commits (execution), since ROUTE.md is the *authorization* basis the
+  reviewer checks execution against. The step names what to read it for (verdict, allowlist,
+  constraints, validation baseline, input basis + stamp) and the three checks it frames (diff
+  stayed inside the allowlist; validation baseline ran; stamp's input basis still matches
+  execution state — authorization-vs-execution drift is a finding), with explicit graceful
+  absence ("absent ROUTE.md, the run was interactive and ungated — move to the next step").
+  Renumbered the following steps (artifact directory → 3, commits → 4, touched files → 5) and
+  added a parenthetical to step 3 so ROUTE.md isn't re-read redundantly. Resolved the header
+  follow-up comment: rewrote its forward-looking "Cycle 1 adds … once that artifact exists"
+  sentence into a resolved note pointing at step 2 (kept the promotion provenance trail).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 cross-reference
+  anchors. review.md is an overlay file (not a command file), so the `.vine/.trellis-ok`
+  command-commit gate is not involved; no required/optional marker applies (not a STATE.md
+  template).
+- **Decisions made during implementation**:
+  - Placed the gate record as step 2 (between scope and the artifact directory) rather than
+    folding it into the existing "read every .md" step — the reviewer needs the authorization
+    boundaries *before* reading the journal/commits so they have something to check execution
+    against, and a discrete numbered step is what the AC ("read at the right point in the
+    orientation order") asks for. Added a parenthetical to step 3 to avoid double-reading.
+    (decided by: claude) [confidence: high]
+  - Resolved the header comment by rewriting (not deleting) its last sentence — kept the cycle-0
+    promotion provenance, changed only the forward-looking clause to a resolved pointer.
+    (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] ROUTE.md is read at the right point in the orientation order (new step 2, before
+        journal/commits)
+  - [x] The header follow-up comment is resolved (forward-looking sentence → resolved note)
+- **Engineer feedback incorporated**: Gearing set to free climb up front.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The orientation order is a dependency chain ("later items make sense
+    because of earlier ones") — the gate record's *value* is positional: it only frames the
+    journal/commit reads if it's read before them, so where it lands in the list is the design
+    decision, not just that it's present.
