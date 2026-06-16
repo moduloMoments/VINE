@@ -830,7 +830,7 @@ cross-references and counts.
 
 ### Slice 17: Command Addition Checklist + count sweeps — Complete
 - **Started**: 2026-06-16 10:34
-- **Commit**: pending
+- **Commit**: 6dd5456
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human (Rob + Claude)
 - **Gear**: free-climb
@@ -882,3 +882,59 @@ cross-references and counts.
     to enumerate). ROUTE.md belongs in the first, not the second; conflating them would have
     "fixed" the four-phase story into a wrong five-phase one. The sweep's judgment was *which*
     references are enumerations, not mechanically find-replacing the chain string everywhere.
+
+### Phase-4 boundary verification — Complete
+- **Started**: 2026-06-16 10:42
+- **Commit**: n/a (verification only — no code change)
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Ran the `vine-verification` agent at phase-group scope over Phase 4
+  (Slices 14-17). Result: trellis pass (11/11 + 8 anchors); all four slices' ACs met with
+  file:line evidence; backward-compat (AC-10) fully met (ROUTE.md absent, journal route fields
+  absent, and `## Validation` block absent all degrade to their interactive defaults). No errors.
+  Two observations, both already accounted for in the slice journals, no fix needed:
+  - **(verify.md / ROUTE.md enumeration)** — `.vine/context/verify.md` doesn't list ROUTE.md, but
+    it doesn't enumerate *any* artifact: it carries the command-count reference and points at
+    STATE.md for artifact specs rather than duplicating the list. Consistent by design; recorded
+    in Slice 17's deviation note.
+  - **(README section placement)** — the `## Agents running VINE` section sits after State
+    Artifacts rather than at either spec-suggested seam. Placement deviation with rationale already
+    recorded in Slice 15 (legibility: the section depends on artifacts introduced by that point).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 + 8/8 anchors.
+- **Decisions made during implementation**:
+  - Accepted both agent observations as non-issues against the journals' prior reasoning rather
+    than "fixing" them — the verify.md non-enumeration is by design and the README placement is a
+    legibility win, both pre-documented. (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Phase-group verification run; all Slice 14-17 ACs confirmed met with evidence
+  - [x] Backward compatibility (AC-10) confirmed for every new surface
+- **Engineer feedback incorporated**: None (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific.
+  - Claude → Engineer: A clean phase-group verification at the *final* group is the lighter
+    pre-flight; evolve's full-feature tier still owns cross-slice integration across all four
+    phases and the deviation/follow-up review. The asymmetry is intentional (verification-tier
+    contract in STATE.md).
+
+### Remaining Work
+- **Incomplete slices**: All 17 slices complete across Phases 1-4 (Phase 4: Slices 14-17 done
+  this session). The full routing-foundation cycle is implemented.
+- **Blockers encountered**: None.
+- **Handoff context for evolve**:
+  - **Phase 4 PR not yet opened.** Slices 14-17 are committed (9baacaf, f6df658, 6983c3f,
+    6dd5456) on `feature/routing-foundation` but unpushed; PROJECT-MAP Phase 4 row is ✅ Complete
+    (no PR). evolve's handoff prep should open the final Phase 4 PR. Prior phases shipped as
+    #94 (P1), #97 (P2), #98 (P3).
+  - **Full-feature verification is evolve's job.** The phase-group check above is the lighter
+    tier; evolve runs the full-feature tier across all four phases and verifies the 10 cycle-level
+    ACs in SPEC.md (not just per-slice).
+  - **No open deviations.** Every slice's "Deviations from spec" is None or a descriptive-hint
+    imprecision explicitly flagged as needing no SPEC annotation (Slices 8, 15, 17) — nothing for
+    evolve to reconcile across SPEC/NAVIGATION.
+  - **Discovered items, all closed in-cycle**: Slice-4 init-template precedence gap (closed at the
+    Phase-1 boundary), Slice-6 CLAUDE.md State Artifact Chain ROUTE.md omission (closed in Slice
+    17). No carried discovered items remain.
+  - **Backlog (out of cycle, for evolve's triage):** journal-check observability, federated
+    knowledge sync (2027), `.vine/knowledge/<domain>.md` (#51, cycle 3) — see SPEC Backlog Updates.
