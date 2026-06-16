@@ -18,4 +18,4 @@
 | Phase 1: Precedence & Validation Foundation | 1-5 | ✅ Shipped | #94 |
 | Phase 2: Eligibility Gate & Route Record | 6-9 | ✅ Complete | #97 |
 | Phase 3: Headless Contract & Journaling | 10-13 | ✅ Shipped | #98 |
-| Phase 4: Docs, Reviewer & Trellis | 14-17 | ✅ Complete | — |
+| Phase 4: Docs, Reviewer & Trellis | 14-17 | ✅ Complete | #100 |
