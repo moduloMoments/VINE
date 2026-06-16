@@ -373,20 +373,30 @@ A committed, append-only, **one-file-per-record** layer at `.vine/knowledge/<dom
 4. **Immutable — supersede, don't edit.** A changed decision is a *new* record linking back (`Supersedes:`); this is what keeps the layer append-only and concurrent-safe. A slightly-aged gloss in an old record is correct — it froze the reference's meaning as of that decision.
 5. **One record per file.**
 
+Each record follows the classic **Nygard ADR template** ([adr.github.io](https://adr.github.io)) — Title / Status / Context / Decision / Consequences — with VINE's provenance (date · source feature · actor) folded into Status:
+
 ```markdown
 # Cut the derived-map cache; keep decisions as committed markdown
 
-Status: Accepted   ·   Date: 2026-06-15   ·   Source: workflow/brain-descope   ·   Actor: Rob + Claude
+## Status
 
-Context: The problem and the forces, in plain words a cold reader can follow here. Links such as
-#51 (durable decisions + gotchas layer) are supplementary navigation; this paragraph carries the
-meaning on its own.
+Accepted — 2026-06-15
+Source: workflow/brain-descope · Actor: Rob + Claude
+Supersedes: none   <!-- or: Superseded by <slug-of-replacement> -->
 
-Decision: What was chosen.
+## Context
 
-Consequences: Trade-offs, what this enables or forecloses, any follow-on.
+The problem and the forces, in plain words a cold reader can follow here. Links such as
+#51 (durable decisions + gotchas layer) are supplementary navigation; this paragraph carries
+the meaning on its own.
 
-Supersedes: <slug of the record this replaces, or "none">
+## Decision
+
+What was chosen.
+
+## Consequences
+
+What this enables or forecloses, and any follow-on — what becomes easier or harder.
 ```
 
 **Wiring (#51, cycle 2):** `vine:evolve` distills records on engineer approval (this is also where its routing-criteria calibration updates land); `vine:verify` globs the domain's records as prior judgment before exploring and surfaces — never auto-trusts — any record that contradicts the live code. Until those commands ship, the convention is defined here and records are written by hand. **Tracked by default** — the team's durable judgment travels with the repo.
