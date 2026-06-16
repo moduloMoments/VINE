@@ -3,8 +3,8 @@
 <!-- Promoted from cycle-0 spike scaffold (2026-06-12, Q4 verdict: sufficient entry
      point first try — evidence in workflow/coordination-spike EVOLUTION.md).
      Deliberately minimal: it tells the reviewer HOW to orient and WHAT to produce,
-     not the artifact-format tribal knowledge. Cycle 1 adds "read the durable gate
-     record" to the orientation order once that artifact exists (#54/#53). -->
+     not the artifact-format tribal knowledge. Cycle 1 added the durable gate record
+     (ROUTE.md) to the orientation order — step 2 below (#54/#53). -->
 
 ## Role
 
@@ -22,15 +22,25 @@ Read in this order; later items will make sense because of earlier ones:
 
 1. **The originating scope** — the issue/ticket the work was delegated against, or the
    feature's SPEC.md if one exists. This tells you what was supposed to happen.
-2. **The feature's artifact directory** — `.vine/projects/<domain>/<feature-slug>/`.
-   Read every `.md` file present. NAVIGATION.md is the implementation journal: per-slice
-   entries record approach, validation, decisions, and acceptance criteria. Sections
-   after the slice entries (remaining work, decision logs, handoff notes) are the
-   outbound handoff — they are addressed to you.
-3. **The commits** — `git log` + `git show` for each commit the journal names. The diff
+2. **The gate record** — `ROUTE.md` in the feature directory, if present. This is the
+   routing decision the work was authorized under: the verdict (interactive vs headless),
+   the **allowlist** of files the work was permitted to touch, the **constraints** a
+   headless actor had to honor, the **validation baseline** that had to stay green, and
+   the **input basis** (HEAD SHA, in-flight set) with its computed-at stamp. Read it
+   before the journal and commits — it frames what you check the work *against*: did the
+   diff stay inside the allowlist, did the validation baseline run, and does the stamp's
+   input basis still match the state the work actually executed on (authorization-vs-
+   execution drift is a finding). Absent ROUTE.md, the run was interactive and ungated —
+   move to the next step.
+3. **The feature's artifact directory** — `.vine/projects/<domain>/<feature-slug>/`.
+   Read every `.md` file present (ROUTE.md you've already read above). NAVIGATION.md is
+   the implementation journal: per-slice entries record approach, validation, decisions,
+   and acceptance criteria. Sections after the slice entries (remaining work, decision
+   logs, handoff notes) are the outbound handoff — they are addressed to you.
+4. **The commits** — `git log` + `git show` for each commit the journal names. The diff
    is the ground truth; the journal is the actor's account of it. Discrepancies between
    the two are findings.
-4. **The touched files in their final state** — read enough of each changed file to
+5. **The touched files in their final state** — read enough of each changed file to
    judge the change in context, not just the diff hunks.
 
 ## What to Scrutinize

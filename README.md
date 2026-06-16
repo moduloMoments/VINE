@@ -313,6 +313,7 @@ when deciding how much to trust a long or lightly-attended session.
 |------|-------|---------|
 | `CONTEXT.md` | verify | Codebase landscape, tribal knowledge, tech debt |
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
+| `ROUTE.md` | navigate (head; previewed by inquire) | Routing gate record: verdict, allowlist, constraints, validation baseline — optional, written when a scope is headless-eligible |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
 | `PROJECT-MAP.md` | verify (created), all phases (updated) | VINE progress tracker, multi-PR milestone status |
@@ -324,6 +325,43 @@ These files are human-readable, git-friendly, and designed to survive session bo
 **When your repo tracks `.vine/` artifacts** (the team-shared choice), VINE keeps the committed artifacts in step with the code: each **slice commit** bundles the code with that slice's NAVIGATION.md journal entry and any SPEC.md deviation notes, and each **phase-group PR** carries the group's full artifact state — SPEC plan, NAVIGATION record, and PROJECT-MAP tracker — alongside the diff. Repos that keep `.vine/` gitignored or personal commit code only; the journal-before-commit guarantee compares file modification time, not commit contents, so it holds either way.
 
 This repo uses VINE on itself — browse [`.vine/projects/`](.vine/projects/) to see real artifacts from completed features. Each resolved project shows how CONTEXT → SPEC → NAVIGATION → EVOLUTION builds up across the four phases.
+
+## Agents running VINE
+
+The same phases a human drives can also run **headless** — an agent executes the work
+unattended, and a reviewer (a person, or another agent) checks it afterward. Headless is
+opt-in and gated: nothing about the normal human-driven flow changes unless you deliberately
+delegate a scope.
+
+**The routing gate.** At the start of `vine:navigate`, before any code is written, VINE decides
+whether a scope is *eligible* to run headless. It checks four things: a validation baseline
+exists (so the agent can verify its own work), the spec carries acceptance criteria, the work is
+independent of anything in flight, and the files it will touch are enumerable. If any is missing,
+the scope stays interactive — the gate only ever **withholds the headless option**; it never
+alters or degrades the human-driven path. For an ordinary interactive session the gate is a
+no-op.
+
+**The gate record.** When a scope is eligible, the decision is written to a `ROUTE.md` in the
+feature directory: the verdict, the **allowlist** of files the work may touch, the constraints
+the agent must honor, the validation baseline that must stay green, and a stamp recording the
+repo state the decision was made against. A headless run is bound by this record — touch only the
+allowlist, keep validation green before each commit, and **escalate anything a human must own**.
+Every decision point in the commands is tagged `human-required` or `default-able`; on a
+human-required decision the agent writes a structured handoff to NAVIGATION.md and stops rather
+than guessing.
+
+**The reviewer.** [`.vine/context/review.md`](.vine/context/review.md) is a recipe for a fresh
+reviewer who wasn't part of the session: how to orient (read ROUTE.md, then the journal, then the
+commits and final files) and what to produce (a verdict, severity-ordered findings, and a draft
+PR description). Everything the reviewer needs lives in durable state, not session memory.
+
+**The agents.** [`agents/`](agents/) ships the agent definitions VINE auto-delegates to by
+description match — `vine-verification` (runs the validation baseline and checks acceptance
+criteria) and `vine-codebase-explorer` (structured codebase exploration). They are the same in an
+interactive or headless run.
+
+See the [State Reference](references/STATE.md) for the ROUTE.md format and the decision-delegation
+and handoff contracts.
 
 ## Engineer Profile
 

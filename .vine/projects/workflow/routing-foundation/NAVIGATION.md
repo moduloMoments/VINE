@@ -668,3 +668,273 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
     because a contract forces you to name the field precisely and then someone checks it against
     practice. The phase-group verification earned its keep here: the mismatch was invisible until
     a contract referenced the field by name.
+
+## Phase 4: Docs, Reviewer & Trellis (Slices 14-17)
+
+Resumed 2026-06-16 10:01 in free-climb gearing (engineer choice; profile confident/workflow).
+Branch even with `origin/main` + 1 local tracker commit (919aa56, Phase-3-shipped), clean tree,
+no open PRs in flight. Routing gate at navigate-head is a no-op this session — human-driven,
+route is `interactive`, no ROUTE.md written. Making the routing surfaces discoverable (README),
+reviewable (review.md orientation), and validated (trellis artifact checks), then sweeping
+cross-references and counts.
+
+### Slice 14: review.md gate-record orientation step — Complete
+- **Started**: 2026-06-16 10:01
+- **Commit**: 9baacaf
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Added a new step 2, **The gate record**, to `.vine/context/review.md`'s
+  Orientation Order — placed after the originating scope (intent) and before the artifact
+  directory / journal / commits (execution), since ROUTE.md is the *authorization* basis the
+  reviewer checks execution against. The step names what to read it for (verdict, allowlist,
+  constraints, validation baseline, input basis + stamp) and the three checks it frames (diff
+  stayed inside the allowlist; validation baseline ran; stamp's input basis still matches
+  execution state — authorization-vs-execution drift is a finding), with explicit graceful
+  absence ("absent ROUTE.md, the run was interactive and ungated — move to the next step").
+  Renumbered the following steps (artifact directory → 3, commits → 4, touched files → 5) and
+  added a parenthetical to step 3 so ROUTE.md isn't re-read redundantly. Resolved the header
+  follow-up comment: rewrote its forward-looking "Cycle 1 adds … once that artifact exists"
+  sentence into a resolved note pointing at step 2 (kept the promotion provenance trail).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 cross-reference
+  anchors. review.md is an overlay file (not a command file), so the `.vine/.trellis-ok`
+  command-commit gate is not involved; no required/optional marker applies (not a STATE.md
+  template).
+- **Decisions made during implementation**:
+  - Placed the gate record as step 2 (between scope and the artifact directory) rather than
+    folding it into the existing "read every .md" step — the reviewer needs the authorization
+    boundaries *before* reading the journal/commits so they have something to check execution
+    against, and a discrete numbered step is what the AC ("read at the right point in the
+    orientation order") asks for. Added a parenthetical to step 3 to avoid double-reading.
+    (decided by: claude) [confidence: high]
+  - Resolved the header comment by rewriting (not deleting) its last sentence — kept the cycle-0
+    promotion provenance, changed only the forward-looking clause to a resolved pointer.
+    (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] ROUTE.md is read at the right point in the orientation order (new step 2, before
+        journal/commits)
+  - [x] The header follow-up comment is resolved (forward-looking sentence → resolved note)
+- **Engineer feedback incorporated**: Gearing set to free climb up front.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The orientation order is a dependency chain ("later items make sense
+    because of earlier ones") — the gate record's *value* is positional: it only frames the
+    journal/commit reads if it's read before them, so where it lands in the list is the design
+    decision, not just that it's present.
+
+### Slice 15: README "Agents running VINE" section — Complete
+- **Started**: 2026-06-16 10:08
+- **Commit**: f6df658
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Added a `## Agents running VINE` section to `README.md`, placed after
+  `## State Artifacts` and before `## Engineer Profile` — the seam where the artifacts (ROUTE.md,
+  the journal handoff) and the reviewer role it references have just been introduced, so the
+  section reads without forward-pointing. Four plain-language subsections, one screen: **the
+  routing gate** (four-leg eligibility, frames headless as opt-in and the gate as withholding-only
+  so the interactive path is untouched); **the gate record** (ROUTE.md's allowlist / constraints /
+  validation baseline / stamp, and the bound headless run + escalate-don't-guess behavior with the
+  human-required/default-able tagging); **the reviewer** (links `.vine/context/review.md`, orient
+  + produce); **the agents** (`agents/` dir, names both shipped agents and their roles). Closes
+  with a single STATE.md link for ROUTE.md format + delegation/handoff contracts (link-don't-inline
+  per the PR-description discipline).
+- **Deviations from spec**: None. The spec's file hint named two candidate seams ("after
+  `## Context Overlays`" or "under `## How VINE compares`"); chose after `## State Artifacts`
+  instead — strictly better for legibility because the section leans on ROUTE.md / journal / the
+  review role, all introduced by that point, so nothing reads forward. Descriptive hint, not an
+  AC; no SPEC annotation needed.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors; all
+  three new relative links resolve (`.vine/context/review.md`, `agents/`, `references/STATE.md`
+  all exist). README is not a command file, so the command-commit gate is not involved.
+- **Decisions made during implementation**:
+  - Placed the section after State Artifacts rather than either spec-suggested seam — legibility
+    (no forward references) over the literal hint. (decided by: claude) [confidence: high]
+  - Named both shipped agents (`vine-verification`, `vine-codebase-explorer`) and noted they're
+    identical interactive-or-headless — the AC says "`agents/` is treated"; naming the concrete
+    contents beats a vague pointer. (decided by: claude) [confidence: high]
+  - Kept it to one screen with a single STATE.md link for depth rather than inlining the ROUTE.md
+    format / delegation policy — the PR-description / Reference Legibility discipline applied to a
+    README section. (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] A named section covers running VINE headless and the reviewer role
+  - [x] `agents/` is treated (both shipped agents named with their roles)
+  - [x] One screen, plain language, links for depth (PR-description discipline)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: A spec file-hint names *candidate* locations, not a mandate — the real
+    constraint is "no forward references," and the seam that satisfies it (after the artifacts the
+    section depends on) won out over the literally-suggested ones. Same instinct as Slice 8's
+    "the gearing preview is in verify, not inquire": treat file hints as descriptive.
+
+### Slice 16: Trellis artifact-tier checks — Complete
+- **Started**: 2026-06-16 10:18
+- **Commit**: 6983c3f
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Added the new surfaces to `.claude/commands/trellis.md`'s artifact tier
+  (Steps 5–7), which is session-judged and explicitly never stamped — the design hook that
+  satisfies "do not gate `.vine/.trellis-ok`" for free (the mechanical `trellis-check.sh` runs only
+  Steps 1–4 + Check 10, never the artifact tier). Wired ROUTE.md into the Step 5a template parse
+  list and the Step 5b discovery glob and the Check A applies-to set (so ROUTE.md's six required
+  sections are validated by the existing generic required-sections check). Added **Check E** (ROUTE
+  Verdict & Eligibility Legs Shape — closed route vocabulary + `mechanism:` token, four legs
+  present as a structural check). Extended **Check D** with an optional-route-field shape check
+  (`Route`/`Gear`/token-led `Validation` validated only when present; absence never a failure; and
+  — mirroring Check 11 — not run retroactively against pre-#90 historical journals). Added
+  **Check F** (repo-level Validation-block shape in shared.md: keys ⊆ the documented six, `extra`
+  is a list, absent ⇒ skip not fail). Updated Step 7 (Route column + column mapping + Check F
+  repo-level line) and Step 8's scope note to enumerate A/E/D/F as session-judged and unstamped.
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors (the
+  script is unchanged, so the stamp logic is untouched — exactly the point). Graceful-absence paths
+  exercised on this repo: no ROUTE.md exists (Checks A/E don't run — this feature ran interactive),
+  and the `## Validation` block at shared.md:188 is well-formed `extra`-only (Check F → valid).
+  trellis.md lives in `.claude/commands/` (contributor tool), not `commands/vine/`, so editing it
+  doesn't trip the command-commit gate.
+- **Decisions made during implementation**:
+  - Put all three checks in the artifact tier (Steps 5–7) rather than the command tier (Steps
+    1–4) — the artifact tier is already session-judged and unstamped, so "don't gate the stamp"
+    needs no new mechanism; it's structural. Left `trellis-check.sh` untouched. (decided by:
+    claude) [confidence: high]
+  - Reused the generic Check A for ROUTE.md's required sections (just added ROUTE.md to the parse
+    + discovery + applies-to lists) and scoped Check E to only the two *shape*-contractual fields
+    (verdict vocab, legs present) — avoids duplicating required-section logic per type. (decided
+    by: claude) [confidence: high]
+  - Made the optional-route-field shape check (Check D extension) non-retroactive for historical
+    journals, mirroring Check 11's "never runs retroactively against immutable historical
+    artifacts" — a pre-#90 entry with free-prose validation must not start failing. (decided by:
+    claude) [confidence: high]
+  - Verified ROUTE.md's metadata lines (`## Feature:`, `## Computed at:`) are exactly analogous to
+    CONTEXT.md's `## Date:` / `## Author:` before adding it — ROUTE.md is just another State File,
+    so it introduces no new unmarked-heading-warning class (direct check, not assumption).
+    (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Checks cover ROUTE.md format (Check A required sections + Check E shape), journal route
+        fields (Check D extension), and the Validation block presence/shape when present (Check F)
+  - [x] They are session-judged and do not gate the `.vine/.trellis-ok` command-commit stamp
+        (all in Steps 5–7; script unchanged; Step 8 scope note enumerates them)
+  - [x] Absence of the surfaces is not a failure (ROUTE.md absent ⇒ A/E skip; route fields absent
+        ⇒ D passes; Validation block absent ⇒ F skips to prose fallback)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The "don't gate the stamp" requirement wasn't a new flag to add — it was a
+    placement decision. trellis already splits a stamped mechanical command tier from a
+    session-judged artifact tier; putting the new checks in the tier that's *already* unstamped
+    made the constraint fall out of the structure instead of needing enforcement. The cleanest way
+    to honor a constraint is often to land the work where the constraint already holds.
+
+### Slice 17: Command Addition Checklist + count sweeps — Complete
+- **Started**: 2026-06-16 10:34
+- **Commit**: 6dd5456
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Swept the cross-reference surfaces for the cycle's new artifact (ROUTE.md)
+  and reconciled the carried discovered item. Three real gaps fixed: (1) **CLAUDE.md** State
+  Artifact Chain (line 36) — the carried Slice-6 discovered item — now names ROUTE.md's optional
+  position between SPEC.md and NAVIGATION.md with its graceful-absence note (keeps the canonical
+  four-phase chain visible while placing ROUTE.md); (2) **README.md** State Artifacts table — added
+  a ROUTE.md row in chain order (after SPEC, before NAVIGATION), marked optional/headless-eligible;
+  (3) **`.vine/context/shared.md`** — added a sibling **State Artifact Addition Checklist** next to
+  the Command Addition Checklist, codifying the multi-surface sync this cycle exercised (STATE.md
+  template + chain + tables, CLAUDE.md chain, README table, trellis Step 5a/5b/Check-A + shape
+  check). STATE.md needed no edit — Slices 6/13 already wired ROUTE.md into its chain,
+  Source-of-Truth and Committing-Artifacts tables (verified: 15 ROUTE.md references).
+- **Deviations from spec**: The spec's Slice 17 file hint named `commands/vine/verify.md (count
+  reference)`, but the "all 11 command files" count reference actually lives in
+  `.vine/context/verify.md:8` (where the Command Addition Checklist correctly points) —
+  `commands/vine/verify.md` carries no count. And the command count is **11, unchanged** this cycle
+  (Phase 4 added docs/checks, no commands), so no count edit was needed anywhere. Same descriptive-
+  hint imprecision noted in Slices 8 and 15; not an AC, no SPEC annotation needed.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors.
+  Consistency grep confirms ROUTE.md now appears in CLAUDE.md chain (1), README State Artifacts
+  table (1), STATE.md source (15), and the new shared.md checklist (1). No `commands/vine/` files
+  touched, so the command-commit gate is not involved.
+- **Decisions made during implementation**:
+  - Inserted ROUTE.md into the *enumerating* surfaces (CLAUDE.md chain, README artifacts table)
+    but left the *narrative* "four phases" lines (README:326/:385, init.md:236) unchanged — those
+    describe the four-phase flow, and ROUTE.md is navigate-internal (not a fifth phase), so adding
+    it there would contradict "four phases." Enumerations include it; phase-flow prose doesn't.
+    (decided by: claude) [confidence: high]
+  - Added a separate State Artifact Addition Checklist rather than overloading the Command
+    Addition Checklist — adding an artifact and adding a command touch different surface sets, and
+    this cycle's ROUTE.md work is the concrete worked example to anchor it. (decided by: claude)
+    [confidence: high]
+  - Left `commands/vine/verify.md` untouched — no count reference there, and 11 is unchanged.
+    Verified by grep rather than editing on the spec hint's say-so. (decided by: claude)
+    [confidence: high]
+- **Acceptance criteria**:
+  - [x] Counts and cross-references consistent across CLAUDE.md, README, STATE.md, and verify.md
+        (ROUTE.md in all enumerating surfaces; command count 11 consistent and unchanged)
+  - [x] The checklist reflects the new surfaces (new State Artifact Addition Checklist covering
+        STATE.md, CLAUDE.md, README, and trellis)
+  - [x] `/trellis` passes (11/11 + 8 anchors)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: A "consistency sweep" is really two distinct surface classes — enumerations
+    (which must list every artifact) and narratives (which describe a flow and shouldn't be forced
+    to enumerate). ROUTE.md belongs in the first, not the second; conflating them would have
+    "fixed" the four-phase story into a wrong five-phase one. The sweep's judgment was *which*
+    references are enumerations, not mechanically find-replacing the chain string everywhere.
+
+### Phase-4 boundary verification — Complete
+- **Started**: 2026-06-16 10:42
+- **Commit**: n/a (verification only — no code change)
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Ran the `vine-verification` agent at phase-group scope over Phase 4
+  (Slices 14-17). Result: trellis pass (11/11 + 8 anchors); all four slices' ACs met with
+  file:line evidence; backward-compat (AC-10) fully met (ROUTE.md absent, journal route fields
+  absent, and `## Validation` block absent all degrade to their interactive defaults). No errors.
+  Two observations, both already accounted for in the slice journals, no fix needed:
+  - **(verify.md / ROUTE.md enumeration)** — `.vine/context/verify.md` doesn't list ROUTE.md, but
+    it doesn't enumerate *any* artifact: it carries the command-count reference and points at
+    STATE.md for artifact specs rather than duplicating the list. Consistent by design; recorded
+    in Slice 17's deviation note.
+  - **(README section placement)** — the `## Agents running VINE` section sits after State
+    Artifacts rather than at either spec-suggested seam. Placement deviation with rationale already
+    recorded in Slice 15 (legibility: the section depends on artifacts introduced by that point).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 + 8/8 anchors.
+- **Decisions made during implementation**:
+  - Accepted both agent observations as non-issues against the journals' prior reasoning rather
+    than "fixing" them — the verify.md non-enumeration is by design and the README placement is a
+    legibility win, both pre-documented. (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Phase-group verification run; all Slice 14-17 ACs confirmed met with evidence
+  - [x] Backward compatibility (AC-10) confirmed for every new surface
+- **Engineer feedback incorporated**: None (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific.
+  - Claude → Engineer: A clean phase-group verification at the *final* group is the lighter
+    pre-flight; evolve's full-feature tier still owns cross-slice integration across all four
+    phases and the deviation/follow-up review. The asymmetry is intentional (verification-tier
+    contract in STATE.md).
+
+### Remaining Work
+- **Incomplete slices**: All 17 slices complete across Phases 1-4 (Phase 4: Slices 14-17 done
+  this session). The full routing-foundation cycle is implemented.
+- **Blockers encountered**: None.
+- **Handoff context for evolve**:
+  - **Phase 4 PR not yet opened.** Slices 14-17 are committed (9baacaf, f6df658, 6983c3f,
+    6dd5456) on `feature/routing-foundation` but unpushed; PROJECT-MAP Phase 4 row is ✅ Complete
+    (no PR). evolve's handoff prep should open the final Phase 4 PR. Prior phases shipped as
+    #94 (P1), #97 (P2), #98 (P3).
+  - **Full-feature verification is evolve's job.** The phase-group check above is the lighter
+    tier; evolve runs the full-feature tier across all four phases and verifies the 10 cycle-level
+    ACs in SPEC.md (not just per-slice).
+  - **No open deviations.** Every slice's "Deviations from spec" is None or a descriptive-hint
+    imprecision explicitly flagged as needing no SPEC annotation (Slices 8, 15, 17) — nothing for
+    evolve to reconcile across SPEC/NAVIGATION.
+  - **Discovered items, all closed in-cycle**: Slice-4 init-template precedence gap (closed at the
+    Phase-1 boundary), Slice-6 CLAUDE.md State Artifact Chain ROUTE.md omission (closed in Slice
+    17). No carried discovered items remain.
+  - **Backlog (out of cycle, for evolve's triage):** journal-check observability, federated
+    knowledge sync (2027), `.vine/knowledge/<domain>.md` (#51, cycle 3) — see SPEC Backlog Updates.

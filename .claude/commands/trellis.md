@@ -228,8 +228,8 @@ always runs regardless.
 ### 5a: Parse Artifact Templates from STATE.md
 
 Read `references/STATE.md`. Locate each artifact template by finding the `### <Name>.md`
-headings under `## State Files` (CONTEXT.md, SPEC.md, NAVIGATION.md, EVOLUTION.md) and
-under `## Per-Repo Artifacts` (PROFILE.md).
+headings under `## State Files` (CONTEXT.md, SPEC.md, ROUTE.md, NAVIGATION.md, EVOLUTION.md)
+and under `## Per-Repo Artifacts` (PROFILE.md).
 
 Each template is enclosed in a markdown code fence (` ```markdown ... ``` `). For each template:
 
@@ -238,7 +238,7 @@ Each template is enclosed in a markdown code fence (` ```markdown ... ``` `). Fo
    `<!-- optional -->` marker on the same line
 3. Record each heading's text (without the marker), heading level, and whether it's required
    or optional
-4. Map these to the artifact type (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
+4. Map these to the artifact type (CONTEXT, SPEC, ROUTE, NAVIGATION, EVOLUTION, PROFILE)
 
 **Handling dynamic headings**: Some template headings contain placeholders like `[Name]` or
 `[Feature Name]`. For validation purposes, treat these as pattern prefixes. For example,
@@ -257,7 +257,7 @@ markers found at all), print a warning and skip Steps 6–7.
 
 Use Glob to find all artifacts in `.vine/projects/`:
 
-- Look for `CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md` under
+- Look for `CONTEXT.md`, `SPEC.md`, `ROUTE.md`, `NAVIGATION.md`, `EVOLUTION.md` under
   `.vine/projects/*/*/` (domain/feature-slug directories)
 - Look for `PROFILE.md` at `.vine/PROFILE.md`
 - **Filter out**: any path containing `.archive/` and any directory containing a `.resolved` file
@@ -277,7 +277,7 @@ results per check per artifact.
 
 ### Check A: Required Sections Present
 
-**Applies to**: all artifact types (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
+**Applies to**: all artifact types (CONTEXT, SPEC, ROUTE, NAVIGATION, EVOLUTION, PROFILE)
 
 For each section marked `<!-- required -->` in the artifact's STATE.md template, verify that
 a matching heading exists in the actual artifact file.
@@ -354,6 +354,57 @@ For completed slices only, verify these fields are present as bold-prefixed list
 Pending or in-progress slices are not checked — NAVIGATION.md is built incrementally and
 partial files are expected.
 
+**Optional route fields — shape when present (#90 journal schema).** A completed slice may
+also carry the optional `**Route**`, `**Actor**`, `**Gear**` fields and a token-led
+`**Validation**`. These are `<!-- optional -->`: their **absence is never a failure** (a missing
+`Route` reads as `interactive`, a missing `Actor` as `human`). Validate only the shape of fields
+that *are* present:
+
+- `**Route**`, if present, uses exactly one of the closed vocabulary `interactive | headless |
+  headless-reentry`, followed by a `` `mechanism: ...` `` token (value may be `n/a`). This is the
+  same closed set as Check E (ROUTE.md) and the PROJECT-MAP Route table — the three surfaces must
+  stay comparable.
+- `**Gear**`, if present, is one of `free-climb` or `walk-me-through`.
+- `**Validation**` leads with a bare `pass` or `fail` token before any details.
+
+Like Check 11's naked-pointer floor, this shape check **does not run retroactively against
+immutable historical journals** — apply it to entries written under the current schema; a
+pre-#90 entry that records validation as free prose is not a failure.
+
+### Check E: ROUTE Verdict & Eligibility Legs Shape
+
+**Applies to**: ROUTE.md only
+
+Check A already confirms ROUTE.md's required sections are present (Verdict, Eligibility Legs,
+Constraints, Allowlist, Validation Baseline, Input Basis). This check validates the two fields
+whose shape is contractual:
+
+1. **Route verdict vocabulary**: The `**Route**` field under `### Verdict` must use exactly one
+   of `interactive`, `headless`, `headless-reentry`, followed by a `` `mechanism: ...` `` token
+   (value may be `n/a`). A route word outside the closed set, or a missing `mechanism:` token,
+   fails. Same closed vocabulary as the NAVIGATION `**Route**` field and the PROJECT-MAP Route
+   table.
+2. **Eligibility legs present**: The `### Eligibility Legs` section lists all four predicate legs
+   (Validation contract, Slice ACs, Independence, Bounded blast radius) as checklist items.
+   Whether each box is ticked is the gate's call, not trellis's — this is a structural check.
+
+ROUTE.md is optional with graceful absence: a feature with no ROUTE.md ran interactively and
+ungated, so Checks A and E simply don't run for it — **absence is not a failure**.
+
+### Check F: Validation Block Shape (repo-level, when present)
+
+**Applies to**: `.vine/context/shared.md` — repo-level, not a per-artifact check (so it has no
+column in the Step 7 table; report it as its own line like Check 10).
+
+When a `## Validation` block is present, verify it is a fenced YAML block whose keys are drawn
+only from the documented set — `lint`, `typecheck`, `test`, `test-all`, `build`, `extra` — and
+that `extra` (if present) is a list. An unknown key or a malformed block fails. **Absence is not
+a failure**: a repo with no `## Validation` block falls back to prose inference (the contract is
+optional, per `references/STATE.md`), so the check simply doesn't run.
+
+Like all of Steps 5–7, Checks E and F and the optional-route-field shape check are
+**session-judged and do not gate the `.vine/.trellis-ok` stamp** (Step 8).
+
 ## Step 7: Format Artifact Results
 
 Present artifact validation results after the command checks from Step 4. This step produces
@@ -390,26 +441,35 @@ Print a results table with artifacts as rows and checks as columns:
 ```
 ## Artifact Validation
 
-| Artifact                              | Sections | Table | Slice Fields | Nav Fields |
-|---------------------------------------|----------|-------|--------------|------------|
-| .vine/PROFILE.md                      | ✅       | ✅    | —            | —          |
-| .vine/projects/auth/login/CONTEXT.md  | ✅       | —     | —            | —          |
-| .vine/projects/auth/login/SPEC.md     | ✅       | —     | ✅           | —          |
-| .vine/projects/auth/login/NAV...md    | ✅       | —     | —            | ✅         |
-| ...                                   |          |       |              |            |
+| Artifact                              | Sections | Table | Slice Fields | Nav Fields | Route |
+|---------------------------------------|----------|-------|--------------|------------|-------|
+| .vine/PROFILE.md                      | ✅       | ✅    | —            | —          | —     |
+| .vine/projects/auth/login/CONTEXT.md  | ✅       | —     | —            | —          | —     |
+| .vine/projects/auth/login/SPEC.md     | ✅       | —     | ✅           | —          | —     |
+| .vine/projects/auth/login/ROUTE.md    | ✅       | —     | —            | —          | ✅    |
+| .vine/projects/auth/login/NAV...md    | ✅       | —     | —            | ✅         | —     |
+| ...                                   |          |       |              |            |       |
 ```
 
 Column mapping:
 - **Sections** → Check A (applies to all)
 - **Table** → Check B (PROFILE only)
 - **Slice Fields** → Check C (SPEC only)
-- **Nav Fields** → Check D (NAVIGATION only)
+- **Nav Fields** → Check D (NAVIGATION only — includes the optional route-field shape check)
+- **Route** → Check E (ROUTE.md only)
 
 Use `✅` for pass, `❌` for fail, `—` for not applicable (the check doesn't apply to this
 artifact type).
 
 After the table, print any unmarked heading warnings from Step 5a (headings in STATE.md
 templates that lack a `<!-- required -->` or `<!-- optional -->` marker).
+
+Then print the Check F result as its own repo-level line (like Check 10's anchor line):
+
+- `## Validation` block present and well-formed: **"✅ Validation block valid (N keys)"**
+- Present but malformed (unknown key, or `extra` not a list): **"❌ Validation block: <what was
+  wrong>"**
+- Absent: **"— Validation block: none (prose-inference fallback)"** — not a failure.
 
 ### Combined Summary
 
@@ -452,5 +512,8 @@ drifted between this skill and `trellis-check.sh` and the drift itself needs fix
 Scope notes: warnings (legacy references, unmarked headings) do not block a pass stamp.
 Artifact validation failures don't either — artifacts are often work-in-progress journals,
 and gating command commits on artifact state would block unrelated work. The stamp certifies
-command structure and cross-reference anchors only; artifact validation (Steps 5–7) stays
-session-judged and is not stamped.
+command structure and cross-reference anchors only; **all of Steps 5–7 stays session-judged and
+is not stamped** — including the ROUTE.md checks (A, E), the optional route-field shape check
+(D), and the repo-level Validation-block check (F, which reads `.vine/context/shared.md`). The
+script never reads those surfaces, so adding or malforming a ROUTE.md, a route field, or the
+Validation block can never block a command commit.

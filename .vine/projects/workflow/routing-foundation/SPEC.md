@@ -284,7 +284,7 @@ field correction when a mechanism diverges mid-slice (the #90 wrong-extraction g
 are optional with graceful absence on older journals.
 **Complexity signal**: Medium.
 
-## Phase 4: Docs, Reviewer & Trellis (Slices 14-17) ⬜
+## Phase 4: Docs, Reviewer & Trellis (Slices 14-17) ✅
 Summary: Make the new surfaces discoverable, reviewable, and validated.
 Session boundary: Cycle complete and ready for evolve.
 
