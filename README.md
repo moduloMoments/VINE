@@ -325,6 +325,43 @@ These files are human-readable, git-friendly, and designed to survive session bo
 
 This repo uses VINE on itself — browse [`.vine/projects/`](.vine/projects/) to see real artifacts from completed features. Each resolved project shows how CONTEXT → SPEC → NAVIGATION → EVOLUTION builds up across the four phases.
 
+## Agents running VINE
+
+The same phases a human drives can also run **headless** — an agent executes the work
+unattended, and a reviewer (a person, or another agent) checks it afterward. Headless is
+opt-in and gated: nothing about the normal human-driven flow changes unless you deliberately
+delegate a scope.
+
+**The routing gate.** At the start of `vine:navigate`, before any code is written, VINE decides
+whether a scope is *eligible* to run headless. It checks four things: a validation baseline
+exists (so the agent can verify its own work), the spec carries acceptance criteria, the work is
+independent of anything in flight, and the files it will touch are enumerable. If any is missing,
+the scope stays interactive — the gate only ever **withholds the headless option**; it never
+alters or degrades the human-driven path. For an ordinary interactive session the gate is a
+no-op.
+
+**The gate record.** When a scope is eligible, the decision is written to a `ROUTE.md` in the
+feature directory: the verdict, the **allowlist** of files the work may touch, the constraints
+the agent must honor, the validation baseline that must stay green, and a stamp recording the
+repo state the decision was made against. A headless run is bound by this record — touch only the
+allowlist, keep validation green before each commit, and **escalate anything a human must own**.
+Every decision point in the commands is tagged `human-required` or `default-able`; on a
+human-required decision the agent writes a structured handoff to NAVIGATION.md and stops rather
+than guessing.
+
+**The reviewer.** [`.vine/context/review.md`](.vine/context/review.md) is a recipe for a fresh
+reviewer who wasn't part of the session: how to orient (read ROUTE.md, then the journal, then the
+commits and final files) and what to produce (a verdict, severity-ordered findings, and a draft
+PR description). Everything the reviewer needs lives in durable state, not session memory.
+
+**The agents.** [`agents/`](agents/) ships the agent definitions VINE auto-delegates to by
+description match — `vine-verification` (runs the validation baseline and checks acceptance
+criteria) and `vine-codebase-explorer` (structured codebase exploration). They are the same in an
+interactive or headless run.
+
+See the [State Reference](references/STATE.md) for the ROUTE.md format and the decision-delegation
+and handoff contracts.
+
 ## Engineer Profile
 
 With AI assistance, engineers at every level are moving into unfamiliar domains at increasing speed. A principal exploring a new area of the codebase deserves the same depth of explanation as a junior encountering it for the first time. A junior who's built confidence in their domain deserves the same concise respect as a senior. The profile tracks domain expertise, not seniority — helping juniors to principals grow in areas both new and familiar.

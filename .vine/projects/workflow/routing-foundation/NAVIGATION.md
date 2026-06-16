@@ -680,7 +680,7 @@ cross-references and counts.
 
 ### Slice 14: review.md gate-record orientation step — Complete
 - **Started**: 2026-06-16 10:01
-- **Commit**: pending
+- **Commit**: 9baacaf
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human (Rob + Claude)
 - **Gear**: free-climb
@@ -722,3 +722,49 @@ cross-references and counts.
     because of earlier ones") — the gate record's *value* is positional: it only frames the
     journal/commit reads if it's read before them, so where it lands in the list is the design
     decision, not just that it's present.
+
+### Slice 15: README "Agents running VINE" section — Complete
+- **Started**: 2026-06-16 10:08
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Added a `## Agents running VINE` section to `README.md`, placed after
+  `## State Artifacts` and before `## Engineer Profile` — the seam where the artifacts (ROUTE.md,
+  the journal handoff) and the reviewer role it references have just been introduced, so the
+  section reads without forward-pointing. Four plain-language subsections, one screen: **the
+  routing gate** (four-leg eligibility, frames headless as opt-in and the gate as withholding-only
+  so the interactive path is untouched); **the gate record** (ROUTE.md's allowlist / constraints /
+  validation baseline / stamp, and the bound headless run + escalate-don't-guess behavior with the
+  human-required/default-able tagging); **the reviewer** (links `.vine/context/review.md`, orient
+  + produce); **the agents** (`agents/` dir, names both shipped agents and their roles). Closes
+  with a single STATE.md link for ROUTE.md format + delegation/handoff contracts (link-don't-inline
+  per the PR-description discipline).
+- **Deviations from spec**: None. The spec's file hint named two candidate seams ("after
+  `## Context Overlays`" or "under `## How VINE compares`"); chose after `## State Artifacts`
+  instead — strictly better for legibility because the section leans on ROUTE.md / journal / the
+  review role, all introduced by that point, so nothing reads forward. Descriptive hint, not an
+  AC; no SPEC annotation needed.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors; all
+  three new relative links resolve (`.vine/context/review.md`, `agents/`, `references/STATE.md`
+  all exist). README is not a command file, so the command-commit gate is not involved.
+- **Decisions made during implementation**:
+  - Placed the section after State Artifacts rather than either spec-suggested seam — legibility
+    (no forward references) over the literal hint. (decided by: claude) [confidence: high]
+  - Named both shipped agents (`vine-verification`, `vine-codebase-explorer`) and noted they're
+    identical interactive-or-headless — the AC says "`agents/` is treated"; naming the concrete
+    contents beats a vague pointer. (decided by: claude) [confidence: high]
+  - Kept it to one screen with a single STATE.md link for depth rather than inlining the ROUTE.md
+    format / delegation policy — the PR-description / Reference Legibility discipline applied to a
+    README section. (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] A named section covers running VINE headless and the reviewer role
+  - [x] `agents/` is treated (both shipped agents named with their roles)
+  - [x] One screen, plain language, links for depth (PR-description discipline)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: A spec file-hint names *candidate* locations, not a mandate — the real
+    constraint is "no forward references," and the seam that satisfies it (after the artifacts the
+    section depends on) won out over the literally-suggested ones. Same instinct as Slice 8's
+    "the gearing preview is in verify, not inquire": treat file hints as descriptive.
