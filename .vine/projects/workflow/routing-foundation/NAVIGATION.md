@@ -402,3 +402,51 @@ Reconciled with two PRs that merged to main while Phase 2 was building:
   + 8 anchors) with no Check 11 warnings. No content conflict — #96's sections sit after mine.
 - The slice **Commit** fields above were rebased: Slice 6 `7271476`→`172867b`, Slice 7
   `dc60e70`→`92c13ad`, Slice 8 `949145f`→`766af0c`, Slice 9 `9f0f8df`→`42b576a`.
+
+## Phase 3: Headless Contract & Journaling (Slices 10-13)
+
+Resumed 2026-06-16 09:20 in free-climb gearing (engineer choice; profile confident/workflow).
+Branch even with `origin/main` (#97 merged), clean tree, no open PRs in flight. Routing gate at
+navigate-head is a no-op this session — human-driven, route is `interactive`, no ROUTE.md
+written. Building the autonomy layer that consumes Phase 2's route: the Decision Delegation
+policy (Slice 10), per-site decision-class tags (Slice 11), the headless mode + structured
+handoff (Slice 12), and the #90 journal schema (Slice 13).
+
+### Slice 10: Decision Delegation policy section — Complete
+- **Started**: 2026-06-16 09:20
+- **Commit**: pending
+- **Approach taken**: Added a `## Decision Delegation` section to `.vine/context/shared.md`,
+  marked `<!-- class: policy -->`, placed directly after `## Interaction Constraints` (it
+  governs how those `AskUserQuestion` sites behave headless — the natural adjacency for a
+  reader) and before `## Team Context`. The section defines the two decision classes and their
+  headless semantics: `default-able` → take the recommended option and journal it as a Decision
+  Taken Autonomously with `(slice N)` attribution; `human-required` → escalate to the structured
+  handoff and stop. It states the section is policy-class (immutable from `.local`, but a *repo*
+  overlay can reclassify — the #55 override path), that it is inert in interactive sessions, and
+  that ambiguous sites default to `human-required` (escalation is always safe).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 cross-reference
+  anchors. No `commands/vine/` files touched, so the trellis command-commit gate is not involved.
+  The new heading is a `##` section in an overlay file (not a STATE.md template), so no
+  required/optional marker applies.
+- **Decisions made during implementation**:
+  - Placed Decision Delegation after Interaction Constraints (thematic adjacency to the
+    `AskUserQuestion` sites it governs) rather than grouped with the bottom policy sections
+    (Team Context, CI/CD) — the class marker declares its policy status regardless of position
+    (Overlay Precedence: "Only policy-class sections carry the marker"). (decided by: claude)
+  - Kept the per-site roster *out* of this section — it defines the two classes; the commands
+    carry the assignments (Slice 11). A single roster home avoids two places to keep in sync.
+    (decided by: claude)
+  - Forward-references the structured handoff (Slice 12) and the autonomous-decision journal
+    field (Slice 13); both land in this same phase/PR, so the references resolve by phase end.
+    (decided by: claude)
+- **Acceptance criteria**:
+  - [x] The section is policy-class (immutable from `.local`) — `<!-- class: policy -->` marker
+  - [x] It sets per-class headless behavior (default-able vs human-required)
+  - [x] It is override-able as overlay content (repo overlay can reclassify; stated explicitly)
+- **Engineer feedback incorporated**: Gearing set to free climb up front.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: Defining the classes in one policy section and the per-site assignments
+    at the sites (Slice 11) keeps the routing policy single-homed — the same derived-view
+    discipline Slice 9 applied to the Route table, applied to decision classification.

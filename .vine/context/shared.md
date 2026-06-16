@@ -146,6 +146,37 @@ Apply these to every `AskUserQuestion` call, in any phase:
 - Batch related decisions into one call when possible
 - If a topic needs more than 4 options, split it by category across multiple questions
 
+## Decision Delegation
+<!-- class: policy -->
+
+Routing policy (#55 — the policy half of Decision Delegation) for how each `AskUserQuestion`
+decision behaves when a phase runs **headless** (an unattended actor executes; a reviewer checks
+after). It sorts every decision into one of two classes; each `AskUserQuestion` site in the
+commands carries a `<!-- decision-class: ... -->` tag so a headless actor knows how to act
+without a human present.
+
+This section is **policy-class**: the personal `.local` layer cannot weaken it (see Overlay
+Precedence). A *repo* overlay can still reclassify a decision by overriding this content — that
+override path is the intended #55 mechanism, available to the team, not the individual.
+
+In an **interactive** session this section is inert — the human answers every prompt exactly as
+today. It governs headless behavior only.
+
+- **`default-able`** — the actor takes the **recommended option** (the first one, the one
+  carrying "(Recommended)") and records it in NAVIGATION.md as a **Decision Taken Autonomously**
+  with section-scoped `(slice N)` attribution. Use for decisions where proceeding on the
+  recommended default is safe and a reviewer can ratify after the fact (gearing, continuation,
+  test-coverage defer, profile/growth updates, feature selection, commit confirmation).
+- **`human-required`** — the actor does **not** choose. It **escalates to the structured handoff
+  and stops** (the handoff block in `navigate.md`). Use for decisions a reviewer must own:
+  design choices, spec sign-off, scope/acceptance, blocker resolution, and anything that commits
+  the work to a direction expensive to reverse.
+
+The per-site assignments live at the tagged `AskUserQuestion` sites, not here — this section
+defines the two classes and their headless semantics; the commands carry the roster. When a
+site's class is genuinely ambiguous, default to `human-required`: escalation is always safe,
+silent autonomy is not.
+
 ## Team Context
 <!-- class: policy -->
 
