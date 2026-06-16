@@ -565,7 +565,7 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
 
 ### Slice 13: #90 journal schema fixes — Complete
 - **Started**: 2026-06-16 10:00
-- **Commit**: pending
+- **Commit**: a7f8cf3
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human (Rob + Claude)
 - **Gear**: free-climb
@@ -621,3 +621,50 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
     field. The fix isn't a richer schema; it's a contract that the *field* is the truth and must
     be corrected when reality diverges. Same discipline as the derived-view rule, applied to a
     single field instead of a whole table.
+
+### Phase-3 boundary verification + lockstep fix — Complete
+- **Started**: 2026-06-16 10:20
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Ran the `vine-verification` agent at phase-group scope over Phase 3
+  (Slices 10-13). Result: trellis pass (11/11 + 8 anchors); all four slices' ACs met with
+  file:line evidence; backward-compat (AC-10) fully met (every new field/block degrades to its
+  interactive default). The agent surfaced one **error** and one **warning**:
+  - **Error (fixed):** lockstep field-label mismatch — `references/STATE.md`'s NAVIGATION.md
+    template (and my new #90 contract note) named the field `**Decisions made**`, but
+    `navigate.md`'s writer template and *every existing journal entry* use `**Decisions made
+    during implementation**`. Verified directly: the verbose label is pre-existing (since the
+    skills→commands refactor `da773a7`) and is the form in actual use; my Slice 13 contract note
+    sharpened the pre-existing drift into a named-field mismatch. Reconciled toward reality —
+    aligned STATE.md's template line and the contract note to `**Decisions made during
+    implementation**` (changing the writer instead would have orphaned every journal). All four
+    references now agree; trellis re-run green.
+  - **Warning (intentional, no change):** `inquire.md`'s design-decision tag sits on the
+    class-level "Use AskUserQuestion for all design decisions" instruction rather than a discrete
+    call — because inquire's design decisions are an open-ended set made dynamically, with no
+    enumerable single call to tag. A class-level tag is the correct shape there; `human-required`
+    is also the safe default for any untagged call. Reasoning already recorded in Slice 11.
+- **Deviations from spec**: None — the lockstep fix closes a coherence gap this phase's contract
+  note created, in-phase (the Phase-1-boundary precedent).
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 + 8/8 anchors after the fix.
+- **Decisions made during implementation**:
+  - Reconciled the label toward the writer/journals (`during implementation`), not toward
+    STATE.md's terse form — the terse form was never actually used, so aligning to it would have
+    broken every existing journal against the template. (decided by: claude) [confidence: high]
+  - Verified the agent's mismatch finding with a direct grep before fixing (findings-trustworthy,
+    diagnosis-unverified) — confirmed origin and direction-of-truth rather than trusting the
+    report's framing. (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Phase-group verification run; all Slice 10-13 ACs confirmed met
+  - [x] Backward compatibility (AC-10) confirmed for every new surface
+  - [x] Lockstep between STATE.md template and navigate.md writer restored
+- **Engineer feedback incorporated**: None (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific.
+  - Claude → Engineer: A contract note that names a field is only as good as the field's real
+    name — writing the #90 schema contract is what *revealed* a years-old terse/verbose drift,
+    because a contract forces you to name the field precisely and then someone checks it against
+    practice. The phase-group verification earned its keep here: the mismatch was invisible until
+    a contract referenced the field by name.

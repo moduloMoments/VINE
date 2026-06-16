@@ -235,7 +235,7 @@ navigate's evaluation remains authoritative.
 (derived view); reconstructable from ROUTE.md; the table is optional/graceful when absent.
 **Complexity signal**: Low.
 
-## Phase 3: Headless Contract & Journaling (Slices 10-13) ⬜
+## Phase 3: Headless Contract & Journaling (Slices 10-13) ✅
 Summary: Build the headless autonomy contract that consumes the route, the decision-delegation
 policy, and the #90 journal schema that records it.
 Session boundary: After this phase, a permitted scope can run headless with classified decisions,
