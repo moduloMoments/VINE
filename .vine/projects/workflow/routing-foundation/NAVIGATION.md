@@ -414,7 +414,7 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
 
 ### Slice 10: Decision Delegation policy section — Complete
 - **Started**: 2026-06-16 09:20
-- **Commit**: pending
+- **Commit**: bc79152
 - **Approach taken**: Added a `## Decision Delegation` section to `.vine/context/shared.md`,
   marked `<!-- class: policy -->`, placed directly after `## Interaction Constraints` (it
   governs how those `AskUserQuestion` sites behave headless — the natural adjacency for a
@@ -450,3 +450,49 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
   - Claude → Engineer: Defining the classes in one policy section and the per-site assignments
     at the sites (Slice 11) keeps the routing policy single-homed — the same derived-view
     discipline Slice 9 applied to the Route table, applied to decision classification.
+
+### Slice 11: AskUserQuestion site classification — Complete
+- **Started**: 2026-06-16 09:35
+- **Commit**: pending
+- **Approach taken**: Tagged every `AskUserQuestion` decision site across the 7 commands in the
+  SPEC's file list with an inline `<!-- decision-class: human-required | default-able -->` HTML
+  comment, placed adjacent to the `AskUserQuestion` instruction so a headless actor reading the
+  command sees the class in place. 31 sites total: verify 4, inquire 4, navigate 6, evolve 9,
+  pause 2, resume 3, pair 3 (14 human-required, 17 default-able). Distinguished real decision
+  sites from the frontmatter `allowed-tools` entry and the "Follow the Interaction Constraints"
+  / "Use AskUserQuestion for all decision points" reference lines, which are not sites.
+- **Deviations from spec**: None against the ACs. The CONTEXT "Current State" map enumerated ~22
+  named sites; 3 live sites it did not name were classed by the Decision Delegation
+  ambiguous-defaults-to-`human-required` rule rather than left untagged (see Decisions).
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors;
+  `.vine/.trellis-ok` stamp written (command-file changes, so the command-commit gate applies).
+  Tag counts verified by grep (31 total, all 7 commands). HTML comments are invisible to
+  rendering and don't alter the prompts — interactive behavior is byte-unchanged.
+- **Decisions made during implementation**:
+  - Used an inline HTML comment at each site rather than a per-command roster table — keeps the
+    class with the decision (one source, no table to drift from the sites), matching Slice 10's
+    "the commands carry the roster" split. (decided by: claude)
+  - Three sites the CONTEXT map didn't enumerate were classed `human-required`: verify's
+    sign-off gate (`verify.md` "Gate on explicit sign-off" — added by #93 *after* the verify map
+    was written; sign-offs gate phase handoff, so human-required like inquire's spec sign-off);
+    navigate's step-3d spec-gap decision-surfacing ("something not covered by the spec"); pair's
+    multiple-valid-approaches prompt. All three are unplanned approach/scope decisions an actor
+    shouldn't make silently → the policy's "ambiguous ⇒ human-required, escalation is always
+    safe" default. (decided by: claude)
+  - Treated "all feature-selection prompts" (CONTEXT, default-able) as covering the
+    pick-which-feature prompts in inquire/navigate/evolve/pause/resume — tagged each
+    default-able. status and optimize have feature/selection prompts too but are out of the
+    SPEC's Slice 11 file list, so left untagged this slice. (decided by: claude)
+- **Acceptance criteria**:
+  - [x] Every site carries a class tag matching the CONTEXT map (22 named sites aligned; 3
+        unnamed sites classed by the policy default)
+  - [x] Tags align with the Decision Delegation policy (Slice 10 vocabulary, exact tokens)
+  - [x] Interactive behavior is unchanged (HTML comments, no prompt text touched)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The CONTEXT map was a snapshot — #93's verify sign-off gate landed after
+    it, so trusting the map verbatim would have left a real site untagged. Grepping the live
+    files for every `AskUserQuestion` site and reconciling against the map (rather than tagging
+    only the map's list) caught the drift; the policy's ambiguous→human-required default made the
+    unenumerated sites a mechanical call, not a judgment one.

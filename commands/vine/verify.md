@@ -45,6 +45,7 @@ that seeds new domains:
 - **If the domain is NOT in the profile**: After the engineer confirms the domain via
   AskUserQuestion, ask them to rate their familiarity:
 
+  <!-- decision-class: human-required -->
   Use `AskUserQuestion` with a single question:
   > "This is your first VINE cycle in the [domain] domain. How familiar are you with this
   > area of the codebase?"
@@ -154,6 +155,7 @@ If the work looks smaller or more contained than expected, surface it:
 > needs. [Brief rationale — e.g., 'It's a 2-file change with no edge cases or integration
 > concerns.'] Two options:"
 
+<!-- decision-class: default-able -->
 Use `AskUserQuestion`:
 
 1. "Switch to vine:pair (Recommended)" — "The context we've gathered is enough. I'll carry
@@ -243,6 +245,7 @@ This two-level namespacing gives you collision prevention (multiple features in 
 and discoverability (see all VINE work in a domain at a glance). It also survives across repos
 if you work on the same domain in different services.
 
+<!-- decision-class: human-required -->
 When starting, use `AskUserQuestion` to let the engineer select the domain and confirm the
 feature slug. Suggest likely domains based on the codebase areas discussed. The tool auto-adds
 an "Other" option for custom input. Follow up with a second prompt for the feature slug if needed.
@@ -309,7 +312,7 @@ from the absence of objections; ask for it. This is the gate that closes verify,
    `.vine/context/verify.md`; the clickable link is the portable default — don't shell out to an
    OS-specific opener yourself.)
 
-2. **Gate on explicit sign-off.** Use `AskUserQuestion`:
+2. **Gate on explicit sign-off.** <!-- decision-class: human-required --> Use `AskUserQuestion`:
    - **"Approve — hand to inquire (Recommended)"**: the context is ready to design against.
    - **"Request changes"**: something needs revision first.
 

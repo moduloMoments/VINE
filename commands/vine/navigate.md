@@ -71,7 +71,7 @@ your approach, and teaching you things about the domain that make the implementa
 
 Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to work on. Filter out resolved projects (directories containing a `.resolved` file) and
+feature to work on. <!-- decision-class: default-able --> Filter out resolved projects (directories containing a `.resolved` file) and
 archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
 tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
 in its own fenced code block so it's copy-pastable.
@@ -230,7 +230,7 @@ The self-assessment isn't performative humility — it's an honest signal that h
 engineer decide where to focus their attention. If you're genuinely confident about
 everything, don't manufacture doubt.
 
-After the preview, use `AskUserQuestion` for the gearing decision:
+After the preview, use `AskUserQuestion` for the gearing decision: <!-- decision-class: default-able -->
 
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
@@ -290,6 +290,7 @@ structured something a certain way. This is learning time — for both of you.
 
 **d. Surface decisions, don't make them silently**
 
+<!-- decision-class: human-required -->
 When you encounter something not covered by the spec (and you will), use `AskUserQuestion`
 to present the options interactively. Never print markdown option lists for the engineer to
 respond to.
@@ -393,6 +394,7 @@ When you hit something unexpected:
 
 **If it's a quick question**: Ask the engineer directly. They probably know the answer.
 
+<!-- decision-class: human-required -->
 **If it's a significant blocker**: Stop, document it, and use `AskUserQuestion` to present
 options. Describe the blocker clearly, then offer concrete resolution paths:
 
@@ -431,7 +433,7 @@ After each slice is validated and committed:
    When task tools are available, dispose its task accordingly: if the condition holds, drop
    the `(conditional: …)` prefix and proceed (it becomes a normal slice); if not, `TaskUpdate`
    it to `deleted` and note the skip in NAVIGATION.md.
-5. Decide how to proceed. Offer three paths via `AskUserQuestion` — **continue in this
+5. Decide how to proceed. <!-- decision-class: default-able --> Offer three paths via `AskUserQuestion` — **continue in this
    session**, **`/clear` and continue fresh**, or **pause**. The `/clear` path means run
    `/clear` then re-invoke `/vine:navigate <domain>/<feature-slug>`, which auto-resumes at the
    next not-Complete slice — navigate rebuilds state from NAVIGATION.md + SPEC.md (Slices 15–16),
@@ -508,7 +510,7 @@ phase group boundary before showing the completion block:
      criteria are unmet, resolve them before proceeding.
    - **Test Coverage section**: if the report flags slices that introduced behavior
      without tests, use `AskUserQuestion` — let the engineer decide per-slice whether to
-     add tests now or defer to a follow-up:
+     add tests now or defer to a follow-up: <!-- decision-class: default-able -->
 
      > "Slice [N] added [behavior] but the verification report shows no tests covering
      > it. Want to add tests before we PR this phase, or defer to a follow-up?"
