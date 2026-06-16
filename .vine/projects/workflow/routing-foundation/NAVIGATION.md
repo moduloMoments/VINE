@@ -725,7 +725,7 @@ cross-references and counts.
 
 ### Slice 15: README "Agents running VINE" section — Complete
 - **Started**: 2026-06-16 10:08
-- **Commit**: pending
+- **Commit**: f6df658
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human (Rob + Claude)
 - **Gear**: free-climb
@@ -768,3 +768,62 @@ cross-references and counts.
     constraint is "no forward references," and the seam that satisfies it (after the artifacts the
     section depends on) won out over the literally-suggested ones. Same instinct as Slice 8's
     "the gearing preview is in verify, not inquire": treat file hints as descriptive.
+
+### Slice 16: Trellis artifact-tier checks — Complete
+- **Started**: 2026-06-16 10:18
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Added the new surfaces to `.claude/commands/trellis.md`'s artifact tier
+  (Steps 5–7), which is session-judged and explicitly never stamped — the design hook that
+  satisfies "do not gate `.vine/.trellis-ok`" for free (the mechanical `trellis-check.sh` runs only
+  Steps 1–4 + Check 10, never the artifact tier). Wired ROUTE.md into the Step 5a template parse
+  list and the Step 5b discovery glob and the Check A applies-to set (so ROUTE.md's six required
+  sections are validated by the existing generic required-sections check). Added **Check E** (ROUTE
+  Verdict & Eligibility Legs Shape — closed route vocabulary + `mechanism:` token, four legs
+  present as a structural check). Extended **Check D** with an optional-route-field shape check
+  (`Route`/`Gear`/token-led `Validation` validated only when present; absence never a failure; and
+  — mirroring Check 11 — not run retroactively against pre-#90 historical journals). Added
+  **Check F** (repo-level Validation-block shape in shared.md: keys ⊆ the documented six, `extra`
+  is a list, absent ⇒ skip not fail). Updated Step 7 (Route column + column mapping + Check F
+  repo-level line) and Step 8's scope note to enumerate A/E/D/F as session-judged and unstamped.
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors (the
+  script is unchanged, so the stamp logic is untouched — exactly the point). Graceful-absence paths
+  exercised on this repo: no ROUTE.md exists (Checks A/E don't run — this feature ran interactive),
+  and the `## Validation` block at shared.md:188 is well-formed `extra`-only (Check F → valid).
+  trellis.md lives in `.claude/commands/` (contributor tool), not `commands/vine/`, so editing it
+  doesn't trip the command-commit gate.
+- **Decisions made during implementation**:
+  - Put all three checks in the artifact tier (Steps 5–7) rather than the command tier (Steps
+    1–4) — the artifact tier is already session-judged and unstamped, so "don't gate the stamp"
+    needs no new mechanism; it's structural. Left `trellis-check.sh` untouched. (decided by:
+    claude) [confidence: high]
+  - Reused the generic Check A for ROUTE.md's required sections (just added ROUTE.md to the parse
+    + discovery + applies-to lists) and scoped Check E to only the two *shape*-contractual fields
+    (verdict vocab, legs present) — avoids duplicating required-section logic per type. (decided
+    by: claude) [confidence: high]
+  - Made the optional-route-field shape check (Check D extension) non-retroactive for historical
+    journals, mirroring Check 11's "never runs retroactively against immutable historical
+    artifacts" — a pre-#90 entry with free-prose validation must not start failing. (decided by:
+    claude) [confidence: high]
+  - Verified ROUTE.md's metadata lines (`## Feature:`, `## Computed at:`) are exactly analogous to
+    CONTEXT.md's `## Date:` / `## Author:` before adding it — ROUTE.md is just another State File,
+    so it introduces no new unmarked-heading-warning class (direct check, not assumption).
+    (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Checks cover ROUTE.md format (Check A required sections + Check E shape), journal route
+        fields (Check D extension), and the Validation block presence/shape when present (Check F)
+  - [x] They are session-judged and do not gate the `.vine/.trellis-ok` command-commit stamp
+        (all in Steps 5–7; script unchanged; Step 8 scope note enumerates them)
+  - [x] Absence of the surfaces is not a failure (ROUTE.md absent ⇒ A/E skip; route fields absent
+        ⇒ D passes; Validation block absent ⇒ F skips to prose fallback)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The "don't gate the stamp" requirement wasn't a new flag to add — it was a
+    placement decision. trellis already splits a stamped mechanical command tier from a
+    session-judged artifact tier; putting the new checks in the tier that's *already* unstamped
+    made the constraint fall out of the structure instead of needing enforcement. The cleanest way
+    to honor a constraint is often to land the work where the constraint already holds.
