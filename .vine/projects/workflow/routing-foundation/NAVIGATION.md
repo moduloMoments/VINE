@@ -624,7 +624,7 @@ handoff (Slice 12), and the #90 journal schema (Slice 13).
 
 ### Phase-3 boundary verification + lockstep fix — Complete
 - **Started**: 2026-06-16 10:20
-- **Commit**: pending
+- **Commit**: 7ad1521
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human (Rob + Claude)
 - **Gear**: free-climb
