@@ -27,6 +27,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - Load Context Overlays must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - Sections use `##` headers for major steps, `###` for substeps; anti-patterns and constraints are called out explicitly
+- When adding to a command, prefer an unnumbered `###` section over renumbering existing steps — renumbering ripples through every `step N` cross-reference (in the command and in `references/STATE.md`), the exact drift `/trellis` Check 10 catches. An unnumbered section also signals "runs once / out of the numbered flow" (e.g. navigate's head-only routing gate)
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
 - Shared patterns (collaboration stance, profile protocol) live in `.vine/context/shared.md` — commands reference them with "Follow the [Protocol] from shared.md" rather than repeating the full block. This saves ~150 tokens per command invocation. Commands still work without shared.md (graceful fallback).
 - Run `/trellis` to validate command structure and artifact format compliance before submitting changes

@@ -9,7 +9,7 @@
 | verify | ✅ | 2026-06-14 |
 | inquire | ✅ | 2026-06-14 |
 | navigate | ✅ | 2026-06-16 |
-| evolve | ⬜ | — |
+| evolve | ✅ | 2026-06-16 |
 
 ### Milestones
 
