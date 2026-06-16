@@ -71,7 +71,7 @@ your approach, and teaching you things about the domain that make the implementa
 
 Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to work on. Filter out resolved projects (directories containing a `.resolved` file) and
+feature to work on. <!-- decision-class: default-able --> Filter out resolved projects (directories containing a `.resolved` file) and
 archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
 tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
 in its own fenced code block so it's copy-pastable.
@@ -209,6 +209,59 @@ review.
 **Backward compatibility.** ROUTE.md is optional with graceful absence; an interactive run need
 not produce one. Nothing about an existing interactive `.vine/` setup changes.
 
+### Running Headless — Decision Protocol & Handoff
+
+This section governs a **headless** navigate run: an unattended actor executes and a reviewer
+checks after, with no human present to answer prompts. Like the gate above, it is inert for an
+interactive session — a human answers every `AskUserQuestion` as today, and the common path is
+unchanged.
+
+**Entry.** A run is headless when it was launched with no human in the loop — by a delegating
+agent, a scheduled job, or a CI step — under a `headless`-verdict ROUTE.md (the gate above, or a
+prior session's record re-evaluated at this head). Headless is a property of *how the run was
+invoked*, not a flag VINE stores: an actor never self-asserts its own authority. Provisioning and
+permissions are a human authority granted at launch time (`claude setup-token` and the actor's
+configured tool access), outside the VINE artifact chain — ROUTE.md records what the work is
+authorized to *touch*, never *who* may run it. If no `headless` ROUTE.md authorizes this scope,
+don't run headless: there's nothing to execute against, so stop and leave a note.
+
+**Execute under ROUTE.md.** A headless run is bound by its gate record: modify only the
+**Allowlist**, run the **Validation Baseline** green before every commit, and honor every
+**Constraint**. Touching a file outside the allowlist is itself an escalation (write the handoff
+and stop) — the bounded blast radius *was* the authorization.
+
+**Decision protocol.** At every `AskUserQuestion` site, read its `<!-- decision-class: ... -->`
+tag (carried at each site in the commands) and apply the **Decision Delegation** policy from
+`shared.md`:
+
+- **`default-able`** — take the **recommended** option (the first one, the "(Recommended)" one)
+  and record it in NAVIGATION.md as a **Decision Taken Autonomously**, attributed to the slice it
+  was made in (`(slice N)`). Don't stop.
+- **`human-required`** — do **not** choose. Write the **Headless Handoff** block (below) and
+  **stop**. Leave the work in a clean, committed state; never guess the answer, never partially
+  proceed past the decision. Escalation is always safe; silent autonomy is not.
+
+An untagged or genuinely ambiguous site is treated as `human-required` — the policy's safe default.
+
+**Platform boundaries** (cycle-0 spike, Q2 — design against these; don't assume the artifact chain
+alone carries reviewer context):
+
+- **No nested Agent tool.** A headless actor that is itself a subagent cannot spawn the
+  `vine-verification` agent or any other subagent. Run the validation baseline's check commands
+  directly rather than delegating to the agent.
+- **`CLAUDE_PROJECT_DIR` may be unset** in a subagent context. Resolve the repo root with
+  `git rev-parse --show-toplevel`, not that variable.
+- **Subagents auto-load CLAUDE.md**, which carries one orientation for free — but don't lean on it
+  for the route: the reviewer's context lives in ROUTE.md plus this journal, which is why both
+  travel tracked with the feature.
+
+**Headless Handoff.** When you escalate a `human-required` decision — or when the scope completes
+cleanly — write the structured handoff to NAVIGATION.md (format in `references/STATE.md`) and
+stop. One block serves both directions: the actor fills it on the way out, and the reviewer (or
+the next session, via `vine:resume`) reads it on the way in. It states where the run stopped, the
+decision that needs a human (restated as the options it would have asked), the commits and
+validation state, the autonomous decisions taken, and what the reader should do next.
+
 ### 3. Implement One Slice at a Time
 
 For each work slice from SPEC.md (when task tools are available, `TaskUpdate` this slice's
@@ -230,7 +283,7 @@ The self-assessment isn't performative humility — it's an honest signal that h
 engineer decide where to focus their attention. If you're genuinely confident about
 everything, don't manufacture doubt.
 
-After the preview, use `AskUserQuestion` for the gearing decision:
+After the preview, use `AskUserQuestion` for the gearing decision: <!-- decision-class: default-able -->
 
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
@@ -290,6 +343,7 @@ structured something a certain way. This is learning time — for both of you.
 
 **d. Surface decisions, don't make them silently**
 
+<!-- decision-class: human-required -->
 When you encounter something not covered by the spec (and you will), use `AskUserQuestion`
 to present the options interactively. Never print markdown option lists for the engineer to
 respond to.
@@ -332,12 +386,17 @@ stronger than that. For each slice, capture:
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
 **Started**: [timestamp]
-**Commit**: [hash] (or "pending" if in progress)
+**Commit**: [hash] (or "pending" if in progress; `+`-separate multiple — `hashA + hashB`)
+**Route**: [interactive | headless | headless-reentry] — `mechanism: [how it ran, or n/a]`
+**Actor**: [human | the headless actor's identifier]
+**Gear**: [free-climb | walk-me-through]
 **Approach taken**: [what you actually did]
 **Deviations from spec**: [anything that changed and why — also annotated in SPEC.md]
-**Validation**: [pass/fail — lint, typecheck, tests]
+**Validation**: [`pass` | `fail` token first, then details — e.g. `pass — lint, typecheck, tests`]
 **Decisions made during implementation**:
-  - [decision]: [rationale] (decided by: [engineer/claude])
+  - [decision]: [rationale] (decided by: [engineer | claude]) [confidence: high | medium | low]
+**Decisions Taken Autonomously**: [headless only — omit when interactive]
+  - [decision]: [rationale] (decided by: claude — autonomous, slice N)
 **Acceptance criteria**:
   - [x] [AC from spec — verified]
   - [ ] [AC skipped — reason]
@@ -352,6 +411,16 @@ The slice-heading shape and field labels above are the NAVIGATION.md template fr
 `In Progress` / `Complete` status words (pause matches on them), and the field labels as
 written. Resume, pause, and artifact-format validation locate entries by these strings, so
 a custom heading or relabeled field breaks the chain silently.
+
+The `**Route**` / `**Actor**` / `**Gear**` fields and `**Decisions Taken Autonomously**` are
+optional — fill them on a headless run, and record `Gear` on any run (it captures the
+gearing choice you'd otherwise lose to prose). An interactive journal may omit Route/Actor
+(readers default a missing `Route` to `interactive`, `Actor` to `human`). Lead `**Validation**`
+with a bare `pass`/`fail` token. The full field contract — controlled Route vocabulary, the
+`+`-separated multi-commit form, section-scoped autonomous attribution, and the
+**mechanism-divergence correction rule** (if the run's mechanism diverges mid-slice, correct the
+`mechanism:` token to what actually ran, not just a prose note) — is in `references/STATE.md`
+under the journal-schema contract.
 
 **c. Commit the slice**
 
@@ -393,6 +462,7 @@ When you hit something unexpected:
 
 **If it's a quick question**: Ask the engineer directly. They probably know the answer.
 
+<!-- decision-class: human-required -->
 **If it's a significant blocker**: Stop, document it, and use `AskUserQuestion` to present
 options. Describe the blocker clearly, then offer concrete resolution paths:
 
@@ -431,7 +501,7 @@ After each slice is validated and committed:
    When task tools are available, dispose its task accordingly: if the condition holds, drop
    the `(conditional: …)` prefix and proceed (it becomes a normal slice); if not, `TaskUpdate`
    it to `deleted` and note the skip in NAVIGATION.md.
-5. Decide how to proceed. Offer three paths via `AskUserQuestion` — **continue in this
+5. Decide how to proceed. <!-- decision-class: default-able --> Offer three paths via `AskUserQuestion` — **continue in this
    session**, **`/clear` and continue fresh**, or **pause**. The `/clear` path means run
    `/clear` then re-invoke `/vine:navigate <domain>/<feature-slug>`, which auto-resumes at the
    next not-Complete slice — navigate rebuilds state from NAVIGATION.md + SPEC.md (Slices 15–16),
@@ -508,7 +578,7 @@ phase group boundary before showing the completion block:
      criteria are unmet, resolve them before proceeding.
    - **Test Coverage section**: if the report flags slices that introduced behavior
      without tests, use `AskUserQuestion` — let the engineer decide per-slice whether to
-     add tests now or defer to a follow-up:
+     add tests now or defer to a follow-up: <!-- decision-class: default-able -->
 
      > "Slice [N] added [behavior] but the verification report shows no tests covering
      > it. Want to add tests before we PR this phase, or defer to a follow-up?"

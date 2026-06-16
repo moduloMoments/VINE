@@ -80,6 +80,7 @@ Summarize what you found:
 
 ## Ask What to Change
 
+<!-- decision-class: human-required -->
 Use `AskUserQuestion` to understand the engineer's intent if the argument didn't make it clear.
 If the argument already describes the change (e.g., "fix the null check in auth.ts line 42"),
 confirm your understanding and skip the question.
@@ -115,6 +116,7 @@ pause and flag it:
 
 ### Surface Decisions
 
+<!-- decision-class: human-required -->
 When you encounter something with multiple valid approaches, use `AskUserQuestion` rather than
 choosing silently. Keep it lightweight — one question, concrete options grounded in the code.
 
@@ -130,7 +132,7 @@ Fix any issues before moving to the commit step.
 ## Commit
 
 Suggest a single commit covering all changes. Show the proposed commit message, then use
-`AskUserQuestion` to confirm:
+`AskUserQuestion` to confirm: <!-- decision-class: default-able -->
 
 - Use `multiSelect: false` with 3 options:
   - "Commit as drafted (Recommended)" — with the commit message as the description

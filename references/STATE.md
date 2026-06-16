@@ -184,11 +184,15 @@ The implementation journal. Built incrementally — each slice is appended as it
 
 ### Slice 1: [Name] — [Status: In Progress / Complete] <!-- required -->
 - **Started**: [timestamp] <!-- optional -->
-- **Commit**: [hash] (or 'pending' if in progress) <!-- required -->
+- **Commit**: [hash, or 'pending' if in progress; `+`-separate multiple commits — `hashA + hashB`] <!-- required -->
+- **Route**: [interactive | headless | headless-reentry] — `mechanism: [how it ran, or n/a]` <!-- optional -->
+- **Actor**: [human | the headless actor's identifier] <!-- optional -->
+- **Gear**: [free-climb | walk-me-through] <!-- optional -->
 - **Approach taken**: What was implemented and how <!-- optional -->
 - **Deviations from spec**: Any changes and why <!-- optional -->
-- **Validation**: [pass/fail — lint, typecheck, tests] <!-- required -->
-- **Decisions made**: Engineer choices during implementation <!-- optional -->
+- **Validation**: [`pass` | `fail` token first, then details — e.g. `pass — lint, typecheck, tests`] <!-- required -->
+- **Decisions made during implementation**: [decision]: [rationale] (decided by: engineer | claude) [confidence: high | medium | low] <!-- optional -->
+- **Decisions Taken Autonomously**: [headless only — decision: rationale (decided by: claude — autonomous, slice N)] <!-- optional -->
 - **Acceptance criteria**: [met/not met with details] <!-- required -->
 - **Engineer feedback incorporated**: [what the engineer corrected or steered] <!-- optional -->
 - **Learnings**: What both sides learned from this slice <!-- required -->
@@ -200,11 +204,30 @@ The implementation journal. Built incrementally — each slice is appended as it
 - Incomplete slices
 - Blockers encountered
 - Handoff context for next session
+
+### Headless Handoff <!-- optional -->
+- **Stopped at**: [slice / decision that triggered the stop, or "scope complete"]
+- **Needs a human**: [the human-required decision, restated as the options it would have asked +
+  the recommendation — or "none; ready for review"]
+- **State**: commits [hashes], validation [pass/fail], authorized by [./ROUTE.md]
+- **Decisions taken autonomously**: [pointer to the Decision Taken Autonomously entries above, or
+  "none"]
+- **Next step**: [resume after answering / review-and-merge]
 ```
 
 **Slice-status contract.** The ` — [Status: In Progress / Complete]` suffix on each slice heading is a writer/reader contract: `vine:navigate` writes it (a slice is `In Progress` while being implemented, `Complete` once committed), and `vine:pause` reads it to locate the active slice when capturing pause state. Keep the literal words `In Progress` and `Complete` — pause matches on them. The suffix is part of the heading, so it doesn't affect trellis Check A, which matches slice headings by their `Slice N:` prefix.
 
+**Route/Actor/Gear + journal-schema contract (#90).** Six rules govern the per-slice route and decision fields; all are `<!-- optional -->`, so an older or interactive journal that omits them is valid (graceful absence — readers treat a missing `Route` as `interactive`, a missing `Actor` as `human`).
+- **Validation token first.** `**Validation**` leads with a bare `pass` or `fail` token before any prose, so a rollup reader can extract the verdict mechanically without parsing the detail.
+- **Multi-commit Commit.** A slice that lands in more than one commit lists them `+`-separated (`hashA + hashB`) in the single `**Commit**` field — not one commit per line, which a reader would mistake for separate slices.
+- **Controlled Route vocabulary + `mechanism:` token.** `**Route**` uses exactly `interactive | headless | headless-reentry` (the same vocabulary as ROUTE.md and the PROJECT-MAP Route table) followed by a labeled `mechanism:` token naming *how* it ran (or `n/a`). The vocabulary is closed so the three route surfaces stay comparable.
+- **Section-scoped autonomous attribution.** A decision a headless actor made on its own goes under `**Decisions Taken Autonomously**` with `(decided by: claude — autonomous, slice N)` — the `(slice N)` scopes the attribution to the slice it was made in, so a reviewer can tie each autonomous choice to its work without it bleeding across slices.
+- **Formalized `(decided by:)` + confidence.** Every entry under `**Decisions made during implementation**` carries `(decided by: engineer | claude)` and may carry an optional `[confidence: high | medium | low]` tag — the same `(decided by:)` convention the per-slice records already use, now part of the contract.
+- **Mechanism-divergence correction (the #90 wrong-extraction gap).** If the run's mechanism diverges mid-slice from what the `Route` field recorded (e.g. a planned `headless` `claude -p` run actually completes via an Agent-tool subagent — the spike's exact divergence), **correct the `mechanism:` token to the mechanism that actually ran** and note the divergence in `**Deviations from spec**`. A prose note alone is insufficient: the field itself must be made true, because mechanical extraction reads the field, not the prose around it.
+
 **Remaining Work dependency.** The `### Remaining Work` section stays `<!-- optional -->` because it only exists at session boundaries — `vine:navigate` writes it when pausing between slices and at phase completion, so a mid-implementation journal legitimately won't have it (promoting it to required would fail validation on every in-progress journal). When it *is* present, two readers depend on it: `vine:resume`'s no-PAUSE.md path reconstructs handoff state from it, and native-task rebuild (see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)) uses it for cross-slice context.
+
+**Headless Handoff contract.** `<!-- optional -->` and present only on a headless run — an interactive journal never has it. `vine:navigate`'s headless decision protocol writes it when it escalates a `human-required` decision (or finishes a scope cleanly) and then stops. It is the single block that serves both the **outbound** contract (what the unattended actor reports on the way out) and the **inbound** contract (what the reviewer, or `vine:resume`, reads on the way in). It points at ROUTE.md — the authorization the run executed under — rather than restating it, per [Reference Legibility](#reference-legibility). It is mechanism-agnostic: the same block regardless of how the actor was launched ("VINE is the map, not the mechanism" — the cycle-0 spike's Q2 finding). Like Remaining Work, it stays `<!-- optional -->` because an interactive or in-progress journal legitimately won't carry it.
 
 **Deviation-closure contract.** When a slice's `**Deviations from spec**` field is anything but "None", `vine:navigate` step 6 also annotates the affected SPEC.md section (strikethrough/addendum), and navigate's completion gate verifies the pair held — an annotated-nowhere deviation is a gate gap, listed like a missing commit hash. The rule is load-bearing and lives in the command (this file is supplementary and doesn't ship via create-vine); it's recorded here so contributors editing the field keep both halves in sync.
 
@@ -340,9 +363,9 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 
 ### Route <!-- optional -->
 
-| Scope | Route | Gate record |
-|-------|-------|-------------|
-| [phase group / slice] | [interactive \| headless \| headless-reentry] | [./ROUTE.md] |
+| Scope | Route | Actor | Outcome | Gate record |
+|-------|-------|-------|---------|-------------|
+| [phase group / slice] | [interactive \| headless \| headless-reentry] | [human \| actor id] | [in-progress \| shipped \| escalated \| —] | [./ROUTE.md] |
 ```
 
 **Status markers** (three, used in both tables):
@@ -367,7 +390,7 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 - **Optional.** Every command must work identically without PROJECT-MAP.md. No errors, no warnings. Commands check for its existence before reading or updating.
 - **Created by verify only.** Other phases update it but never create it. If verify didn't create one (e.g., older project), downstream phases skip PROJECT-MAP updates silently.
 - **Milestones table is conditional.** Only added by inquire when the engineer confirms multi-PR treatment. Single-PR features have a VINE Progress table but no Milestones table.
-- **Route table is a derived pointer.** Optional; added by `vine:navigate` when it writes a ROUTE.md (the `Gate record` cell links to it). It holds no authoritative routing state — verdict, legs, constraints, and basis all live in ROUTE.md, and the row is fully reconstructable from it. Absent a ROUTE.md the table is simply omitted; readers treat its absence as "interactive, no headless authorization." Like the rest of PROJECT-MAP, when it disagrees with ROUTE.md, ROUTE.md wins.
+- **Route table is a derived pointer.** Optional; added by `vine:navigate` when it writes a ROUTE.md (the `Gate record` cell links to it). It holds no authoritative state — the routing decision (verdict, legs, constraints, basis) lives in ROUTE.md, and the execution columns (`Actor`, `Outcome`) mirror the per-slice `**Actor**` / `**Route**` fields and the Headless Handoff in NAVIGATION.md. Every cell is reconstructable from those two authoritative artifacts. Absent a ROUTE.md the table is simply omitted; readers treat its absence as "interactive, no headless authorization." Like the rest of PROJECT-MAP, when it disagrees with ROUTE.md (route) or the journal (actor/outcome), those win.
 - **Scannable first.** Tables over prose. Short status markers over verbose descriptions. The whole file should be readable in a terminal glance.
 
 ## Per-Repo Artifacts

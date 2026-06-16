@@ -402,3 +402,269 @@ Reconciled with two PRs that merged to main while Phase 2 was building:
   + 8 anchors) with no Check 11 warnings. No content conflict — #96's sections sit after mine.
 - The slice **Commit** fields above were rebased: Slice 6 `7271476`→`172867b`, Slice 7
   `dc60e70`→`92c13ad`, Slice 8 `949145f`→`766af0c`, Slice 9 `9f0f8df`→`42b576a`.
+
+## Phase 3: Headless Contract & Journaling (Slices 10-13)
+
+Resumed 2026-06-16 09:20 in free-climb gearing (engineer choice; profile confident/workflow).
+Branch even with `origin/main` (#97 merged), clean tree, no open PRs in flight. Routing gate at
+navigate-head is a no-op this session — human-driven, route is `interactive`, no ROUTE.md
+written. Building the autonomy layer that consumes Phase 2's route: the Decision Delegation
+policy (Slice 10), per-site decision-class tags (Slice 11), the headless mode + structured
+handoff (Slice 12), and the #90 journal schema (Slice 13).
+
+### Slice 10: Decision Delegation policy section — Complete
+- **Started**: 2026-06-16 09:20
+- **Commit**: bc79152
+- **Approach taken**: Added a `## Decision Delegation` section to `.vine/context/shared.md`,
+  marked `<!-- class: policy -->`, placed directly after `## Interaction Constraints` (it
+  governs how those `AskUserQuestion` sites behave headless — the natural adjacency for a
+  reader) and before `## Team Context`. The section defines the two decision classes and their
+  headless semantics: `default-able` → take the recommended option and journal it as a Decision
+  Taken Autonomously with `(slice N)` attribution; `human-required` → escalate to the structured
+  handoff and stop. It states the section is policy-class (immutable from `.local`, but a *repo*
+  overlay can reclassify — the #55 override path), that it is inert in interactive sessions, and
+  that ambiguous sites default to `human-required` (escalation is always safe).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 cross-reference
+  anchors. No `commands/vine/` files touched, so the trellis command-commit gate is not involved.
+  The new heading is a `##` section in an overlay file (not a STATE.md template), so no
+  required/optional marker applies.
+- **Decisions made during implementation**:
+  - Placed Decision Delegation after Interaction Constraints (thematic adjacency to the
+    `AskUserQuestion` sites it governs) rather than grouped with the bottom policy sections
+    (Team Context, CI/CD) — the class marker declares its policy status regardless of position
+    (Overlay Precedence: "Only policy-class sections carry the marker"). (decided by: claude)
+  - Kept the per-site roster *out* of this section — it defines the two classes; the commands
+    carry the assignments (Slice 11). A single roster home avoids two places to keep in sync.
+    (decided by: claude)
+  - Forward-references the structured handoff (Slice 12) and the autonomous-decision journal
+    field (Slice 13); both land in this same phase/PR, so the references resolve by phase end.
+    (decided by: claude)
+- **Acceptance criteria**:
+  - [x] The section is policy-class (immutable from `.local`) — `<!-- class: policy -->` marker
+  - [x] It sets per-class headless behavior (default-able vs human-required)
+  - [x] It is override-able as overlay content (repo overlay can reclassify; stated explicitly)
+- **Engineer feedback incorporated**: Gearing set to free climb up front.
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: Defining the classes in one policy section and the per-site assignments
+    at the sites (Slice 11) keeps the routing policy single-homed — the same derived-view
+    discipline Slice 9 applied to the Route table, applied to decision classification.
+
+### Slice 11: AskUserQuestion site classification — Complete
+- **Started**: 2026-06-16 09:35
+- **Commit**: 99e19fb
+- **Approach taken**: Tagged every `AskUserQuestion` decision site across the 7 commands in the
+  SPEC's file list with an inline `<!-- decision-class: human-required | default-able -->` HTML
+  comment, placed adjacent to the `AskUserQuestion` instruction so a headless actor reading the
+  command sees the class in place. 31 sites total: verify 4, inquire 4, navigate 6, evolve 9,
+  pause 2, resume 3, pair 3 (14 human-required, 17 default-able). Distinguished real decision
+  sites from the frontmatter `allowed-tools` entry and the "Follow the Interaction Constraints"
+  / "Use AskUserQuestion for all decision points" reference lines, which are not sites.
+- **Deviations from spec**: None against the ACs. The CONTEXT "Current State" map enumerated ~22
+  named sites; 3 live sites it did not name were classed by the Decision Delegation
+  ambiguous-defaults-to-`human-required` rule rather than left untagged (see Decisions).
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors;
+  `.vine/.trellis-ok` stamp written (command-file changes, so the command-commit gate applies).
+  Tag counts verified by grep (31 total, all 7 commands). HTML comments are invisible to
+  rendering and don't alter the prompts — interactive behavior is byte-unchanged.
+- **Decisions made during implementation**:
+  - Used an inline HTML comment at each site rather than a per-command roster table — keeps the
+    class with the decision (one source, no table to drift from the sites), matching Slice 10's
+    "the commands carry the roster" split. (decided by: claude)
+  - Three sites the CONTEXT map didn't enumerate were classed `human-required`: verify's
+    sign-off gate (`verify.md` "Gate on explicit sign-off" — added by #93 *after* the verify map
+    was written; sign-offs gate phase handoff, so human-required like inquire's spec sign-off);
+    navigate's step-3d spec-gap decision-surfacing ("something not covered by the spec"); pair's
+    multiple-valid-approaches prompt. All three are unplanned approach/scope decisions an actor
+    shouldn't make silently → the policy's "ambiguous ⇒ human-required, escalation is always
+    safe" default. (decided by: claude)
+  - Treated "all feature-selection prompts" (CONTEXT, default-able) as covering the
+    pick-which-feature prompts in inquire/navigate/evolve/pause/resume — tagged each
+    default-able. status and optimize have feature/selection prompts too but are out of the
+    SPEC's Slice 11 file list, so left untagged this slice. (decided by: claude)
+- **Acceptance criteria**:
+  - [x] Every site carries a class tag matching the CONTEXT map (22 named sites aligned; 3
+        unnamed sites classed by the policy default)
+  - [x] Tags align with the Decision Delegation policy (Slice 10 vocabulary, exact tokens)
+  - [x] Interactive behavior is unchanged (HTML comments, no prompt text touched)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The CONTEXT map was a snapshot — #93's verify sign-off gate landed after
+    it, so trusting the map verbatim would have left a real site untagged. Grepping the live
+    files for every `AskUserQuestion` site and reconciling against the map (rather than tagging
+    only the map's list) caught the drift; the policy's ambiguous→human-required default made the
+    unenumerated sites a mechanical call, not a judgment one.
+
+### Slice 12: Headless mode + structured handoff block (#53) — Complete
+- **Started**: 2026-06-16 09:45
+- **Commit**: faa4b4e
+- **Approach taken**: Added a `### Running Headless — Decision Protocol & Handoff` section to
+  `commands/vine/navigate.md` (unnumbered, placed right after the gate section and before step 3
+  — same no-renumber rationale as Slice 7's gate). It defines: (1) **entry** — headless is a
+  property of how the run was invoked, never a flag VINE stores; an actor never self-asserts
+  authority; provisioning/permissions are a launch-time human authority outside the artifact
+  chain; no `headless` ROUTE.md ⇒ don't run headless; (2) **execute under ROUTE.md** — modify only
+  the Allowlist, run the Validation Baseline green before each commit, an out-of-allowlist touch
+  is itself an escalation; (3) **decision protocol** — read each site's `<!-- decision-class -->`
+  tag (Slice 11) and apply the Decision Delegation policy (Slice 10): default-able → take
+  recommended + journal autonomous `(slice N)`; human-required → write handoff and stop;
+  ambiguous → human-required; (4) **platform boundaries** (verified, see Decisions): no nested
+  Agent tool (run checks directly), `CLAUDE_PROJECT_DIR` may be unset (use `git rev-parse
+  --show-toplevel`), subagents auto-load CLAUDE.md but the route lives in ROUTE.md + journal;
+  (5) **Headless Handoff** — written on escalation or clean completion, one block both directions.
+  Added the `### Headless Handoff <!-- optional -->` block to the NAVIGATION.md template in
+  `references/STATE.md` plus a "Headless Handoff contract" note (single block serves outbound +
+  inbound, points at ROUTE.md per Reference Legibility, mechanism-agnostic, optional/graceful).
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors;
+  `.vine/.trellis-ok` stamp written (navigate.md is a command file → command-commit gate applies).
+  The new navigate section is unnumbered, so no step renumber and no broken `step N`
+  cross-references. The STATE.md contract note's `#reference-legibility` link resolves (heading at
+  STATE.md:563).
+- **Decisions made during implementation**:
+  - **Verified the spike's platform-boundary claims before encoding them** (shared.md Tooling
+    Notes: agent diagnoses are unverified). Read `coordination-spike/EVOLUTION.md` directly: Q2
+    (line 23) confirms nested-Agent-unavailable, `CLAUDE_PROJECT_DIR`-unset, `claude setup-token`
+    auth, and actor-permissions-as-provisioning-authority; Q4 (line 25) confirms subagents
+    auto-load CLAUDE.md and the "map, not mechanism" / mechanism-portability finding. All four
+    claims accurate — design encodes them verbatim. (decided by: claude)
+  - Defined the structured handoff as an **optional section of NAVIGATION.md**, not a new file
+    type — the journal already travels tracked and is in the reviewer's orientation order (and
+    Slice 14 adds ROUTE.md to it). One durable home, one block, both directions. (decided by:
+    claude)
+  - Kept **headless as a property of invocation**, not a self-asserted artifact field — directly
+    honors the spike's "actor permissions are a provisioning-time human authority, not a VINE
+    field" boundary. ROUTE.md authorizes *what* is touched; *who* runs is granted at launch.
+    (decided by: claude)
+  - Inserted the section **unnumbered** after the gate (not a numbered step 3) — renumbering
+    would ripple through navigate's `step 3b/c/d`, `step 4/6/8` and STATE.md's pointers (the exact
+    drift trellis Check 10 catches). Same structural choice as Slice 7. (decided by: claude)
+  - The autonomous-decision **journal field** itself (section-scoped `(slice N)` token) is
+    formalized in Slice 13 — Slice 12 introduces the *behavior* and references the field; Slice 13
+    adds it to the slice template. Complementary, dependency-ordered (13 depends on 12). (decided
+    by: claude)
+- **Acceptance criteria**:
+  - [x] In headless mode, default-able decisions take the recommended option and are journaled as
+        autonomous (section-scoped attribution)
+  - [x] Human-required decisions escalate to the structured handoff and stop
+  - [x] One structured handoff block serves both outbound (agent) and inbound (reviewer)
+  - [x] Platform boundaries respected (no nested Agent assumption; actor permissions stay
+        provisioning-time human authority, not a VINE field)
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The cycle's highest-risk autonomy slice was safest expressed by *not*
+    inventing mechanism — the spike's "map, not the mechanism" finding meant the contract is a
+    decision protocol + a handoff format, both mechanism-agnostic, so it survives whatever launches
+    the actor. The one place I slowed down (re-reading the spike's EVOLUTION.md to confirm the four
+    platform claims rather than trusting the SPEC's summary of them) is exactly where the
+    diagnosis-unverified rule pays off — encoding an inverted boundary into an autonomy contract
+    would be expensive to catch later.
+
+### Slice 13: #90 journal schema fixes — Complete
+- **Started**: 2026-06-16 10:00
+- **Commit**: a7f8cf3
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Applied all five #90 fixes plus Route/Actor/Gear to the journal schema
+  across `references/STATE.md` (NAVIGATION.md template + PROJECT-MAP Route table) and the
+  `commands/vine/navigate.md` writer template, keeping the two templates in lockstep.
+  NAVIGATION.md slice template gained: optional `**Route**` (controlled `interactive | headless
+  | headless-reentry` vocab + labeled `mechanism:` token), `**Actor**`, `**Gear**` fields;
+  `**Commit**` now documents the `+`-separated multi-commit form; `**Validation**` leads with a
+  bare `pass`/`fail` token; `**Decisions made**` formalizes `(decided by: …)` + optional
+  `[confidence: …]`; new `**Decisions Taken Autonomously**` field with section-scoped `(slice N)`
+  attribution. Added a six-rule "journal-schema contract (#90)" note covering token-first
+  validation, multi-commit, controlled Route vocab, autonomous attribution, decided-by/confidence,
+  and the **mechanism-divergence correction rule** (correct the field, not just prose — the #90
+  wrong-extraction gap). PROJECT-MAP Route table gained the `Actor` and `Outcome` columns Slice 9
+  deferred here; updated the derived-pointer note so the execution columns are documented as
+  mirrors of the journal (table stays a pure derived view). All new fields `<!-- optional -->`
+  with graceful absence. This entry itself carries the new Route/Actor/Gear fields as a
+  dogfooding instance.
+- **Deviations from spec**: None.
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 commands + 8/8 anchors;
+  `.vine/.trellis-ok` stamp written (navigate.md command-file change → command-commit gate).
+  PROJECT-MAP Route table renders with 5 columns; NAVIGATION template headings unchanged (trellis
+  Check A matches on the `Slice N:` prefix, unaffected).
+- **Decisions made during implementation**:
+  - Added `Actor`/`Outcome` to the PROJECT-MAP Route table (the columns Slice 9 explicitly
+    deferred to this slice) and documented them as derived from NAVIGATION.md's per-slice fields +
+    the Headless Handoff — preserving Slice 9's "the Route table holds no authoritative state"
+    invariant. (decided by: claude) [confidence: high]
+  - Kept Route/Actor/Gear optional and made interactive defaults explicit (missing Route ⇒
+    interactive, missing Actor ⇒ human) so older and interactive journals stay valid without
+    backfill — AC-10 backward-compat. (decided by: claude) [confidence: high]
+  - Recorded `Gear` as fillable on *any* run (not just headless): the gearing choice is currently
+    lost to prose, and journaling it is cheap dogfooding value. Route/Actor stay headless-relevant
+    with interactive defaults. (decided by: claude) [confidence: medium]
+  - Expressed the mechanism-divergence fix as "make the field true, not just a prose note" —
+    directly targets the #90 wrong-extraction root cause (mechanical extraction reads the field,
+    not surrounding prose). (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] NAVIGATION.md carries Route/Actor/Gear fields
+  - [x] Validation rollup uses a `pass`/`fail` token first
+  - [x] Multi-commit slices use a `+`-separated Commit field
+  - [x] Autonomous decisions carry section-scoped `(slice N)` attribution
+  - [x] Route uses a controlled vocabulary with a labeled `mechanism:` token
+  - [x] `(decided by:)` and confidence tags are formalized
+  - [x] The schema forces field correction when a mechanism diverges mid-slice
+  - [x] All fields are optional with graceful absence on older journals
+- **Engineer feedback incorporated**: None this slice (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific to this slice.
+  - Claude → Engineer: The #90 wrong-extraction gap is really a "single source of mechanical
+    truth" rule — a prose correction and a stale field disagree, and the extractor trusts the
+    field. The fix isn't a richer schema; it's a contract that the *field* is the truth and must
+    be corrected when reality diverges. Same discipline as the derived-view rule, applied to a
+    single field instead of a whole table.
+
+### Phase-3 boundary verification + lockstep fix — Complete
+- **Started**: 2026-06-16 10:20
+- **Commit**: 7ad1521
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human (Rob + Claude)
+- **Gear**: free-climb
+- **Approach taken**: Ran the `vine-verification` agent at phase-group scope over Phase 3
+  (Slices 10-13). Result: trellis pass (11/11 + 8 anchors); all four slices' ACs met with
+  file:line evidence; backward-compat (AC-10) fully met (every new field/block degrades to its
+  interactive default). The agent surfaced one **error** and one **warning**:
+  - **Error (fixed):** lockstep field-label mismatch — `references/STATE.md`'s NAVIGATION.md
+    template (and my new #90 contract note) named the field `**Decisions made**`, but
+    `navigate.md`'s writer template and *every existing journal entry* use `**Decisions made
+    during implementation**`. Verified directly: the verbose label is pre-existing (since the
+    skills→commands refactor `da773a7`) and is the form in actual use; my Slice 13 contract note
+    sharpened the pre-existing drift into a named-field mismatch. Reconciled toward reality —
+    aligned STATE.md's template line and the contract note to `**Decisions made during
+    implementation**` (changing the writer instead would have orphaned every journal). All four
+    references now agree; trellis re-run green.
+  - **Warning (intentional, no change):** `inquire.md`'s design-decision tag sits on the
+    class-level "Use AskUserQuestion for all design decisions" instruction rather than a discrete
+    call — because inquire's design decisions are an open-ended set made dynamically, with no
+    enumerable single call to tag. A class-level tag is the correct shape there; `human-required`
+    is also the safe default for any untagged call. Reasoning already recorded in Slice 11.
+- **Deviations from spec**: None — the lockstep fix closes a coherence gap this phase's contract
+  note created, in-phase (the Phase-1-boundary precedent).
+- **Validation**: pass — `sh .vine/scripts/trellis-check.sh` 11/11 + 8/8 anchors after the fix.
+- **Decisions made during implementation**:
+  - Reconciled the label toward the writer/journals (`during implementation`), not toward
+    STATE.md's terse form — the terse form was never actually used, so aligning to it would have
+    broken every existing journal against the template. (decided by: claude) [confidence: high]
+  - Verified the agent's mismatch finding with a direct grep before fixing (findings-trustworthy,
+    diagnosis-unverified) — confirmed origin and direction-of-truth rather than trusting the
+    report's framing. (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Phase-group verification run; all Slice 10-13 ACs confirmed met
+  - [x] Backward compatibility (AC-10) confirmed for every new surface
+  - [x] Lockstep between STATE.md template and navigate.md writer restored
+- **Engineer feedback incorporated**: None (free climb).
+- **Learnings**:
+  - Engineer → Claude: None specific.
+  - Claude → Engineer: A contract note that names a field is only as good as the field's real
+    name — writing the #90 schema contract is what *revealed* a years-old terse/verbose drift,
+    because a contract forces you to name the field precisely and then someone checks it against
+    practice. The phase-group verification earned its keep here: the mismatch was invisible until
+    a contract referenced the field by name.

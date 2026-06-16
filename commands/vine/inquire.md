@@ -56,7 +56,7 @@ Identify the feature directory under `.vine/projects/`. Look for the domain/feat
 (e.g., `.vine/projects/payments/webhook-support/`). Filter out resolved projects (directories
 containing a `.resolved` file) and archived projects (under `.vine/projects/.archive/`). If
 there's only one active feature directory, use that. If there are multiple, use
-`AskUserQuestion` to let the engineer pick which feature to work on. If all projects are
+`AskUserQuestion` to let the engineer pick which feature to work on. <!-- decision-class: default-able --> If all projects are
 resolved or archived, tell the engineer and suggest starting a new cycle with `/vine:verify` —
 present the command in its own fenced code block so it's copy-pastable.
 
@@ -99,6 +99,7 @@ research the specific area rather than reading broadly yourself.
 
 For each significant design decision:
 
+<!-- decision-class: human-required -->
 **Use AskUserQuestion for all design decisions.** Never print markdown option lists — use the
 interactive `AskUserQuestion` tool instead. This gives the engineer a clean UI with selectable
 options.
@@ -195,7 +196,7 @@ For smaller features (4 or fewer slices), skip grouping. Everything fits in one 
 
 After slicing (and grouping, if applicable), check whether this feature is a multi-PR candidate.
 The heuristic: **more than 4 slices or phase groups exist.** If either condition is met, use
-`AskUserQuestion` to ask the engineer:
+`AskUserQuestion` to ask the engineer: <!-- decision-class: default-able -->
 
 > "This feature has [N slices / N phase groups] — large enough that it might benefit from
 > shipping in multiple PRs. Should we set up multi-PR tracking?"
@@ -308,7 +309,7 @@ formality.
    file automatically, a repo can wire its editor's open command in `.vine/context/inquire.md`;
    the clickable link is the portable default — don't shell out to an OS-specific opener yourself.)
 
-2. **Gate on explicit sign-off.** Use `AskUserQuestion`:
+2. **Gate on explicit sign-off.** <!-- decision-class: human-required --> Use `AskUserQuestion`:
    - **"Approve — hand to navigate (Recommended)"**: the spec is ready to implement.
    - **"Request changes"**: something needs revision first.
 
