@@ -36,6 +36,7 @@ These slash commands in `.claude/commands/` help with common contributor workflo
 - `/triage` — check GitHub issues, surface priorities, and discuss next steps
 - `/trellis` — validate structural conventions across VINE command files
 - `/pr` — create a PR using the repo's template and contributing guidelines
+- `/pr-review` — simulate a PR-reviewer auto-agent against a real PR to dogfood the `review.md` reviewer contract
 
 When submitting a PR:
 
