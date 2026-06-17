@@ -53,7 +53,7 @@ anchor pairs resolve; the `.vine/hooks/` warnings are pre-existing in init.md, u
 
 ### Slice 2: Bootstrap workflow-domain records — Complete
 **Started**: 2026-06-16 22:05
-**Commit**: pending
+**Commit**: 90d1191
 **Route**: interactive — `mechanism: n/a`
 **Actor**: human
 **Gear**: free-climb
@@ -86,3 +86,65 @@ date-prefixed slug. (Knowledge records are not trellis-gated this cycle — stee
   - Claude → Engineer: Authoring the bootstrap records is the first real test of the five
     properties as a *writing* contract (vs. a reading one) — self-contained Context and the
     declarative-sentence title are the two that take deliberate effort; the rest are mechanical.
+
+### Slice 3: evolve.md — writer wiring — Complete
+**Started**: 2026-06-16 22:18
+**Commit**: pending
+**Route**: interactive — `mechanism: n/a`
+**Actor**: human
+**Gear**: free-climb
+**Approach taken**: Two edits to `commands/vine/evolve.md`:
+  - New `### Distill Durable Decisions` subsection at the end of Evolution 3 (after the three existing
+    routing flows — CLAUDE.md Suggestions, Context Overlay Update, Update Engineer Profile — and before
+    Write EVOLUTION.md). Carries: the compact operative five-step routing rule (each home pointed back
+    to the evolve step that handles it, canonical version pointer to STATE.md Knowledge Boundary) →
+    mine candidates from NAVIGATION.md + CONTEXT.md → `AskUserQuestion multiSelect` tagged
+    `default-able` → write one date-prefixed ADR per accepted record (template + five properties +
+    slug) → supersession (new record `Supersedes:` + flip old record's Status line ONLY) → decline-all-
+    writes-nothing (backward compat) → records persist beyond project archival.
+  - Archive offer in *Mark as Resolved*, immediately after the `.resolved` write (the #56 attach point):
+    default-able `AskUserQuestion` to `git mv` the project under `.vine/projects/.archive/`, knowledge
+    records explicitly never moved, declining leaves it resolved-but-unarchived. Added a note to
+    *Commit Evolve Changes* so it stages artifacts at the post-archive path.
+**Deviations from spec**: None. Placed the new step at the end of Evolution 3 (not a restructure to make
+all four homes physically adjacent) and stated the routing rule once at the step head, each home tagged
+with the existing flow that handles it — satisfies "stated once" + "operative inline" (AC4) without
+bloating evolve into a fourth full flow, per the spec's own mitigation.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` (11/11 commands, 8 cross-reference anchor
+pairs; gate stamp `status: pass`). Fixed one Reference-Legibility Check-11 warning: reworded "home #2"
+→ "the knowledge home (item 2 above)" so a list-index doesn't read as a bare issue pointer.
+**Decisions made during implementation**:
+  - Routing rule stated at the *head* of the new step (after the other three flows ran) rather than
+    hoisted into a preamble before Evolution 2: avoids restructuring the command and the "four homes
+    adjacent" goal is met by the rule naming all four in one place (decided by: claude) [confidence: high]
+  - Archive `git mv` performed in *Mark as Resolved* but committed by the existing *Commit Evolve
+    Changes* step (added a post-move-path note) rather than a separate archival commit — keeps the
+    archival rename in the same evolve commit as the artifacts (decided by: claude) [confidence: medium]
+**Acceptance criteria**:
+  - [x] AC2 — dedicated Durable Decisions step mines candidates, multiSelect, writes one ADR per record
+  - [x] AC3 — supersession bidirectional (new `Supersedes:` + old Status-line flip, body untouched)
+  - [x] AC4 (operative half) — compact routing rule inline in evolve with STATE.md pointer
+  - [x] AC7 — archive offer after `.resolved`, default-able, knowledge untouched, declinable
+  - [x] AC11 — declining all candidates / no archive writes nothing; no migration introduced
+**Engineer feedback incorporated**: (pending slice-boundary review — free-climb gear)
+**Learnings**:
+  - Engineer → Claude: None this slice (Rob's gitignore-convention concern was captured as a
+    Discovered Item at the slice-2 boundary; see below).
+  - Claude → Engineer: The "four homes adjacent" instruction is satisfiable two ways — physically
+    (restructure) or referentially (one rule that names all four). The referential reading is the
+    lower-risk one for a long command and matches the spec's anti-bloat mitigation.
+
+### Discovered Items
+
+- **`.vine/` gitignore shape should invert when `.vine.local/` lands** (raised by Rob, slice 2).
+  The current `.gitignore` is deny-everything (`.vine/*`) + per-subdir allowlist negations
+  (`!.vine/context/`, `!.vine/knowledge/`, …). It's brittle: each new tracked `.vine/` subdir
+  needs its own negation, which is why slice 2's records were silently untracked until the commit
+  failed. The `.vine.local/` backlog idea (STATE.md "Forward references" — personal work in a
+  gitignored sibling root, `.vine/` shared-and-tracked) inverts this: the right shape becomes
+  track-`.vine/`-by-default + ignore only `.vine.local/` and a couple of ephemeral sentinels
+  (`.vine/ACTIVE`, `.vine/.trellis-ok`), with PROFILE.md/PAUSE.md relocating into `.vine.local/`.
+  **Decision (Rob, slice 2):** keep the minimal `!.vine/knowledge/` negation now (consistent,
+  in-scope, and correct under either model since knowledge is team-shared); defer the inversion to
+  the `.vine.local/` work so the whole pattern flips at once rather than as a half-migration. For
+  evolve to triage into the backlog, linked to the existing `.vine.local/` forward reference.
