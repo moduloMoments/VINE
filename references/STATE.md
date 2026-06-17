@@ -634,7 +634,7 @@ Archiving moves a resolved project to `.vine/projects/.archive/`:
 .vine/projects/.archive/<domain>/<feature-slug>/
 ```
 
-This gets completed work fully out of the way while preserving artifacts. Archiving is **engineer-confirmed, never automatic**: after `vine:evolve` writes `.resolved`, it *offers* the move via a default-able prompt — the engineer can decline and leave the project resolved-but-unarchived. VINE never archives on its own.
+This gets completed work fully out of the way while preserving artifacts. Archiving is **engineer-confirmed, never automatic**: after `vine:evolve` writes `.resolved`, it *offers* the move via a default-able prompt — the engineer can decline and leave the project resolved-but-unarchived. VINE never archives on its own. Because evolve only offers the move for the project it just resolved, `vine:init` provides the *catch-up* path: in its upgrade flow it sweeps any resolved-but-unarchived projects (legacy resolves, or ones the engineer declined earlier) and offers to archive them in a batch — same engineer-confirmed, declinable move.
 
 **Knowledge records persist across archival.** Archiving moves only the project's artifacts under `.vine/projects/<domain>/<feature-slug>/`. Durable-decision records in `.vine/knowledge/<domain>/` are physically separate and are **never moved** — they keep their own Accepted→Superseded lifecycle. Durable judgment outlives the project that produced it.
 

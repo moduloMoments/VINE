@@ -33,6 +33,7 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
    Knowledge Boundary rule — declinable
 9. Ensures CLAUDE.md carries the availability-gated VINE pointer block (which names the
    `.vine/knowledge/` durable-decisions layer) — declinable
+10. Sweeps legacy resolved-but-unarchived projects into `.vine/projects/.archive/` — declinable
 
 ## Step 1: Discover Repo Capabilities
 
@@ -550,6 +551,47 @@ or upgrade):
 4. **Declining changes nothing on disk** — no settings edit, no script copy, and VINE keeps
    working exactly as before; the journal guarantee just stays advisory. The offer repeats
    on the next `/vine:init`.
+
+### Archive Legacy Resolved Projects
+
+`vine:evolve` offers to archive a project only at the moment it resolves it — so projects
+resolved before that offer existed (or where the engineer declined it) sit
+**resolved-but-unarchived** forever, with no command that will ever sweep them. Init closes
+that gap.
+
+Scan `.vine/projects/` for directories containing a `.resolved` marker that are **not already
+under `.vine/projects/.archive/`**. If none, skip silently — no offer, no mention. Otherwise
+list them and offer to archive them, mirroring evolve's archive mechanics (lifecycle in
+`references/STATE.md`, "Project Lifecycle"):
+
+1. **Present the list** of resolved-but-unarchived projects (`<domain>/<feature-slug>`), then
+   offer via `AskUserQuestion` (`multiSelect: false`): <!-- decision-class: default-able -->
+   - **"Archive all N (Recommended)"** — description: "Move every resolved project under
+     `.vine/projects/.archive/` — gets completed work fully out of the way"
+   - **"Pick which to archive"** — description: "Choose a subset"
+   - **"Not now"** — description: "Leave them resolved-but-unarchived — nothing changes on disk"
+
+2. **If the engineer picks a subset**, present the candidates for selection via
+   `AskUserQuestion` (`multiSelect: true`); when there are more than four, split across calls
+   by domain (max 4 options per call, per the Interaction Constraints in `shared.md`).
+
+3. **Move each accepted project** — `git mv` when the repo tracks artifacts so history follows,
+   plain `mv` when untracked:
+
+   ```
+   mkdir -p .vine/projects/.archive/<domain>
+   git mv .vine/projects/<domain>/<feature-slug> .vine/projects/.archive/<domain>/<feature-slug>
+   ```
+
+   Before moving, delete any stray `PAUSE.md` in a resolved project — a resolved project's pause
+   state is definitionally stale (consumed-once rule). **`.vine/knowledge/<domain>/` records are
+   never moved** — they live outside `.vine/projects/` and keep their own Accepted→Superseded
+   lifecycle, so durable judgment outlives the archived project.
+
+4. **Declining changes nothing on disk** — resolved-but-unarchived is a fine terminal state, and
+   the offer repeats on the next `/vine:init`. The `git mv` renames are staged for the engineer
+   to commit with the rest of the init changes (artifacts are tracked only when the repo tracks
+   `.vine/`; never force-add a gitignored artifact).
 
 ## Output
 
