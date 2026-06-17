@@ -39,9 +39,17 @@ No behavioral deviations. Every slice reports "Deviations from spec: None."
 #### Follow-Up Items
 
 Filed as GitHub issues this cycle:
-- [#108](https://github.com/moduloMoments/VINE/issues/108) — Invert `.vine/` gitignore to track-by-default when `.vine.local/` lands (deferred from slice 2; coupled to the `.vine.local/` work).
-- [#109](https://github.com/moduloMoments/VINE/issues/109) — Add a format validator (trellis check / evolve-time lint) for durable-decision records.
-- [#110](https://github.com/moduloMoments/VINE/issues/110) — Availability-gated CLAUDE.md pointer to `.vine/knowledge/` for mixed-adoption teams.
+- [#108](https://github.com/moduloMoments/VINE/issues/108) — Invert `.vine/` gitignore to track-by-default when `.vine.local/` lands (deferred from slice 2; coupled to the `.vine.local/` work). **Open.**
+- [#109](https://github.com/moduloMoments/VINE/issues/109) — Add a format validator (trellis check / evolve-time lint) for durable-decision records. **Open.**
+- [#110](https://github.com/moduloMoments/VINE/issues/110) — Availability-gated CLAUDE.md pointer to `.vine/knowledge/` for mixed-adoption teams. **Resolved in this PR** by the post-evolve init/optimize pointer work (see Post-Evolve Additions below).
+
+#### Post-Evolve Additions
+
+Three changes were made *after* the evolve commit (`e4580d9`), in response to engineer requests, and ride in the same PR. They are outside the slice 1–5 plan above and are recorded here so the durable state matches the diff:
+
+- **CLAUDE.md durable-decisions pointer** (`8df52e1`) — extended the availability-gated `## VINE` pointer block (canonical template in `optimize` 3e) with a line naming `.vine/knowledge/<domain>/`, and added an `init` step that ensures the block is present at setup. This delivers [#110](https://github.com/moduloMoments/VINE/issues/110), which is therefore resolved rather than deferred.
+- **init legacy-archive sweep** (`2405f42`) — new `init` upgrade-mode step that detects resolved-but-unarchived projects and offers to `git mv` them into `.vine/projects/.archive/`. Closes the gap where `evolve` only archives the project it just resolved. Documented in STATE.md's Project Lifecycle as the catch-up path.
+- **Sweep executed on this repo** (`49ccf40`) — the new step's first real run archived 11 legacy resolved projects (≈50 file renames, history preserved). Knowledge records under `.vine/knowledge/` were not moved. This is a repo-state migration bundled into the PR, not feature wiring.
 
 ### Agent Evolution
 
@@ -144,7 +152,7 @@ read or wrote it.
   cycle and produced two new records.
 
 ## Follow-up
-- #108 gitignore inversion · #109 record-format validator · #110 gated CLAUDE.md pointer.
+- #108 gitignore inversion · #109 record-format validator. (#110 gated CLAUDE.md pointer was delivered in this PR — see Post-Evolve Additions.)
 ```
 
 #### Reviewer Notes

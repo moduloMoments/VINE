@@ -32,8 +32,11 @@ Read in this order; later items will make sense because of earlier ones:
    input basis still match the state the work actually executed on (authorization-vs-
    execution drift is a finding). Absent ROUTE.md, the run was interactive and ungated —
    move to the next step.
-3. **The feature's artifact directory** — `.vine/projects/<domain>/<feature-slug>/`.
-   Read every `.md` file present (ROUTE.md you've already read above). NAVIGATION.md is
+3. **The feature's artifact directory** — `.vine/projects/<domain>/<feature-slug>/`. If
+   that path is empty, the PR under review may have archived its own project — look under
+   `.vine/projects/.archive/<domain>/<feature-slug>/` (a resolve+archive in the same PR
+   moves the artifacts there). Read every `.md` file present (ROUTE.md you've already read
+   above). NAVIGATION.md is
    the implementation journal: per-slice entries record approach, validation, decisions,
    and acceptance criteria. Sections after the slice entries (remaining work, decision
    logs, handoff notes) are the outbound handoff — they are addressed to you.
