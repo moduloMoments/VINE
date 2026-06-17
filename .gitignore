@@ -14,6 +14,7 @@ Thumbs.db
 .vine/*
 !.vine/README.md
 !.vine/context/
+!.vine/knowledge/
 !.vine/projects/
 !.vine/scripts/
 .vine/projects/*/*/PAUSE.md
