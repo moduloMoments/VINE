@@ -16,6 +16,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `.github/` — PR template, issue templates (bug, friction, idea)
 - `.vine/context/` — Contributor context overlays (tracked)
 - `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (tracked; PAUSE.md gitignored)
+- `.vine/knowledge/<domain>/` — Committed durable-decision ADR records (tracked); independent of the project lifecycle, never moved by archival
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
 ## Command Authoring Conventions
