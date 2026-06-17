@@ -16,6 +16,7 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `.github/` — PR template, issue templates (bug, friction, idea)
 - `.vine/context/` — Contributor context overlays (tracked)
 - `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (tracked; PAUSE.md gitignored)
+- `.vine/knowledge/<domain>/` — Committed durable-decision ADR records (tracked); independent of the project lifecycle, never moved by archival
 - `.vine/PROFILE.md` — Engineer profile (gitignored)
 
 ## Command Authoring Conventions
@@ -73,4 +74,5 @@ This applies to PR bodies drafted anywhere — evolve's handoff package, the `/p
 
 This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
 has active features, suggest the matching phase — routing details in
-`.vine/context/shared.md`.
+`.vine/context/shared.md`. Durable design decisions are recorded as committed ADR records
+under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).

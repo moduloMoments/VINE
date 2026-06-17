@@ -91,6 +91,24 @@ vine:inquire is for. You just need enough direction to know where to look.
 
 ### 2. Read the Landscape
 
+**Start with prior judgment on record.** Before reading code, glob this domain's durable-decision
+records — `.vine/knowledge/<domain>/` (and `.vine/knowledge/` broadly when the domain isn't pinned
+down yet from step 1). These are the team's committed *judgment* about this area (format in
+`references/STATE.md`, "Durable Decisions & Gotchas"): why past approaches were chosen over their
+alternatives, gotchas that cost someone time. Present what you find in a dedicated **Durable
+Decisions on record** subsection — each record's title, status, and gist — so you and the engineer
+carry prior reasoning into the exploration instead of rediscovering it.
+
+These records are *prior judgment, not current truth*. A record can read `Accepted` and still
+describe a decision the code has since moved past. Where one appears to contradict what the live
+code now does, **surface the mismatch for the engineer — never auto-trust the record** (consistent
+with how verify treats every source: the contradiction call is the engineer's, not yours). A
+still-live record is valuable context; a stale one is a signal worth a supersede when this cycle
+reaches evolve.
+
+**With no records present** — the common first-cycle case — this is a silent no-op: verify
+proceeds exactly as it does today.
+
 Once you have direction, explore the relevant code. For larger features touching multiple
 areas, delegate to the `vine-codebase-explorer` agent to research specific areas in parallel
 while you and the engineer discuss what you're finding. For each area:

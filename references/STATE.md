@@ -461,14 +461,14 @@ A committed, append-only, **one-file-per-record** layer at `.vine/knowledge/<dom
 
 **This is not a codebase map and not a cache.** Facts that *can* be recovered from the code — structure, call graphs, where-is-X — are never homed here; they regenerate on demand via agentic search (see "Source of Truth vs Derived Views"), so they can never go stale. Only non-regenerable judgment is durable.
 
-**Why one record per file:** two actors never edit the same file, so concurrent multi-IC writes don't collide (the append-only journal pattern from #52, applied to knowledge). And `ls .vine/knowledge/<domain>/` is the human-readable index — discoverability without a retrieval system.
+**Why one record per file:** two actors never rewrite the same record's *body*, so concurrent multi-IC writes don't collide (the append-only journal pattern from #52, applied to knowledge). The lone exception is the one-line Status flip on supersession (property 4 below) — rare, single-line, and not a body rewrite, so the concurrent-safety guarantee holds. And `ls .vine/knowledge/<domain>/` is the human-readable index — discoverability without a retrieval system.
 
 **Five properties of a record:**
 
 1. **The title is the decision as a declarative sentence — never a bare number.** The filename is its slug, so the directory listing *is* the table of contents.
 2. **Self-contained Context, in its own words.** A reader with zero session memory must understand it from the record. Issue/PR links are supplementary navigation; the gloss carries the meaning (see "Reference Legibility").
 3. **Status + date + source on every record** — so a cold reader knows whether it is still live without cross-checking anything.
-4. **Immutable — supersede, don't edit.** A changed decision is a *new* record linking back (`Supersedes:`); this is what keeps the layer append-only and concurrent-safe. A slightly-aged gloss in an old record is correct — it froze the reference's meaning as of that decision.
+4. **Immutable body — supersede, don't rewrite.** A changed decision is a *new* record linking back (`Supersedes: <old-slug>`); a record's Context / Decision / Consequences are frozen forever. The **one sanctioned edit** to an existing record is flipping its Status line from `Accepted` to `Superseded by <new-slug>` — a single forward-pointer write, never a body change — so a cold reader landing on the old record learns it was replaced instead of trusting a stale `Accepted`. This is what keeps the layer append-only and concurrent-safe. A slightly-aged gloss in an old record is correct — it froze the reference's meaning as of that decision.
 5. **One record per file.**
 
 Each record follows the classic **Nygard ADR template** ([adr.github.io](https://adr.github.io)) — Title / Status / Context / Decision / Consequences — with VINE's provenance (date · source feature · actor) folded into Status:
@@ -478,9 +478,9 @@ Each record follows the classic **Nygard ADR template** ([adr.github.io](https:/
 
 ## Status
 
-Accepted — 2026-06-15
+Accepted — 2026-06-15            <!-- on supersession, flips to: Superseded by <new-slug> — YYYY-MM-DD -->
 Source: workflow/brain-descope · Actor: Rob + Claude
-Supersedes: none   <!-- or: Superseded by <slug-of-replacement> -->
+Supersedes: none                 <!-- or the slug of the record this one replaces -->
 
 ## Context
 
@@ -497,11 +497,13 @@ What was chosen.
 What this enables or forecloses, and any follow-on — what becomes easier or harder.
 ```
 
+**Slug:** a record's filename is `YYYY-MM-DD-<kebab-of-title>.md`. The date prefix orders the directory chronologically and makes within-domain collisions near-impossible; the kebab body keeps the listing a readable table of contents. The example above lives at `.vine/knowledge/workflow/2026-06-15-cut-the-derived-map-cache.md`.
+
 **Wiring (#51, cycle 2):** `vine:evolve` distills records on engineer approval (this is also where its routing-criteria calibration updates land); `vine:verify` globs the domain's records as prior judgment before exploring and surfaces — never auto-trusts — any record that contradicts the live code. Until those commands ship, the convention is defined here and records are written by hand. **Tracked by default** — the team's durable judgment travels with the repo.
 
 ## Knowledge Boundary
 
-Repo knowledge has four homes, keyed to reader scope: every fact lives on the narrowest surface whose readers all need it, and appears there exactly once.
+Repo knowledge has five homes, keyed to reader scope: every fact lives on the narrowest surface whose readers all need it, and appears there exactly once.
 
 | Surface | Holds | Who pays the tokens |
 |---------|-------|---------------------|
@@ -509,6 +511,7 @@ Repo knowledge has four homes, keyed to reader scope: every fact lives on the na
 | Native skill/agent list | The command and agent **inventory** — names and descriptions the harness already surfaces to Claude | Nobody — the harness provides it |
 | `.vine/context/shared.md` | Cross-phase VINE knowledge: protocols, project-development context, inter-phase routing | VINE sessions only |
 | `.vine/context/<phase>.md` | Phase-specific mappings: which agents, validation commands, and checks this phase uses | One phase's sessions only |
+| `.vine/knowledge/<domain>/` | Durable, non-regenerable *judgment* tied to a domain — why-over-alternatives decisions, hard-won gotchas ("Durable Decisions & Gotchas" above) | VINE sessions touching that domain — verify globs them, evolve writes them |
 
 The cost framing is the rule's teeth: anything homed in CLAUDE.md is paid by every session of every teammate — including teammates who never run VINE. A non-VINE teammate should pay at most a few pointer lines for VINE's existence; workflow knowledge they'd never use belongs in shared.md, which only VINE sessions load.
 
@@ -519,11 +522,22 @@ The native-surface row has two consequences:
 
 shared.md's identity in one line: cross-phase protocols + project-development context + inter-phase routing — nothing phase-specific, nothing the harness already surfaces.
 
+**Routing a durable item to its home** — the decision tree for "where does this learning go," first match wins:
+
+1. **Regenerable from the code?** (structure, call graph, where-is-X) → home it nowhere; it regenerates on demand via agentic search (see "Source of Truth vs Derived Views").
+2. **Non-regenerable judgment or gotcha tied to one domain?** (why this approach over the alternatives; "module Y is mid-migration, don't touch it") → `.vine/knowledge/<domain>/`.
+3. **Per-engineer depth, expertise, or preference?** → `.vine/PROFILE.md`.
+4. **Cross-phase VINE protocol or inter-phase routing?** → `.vine/context/shared.md` (or `.vine/context/<phase>.md` when it's one phase's mapping).
+5. **A repo fact every session needs, VINE or not?** → `CLAUDE.md`.
+
+The order is narrowest-qualifying-reader-scope first, so a domain-scoped judgment lands in `.vine/knowledge/` instead of bleeding up into `CLAUDE.md`, which every teammate pays for. The knowledge-vs-`CLAUDE.md` cut is the subtle one: a non-regenerable *judgment* a cold reader can't recover from the code goes to knowledge; a *fact* every session needs to be told goes to `CLAUDE.md`.
+
 When a fact moves homes, leave a one-line pointer at the old location.
+
+Other surfaces reference a domain's records with a one-line pointer (`See .vine/knowledge/<domain>/`), never by inlining them.
 
 **Forward references** (conventions defined now, implemented in later cycles):
 
-- `.vine/knowledge/<domain>/` (#51, cycle 2) — durable decisions + gotchas, one record per file (format: "Durable Decisions & Gotchas" above; command wiring lands in cycle 2). Other surfaces reference a domain's records with a one-line pointer (`See .vine/knowledge/<domain>/`), never by inlining them.
 - `.vine.local/` (backlog idea) — the sharing boundary for projects: tracked `.vine/projects/` is team-shared; personal work lives outside the shared tree in a gitignored sibling root mirroring `.vine/`'s structure.
 
 ## Source of Truth vs Derived Views
@@ -620,7 +634,9 @@ Archiving moves a resolved project to `.vine/projects/.archive/`:
 .vine/projects/.archive/<domain>/<feature-slug>/
 ```
 
-This gets completed work fully out of the way while preserving artifacts. Archiving is manual — VINE doesn't auto-archive.
+This gets completed work fully out of the way while preserving artifacts. Archiving is **engineer-confirmed, never automatic**: after `vine:evolve` writes `.resolved`, it *offers* the move via a default-able prompt — the engineer can decline and leave the project resolved-but-unarchived. VINE never archives on its own. Because evolve only offers the move for the project it just resolved, `vine:init` provides the *catch-up* path: in its upgrade flow it sweeps any resolved-but-unarchived projects (legacy resolves, or ones the engineer declined earlier) and offers to archive them in a batch — same engineer-confirmed, declinable move.
+
+**Knowledge records persist across archival.** Archiving moves only the project's artifacts under `.vine/projects/<domain>/<feature-slug>/`. Durable-decision records in `.vine/knowledge/<domain>/` are physically separate and are **never moved** — they keep their own Accepted→Superseded lifecycle. Durable judgment outlives the project that produced it.
 
 ### Filtering Convention
 

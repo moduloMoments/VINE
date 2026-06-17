@@ -372,6 +372,64 @@ to persist. For each accepted item, suggest the exact Claude memory entry or CLA
 If no general preferences were discovered this cycle, skip this section — don't manufacture
 observations. Domain-specific knowledge goes in the profile, not here.
 
+### Distill Durable Decisions
+
+This cycle produced *judgment* a cold reader can't recover from the code — why an approach won
+over its alternatives, a hard-won gotcha. That judgment has a durable home: `.vine/knowledge/<domain>/`,
+the committed, append-only ADR layer (format and the five properties in `references/STATE.md`,
+"Durable Decisions & Gotchas"). This is the **fourth and last** of evolve's "where does this learning
+go" homes; the routing rule below decides which learnings belong here versus the three you just handled.
+
+**Routing rule (operative copy — canonical version in `references/STATE.md`, "Knowledge Boundary").**
+Route each candidate learning to exactly one home, first match wins:
+
+1. Regenerable from the code? (structure, where-is-X) → home it nowhere; it regenerates on demand.
+2. Non-regenerable judgment or gotcha tied to a domain? → `.vine/knowledge/<domain>/` (**this step**).
+3. Per-engineer depth or expertise? → `.vine/PROFILE.md` (handled in *Update Engineer Profile*).
+4. Cross-phase VINE protocol / inter-phase routing? → `.vine/context/shared.md` (*Context Overlay Update*).
+5. Repo fact every session needs, VINE or not? → `CLAUDE.md` (*CLAUDE.md Suggestions*).
+
+The subtle cut is knowledge vs `CLAUDE.md`: a non-regenerable *judgment* a cold reader can't recover
+from the code goes to knowledge; a *fact* every session needs to be told goes to `CLAUDE.md`.
+
+**Mine candidates.** Read NAVIGATION.md (each slice's "Decisions made during implementation" and
+"Learnings", plus any "Discovered Items") and CONTEXT.md (tribal knowledge, edge cases) for decisions
+and gotchas that route to the knowledge home (item 2 above) — durable judgment tied to this feature's domain. A choice made over
+a real alternative, or a gotcha that cost time to learn, is a candidate. A restatement of what the code
+plainly shows is not.
+
+**Let the engineer choose.** Present the mined candidates via `AskUserQuestion` (`multiSelect: true`)
+so the engineer picks which become records. <!-- decision-class: default-able --> Proposing a record is
+reviewer-ratifiable, so a headless run takes the recommended set and records the choice; an interactive
+engineer decides directly. Batch into one call; if there are more than four candidates, split by
+category across calls (Interaction Constraints, `shared.md`). **If no candidate rises to a durable
+record, write nothing** — declining all is current behavior, fully backward-compatible.
+
+**Write each accepted record.** One date-prefixed file per record under `.vine/knowledge/<domain>/`,
+named `YYYY-MM-DD-<kebab-of-title>.md`, following the Nygard ADR template and the five properties from
+`references/STATE.md`:
+- Title is the decision as a declarative sentence (the filename slug derives from it).
+- Self-contained Context a cold reader understands without session memory; gloss every reference.
+- Status block: `Accepted — <date>` / `Source: <domain>/<feature-slug> · Actor: <who>` /
+  `Supersedes: <old-slug>` (or `none`).
+
+Follow the *Convention Check for Created Artifacts* above — match the existing records in the domain
+(`ls .vine/knowledge/<domain>/`) before writing a new one.
+
+**Supersession — the one sanctioned edit to an existing record.** If a new record replaces an existing
+one, do both halves of the bidirectional link:
+1. The new record carries `Supersedes: <old-slug>`.
+2. Flip the *old* record's Status line from `Accepted — <date>` to `Superseded by <new-slug> — <date>`.
+
+Edit the Status line **only** — never the old record's Context / Decision / Consequences. The body is
+immutable; the single Status-line flip is the lone exception that keeps the layer append-only and
+concurrent-safe (`references/STATE.md`, property 4). Without the flip, a cold reader landing on the old
+record would trust a stale `Accepted` and never learn it was replaced.
+
+**Records persist beyond the project.** These files live in `.vine/knowledge/<domain>/`, separate from
+`.vine/projects/`. Resolving or archiving this project (below) never moves or deletes them — durable
+judgment outlives the project that produced it.
+
 ## Write EVOLUTION.md
 
 Compile everything into `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md`:
@@ -467,6 +525,30 @@ If the engineer chooses to resolve, write an empty `.resolved` file to
 `.vine/projects/<domain>/<feature-slug>/PAUSE.md` if it exists — a resolved project's pause
 state is definitionally stale. No prompt, no message to the engineer.
 
+**Offer to archive (#56 — move resolved work out of the way).** Only when the engineer just resolved
+the project, offer to archive it — move it to `.vine/projects/.archive/<domain>/<feature-slug>/`, which
+preserves the artifacts but gets completed work fully out of the way (lifecycle in `references/STATE.md`,
+"Project Lifecycle"). An active project is never archived. Use `AskUserQuestion`:
+<!-- decision-class: default-able -->
+
+Options (mutually exclusive):
+1. "Archive now (Recommended)" — "Move the project under `.vine/projects/.archive/`"
+2. "Keep in place" — "Leave it resolved-but-unarchived; archive later by hand"
+
+If the engineer archives, move the project directory — `git mv` when the repo tracks artifacts so
+history follows, plain `mv` when untracked:
+
+```
+mkdir -p .vine/projects/.archive/<domain>
+git mv .vine/projects/<domain>/<feature-slug> .vine/projects/.archive/<domain>/<feature-slug>
+```
+
+The move carries the artifacts only: PAUSE.md is already gone (consumed-once, deleted at resolve above),
+and **`.vine/knowledge/<domain>/` records are never moved** — they're physically separate from
+`.vine/projects/` and keep their own Accepted→Superseded lifecycle, so durable judgment outlives the
+archived project. The *Commit Evolve Changes* step below then stages the artifacts at whichever path they
+now live. Declining leaves the project resolved-but-unarchived — a fine terminal state.
+
 ### Commit Evolve Changes
 
 After resolving (or choosing to keep active), commit the changes generated during the evolve
@@ -481,7 +563,9 @@ under *Committing Artifacts*):
 - **`.vine/PROFILE.md`** updates (if accepted) — commonly gitignored (it's personal); stage only
   if the repo tracks it.
 
-Never force-add a gitignored artifact. Stage the applicable files and commit with a message like:
+Never force-add a gitignored artifact. If the project was just archived, its artifacts now live
+under `.vine/projects/.archive/<domain>/<feature-slug>/` — `git mv` already staged the rename, so
+stage any post-move edits at that path. Stage the applicable files and commit with a message like:
 
 ```
 evolve: [feature name] — evolution report and cycle artifacts
