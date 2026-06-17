@@ -407,13 +407,16 @@ VINE pointer block; if it's missing, offer to add it:
 
 This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
 has active features, suggest the matching phase — routing details in
-`.vine/context/shared.md`.
+`.vine/context/shared.md`. Durable design decisions are recorded as committed ADR records
+under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).
 ```
 
 The gate is command availability — visible to Claude in its own skill list — so the block
 works whether VINE is installed repo-level or globally, and a teammate who doesn't use VINE
-pays only these few lines. Verify the pointer exists and is accurate; never expand it into
-a map.
+pays only these few lines. The durable-decisions line is itself an availability-gated pointer
+(it names where committed judgment lives without expanding into the records). Verify the
+pointer exists and is accurate — both the routing line and the durable-decisions line — and
+never expand it into a map.
 
 ### 3f. Add Chain Links to Command Prose
 

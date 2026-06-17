@@ -31,6 +31,8 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
    guarantee, declinable
 8. In upgrade mode, offers single-homing of CLAUDE.md/shared.md duplicates per the
    Knowledge Boundary rule — declinable
+9. Ensures CLAUDE.md carries the availability-gated VINE pointer block (which names the
+   `.vine/knowledge/` durable-decisions layer) — declinable
 
 ## Step 1: Discover Repo Capabilities
 
@@ -470,6 +472,42 @@ removed. Then offer via `AskUserQuestion` (`multiSelect: false`, 2 options):
 **If the engineer accepts**, apply exactly the previewed moves — nothing beyond what the
 preview showed. **Declining is a no-op** — no file changes, and the offer repeats on the
 next `/vine:init`.
+
+### CLAUDE.md VINE Pointer
+
+If `CLAUDE.md` (project root) exists, make sure it carries the **availability-gated VINE
+pointer block** — the few lines that tell any session (VINE-using or not) where VINE routing
+and the durable-decisions layer live. This is the *ensure-present* half at setup; `vine:optimize`
+step 3e *verifies and keeps it accurate* thereafter, so both reference the same template rather
+than reinventing it (the **Availability-Gated Pointer** convention in `shared.md`). If `CLAUDE.md`
+doesn't exist, skip silently — init is not a CLAUDE.md generator.
+
+The block (canonical template in `vine:optimize` 3e):
+
+```markdown
+## VINE
+
+This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
+has active features, suggest the matching phase — routing details in
+`.vine/context/shared.md`. Durable design decisions are recorded as committed ADR records
+under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).
+```
+
+- **If the block is missing entirely**, offer to add it.
+- **If a `## VINE` block exists but lacks the durable-decisions line** (a pre-0.5 pointer),
+  offer to add just that line — don't rewrite the rest.
+- **If both are present and accurate**, skip silently — no offer, no mention.
+
+Offer via `AskUserQuestion` (`multiSelect: false`, 2 options): <!-- decision-class: default-able -->
+
+- **"Add the VINE pointer (Recommended)"** — description: "Write the availability-gated block
+  to CLAUDE.md (or add the missing durable-decisions line)"
+- **"Not now"** — description: "Leave CLAUDE.md as-is — nothing changes on disk"
+
+Never expand the block into a workflow map or command inventory — it stays a pointer (the
+Knowledge Boundary rule). **Declining is a no-op** — no file changes, and the offer repeats on
+the next `/vine:init`. CLAUDE.md is an ordinary tracked repo file, so an accepted edit is
+committed normally with the other init changes.
 
 ### Native Hook Scaffold
 

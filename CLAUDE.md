@@ -74,4 +74,5 @@ This applies to PR bodies drafted anywhere — evolve's handoff package, the `/p
 
 This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
 has active features, suggest the matching phase — routing details in
-`.vine/context/shared.md`.
+`.vine/context/shared.md`. Durable design decisions are recorded as committed ADR records
+under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).
