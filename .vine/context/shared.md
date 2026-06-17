@@ -1,6 +1,35 @@
 # VINE Shared Context Overlay — VINE Framework
 # Edit this file to customize VINE behavior for this repo.
 
+## Overlay Loading Protocol
+
+Each command (except init and help) opens with a *Load Context Overlays* step that bootstraps
+this file plus its phase overlay, then defers here for the shared loading rules. The bootstrap
+reads `.vine/context/shared.md` and `.vine/context/<phase>.md` (and is the step that loads this
+file in the first place, so it cannot be fully externalized); everything below is what "follow
+the Overlay Loading Protocol" pulls in.
+
+- **Apply as overlay instructions.** Treat the contents of both files as additional instructions
+  layered on top of the command. Overlay instructions take precedence over command defaults when
+  they conflict — they are the team's customization of VINE for this codebase. (Precedence
+  *between* the overlay layers — shared vs. personal vs. policy — is governed by **Overlay
+  Precedence** below; that section is the source of truth and this line does not override it.)
+- **Personal layer.** After reading `shared.md` and the phase overlay, read
+  `.vine/context/shared.local.md` if present and compose it per the **Personal layer** rule in
+  Overlay Precedence. Absent it, nothing changes.
+- **Legacy fallback (supported through 0.4.x).** If `.vine/context/` doesn't exist but legacy
+  `.vine/hooks/` does, read the same files from `.vine/hooks/` instead and nudge once per
+  session, no more: "Heads up: this project uses the legacy `.vine/hooks/` directory — run
+  `/vine:init` to migrate to `.vine/context/`."
+- **Missing-file behavior.** Every file is optional. If a phase overlay or `shared.md` is
+  absent, proceed normally — the command still works without it. If `.vine/` doesn't exist at
+  all, this is likely a first VINE run: suggest `/vine:init` to scaffold the context overlay
+  directory.
+
+Because the bootstrap is what reads `shared.md`, a command must still degrade gracefully when
+this file (and thus this protocol) is absent: the bootstrap's own read instruction carries the
+minimal behavior, and missing overlays mean the command runs on its built-in defaults.
+
 ## Overlay Precedence
 
 VINE composes context from command defaults, this shared overlay (`shared.md`), and the
