@@ -7,6 +7,6 @@
 | Phase | Status | Updated |
 |-------|--------|---------|
 | verify | ✅ | 2026-06-16 |
-| inquire | ⬜ | — |
+| inquire | ✅ | 2026-06-16 |
 | navigate | ⬜ | — |
 | evolve | ⬜ | — |
