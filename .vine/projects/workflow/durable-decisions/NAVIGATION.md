@@ -89,7 +89,7 @@ date-prefixed slug. (Knowledge records are not trellis-gated this cycle — stee
 
 ### Slice 3: evolve.md — writer wiring — Complete
 **Started**: 2026-06-16 22:18
-**Commit**: pending
+**Commit**: 7f11830
 **Route**: interactive — `mechanism: n/a`
 **Actor**: human
 **Gear**: free-climb
@@ -133,6 +133,38 @@ pairs; gate stamp `status: pass`). Fixed one Reference-Legibility Check-11 warni
   - Claude → Engineer: The "four homes adjacent" instruction is satisfiable two ways — physically
     (restructure) or referentially (one rule that names all four). The referential reading is the
     lower-risk one for a long command and matches the spec's anti-bloat mitigation.
+
+### Slice 4: verify.md — reader wiring — Complete
+**Started**: 2026-06-16 22:29
+**Commit**: pending
+**Route**: interactive — `mechanism: n/a`
+**Actor**: human
+**Gear**: free-climb
+**Approach taken**: One edit to `commands/vine/verify.md` — a lead-in block at the start of step 2
+(*Read the Landscape*), before code reading: glob `.vine/knowledge/<domain>/` (broadly when the
+domain isn't yet pinned from step 1), present a dedicated **Durable Decisions on record** subsection
+(title/status/gist per record), and surface — never auto-trust — any record that appears to
+contradict the live code (the contradiction call is the engineer's). Explicit no-op when no records
+are present.
+**Deviations from spec**: None. Placed the block as a bolded lead-in inside step 2 rather than a new
+numbered/`###` substep — keeps the existing step numbering intact (per the authoring convention that
+prefers not renumbering) while still running "early in Read the Landscape."
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` (11/11 commands, 8 cross-reference anchor
+pairs; gate stamp `status: pass`). No new naked-issue warnings.
+**Decisions made during implementation**:
+  - Reused verify's existing never-auto-trust framing verbatim rather than inventing new
+    contradiction-handling language — the records are just one more source verify surfaces for the
+    engineer's judgment (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC1 — verify globs `.vine/knowledge/<domain>/` early in Read the Landscape, presents a
+    dedicated "Durable Decisions on record" subsection, surfaces (not auto-trusts) contradictions
+  - [x] AC11 — no records present → silent no-op, verify behaves exactly as today
+**Engineer feedback incorporated**: (pending slice-boundary review — free-climb gear)
+**Learnings**:
+  - Engineer → Claude: None this slice.
+  - Claude → Engineer: The reader half is much smaller than the writer half — verify only needs to
+    glob-and-present, because "surface, don't trust" is already verify's universal stance. The
+    durable-decisions records slot into an existing pattern rather than needing a new one.
 
 ### Discovered Items
 
