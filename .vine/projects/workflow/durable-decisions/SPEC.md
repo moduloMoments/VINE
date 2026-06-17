@@ -128,7 +128,10 @@ convention, and archival-persistence semantics — the contract slices 2–5 imp
 **Goal**: Write 2–3 genuine `workflow`-domain records so the format is proven end-to-end and verify's
 glob has real content to surface.
 **Depends on**: Slice 1 (template, slug, five properties finalized)
-**Files likely touched**: `.vine/knowledge/workflow/*.md` (new)
+**Files likely touched**: `.vine/knowledge/workflow/*.md` (new). **Addendum (navigate, slice 2):**
+also touched `.gitignore`, adding the `!.vine/knowledge/` negation so records are tracked by default
+per STATE.md ("tracked by default"). A requirement-implied file the slice enumeration missed, not an
+approach change; recorded here so the spec reflects what was touched.
 **Acceptance criteria**: AC9. Records: the brain-descope decision (the STATE.md example — cut the
 derived-map cache, keep decisions as committed markdown) and routing-foundation decision(s) (e.g.
 the Decision Delegation default-able/human-required split; ROUTE.md as the per-scope eligibility gate

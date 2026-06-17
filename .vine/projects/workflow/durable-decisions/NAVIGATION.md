@@ -168,7 +168,7 @@ pairs; gate stamp `status: pass`). No new naked-issue warnings.
 
 ### Slice 5: README.md — document the layer — Complete
 **Started**: 2026-06-16 22:35
-**Commit**: pending
+**Commit**: 4d029a2
 **Route**: interactive — `mechanism: n/a`
 **Actor**: human
 **Gear**: free-climb
@@ -210,3 +210,26 @@ README isn't a command file so the trellis gate doesn't apply. Section kept to ~
   in-scope, and correct under either model since knowledge is team-shared); defer the inversion to
   the `.vine.local/` work so the whole pattern flips at once rather than as a half-migration. For
   evolve to triage into the backlog, linked to the existing `.vine.local/` forward reference.
+
+### Remaining Work
+
+- **Incomplete slices**: None — all 5 of 5 complete and committed (f5349c0, 90d1191, 7f11830,
+  999288f, 4d029a2).
+- **Blockers encountered**: None. The one design tension (the `.gitignore` negation vs. the future
+  `.vine.local/` inversion) was discussed at the slice-2 boundary and resolved by Rob (keep the
+  negation, defer the inversion). Captured under Discovered Items.
+- **Handoff context for evolve**:
+  - **Deviation to review**: Slice 2's `.gitignore` addition is annotated in SPEC.md slice 2
+    (requirement-implied by STATE.md's tracked-by-default, not an approach change).
+  - **Discovered item to triage**: the `.vine/` gitignore-shape inversion tied to the `.vine.local/`
+    backlog idea (see Discovered Items above) — a backlog candidate, not this cycle's work.
+  - **Dogfood opportunity**: this cycle *built* the durable-decisions layer (evolve's new Distill
+    step, the bootstrap records). Evolve can now exercise its own new Distill Durable Decisions step
+    against this cycle — strong candidate decisions to record: the routing rule stated referentially
+    rather than via physical adjacency (slice 3), and the keep-negation-defer-inversion gitignore
+    call (slice 2). The 3 bootstrap records under `.vine/knowledge/workflow/` already exist; new
+    records from this cycle would supersede none (all `Supersedes: none`).
+  - **Full-feature verification scope**: cross-slice integration is light (markdown-only, no runtime).
+    The meaningful end-to-end check is the dogfood loop — run verify's new glob against the bootstrap
+    records and confirm evolve's Distill step + supersession wording are internally consistent with
+    the STATE.md contract finalized in slice 1.
