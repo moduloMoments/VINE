@@ -136,7 +136,7 @@ pairs; gate stamp `status: pass`). Fixed one Reference-Legibility Check-11 warni
 
 ### Slice 4: verify.md — reader wiring — Complete
 **Started**: 2026-06-16 22:29
-**Commit**: pending
+**Commit**: 999288f
 **Route**: interactive — `mechanism: n/a`
 **Actor**: human
 **Gear**: free-climb
@@ -165,6 +165,36 @@ pairs; gate stamp `status: pass`). No new naked-issue warnings.
   - Claude → Engineer: The reader half is much smaller than the writer half — verify only needs to
     glob-and-present, because "surface, don't trust" is already verify's universal stance. The
     durable-decisions records slot into an existing pattern rather than needing a new one.
+
+### Slice 5: README.md — document the layer — Complete
+**Started**: 2026-06-16 22:35
+**Commit**: pending
+**Route**: interactive — `mechanism: n/a`
+**Actor**: human
+**Gear**: free-climb
+**Approach taken**: Two edits to `README.md`: (1) a new `## Durable Decisions` section after State
+Artifacts — the `.vine/knowledge/<domain>/` layer (committed-by-default, ADR shape, declarative-
+sentence titles, immutable/supersede), how evolve writes and verify reads it, the
+active→resolved→archived project lifecycle, and that knowledge persists across archival; points to
+the State Reference for the format. (2) Added a `knowledge/` branch to the `.vine/` directory tree
+for accuracy.
+**Deviations from spec**: None.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` still green (11/11, 8 anchor pairs);
+README isn't a command file so the trellis gate doesn't apply. Section kept to ~one screen per AC10.
+**Decisions made during implementation**:
+  - Pointed to STATE.md for the five properties / full format rather than restating them in README,
+    per the README convention "point back to STATE.md rather than duplicating" (decided by: claude)
+    [confidence: high]
+**Acceptance criteria**:
+  - [x] AC10 — README documents `.vine/knowledge/` (commit-by-default), the active→resolved→archived
+    lifecycle, and knowledge persisting independent of archival; points to STATE.md, ~one screen
+**Engineer feedback incorporated**: (pending slice-boundary review — free-climb gear)
+**Learnings**:
+  - Engineer → Claude: None this slice.
+  - Claude → Engineer: README is the only surface in this cycle that ships to consumers but the
+    layer's *format* doesn't (STATE.md is contributor-only) — so README documents the layer's
+    existence and lifecycle while deferring the format to the State Reference pointer, which
+    degrades gracefully when a consumer repo doesn't carry STATE.md.
 
 ### Discovered Items
 

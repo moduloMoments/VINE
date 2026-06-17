@@ -212,6 +212,9 @@ migration.)
 │   ├── navigate.md                # navigate-specific extensions
 │   ├── evolve.md                  # evolve-specific extensions
 │   └── pair.md                    # pair-specific extensions
+├── knowledge/                     # Durable decisions & gotchas (committed, append-only)
+│   └── workflow/
+│       └── 2026-06-15-cut-the-derived-map-cache.md
 └── projects/
     ├── payments/
     │   ├── webhook-support/       # Feature 1 (complete)
@@ -325,6 +328,46 @@ These files are human-readable, git-friendly, and designed to survive session bo
 **When your repo tracks `.vine/` artifacts** (the team-shared choice), VINE keeps the committed artifacts in step with the code: each **slice commit** bundles the code with that slice's NAVIGATION.md journal entry and any SPEC.md deviation notes, and each **phase-group PR** carries the group's full artifact state — SPEC plan, NAVIGATION record, and PROJECT-MAP tracker — alongside the diff. Repos that keep `.vine/` gitignored or personal commit code only; the journal-before-commit guarantee compares file modification time, not commit contents, so it holds either way.
 
 This repo uses VINE on itself — browse [`.vine/projects/`](.vine/projects/) to see real artifacts from completed features. Each resolved project shows how CONTEXT → SPEC → NAVIGATION → EVOLUTION builds up across the four phases.
+
+## Durable Decisions
+
+Some knowledge can't be recovered by reading the code: *why* an approach was chosen over its
+alternatives, or a gotcha that cost someone time to learn. VINE keeps that durable judgment in a
+committed, append-only layer — one Markdown file per record, under `.vine/knowledge/<domain>/`:
+
+```
+.vine/knowledge/
+└── workflow/
+    ├── 2026-06-15-cut-the-derived-map-cache.md
+    └── 2026-06-16-route-md-headless-eligibility-gate.md
+```
+
+Each record follows a lightweight [ADR](https://adr.github.io) shape — Title / Status / Context /
+Decision / Consequences — with the title written as a declarative sentence, so `ls` of a domain is
+its table of contents. Records are **committed by default**: durable judgment travels with the repo
+for every teammate. They're immutable — a changed decision is a *new* record that supersedes the old
+one (the old record's status flips to point forward), never an in-place edit. See the
+[State Reference](references/STATE.md) for the full format and the five properties of a good record.
+
+`vine:evolve` distills records from a finished cycle — you pick which decisions are worth keeping —
+and `vine:verify` surfaces a domain's records at the start of exploration, as prior judgment that is
+*never auto-trusted* (a record can describe a decision the code has since moved past). With no
+records present, both commands behave exactly as before.
+
+### Project lifecycle
+
+VINE projects move through **active → resolved → archived**, all opt-in:
+
+- **Active** — the default; work in progress.
+- **Resolved** — after `vine:evolve`, you can mark a project resolved (an empty `.resolved` marker).
+  Resolved projects drop out of command prompts but stay accessible by path.
+- **Archived** — evolve offers to move a resolved project under `.vine/projects/.archive/`, getting
+  completed work out of the way while preserving its artifacts. Always your call; VINE never
+  auto-archives.
+
+**Durable-decision records persist across archival.** They live in `.vine/knowledge/`, separate from
+`.vine/projects/`, and are never moved when a project is archived — the judgment outlives the project
+that produced it.
 
 ## Agents running VINE
 
