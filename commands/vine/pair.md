@@ -17,23 +17,12 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Before starting, check for project-level VINE context overlays:
-
-1. Read `.vine/context/shared.md` if it exists — repo-wide context for all VINE phases (available
-   tools, agents, conventions, CI/CD patterns, team structure).
-2. Read `.vine/context/pair.md` if it exists — pair-specific extensions for this project
-   (preferred test commands, lint/format requirements, commit conventions for small changes).
-3. Apply the contents of both as additional instructions layered on top of this command. Overlay
-   instructions take precedence over defaults when they conflict.
-
-4. Read `.vine/context/shared.local.md` if it exists and compose it per the **Personal layer**
-   rule in `shared.md` (under Overlay Precedence). Absent it, nothing changes.
-
-If `.vine/context/` doesn't exist but legacy `.vine/hooks/` does, read the same files from
-`.vine/hooks/` instead and nudge once per session, no more: "Heads up: this project uses the
-legacy `.vine/hooks/` directory — run `/vine:init` to migrate to `.vine/context/`."
-
-If neither file exists, proceed normally. If `.vine/` doesn't exist at all, suggest `/vine:init`.
+Read `.vine/context/shared.md` and `.vine/context/pair.md` if they exist, then follow the
+**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
+personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The pair
+overlay carries pair-specific extensions for this project (preferred test commands, lint/format
+requirements, commit conventions for small changes). If `shared.md` is absent, degrade gracefully:
+read the phase overlay if present, otherwise proceed on command defaults.
 
 ## Load Engineer Profile
 
