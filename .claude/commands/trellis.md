@@ -360,8 +360,8 @@ also carry the optional `**Route**`, `**Actor**`, `**Gear**` fields and a token-
 `Route` reads as `interactive`, a missing `Actor` as `human`). Validate only the shape of fields
 that *are* present:
 
-- `**Route**`, if present, uses exactly one of the closed vocabulary `interactive | headless |
-  headless-reentry`, followed by a `` `mechanism: ...` `` token (value may be `n/a`). The vocabulary
+- `**Route**`, if present, uses exactly one of the closed vocabulary `interactive | headless`,
+  followed by a `` `mechanism: ...` `` token (value may be `n/a`). The vocabulary
   is closed so the field stays machine-comparable across journals.
 - `**Gear**`, if present, is one of `free-climb` or `walk-me-through`.
 - `**Validation**` leads with a bare `pass` or `fail` token before any details.
