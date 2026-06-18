@@ -45,9 +45,10 @@ of it:
 
 VINE already routes by trust at two granularities — verify's scope check (full cycle vs.
 `vine:pair`) and navigate's per-slice gearing (walk-me-through vs. free-climb). v0.4.0 extends
-that gearing axis past the human-attention boundary:
+that gearing axis past the human-attention boundary — autonomous work runs as an **agent role**
+(`vine-coder`), not a human-shaped command run unattended:
 
-**walk-me-through → free-climb → hybrid-parallel → headless**
+**walk-me-through → free-climb → agent-delegated → hybrid-parallel**
 
 How each stage works:
 
@@ -64,7 +65,7 @@ How each stage works:
   per-slice `**Route**` / `**Actor**` fields on NAVIGATION.md entries (cycle 3 retired the
   separate ROUTE.md gate record and the PROJECT-MAP route table; the journal fields remain). No
   new artifact.
-- **Evolve** — calibrates the criteria. Routing outcomes (e.g., a headless scope failing
+- **Evolve** — calibrates the criteria. Routing outcomes (e.g., an agent-delegated scope failing
   validation twice) feed criteria updates the way learnings feed CLAUDE.md today; the
   Stop-hook reflection pattern (propose updates, never apply them) is the likely plumbing.
 
@@ -85,11 +86,11 @@ Every primitive is checked against three environments:
   gate below.
 - **E2 — committed shared.** `.vine/` tracked in git, multiple actors on one repo. Where
   routing, cross-actor state, and slice ownership earn their keep.
-- **E3 — remote verification.** A reviewer works from the artifact chain alone. The headless
-  route's verification leg.
+- **E3 — remote verification.** A reviewer works from the artifact chain alone. The
+  agent-delegated path's verification leg.
 
-The gearing axis aligns: E1 covers walk-through and free-climb; E2 unlocks hybrid-parallel
-and headless; E3 verifies headless output.
+The gearing axis aligns: E1 covers walk-through and free-climb; E2 unlocks agent-delegated and
+hybrid-parallel runs; E3 verifies delegated output.
 
 ### Guiding principle
 
@@ -210,7 +211,8 @@ Check 9 hardening land together at 0.5.
 - Each full cycle gets its own `.vine/projects/` feature with PROJECT-MAP.md; multi-PR cycles use
   the Milestones table.
 - VINE's own construction is the first test bed for routing: roadmap and design sessions stay
-  interactive; mechanical items graduate to headless once the contract exists.
+  interactive; mechanical items graduate to agent-delegated runs now that the contract exists
+  (the `vine-coder` recipe + ticket).
 - Run `/trellis` before committing command changes; `/vine:optimize` after each cycle that touches
   descriptions or workflows.
 - This file is updated at each cycle boundary (evolve's handoff step) — status lives in the GitHub

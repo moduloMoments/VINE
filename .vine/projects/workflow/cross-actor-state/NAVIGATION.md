@@ -389,8 +389,12 @@
     and flip that record's Status line to `Superseded by <new-slug>`. This is the sanctioned knowledge-layer
     operation for a reversal; evolve homes knowledge-record writing.
   - **`**Route**`/`**Actor**` journal fields KEPT** as vine-coder's cross-actor markers (engineer's call).
-  - **ROADMAP vision-narrative follow-up:** the broader v0.4.0 "route stage / headless route" mechanism
-    framing was intentionally left to the engineer's strategic roadmap pass (see Slice 7 deviation).
+  - **ROADMAP vision-narrative pass — done (post-slice, engineer-requested):** after the PR opened, the
+    engineer asked for the light vision-vocabulary pass. Aligned the *forward-looking* vision to the
+    role-recipe model — the gearing axis (`… → agent-delegated → hybrid-parallel`, dropping "headless"
+    as a VINE-mechanism name), the E3 framing, the evolve-calibration example, and the process note —
+    while leaving frozen history (cycle 0/1 rows, the 2026-06-12 spike questions) and the platform-capability
+    "headless invocation" references untouched. Committed separately on this branch.
   - **Phase-group PR:** open the Phase 2 PR (retirement) from `feature/cross-actor-state`. Branch was reset
     to `origin/main` at session start (Phase 1 squash-merged via #113 + #112's ROADMAP base), so no rebase
     is owed.
