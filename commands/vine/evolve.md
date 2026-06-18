@@ -395,10 +395,9 @@ a real alternative, or a gotcha that cost time to learn, is a candidate. A resta
 plainly shows is not.
 
 **Let the engineer choose.** Present the mined candidates via `AskUserQuestion` (`multiSelect: true`)
-so the engineer picks which become records. Proposing a record is
-reviewer-ratifiable, so a headless run takes the recommended set and records the choice; an interactive
-engineer decides directly. Batch into one call; if there are more than four candidates, split by
-category across calls (Interaction Constraints, `shared.md`). **If no candidate rises to a durable
+so the engineer picks which become records — proposing a record is reviewer-ratifiable, never
+auto-applied; the engineer decides directly. Batch into one call; if there are more than four
+candidates, split by category across calls (Interaction Constraints, `shared.md`). **If no candidate rises to a durable
 record, write nothing** — declining all is current behavior, fully backward-compatible.
 
 **Write each accepted record.** One date-prefixed file per record under `.vine/knowledge/<domain>/`,

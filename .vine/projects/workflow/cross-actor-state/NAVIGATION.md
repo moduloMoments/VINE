@@ -313,25 +313,84 @@
     decision protocol writes it" (→ vine-coder); the `**Route**`/`**Actor**`/Headless-Handoff schema fields and
     README's "Agents running VINE" section remain for the sweep + the explicit `**Route**`-field decision.
 
+### Slice 7: Repo-wide alignment sweep + ROADMAP update — Complete
+- **Started**: 2026-06-17 23:15
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human
+- **Gear**: free-climb
+- **Approach taken**: Final sweep + the explicit `**Route**`-field decision. (a) **`**Route**`-field fate
+  (the SPEC's conscious call):** the engineer chose **KEEP** — the `**Route**`/`**Actor**`/`**Decisions Taken
+  Autonomously**`/Headless-Handoff journal fields stay as the markers the autonomous actor writes to flag
+  produced slices for `vine-reviewer`. Engineer's rationale: the `**Actor**` field attributes a slice to
+  *whoever* produced it — a specific person when several share a repo, or the autonomous agent — so it's
+  useful beyond human-vs-bot. Broadened the STATE.md `**Actor**` template to say so. (b) **STATE.md attribution
+  reconcile** (fields kept, prose reattributed off navigate): "headless only" → "autonomous runs only" on
+  Decisions-Taken-Autonomously; "a headless actor made on its own" → "the autonomous actor"; and the Headless
+  Handoff contract now reads "the autonomous actor (`vine-coder`) writes it … `vine:navigate` itself is
+  human-only and never writes one" (was "vine:navigate's headless decision protocol writes it"). (c)
+  **CLAUDE.md:31** unnumbered-section example "navigate's head-only routing gate" → "navigate's Completion Gate
+  Check" (the gate is gone). (d) **evolve.md:399** dropped the vestigial "a headless run takes the recommended
+  set" clause — evolve is human-only. (e) **README**: rewrote the "Agents running VINE" section → "Autonomous
+  delegation" describing the `vine-coder` ticket model (ticket → implement-in-scope → one PR → vine-reviewer
+  leash), removing the routing-gate / ROUTE.md gate-record / per-decision-tagging narrative; reworded the two
+  "How VINE compares" lines off "headless on the roadmap" → autonomous delegation exists, parallel on the
+  roadmap. (f) **ROADMAP.md**: rewrote the cycle-3 row to *role-recipe autonomy + ROUTE retirement* (notes what
+  dissolved — slice ownership, PROFILE read-guard, ROUTE.md — and why), updated the "Cycle 3 is next" line, and
+  fixed the one directly-stale fact in the core-loop handoff bullet (the retired PROJECT-MAP route table).
+- **Deviations from spec**: Scoped the ROADMAP edit to the cycle-3 row + directly-stale facts, **not** the
+  broader v0.4.0 vision narrative (the "route stage / headless route" mechanism language at lines ~43–99, 170,
+  and the frozen 2026-06-12 spike-questions history). That narrative is the engineer's strategic doc and the
+  reframe changed the *mechanism* (agent role vs in-session headless), not the *direction*; the SPEC scoped this
+  slice to "cycle 3 reflects the reframe," which it now does. Flagged below as a follow-up.
+- **Validation**: pass — `trellis-check.sh` 11/11 commands, anchors resolve (8 pairs), stamp `status: pass`;
+  feature-level `grep -rn ROUTE` over product surfaces returns only the STATE.md retirement/migration note and
+  shared.md's added-then-removed checklist example (both documenting the retirement); no `commands/vine/*.md`
+  carries `route|headless`; the artifact chain reads CONTEXT → SPEC → NAVIGATION → EVOLUTION everywhere; the
+  shared.md workflow map routes autonomous-eligible scope to `vine-coder`.
+- **Decisions made during implementation**:
+  - KEEP the `**Route**`/`**Actor**` journal fields (engineer's call) — the `**Actor**` field generalizes to
+    multi-human attribution, not just human-vs-autonomous, and `vine-coder.md` already writes them; retiring
+    them would gut the cross-actor marker the cycle is about (decided by: engineer) [confidence: high]
+  - Leave the broader ROADMAP v0.4.0 vision narrative unreframed — repo-owned strategic decision; the reframe
+    changed mechanism not direction, and the SPEC scoped this slice to the cycle-3 row (decided by: claude)
+    [confidence: medium]
+  - Reword README's positioning lines off "headless" toward "agent delegation (exists) + parallel (roadmap)"
+    rather than deleting them — autonomy is now delivered, parallel still isn't (decided by: claude)
+    [confidence: high]
+- **Acceptance criteria**:
+  - [x] `grep -rn ROUTE` over product surfaces clean except the documented retirement/migration note
+  - [x] `**Route**`-field fate decided explicitly and recorded here (KEEP, as vine-coder's marker)
+  - [x] ROADMAP.md cycle 3 reflects the reframe (role-recipe autonomy + ROUTE retirement; links the SPEC)
+  - [x] `/trellis` passes; the shared.md workflow map reads coherently for a human-only command set
+  - [x] No command implies a human-shaped command runs headlessly (all 11 vine commands clean of route/headless)
+- **Engineer feedback incorporated**: KEEP decision on the Route/Actor fields, with the multi-human
+  generalization folded into the STATE.md `**Actor**` template.
+- **Learnings**:
+  - Engineer → Claude: the `**Actor**` field isn't just human-vs-bot — it attributes a slice to whichever
+    person or agent produced it, which is exactly what makes it earn its keep on a shared (E2) repo.
+  - Claude → Engineer: retiring an artifact is cheaper than retiring its *vocabulary* — ROUTE.md the file went
+    cleanly, but "headless" survives as accurate language for what a `vine-coder` run is, so the journal schema
+    keeps it.
+  - **Follow-up flagged:** a fuller ROADMAP v0.4.0 vision reconciliation (the "route stage / headless route"
+    mechanism framing, the gearing-axis "→ headless" endpoint) is left for the engineer's own roadmap pass —
+    out of this cleanup cycle's scope, recorded here and surfaced in the PR.
+
 ### Remaining Work
-- **Incomplete slices**: Phase 1 (Slices 1–4) complete and verified. Phase 2 (Slices 5–7) not
-  started — Retire ROUTE.md across all surfaces (Slice 5), navigate → interactive-only (Slice 6),
-  repo-wide alignment sweep + ROADMAP update (Slice 7). Phase 2 is its own session and PR.
+- **Incomplete slices**: All slices complete. Phase 1 (Slices 1–4) shipped in PR #113; Phase 2
+  (Slices 5–7) complete on this branch, ready for its own PR.
 - **Blockers encountered**: None.
-- **Handoff context for the Phase 2 session**:
-  - The new model is fully stood up and additive: `vine-coder` + `vine-reviewer` agents exist, the
-    Autonomous Delegation ticket convention is in shared.md, ROUTE.md still exists but the new agents
-    don't consume it. Phase 2 removes the old machinery.
-  - **Known ROUTE references already located** (Slice 5/7 targets), beyond the spec's listed files:
-    README.md still carries the ROUTE "gate record" paragraph (~387–394) and the closing STATE.md
-    ROUTE pointer (~406); these were deliberately left for the retirement PR (Phase 1 is additive).
-  - **Slice 4 already de-hardcoded** the autonomous attribution to `[actor]` and added the
-    role-not-model gloss in STATE.md — Slice 6's Decision Delegation reframe inherits clean wording.
-  - **`**Route**` field fate (Slice 7 explicit call):** the inquire route-preview block (inquire.md
-    ~341–347) is still present and ROUTE-coupled; Slice 5 retires it. The new `🎫 Auto-agent ticket`
-    block was written self-standing so it survives that removal.
-  - **Rebase note:** `origin/main` advanced by #112 (a ROADMAP doc reconciliation) after this branch
-    diverged. No Phase 1 file overlapped, but Slice 7 edits ROADMAP.md — rebase onto fresh main
-    before that slice to avoid a conflict.
-  - Run `/clear` before the Phase 2 session; re-invoke `/vine:navigate workflow/cross-actor-state` —
-    it auto-resumes at Slice 5.
+- **Handoff context for evolve**:
+  - **ROUTE.md is fully retired.** Artifact chain is CONTEXT → SPEC → NAVIGATION → EVOLUTION. The only
+    surviving `ROUTE.md` mentions are the STATE.md retirement/migration note and shared.md's checklist
+    worked-example (both documenting the retirement).
+  - **Knowledge-layer supersession owed (deferred from Slice 5):** write a new `.vine/knowledge/workflow/`
+    ADR record for the ROUTE retirement that `Supersedes: 2026-06-16-route-md-headless-eligibility-gate.md`,
+    and flip that record's Status line to `Superseded by <new-slug>`. This is the sanctioned knowledge-layer
+    operation for a reversal; evolve homes knowledge-record writing.
+  - **`**Route**`/`**Actor**` journal fields KEPT** as vine-coder's cross-actor markers (engineer's call).
+  - **ROADMAP vision-narrative follow-up:** the broader v0.4.0 "route stage / headless route" mechanism
+    framing was intentionally left to the engineer's strategic roadmap pass (see Slice 7 deviation).
+  - **Phase-group PR:** open the Phase 2 PR (retirement) from `feature/cross-actor-state`. Branch was reset
+    to `origin/main` at session start (Phase 1 squash-merged via #113 + #112's ROADMAP base), so no rebase
+    is owed.
