@@ -315,7 +315,7 @@
 
 ### Slice 7: Repo-wide alignment sweep + ROADMAP update — Complete
 - **Started**: 2026-06-17 23:15
-- **Commit**: pending
+- **Commit**: 45d873a
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
