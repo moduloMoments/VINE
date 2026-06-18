@@ -180,6 +180,32 @@ No separate per-feature route artifact is needed: the payload lives in {the tick
 the `## Validation` block}. The PR that comes back is the result; a human or the `vine-reviewer`
 agent (the cold-reviewer role) reviews it before merge — **the review is the leash.**
 
+## Out-of-Scope Routing
+
+The standard recommendation whenever work surfaces that's real but **outside the current
+feature's scope** — an unrelated bug, adjacent tech debt, a refactor that would help but isn't
+this feature. Never silently absorb it (scope creep) or silently drop it (lost work). Surface
+the disposition via `AskUserQuestion` (follow the Interaction Constraints), recommending the
+first route unless the engineer signals otherwise:
+
+- **Backlog** *(default)* — capture it where this repo tracks work: the destination is
+  repo-defined (read Team Context / the phase overlay's ticket workflow; this repo uses GitHub
+  Issues, falling back to `gh issue create`, else leave it in the feature artifact). Give it a
+  standalone title and enough cold-pickup context to act on without the VINE artifacts
+  (Reference Legibility, `references/STATE.md`). Lowest friction; current scope stays intact, and
+  the item earns its own cycle when it's picked up later.
+- **Trigger now (`vine:pair`)** — a small, contained fix you want to handle immediately. Pair is
+  artifact-free (no SPEC needed), so it fits an unrelated discovery as-is; spin a separate
+  session so the current work isn't disturbed.
+- **Drop** — not worth tracking; say so and move on.
+
+Recommend backlog by default; reserve `vine:pair` for the small fix you'll genuinely do now —
+anything larger or fuzzier belongs in the backlog, where it earns its own design cycle. Backlog
+and `vine:pair` are the shipped defaults, not the ceiling: a repo overlay may add routes its
+conventions support — e.g. an autonomous `vine-coder` flow for discoveries that are already
+ticket-ready (bounded, own acceptance criteria, validation contract). VINE owns the recommendation
+and the route set; the routes offered and the backlog destination stay repo-supplied.
+
 ## Collaboration Stance
 
 Internal, not shown to the engineer. Apply this stance in all VINE phases:

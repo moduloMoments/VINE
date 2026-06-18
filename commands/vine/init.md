@@ -185,6 +185,29 @@ Apply these to every `AskUserQuestion` call, in any phase:
 - Batch related decisions into one call when possible
 - If a topic needs more than 4 options, split it by category across multiple questions
 
+## Out-of-Scope Routing
+
+The standard recommendation whenever work surfaces that's real but outside the current
+feature's scope (an unrelated bug, adjacent tech debt, a refactor that isn't this feature).
+Never silently absorb it (scope creep) or silently drop it (lost work). Surface the disposition
+via `AskUserQuestion` (follow the Interaction Constraints), recommending the first route unless
+the engineer signals otherwise:
+
+- **Backlog** *(default)* — capture it where this repo tracks work (read Team Context or the
+  phase overlay's ticket workflow; fall back to `gh issue create` when available, else leave it
+  in the feature artifact). Standalone title + enough cold-pickup context to act on without the
+  VINE artifacts. Lowest friction; current scope stays intact, and the item earns its own cycle
+  when it's picked up later.
+- **Trigger now (`vine:pair`)** — a small, contained fix you want to handle immediately. Pair is
+  artifact-free (no SPEC needed), so it fits an unrelated discovery as-is; spin a separate session.
+- **Drop** — not worth tracking; say so and move on.
+
+Recommend backlog by default; reserve `vine:pair` for the small fix you'll genuinely do now.
+Anything larger belongs in the backlog. Backlog and `vine:pair` are the defaults, not the ceiling
+— add routes this repo's conventions support (e.g. an autonomous `vine-coder` flow for
+discoveries that are already ticket-ready). VINE owns the recommendation and the route set; the
+routes offered and the backlog destination stay repo-supplied.
+
 ## Team Context
 <!-- class: policy -->
 
@@ -429,6 +452,8 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
    - "Collaboration Stance" — if missing, add it (commands now reference this from shared.md)
    - "Engineer Profile Protocol" — if missing, add it
    - "Interaction Constraints" — if missing, add it
+   - "Out-of-Scope Routing" — if missing, add it (commands now reference this pattern from
+     shared.md to route unrelated discoveries: backlog by default, or trigger now)
    - "Validation" — if missing, offer the structured block populated from discovery; declining
      leaves prose inference in place (nothing changes on disk)
 4. Present a diff of what's new vs what's already in the overlays using `AskUserQuestion`:

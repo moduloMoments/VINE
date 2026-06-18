@@ -146,9 +146,11 @@ Compile from NAVIGATION.md's "discovered items" and any gaps found during verifi
 
 Suggest concrete backlog items with enough context that someone else could pick them up.
 
-If there are actionable follow-up items (not just "consider someday" notes), offer to create
-tickets. Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which items
-should become tickets. For each selected item:
+If there are actionable follow-up items (not just "consider someday" notes), route them with the
+**Out-of-Scope Routing** pattern from `.vine/context/shared.md`: most become backlog tickets, but
+a small fix the engineer wants handled now can go straight to a `vine:pair` session. Use
+`AskUserQuestion` with `multiSelect: true` to let the engineer pick which items become tickets.
+For each selected item:
 
 - A title that stands alone (not "follow-up from [feature]")
 - Body with enough context from CONTEXT.md and NAVIGATION.md that someone could pick it up
