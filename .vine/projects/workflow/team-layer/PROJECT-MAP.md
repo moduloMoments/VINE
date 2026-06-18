@@ -7,6 +7,14 @@
 | Phase | Status | Updated |
 |-------|--------|---------|
 | verify | ✅ | 2026-06-18 |
-| inquire | ⬜ | — |
+| inquire | ✅ | 2026-06-18 |
 | navigate | ⬜ | — |
 | evolve | ⬜ | — |
+
+### Milestones
+
+| Phase | Slices | Status | PR |
+|-------|--------|--------|----|
+| Phase 1: Composition Model | 1-3 | ⬜ Pending | — |
+| Phase 2: Discovery & Session Plumbing | 4-6 | ⬜ Pending | — |
+| Phase 3: Visibility, the Flip & Docs | 7-10 | ⬜ Pending | — |
