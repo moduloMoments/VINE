@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — 2026-06-16
+Superseded by 2026-06-18-autonomous-work-is-an-agent-role-not-headless-command-impersonation — 2026-06-18
 Source: workflow/routing-foundation · Actor: Rob + Claude
 Supersedes: none
 

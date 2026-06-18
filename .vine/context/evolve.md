@@ -6,6 +6,15 @@
 - Link to related GitHub Issues when applicable
 - PR title should reflect the VINE phase perspective (e.g., "Improve verify phase context discovery")
 
+## Multi-PR Features
+
+- **Confirm phase-group PRs before assuming you must open one.** For features with a Milestones
+  table, run `gh pr list --state merged --search <feature-slug>` (or check the table's PR column
+  against `git log origin/main`) at the start of evolve. A phase group can ship in a parallel
+  session and leave PROJECT-MAP's PR cell stale (`—`), so evolve must verify against `main` rather
+  than trust the tracker — otherwise it tries to re-open work that already merged, or worse, opens a
+  PR from a now-stale branch that reverts later main commits.
+
 ## Follow-up Tracking
 
 - File follow-up items as GitHub Issues using the appropriate template:
