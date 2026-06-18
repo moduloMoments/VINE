@@ -338,14 +338,6 @@ plain chat text, with only the `/vine:navigate` command line in a fenced block:
    Inquire is analytical — navigate needs a tactical, implementation-focused headspace.
    SPEC.md carries everything forward; conversation context doesn't need to.
 
-🧭 Route preview (non-binding): [Based on the four-leg headless predicate read against the
-   spec as written — is there a validation contract, do the slices carry acceptance criteria,
-   do they look independent of in-flight work, is the blast radius bounded — name the likely
-   route, e.g. "Looks headless-eligible — bounded, independent slices with ACs and a validation
-   block" or "Likely interactive — slice 3 overlaps in-flight work / no validation contract yet".
-   This is a preview only, like the gearing note: it does not write ROUTE.md, and navigate's
-   head gate re-evaluates the volatile legs against fresh repo state and makes the binding call.]
-
 🎫 Auto-agent ticket (when scope is autonomous-eligible): If a phase group is bounded, independent
    of in-flight work, carries acceptance criteria, and the repo has a validation contract, it can be
    handed to the `vine-coder` agent (the autonomous coding role — implements a ticketed slice

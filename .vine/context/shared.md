@@ -77,15 +77,16 @@ When adding or removing a VINE command, update all of these:
 - `.vine/context/verify.md` — command count reference
 
 ### State Artifact Addition Checklist
-When adding or removing a state artifact (the ROUTE.md addition in the routing-foundation cycle is
-the worked example), update all of these:
+When adding or removing a state artifact (ROUTE.md's addition in the routing-foundation cycle and
+its removal one cycle later in cross-actor-state are the worked examples — the same checklist run
+forward, then in reverse), update all of these:
 - `references/STATE.md` — the artifact template (every heading marked `<!-- required -->` /
   `<!-- optional -->`), its place in the artifact chain, and the Source-of-Truth and Committing
   Artifacts tables
 - `CLAUDE.md` — the State Artifact Chain line
 - `README.md` — the State Artifacts table
 - `.claude/commands/trellis.md` — the Step 5a template-parse list, the Step 5b discovery glob, and
-  Check A's applies-to set (plus a shape check like Check E if the artifact has contractual fields)
+  Check A's applies-to set (plus a per-artifact shape check if the artifact has contractual fields)
 
 ### Availability-Gated Pointer
 When VINE knowledge must be referenced from a surface non-VINE teammates load (CLAUDE.md), use an availability-gated pointer: gate the suggestion on whether the vine commands are actually present in the session's skill list, and point at this file for routing. The gate is what Claude can see, not where files live — so mixed-adoption teams and global installs both resolve correctly. Future commands reuse this pattern instead of reinventing the mixed-adoption answer.

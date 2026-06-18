@@ -187,6 +187,68 @@
     matches the autonomous form, so the interactive `engineer | claude` log is safe by construction.
     The two attribution layers were already cleanly separable.
 
+## Phase 2: Retire old machinery + repo-wide alignment (Slices 5-7)
+
+### Slice 5: Retire ROUTE.md across all surfaces — Complete
+- **Started**: 2026-06-17 22:30
+- **Commit**: 5fb3c1f
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human
+- **Gear**: free-climb
+- **Approach taken**: Retired ROUTE.md *the artifact* from the contract/documentation surfaces, leaving
+  the headless-*model* prose (navigate's gate, README's "Agents running VINE" narrative) for Slices 6–7
+  where they become coherent. (a) `references/STATE.md`: replaced the 67-line `### ROUTE.md` template
+  section with a short **retirement + migration note** (chain is now CONTEXT→SPEC→NAVIGATION→EVOLUTION;
+  downstream ROUTE.md files are inert and can be deleted); removed the ROUTE row from the
+  Source-of-Truth and Committing-Artifacts tables and the `### Route` table + its lifecycle/design-
+  constraint/derived-view mentions from the PROJECT-MAP template; scrubbed ROUTE.md cross-refs out of
+  the Headless-Handoff template ("authorized by ./ROUTE.md" → "the ticket") and the #90 journal-schema
+  rules (dropped "same vocabulary as ROUTE.md and the PROJECT-MAP Route table"). The per-slice `**Route**`
+  *field* itself is **kept** — its keep/retire fate is Slice 7's explicit call. (b) `.claude/commands/
+  trellis.md`: removed ROUTE from the Step 5a parse list, Step 5b discovery glob, and Check A applies-to;
+  **deleted Check E** (ROUTE Verdict shape) and renumbered the old Check F (Validation block) → Check E
+  for a clean A–E sequence, fixing all references; removed the Route column + ROUTE.md row from the
+  Step 7 table. The NAVIGATION `**Route**` field shape check (Check D) is kept, with its ROUTE/PROJECT-MAP
+  cross-refs scrubbed. (c) `CLAUDE.md`: dropped the ROUTE.md sentence from the State Artifact Chain line.
+  (d) `commands/vine/inquire.md`: removed the 🧭 Route-preview completion block (the 🎫 Auto-agent ticket
+  block stays — the replacement model). (e) `.vine/context/shared.md`: made the State Artifact Addition
+  Checklist's worked example bidirectional (ROUTE's addition then one-cycle-later removal); dropped the
+  stale "like Check E" shape-check reference. (f) `README.md`: removed the State Artifacts ROUTE row and
+  swapped the knowledge-tree example off the route record.
+- **Deviations from spec**: Minor in-flight scoping refinement — deferred README's `references/STATE.md`
+  closing pointer (the "ROUTE.md format" mention) to Slice 7 alongside the rest of the "Agents running
+  VINE" section, rather than scrubbing it here as the preview planned. Keeping that section intact mid-flight
+  reads more coherently than a one-line scrub; it's rewritten as one unit once navigate is interactive-only.
+- **Validation**: pass — `trellis-check.sh` 11/11 commands, cross-reference anchors resolve (8 pairs),
+  stamp `status: pass`; ROUTE-token grep confirms intended end-state (STATE retirement note + kept `**Route**`
+  field; CLAUDE/inquire clean; navigate + README "Agents running VINE" deferred to 6/7). Pre-existing
+  `.vine/hooks/` legacy warnings in init.md are unrelated.
+- **Decisions made during implementation**:
+  - Keep the per-slice `**Route**` *field* (and Check D) while retiring the ROUTE.md *artifact* — the field
+    is the marker `vine-coder` writes for `vine-reviewer`; its keep/retire fate is Slice 7's explicit call,
+    so Slice 5 only scrubs ROUTE.md cross-references from it (decided by: claude) [confidence: high]
+  - Renumber trellis Check F→E rather than leave an A,B,C,D,F gap — it's the linter itself, a gap reads as a
+    bug; the ripple was 5 internal references, all fixed (decided by: claude) [confidence: high]
+  - Defer the README "Agents running VINE" section rewrite (gate-record paragraph + STATE.md pointer) to
+    Slice 7 so it's rewritten once, coherently, after navigate is interactive-only — rather than a piecemeal
+    scrub that leaves the section dangling (decided by: claude) [confidence: high]
+  - Defer the knowledge-layer supersession record (a new ADR superseding `2026-06-16-route-md-headless-
+    eligibility-gate.md`, flipping its Status to Superseded) to **evolve**, where the convention homes
+    knowledge-record writing — noted in handoff (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] ROUTE.md retired from the artifact chain with a documented retirement/migration note (STATE.md)
+  - [x] `/trellis` passes (11/11, anchors resolve, stamp green) after the slice
+  - [x] Artifact chain reads CONTEXT → SPEC → NAVIGATION → EVOLUTION (STATE.md + CLAUDE.md) with no ROUTE leg
+  - [~] `grep -rn ROUTE` clean on Slice-5-owned surfaces; navigate.md (Slice 6) and README's "Agents running
+    VINE" section (Slice 7) still carry ROUTE by design — the feature-level grep-clean is the evolve-time gate
+- **Learnings**:
+  - Claude → Engineer: the trellis gate stamp covers only command Checks 1–10 (it never reads STATE.md
+    templates or ROUTE artifacts — Steps 5–7 are session-judged), so retiring ROUTE from STATE.md could never
+    break the commit gate. That decoupling is what let Slice 5 land green while navigate.md still carries ROUTE.
+  - Claude → Engineer: the three slices all touch STATE.md, but the cut lines cleanly — Slice 5 owns the ROUTE
+    *artifact* (template, chain, tables), Slice 6 the headless *model*, Slice 7 the `**Route**` *field* fate.
+    Scrubbing tokens without ripping out the kept field is the discipline that keeps them separable.
+
 ### Remaining Work
 - **Incomplete slices**: Phase 1 (Slices 1–4) complete and verified. Phase 2 (Slices 5–7) not
   started — Retire ROUTE.md across all surfaces (Slice 5), navigate → interactive-only (Slice 6),

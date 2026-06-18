@@ -106,73 +106,25 @@ it on arrival and skip cleanly when the condition isn't met.
 - Dependencies on other work
 ```
 
-### ROUTE.md (produced by vine:navigate at head, previewed by vine:inquire)
+### ROUTE.md — retired (2026-06)
 
-The gate record. The durable output of the routing-layer eligibility gate (#54): the verdict on
-how a scope is delivered (interactive vs. headless), the constraints and allowlist a headless
-actor must honor, the validation baseline it runs, and the input basis the decision was computed
-against. It joins the artifact chain between SPEC.md and NAVIGATION.md — the route is decided
-*before* slices execute — and it is the convergent artifact the cycle-0 spike pointed at: the
-record the headless envelope embeds, the reviewer reads, and the PROJECT-MAP Route table points
-at (a derived view — see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)).
+ROUTE.md was the routing gate record: a per-feature artifact `vine:navigate` wrote at its head to
+authorize and bound a *headless* run (verdict, allowlist, constraints, validation baseline, input
+basis), joining the chain between SPEC.md and NAVIGATION.md.
 
-`vine:inquire` *previews* a likely route in its completion block (non-binding, like its gearing
-preview); `vine:navigate` runs the *authoritative* gate at its head against fresh repo state and
-writes this file. For a clearly-interactive run the gate is a no-op and the route is simply
-`interactive` — the common path is unchanged.
+**It is retired.** The artifact chain is now **CONTEXT → SPEC → NAVIGATION → EVOLUTION**, with no
+ROUTE leg. Autonomous work no longer runs by an agent impersonating a human-driven `vine:navigate`
+under a route record — it runs through the `vine-coder` agent (the autonomous coding role, see
+`agents/vine-coder.md`), bounded by a **ticket** and gated by a **PR review**. ROUTE's whole payload
+has a home without it: the scope and constraints live in the ticket, the touched-file leash is the
+agent's self-derived discipline, the validation baseline is the `## Validation` block in
+`.vine/context/shared.md`, and the authorization-vs-execution record is git / the PR. The ticket
+convention lives in shared.md ("Autonomous Delegation — the vine-coder ticket").
 
-```markdown
-# Route Record: [Feature Name]
-## Feature: .vine/projects/<domain>/<feature-slug>
-## Computed at: [YYYY-MM-DD HH:MM]
-
-### Verdict <!-- required -->
-- **Route**: [interactive | headless | headless-reentry] — `mechanism: [how it runs, or n/a]`
-- **Scope**: [the phase group or slice this record governs]
-- **Rationale**: [one line — why this route was chosen]
-
-### Eligibility Legs <!-- required -->
-The four-leg headless predicate (#54). All four must hold for a headless verdict; a missing leg
-yields `interactive` and never degrades the interactive route (gate-time check, not
-verification-time).
-- [ ] **Validation contract** — a `## Validation` block (or prose-inferable checks) exists
-- [ ] **Slice ACs present** — the in-scope SPEC.md slices carry acceptance criteria
-- [ ] **Independence** — slices are independent of in-flight work [name the conflict if not]
-- [ ] **Bounded blast radius** — files enumerable, including requirement-implied files (not just
-      occurrence-grep — the spike's F1 root cause)
-
-### Constraints <!-- required -->
-- [What the actor must honor — e.g., modify only the allowlist, run the validation baseline green
-  before each commit, escalate human-required decisions per the Decision Delegation policy]
-
-### Allowlist <!-- required -->
-- [Files / paths the headless actor may modify]
-
-### Validation Baseline <!-- required -->
-- [The checks that must pass, captured from the `## Validation` block at compute time — so the
-  reviewer sees the baseline the actor was held to, even if the block later changes]
-
-### Input Basis <!-- required -->
-- **HEAD SHA**: [commit the gate was evaluated against]
-- **In-flight set**: [open PRs / branches weighed for the independence leg, or "none"]
-
-### Decay <!-- optional -->
-- [Freshness note. Volatile legs (independence, blast radius) are re-evaluated at navigate-head,
-  so the *binding* decision can't decay; the reviewer compares this stamp against the execution
-  state to flag authorization-vs-execution drift.]
-```
-
-**Backward compatibility.** ROUTE.md is optional with graceful absence: an interactive run need
-not write one (or writes a trivial `interactive` record), and every reader treats its absence as
-"interactive, no headless authorization." Older features without a ROUTE.md behave exactly as
-they do today.
-
-**Tracking.** Unlike the personal `.local` overlay (gitignored by design), ROUTE.md travels
-**tracked** with the feature — it lives in the feature directory under `.vine/projects/`, which
-`.gitignore` already negates (`!.vine/projects/`), so it ships with the code through history and
-PRs where the reviewer needs it. No `.gitignore` change is required; a repo that gitignores the
-whole artifact chain keeps ROUTE.md local along with the rest (see [Committing
-Artifacts](#committing-artifacts)).
+**Migration.** A downstream repo that already has `ROUTE.md` files under `.vine/projects/` can
+delete them — nothing reads them anymore, and every reader treats a missing ROUTE.md as
+"interactive, no headless authorization" (the graceful-absence default ROUTE.md always carried). No
+action is required; the stale files are inert.
 
 ### NAVIGATION.md (produced by vine:navigate)
 
@@ -209,7 +161,7 @@ The implementation journal. Built incrementally — each slice is appended as it
 - **Stopped at**: [slice / decision that triggered the stop, or "scope complete"]
 - **Needs a human**: [the human-required decision, restated as the options it would have asked +
   the recommendation — or "none; ready for review"]
-- **State**: commits [hashes], validation [pass/fail], authorized by [./ROUTE.md]
+- **State**: commits [hashes], validation [pass/fail], authorized by [the ticket]
 - **Decisions taken autonomously**: [pointer to the Decision Taken Autonomously entries above, or
   "none"]
 - **Next step**: [resume after answering / review-and-merge]
@@ -220,14 +172,14 @@ The implementation journal. Built incrementally — each slice is appended as it
 **Route/Actor/Gear + journal-schema contract (#90).** Six rules govern the per-slice route and decision fields; all are `<!-- optional -->`, so an older or interactive journal that omits them is valid (graceful absence — readers treat a missing `Route` as `interactive`, a missing `Actor` as `human`).
 - **Validation token first.** `**Validation**` leads with a bare `pass` or `fail` token before any prose, so a rollup reader can extract the verdict mechanically without parsing the detail.
 - **Multi-commit Commit.** A slice that lands in more than one commit lists them `+`-separated (`hashA + hashB`) in the single `**Commit**` field — not one commit per line, which a reader would mistake for separate slices.
-- **Controlled Route vocabulary + `mechanism:` token.** `**Route**` uses exactly `interactive | headless | headless-reentry` (the same vocabulary as ROUTE.md and the PROJECT-MAP Route table) followed by a labeled `mechanism:` token naming *how* it ran (or `n/a`). The vocabulary is closed so the three route surfaces stay comparable.
+- **Controlled Route vocabulary + `mechanism:` token.** `**Route**` uses exactly `interactive | headless | headless-reentry` followed by a labeled `mechanism:` token naming *how* it ran (or `n/a`). The vocabulary is closed so the field stays machine-comparable across journals.
 - **Section-scoped autonomous attribution.** A decision a headless actor made on its own goes under `**Decisions Taken Autonomously**` with `(decided by: [actor] — autonomous, slice N)`, where `[actor]` is the autonomous actor's role identifier (e.g. `vine-coder`) — never a model name, so the attribution stays accurate whatever model runs the role. The `(slice N)` scopes the attribution to the slice it was made in, so a reviewer can tie each autonomous choice to its work without it bleeding across slices.
 - **Formalized `(decided by:)` + confidence.** Every entry under `**Decisions made during implementation**` carries `(decided by: engineer | claude)` and may carry an optional `[confidence: high | medium | low]` tag — the same `(decided by:)` convention the per-slice records already use, now part of the contract.
 - **Mechanism-divergence correction (the #90 wrong-extraction gap).** If the run's mechanism diverges mid-slice from what the `Route` field recorded (e.g. a planned `headless` `claude -p` run actually completes via an Agent-tool subagent — the spike's exact divergence), **correct the `mechanism:` token to the mechanism that actually ran** and note the divergence in `**Deviations from spec**`. A prose note alone is insufficient: the field itself must be made true, because mechanical extraction reads the field, not the prose around it.
 
 **Remaining Work dependency.** The `### Remaining Work` section stays `<!-- optional -->` because it only exists at session boundaries — `vine:navigate` writes it when pausing between slices and at phase completion, so a mid-implementation journal legitimately won't have it (promoting it to required would fail validation on every in-progress journal). When it *is* present, two readers depend on it: `vine:resume`'s no-PAUSE.md path reconstructs handoff state from it, and native-task rebuild (see [Source of Truth vs Derived Views](#source-of-truth-vs-derived-views)) uses it for cross-slice context.
 
-**Headless Handoff contract.** `<!-- optional -->` and present only on a headless run — an interactive journal never has it. `vine:navigate`'s headless decision protocol writes it when it escalates a `human-required` decision (or finishes a scope cleanly) and then stops. It is the single block that serves both the **outbound** contract (what the unattended actor reports on the way out) and the **inbound** contract (what the reviewer, or `vine:resume`, reads on the way in). It points at ROUTE.md — the authorization the run executed under — rather than restating it, per [Reference Legibility](#reference-legibility). It is mechanism-agnostic: the same block regardless of how the actor was launched ("VINE is the map, not the mechanism" — the cycle-0 spike's Q2 finding). Like Remaining Work, it stays `<!-- optional -->` because an interactive or in-progress journal legitimately won't carry it.
+**Headless Handoff contract.** `<!-- optional -->` and present only on a headless run — an interactive journal never has it. `vine:navigate`'s headless decision protocol writes it when it escalates a `human-required` decision (or finishes a scope cleanly) and then stops. It is the single block that serves both the **outbound** contract (what the unattended actor reports on the way out) and the **inbound** contract (what the reviewer, or `vine:resume`, reads on the way in). It points at the ticket — the authorization the run executed under — rather than restating it, per [Reference Legibility](#reference-legibility). It is mechanism-agnostic: the same block regardless of how the actor was launched ("VINE is the map, not the mechanism" — the cycle-0 spike's Q2 finding). Like Remaining Work, it stays `<!-- optional -->` because an interactive or in-progress journal legitimately won't carry it.
 
 **Deviation-closure contract.** When a slice's `**Deviations from spec**` field is anything but "None", `vine:navigate` step 6 also annotates the affected SPEC.md section (strikethrough/addendum), and navigate's completion gate verifies the pair held — an annotated-nowhere deviation is a gate gap, listed like a missing commit hash. The rule is load-bearing and lives in the command (this file is supplementary and doesn't ship via create-vine); it's recorded here so contributors editing the field keep both halves in sync.
 
@@ -360,12 +312,6 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 |-------|--------|--------|----|
 | Phase 1: [Name] | 1-3 | ⬜ Pending | — |
 | Phase 2: [Name] | 4-5 | ⬜ Pending | — |
-
-### Route <!-- optional -->
-
-| Scope | Route | Actor | Outcome | Gate record |
-|-------|-------|-------|---------|-------------|
-| [phase group / slice] | [interactive \| headless \| headless-reentry] | [human \| actor id] | [in-progress \| shipped \| escalated \| —] | [./ROUTE.md] |
 ```
 
 **Status markers** (three, used in both tables):
@@ -380,7 +326,7 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 
 1. **Created** by `vine:verify` — writes PROJECT-MAP.md alongside CONTEXT.md. VINE Progress table has verify=✅, all others=⬜. No Milestones table yet.
 2. **Updated** by `vine:inquire` — sets inquire→🚧 on start, ✅ on completion. If the engineer confirms multi-PR treatment, adds the Milestones table with all phases as ⬜ Pending.
-3. **Updated** by `vine:navigate` — sets navigate→🚧 on start. When it writes a ROUTE.md at head, adds/updates the optional Route table row (a derived pointer to ROUTE.md). At phase group boundaries (multi-PR), updates the completed milestone row to ✅ Shipped and records the PR number if known. Sets navigate→✅ on completion.
+3. **Updated** by `vine:navigate` — sets navigate→🚧 on start. At phase group boundaries (multi-PR), updates the completed milestone row to ✅ Shipped and records the PR number if known. Sets navigate→✅ on completion.
 4. **Updated** by `vine:evolve` — sets evolve→🚧 on start, ✅ on completion.
 5. **Read** by `vine:resume` — displays VINE Progress and Milestones in the resume summary.
 6. **Read** by `vine:pause` — uses current VINE phase for pause context.
@@ -390,7 +336,6 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 - **Optional.** Every command must work identically without PROJECT-MAP.md. No errors, no warnings. Commands check for its existence before reading or updating.
 - **Created by verify only.** Other phases update it but never create it. If verify didn't create one (e.g., older project), downstream phases skip PROJECT-MAP updates silently.
 - **Milestones table is conditional.** Only added by inquire when the engineer confirms multi-PR treatment. Single-PR features have a VINE Progress table but no Milestones table.
-- **Route table is a derived pointer.** Optional; added by `vine:navigate` when it writes a ROUTE.md (the `Gate record` cell links to it). It holds no authoritative state — the routing decision (verdict, legs, constraints, basis) lives in ROUTE.md, and the execution columns (`Actor`, `Outcome`) mirror the per-slice `**Actor**` / `**Route**` fields and the Headless Handoff in NAVIGATION.md. Every cell is reconstructable from those two authoritative artifacts. Absent a ROUTE.md the table is simply omitted; readers treat its absence as "interactive, no headless authorization." Like the rest of PROJECT-MAP, when it disagrees with ROUTE.md (route) or the journal (actor/outcome), those win.
 - **Scannable first.** Tables over prose. Short status markers over verbose descriptions. The whole file should be readable in a terminal glance.
 
 ## Per-Repo Artifacts
@@ -549,7 +494,6 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 | State | Source of truth | Lifecycle |
 |-------|-----------------|-----------|
 | The plan — what slices and phase groups exist | `SPEC.md` | durable |
-| The route decision — verdict, constraints, allowlist, validation baseline, input basis | `ROUTE.md` | durable |
 | Implementation progress — which slices are done, with commits, decisions, learnings | `NAVIGATION.md` | durable |
 | What's active right now | `.vine/ACTIVE` | ephemeral |
 | Handoff notes across a session gap | `PAUSE.md` | ephemeral |
@@ -557,13 +501,13 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 **Derived views** (never authoritative; rebuilt from the sources above):
 
 - **Native tasks** (`TaskCreate`/`TaskUpdate`/`TaskList`, when available) — the ephemeral, in-session **live view** of slice progress. It mirrors NAVIGATION.md: one task per slice in the current phase group, titled by the slice name, status `pending`/`in_progress`/`completed`, ordered to match slice dependencies, with a `(conditional: <condition>)` prefix on conditional slices. It holds the progress *skeleton only* — never the approach, decisions, commits, acceptance criteria, or learnings, which live solely in NAVIGATION.md. `vine:navigate` creates it at session start and updates it at slice transitions; `vine:resume` rebuilds it from NAVIGATION.md (which slices are Complete) plus SPEC.md (the full slice list). **Tasks are rebuilt FROM the journal, never the reverse** — if the session dies nothing is lost, because the live view carries no information the durable artifacts don't already have.
-- **PROJECT-MAP.md** — a **durable** derived view: the scannable phase-level summary (VINE Progress + Milestones + the optional Route table). Commands update its rows as a convenience, but every row is reconstructable from the authoritative artifacts (phase status from the artifact chain; slice and milestone status from NAVIGATION.md and SPEC.md; the Route row from ROUTE.md). It is a cache for at-a-glance scanning, not a second source of truth — when it disagrees with the journal or ROUTE.md, those win. This is why its schema stays coarse (phases and phase groups, not slices): pushing slice-level state into it would create a second writer for state the journal already owns.
+- **PROJECT-MAP.md** — a **durable** derived view: the scannable phase-level summary (VINE Progress + Milestones). Commands update its rows as a convenience, but every row is reconstructable from the authoritative artifacts (phase status from the artifact chain; slice and milestone status from NAVIGATION.md and SPEC.md). It is a cache for at-a-glance scanning, not a second source of truth — when it disagrees with the journal, the journal wins. This is why its schema stays coarse (phases and phase groups, not slices): pushing slice-level state into it would create a second writer for state the journal already owns.
 
 **When task tools are unavailable** there is simply no live view: `vine:navigate`, `vine:resume`, and `vine:status` behave exactly as they do today, reading progress directly from the durable artifacts. Every consumer degrades to the source of truth.
 
 ## Committing Artifacts
 
-Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `ROUTE.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
+Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
 
 - **Tracked** (`.vine/projects/` not gitignored) = the team-shared choice (see the Knowledge Boundary rule). The artifacts travel with the code through history and PRs.
 - **Untracked / personal scope** (gitignored, or a future `.vine.local/` root) = artifacts stay local to the engineer. Fully supported.
@@ -576,7 +520,6 @@ The journal-before-commit guarantee holds either way: `journal-check.sh` compare
 |--------------|----------------|------------------------------|
 | **Verify completion** (`vine:verify` wrap-up, after the engineer approves) | — | CONTEXT.md + PROJECT-MAP.md — their first entry into history |
 | **Inquire completion** (`vine:inquire` sign-off) | — | SPEC.md + the PROJECT-MAP.md inquire row |
-| **Navigate head** (`vine:navigate`, gate run before the first slice) | — | ROUTE.md — the gate record's entry into history (bundled with the first slice commit of the group) |
 | **Slice commit** (`vine:navigate` step 4c) | the slice's code | that slice's NAVIGATION.md journal entry + any SPEC.md deviation annotations made during the slice (step 6) |
 | **Phase-group boundary** (`vine:navigate` step 8) | — | PROJECT-MAP.md (navigate row, Milestones row → status / PR#) + the SPEC.md phase-group ✅ marker |
 | **Evolve commit** (`vine:evolve`) | — | EVOLUTION.md and the `.resolved` marker |
