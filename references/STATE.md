@@ -192,7 +192,7 @@ The implementation journal. Built incrementally — each slice is appended as it
 - **Deviations from spec**: Any changes and why <!-- optional -->
 - **Validation**: [`pass` | `fail` token first, then details — e.g. `pass — lint, typecheck, tests`] <!-- required -->
 - **Decisions made during implementation**: [decision]: [rationale] (decided by: engineer | claude) [confidence: high | medium | low] <!-- optional -->
-- **Decisions Taken Autonomously**: [headless only — decision: rationale (decided by: claude — autonomous, slice N)] <!-- optional -->
+- **Decisions Taken Autonomously**: [headless only — decision: rationale (decided by: [actor] — autonomous, slice N)] <!-- optional -->
 - **Acceptance criteria**: [met/not met with details] <!-- required -->
 - **Engineer feedback incorporated**: [what the engineer corrected or steered] <!-- optional -->
 - **Learnings**: What both sides learned from this slice <!-- required -->
@@ -221,7 +221,7 @@ The implementation journal. Built incrementally — each slice is appended as it
 - **Validation token first.** `**Validation**` leads with a bare `pass` or `fail` token before any prose, so a rollup reader can extract the verdict mechanically without parsing the detail.
 - **Multi-commit Commit.** A slice that lands in more than one commit lists them `+`-separated (`hashA + hashB`) in the single `**Commit**` field — not one commit per line, which a reader would mistake for separate slices.
 - **Controlled Route vocabulary + `mechanism:` token.** `**Route**` uses exactly `interactive | headless | headless-reentry` (the same vocabulary as ROUTE.md and the PROJECT-MAP Route table) followed by a labeled `mechanism:` token naming *how* it ran (or `n/a`). The vocabulary is closed so the three route surfaces stay comparable.
-- **Section-scoped autonomous attribution.** A decision a headless actor made on its own goes under `**Decisions Taken Autonomously**` with `(decided by: claude — autonomous, slice N)` — the `(slice N)` scopes the attribution to the slice it was made in, so a reviewer can tie each autonomous choice to its work without it bleeding across slices.
+- **Section-scoped autonomous attribution.** A decision a headless actor made on its own goes under `**Decisions Taken Autonomously**` with `(decided by: [actor] — autonomous, slice N)`, where `[actor]` is the autonomous actor's role identifier (e.g. `vine-coder`) — never a model name, so the attribution stays accurate whatever model runs the role. The `(slice N)` scopes the attribution to the slice it was made in, so a reviewer can tie each autonomous choice to its work without it bleeding across slices.
 - **Formalized `(decided by:)` + confidence.** Every entry under `**Decisions made during implementation**` carries `(decided by: engineer | claude)` and may carry an optional `[confidence: high | medium | low]` tag — the same `(decided by:)` convention the per-slice records already use, now part of the contract.
 - **Mechanism-divergence correction (the #90 wrong-extraction gap).** If the run's mechanism diverges mid-slice from what the `Route` field recorded (e.g. a planned `headless` `claude -p` run actually completes via an Agent-tool subagent — the spike's exact divergence), **correct the `mechanism:` token to the mechanism that actually ran** and note the divergence in `**Deviations from spec**`. A prose note alone is insufficient: the field itself must be made true, because mechanical extraction reads the field, not the prose around it.
 
@@ -289,7 +289,7 @@ thinking, what to pick up first, anything that won't survive a session break]
    - `vine:navigate` — at session start, the same moment `.vine/ACTIVE` is written; notes are surfaced in the starting-point summary first.
    - `vine:inquire` — at session start, after reading CONTEXT.md (handles a pause taken after verify); notes are surfaced in the context summary first.
    - `vine:evolve` — at session start, after reading the feature's artifacts; notes are surfaced first.
-   - `vine:evolve` when writing `.resolved` — backstop; a resolved project's pause state is definitionally stale.
+   - `vine:evolve` when writing `.resolved` — backstop; session-start consumption normally removed PAUSE.md already, so a surviving one is surfaced then deleted like the rest (its notes appeared after evolve began and aren't necessarily stale).
 
    No consumed pause survives a restarted session: if PAUSE.md still exists, the pause hasn't been picked back up yet.
 

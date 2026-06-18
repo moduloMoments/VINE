@@ -105,7 +105,7 @@
     pointer near it still describe the route model; they retire with ROUTE.md, not here.
 
 ### Slice 3: Auto-agent ticket convention — Complete
-- **Commit**: pending
+- **Commit**: f58a128
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
@@ -145,3 +145,44 @@
   - Claude → Engineer: writing the convention ROUTE-free (eligibility as a delegation-time judgment,
     not a stored gate) is what lets Phase 2 retire ROUTE without rewriting this section — the
     additive slice already lands in its post-retirement shape.
+
+### Slice 4: De-hardcode attribution + fix evolve.md PAUSE delete — Complete
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human
+- **Gear**: free-climb
+- **Approach taken**: (a) Replaced the hardcoded `claude` in the **autonomous** attribution at all
+  three sites — `commands/vine/navigate.md:387`, `references/STATE.md:195`, `references/STATE.md:224`
+  — with `[actor]`, the autonomous actor's role identifier, glossed `e.g. vine-coder` in the STATE
+  prose rule with "never a model name." Left the interactive decision-log `(decided by: engineer |
+  claude)` lines untouched (navigate.md:385, STATE.md:194/225) — they're a legitimate choice list,
+  and `grep "decided by: claude"` doesn't match them, so the feature grep is clean. (b) Changed
+  evolve's resolve-time PAUSE delete (evolve.md ~523) from silent to surface-then-delete: a PAUSE.md
+  surviving session-start consumption appeared *after* evolve began, so its notes aren't stale —
+  surface then delete, matching the rule the other four triggers follow. Aligned STATE.md:292's
+  backstop description so the contract doesn't drift from the command.
+- **Deviations from spec**: Minor in-spirit addition — also updated `references/STATE.md:292` (not in
+  the spec's listed lines) so the PAUSE-lifecycle description matches the corrected evolve behavior;
+  leaving it would have drifted the contract from the command.
+- **Validation**: pass — `grep "decided by: claude"` clean; interactive log preserved (3 sites);
+  three `[actor]` sites confirmed; no `silently delete` left in evolve.md; `trellis-check.sh` 11/11,
+  anchors resolve (8 pairs), stamp refreshed for the navigate.md + evolve.md command edits.
+- **Decisions made during implementation**:
+  - Use `[actor]` (role identifier, glossed `e.g. vine-coder`) rather than the literal `vine-coder`
+    in the generic STATE/navigate templates — the schema stays actor-agnostic while the agent recipe
+    keeps the concrete name (decided by: claude) [confidence: high]
+  - Treat the feature-level "no `decided by: claude`" AC as satisfied by fixing the three autonomous
+    sites only: the interactive `engineer | claude` lines aren't matched by that grep and name the
+    interactive pair legitimately, so de-hardcoding them is out of scope (decided by: claude)
+    [confidence: high] — intent-over-letter resolution
+  - Fix evolve's backstop toward surface-then-delete (not "prove redundant + remove"): the rare
+    surviving PAUSE.md carries non-stale notes, so consistency with the other triggers is the
+    correct behavior, not deletion (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Autonomous-attribution wording references the role/route, not `claude`, at all three sites
+  - [x] Readers still default a missing `**Actor**` to `human` (STATE.md unchanged on that point)
+  - [x] evolve's resolve-time PAUSE delete surfaces notes before deleting, matching surface-then-delete
+- **Learnings**:
+  - Claude → Engineer: the feature grep `decided by: claude` is sharper than it looks — it only
+    matches the autonomous form, so the interactive `engineer | claude` log is safe by construction.
+    The two attribution layers were already cleanly separable.
