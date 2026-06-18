@@ -147,6 +147,37 @@ When contributing to the VINE framework itself:
 - PAUSE.md exists — suggest `/vine:resume`
 - All projects resolved — suggest `/vine:verify` for a new feature
 - Work looks smaller than expected during verify — suggest `/vine:pair`
+- Scope is bounded, independent, carries ACs, and the repo has a validation contract — it may be
+  ticketed to the `vine-coder` agent instead of running navigate (see Autonomous Delegation)
+
+## Autonomous Delegation — the vine-coder ticket
+
+The autonomous path runs alongside the interactive cycle above, not inside it. Autonomous work is
+not a human-shaped command run unattended — it is a **ticket** handed to the `vine-coder` agent (the
+autonomous coding role: implements a ticketed SPEC slice end-to-end and opens one PR). VINE owns the
+role recipe and this ticket convention; the platform owns how the role is invoked (the sub-agent, a
+GitHub trigger). VINE never runs an agent itself.
+
+**When scope is eligible.** Hand scope to `vine-coder` only when it is bounded (the files it touches
+are enumerable, including the requirement-implied ones an acceptance criterion forces), independent
+of in-flight work, its SPEC slices carry acceptance criteria, and a validation contract exists (the
+`## Validation` block, or prose-inferable checks). If any of those is missing, keep the work
+interactive — run `/vine:navigate` with a human. This is a judgment made *when* delegating, not a
+stored gate.
+
+**The ticket is the authorization.** It carries, as plain instructions, everything the cold agent
+needs:
+
+- **Scope** — which SPEC slice(s) to implement.
+- **SPEC pointer** — the path to SPEC.md and the feature's artifact directory.
+- **Constraints** — what the work must honor: the files it may touch or must leave alone, the
+  validation it must keep green, and that `human-required` decisions stop-and-surface (a sub-agent
+  cannot prompt — see Decision Delegation below).
+- **Dispatch** — names `vine-coder`.
+
+No separate per-feature route artifact is needed: the payload lives in {the ticket, git / the PR,
+the `## Validation` block}. The PR that comes back is the result; a human or the `vine-reviewer`
+agent (the cold-reviewer role) reviews it before merge — **the review is the leash.**
 
 ## Collaboration Stance
 

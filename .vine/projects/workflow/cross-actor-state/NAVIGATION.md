@@ -54,7 +54,7 @@
     behavior rather than a pre-committed artifact.
 
 ### Slice 2: vine-reviewer agent + retire review.md overlay — Complete
-- **Commit**: pending
+- **Commit**: 27f50d4
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
@@ -103,3 +103,45 @@
     "mechanical teeth" principle applied to a role.
   - Remaining for Phase 2 (Slice 7): README's ROUTE gate-record paragraph and the STATE.md ROUTE
     pointer near it still describe the route model; they retire with ROUTE.md, not here.
+
+### Slice 3: Auto-agent ticket convention — Complete
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human
+- **Gear**: free-climb
+- **Approach taken**: Defined the convention in `.vine/context/shared.md` as a new top-level
+  `## Autonomous Delegation — the vine-coder ticket` section (cross-phase routing knowledge — per the
+  Knowledge Boundary rule, routing lives in shared.md, not as a STATE.md artifact). It states the
+  eligibility judgment (bounded + independent + ACs + validation contract), the ticket payload
+  (scope, SPEC pointer, constraints, dispatch to vine-coder), and that the PR review is the leash.
+  Added a one-line routing hint to State-Based Suggestions, and a `🎫 Auto-agent ticket` emission to
+  inquire's completion block that references the shared.md convention. Wrote the section to stand on
+  its own after Phase 2 (no ROUTE.md dependency — it says "no separate per-feature route artifact is
+  needed," which stays true after retirement).
+- **Deviations from spec**: None. Spec listed `references/STATE.md` and `commands/vine/navigate.md`
+  as *possibly* touched; consciously left both alone — the AC says keep it a convention not a heavy
+  artifact (so no STATE.md format), and navigate's ticket-handoff path folds more naturally into
+  Slice 6's navigate rework than touching navigate twice.
+- **Validation**: pass — `trellis-check.sh` 11/11, cross-reference anchors resolve (8 pairs), stamp
+  refreshed for the inquire.md command edit; new shared.md section confirmed free of ROUTE.md
+  coupling.
+- **Decisions made during implementation**:
+  - Home the convention in shared.md, not STATE.md: the AC says "convention, not a heavy new
+    artifact," and the Knowledge Boundary rule routes cross-phase routing to shared.md (decided by:
+    claude) [confidence: high]
+  - Leave inquire's existing route-preview block in place (Phase 1 is additive; Slice 5 retires it)
+    and write the new ticket block to be self-standing so it survives that removal (decided by:
+    claude) [confidence: high]
+  - Don't touch navigate.md this slice — its ticket-handoff path belongs with Slice 6's
+    interactive-only rework, avoiding a double-touch of the most cross-referenced command (decided
+    by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] Documented ticket convention (scope + SPEC pointer + constraints + names vine-coder)
+  - [x] inquire's completion block can emit it for autonomous-eligible scope
+  - [x] Glossed per Reference Legibility (vine-coder, vine-reviewer, `## Validation` all glossed in
+    place — reads without dereferencing)
+  - [x] Kept a convention, not a heavy new artifact (no new STATE.md artifact)
+- **Learnings**:
+  - Claude → Engineer: writing the convention ROUTE-free (eligibility as a delegation-time judgment,
+    not a stored gate) is what lets Phase 2 retire ROUTE without rewriting this section — the
+    additive slice already lands in its post-retirement shape.
