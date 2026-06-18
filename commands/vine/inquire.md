@@ -225,7 +225,10 @@ Based on everything you've discussed, suggest updates to the project backlog:
 - Items that are now unblocked by this feature
 - Tech debt items deferred from this work
 
-Present these as suggestions. The engineer manages the backlog.
+Present these as suggestions — the engineer manages the backlog. For any item that's actionable
+now rather than someday, apply the **Out-of-Scope Routing** pattern from `.vine/context/shared.md`
+(backlog by default, or a `vine:pair` session for a small fix worth doing now) instead of only
+parking it.
 
 ### 8. Write SPEC.md
 

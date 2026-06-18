@@ -501,8 +501,11 @@ The work so far should stand on its own.
 than you. When they suggest a different approach, explore it seriously. When you're unsure,
 say so — the engineer is a resource, not an audience.
 
-**Stay in scope.** If you notice something that should be fixed but isn't in the spec, note it
-in NAVIGATION.md under "discovered items" rather than fixing it.
+**Stay in scope.** If you notice something that should be fixed but isn't in the spec, don't
+fix it inline. Note it in NAVIGATION.md under "discovered items," then apply the **Out-of-Scope
+Routing** pattern from `.vine/context/shared.md` — recommend backlog by default, or, for a small
+fix the engineer wants handled now, a separate `vine:pair` session so the current slice stays
+focused.
 
 ## Phase Completion
 

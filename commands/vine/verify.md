@@ -197,6 +197,11 @@ are "not great." Capture them without judgment:
 - Whether it should be addressed now, during the feature work, or later
 - Rough effort estimate if the engineer has a sense
 
+Most of these stay cataloged for inquire to weigh against the feature. But if something is
+clearly unrelated to this feature and worth acting on regardless, apply the **Out-of-Scope
+Routing** pattern from `.vine/context/shared.md` rather than letting it ride — backlog it by
+default, or a `vine:pair` session for a small fix worth doing now.
+
 ### 6. Write CONTEXT.md
 
 Once you've explored enough, produce the context document. This should capture everything you've
