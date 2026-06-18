@@ -393,14 +393,18 @@ Every decision point in the commands is tagged `human-required` or `default-able
 human-required decision the agent writes a structured handoff to NAVIGATION.md and stops rather
 than guessing.
 
-**The reviewer.** [`.vine/context/review.md`](.vine/context/review.md) is a recipe for a fresh
-reviewer who wasn't part of the session: how to orient (read ROUTE.md, then the journal, then the
-commits and final files) and what to produce (a verdict, severity-ordered findings, and a draft
-PR description). Everything the reviewer needs lives in durable state, not session memory.
+**The reviewer.** [`agents/vine-reviewer.md`](agents/vine-reviewer.md) is the recipe for a fresh
+reviewer who wasn't part of the session: how to orient (read the originating scope, then the
+journal, then the commits and final files) and what to produce (a verdict, severity-ordered
+findings, and a draft PR description). Its `tools` exclude Edit/Write, so "report only" is enforced
+by the platform, not just asserted. Everything the reviewer needs lives in durable state, not
+session memory.
 
 **The agents.** [`agents/`](agents/) ships the agent definitions VINE auto-delegates to by
-description match — `vine-verification` (runs the validation baseline and checks acceptance
-criteria) and `vine-codebase-explorer` (structured codebase exploration). They are the same in an
+description match: `vine-verification` (runs the validation baseline and checks acceptance
+criteria), `vine-codebase-explorer` (structured codebase exploration), `vine-coder` (the autonomous
+coding role — implements a ticketed slice end-to-end and opens a PR), and `vine-reviewer` (the
+cold-reviewer role described above). The verification and exploration agents work the same in an
 interactive or headless run.
 
 See the [State Reference](references/STATE.md) for the ROUTE.md format and the decision-delegation

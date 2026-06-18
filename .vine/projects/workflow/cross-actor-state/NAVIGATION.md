@@ -2,7 +2,7 @@
 ## Date: 2026-06-17
 
 ### Slice 1: vine-coder agent definition — Complete
-- **Commit**: pending
+- **Commit**: 45b8a33
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
@@ -52,3 +52,54 @@
   - Claude → Engineer: writing the leash as *self-derived* (reasoned blast radius, not a handed
     allowlist) is what lets the ticket stay lightweight — it absorbs ROUTE's discipline as agent
     behavior rather than a pre-committed artifact.
+
+### Slice 2: vine-reviewer agent + retire review.md overlay — Complete
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human
+- **Gear**: free-climb
+- **Approach taken**: Ported `.vine/context/review.md` into `agents/vine-reviewer.md` verbatim across
+  its four sections (Role + authority boundary, Orientation Order, What to Scrutinize, What to
+  Produce), **dropping the ROUTE orientation step** and renumbering the order 1–4. Frontmatter:
+  `name: vine-reviewer`, delegation-driving description, `tools: Read, Grep, Glob, Bash` (no
+  Edit/Write — the report-only boundary is now platform-enforced). Added a cold-actor/final-message
+  note and an explicit statement that the tool set *is* the authority boundary. Deleted the overlay
+  (`git rm`). Rewrapped `.claude/commands/pr-review.md`: Step 2 now confirms the agent exists rather
+  than loading recipe text; Step 3 spawns the `vine-reviewer` agent type (system prompt = recipe)
+  instead of stuffing overlay text into a `general-purpose` subagent; removed the legacy
+  `.vine/hooks/review.md` fallback note; retargeted the tool's framing and validation read-out to
+  `vine-reviewer`. Fixed README's reviewer paragraph (now links `agents/vine-reviewer.md`, drops the
+  ROUTE orientation, notes the tools-enforced boundary) and added `vine-coder`/`vine-reviewer` to the
+  agents inventory.
+- **Deviations from spec**: None. (Spec named inquire.md/navigate.md as *possibly* touched for the
+  ticket convention — that is Slice 3, untouched here.)
+- **Validation**: pass — `trellis-check.sh` 11/11, cross-reference anchors resolve; `review.md` grep
+  clean across product surfaces (only false positives in `pr-review.md` filename and `preview.md`);
+  `route` absent from `agents/vine-reviewer.md`.
+- **Decisions made during implementation**:
+  - Model `opus` for vine-reviewer (not `sonnet` like the read-only agents): the review is the leash
+    on vine-coder's unattended output, so the checker should be at least as strong as what it checks
+    (decided by: engineer) [confidence: high]
+  - Don't pass `shared.md` to the spawned reviewer: the truest auto-reviewer simulation is the agent
+    system prompt + CLAUDE.md + PR pointers only; extra overlay text would contaminate the
+    Missing-context-log validation signal (decided by: claude) [confidence: high]
+  - Added `vine-coder` to README's agents inventory now (Phase 1 ships it) but left the README ROUTE
+    gate-record narrative for Phase 2's retirement sweep — Phase 1 is additive (decided by: claude)
+    [confidence: high]
+- **Acceptance criteria**:
+  - [x] Valid frontmatter — `name: vine-reviewer`, delegation-driving description, `tools: Read,
+    Grep, Glob, Bash` (no Edit/Write — boundary mechanically enforced)
+  - [x] Body: Role/authority-boundary, Orientation Order (no ROUTE step), What to Scrutinize, What to
+    Produce
+  - [x] `pr-review` spawns `vine-reviewer` with identical instructions (agent system prompt = recipe)
+  - [x] No dangling reference to `.vine/context/review.md` (grep clean)
+  - [x] Legacy `.vine/hooks/review.md` fallback note in pr-review reconciled (removed)
+- **Engineer feedback incorporated**: Chose opus for the reviewer to match vine-coder's stakes.
+- **Learnings**:
+  - Engineer → Claude: the reviewer's model should track the coder's — a leash weaker than what it
+    restrains is no leash.
+  - Claude → Engineer: porting an overlay to an agent makes the authority boundary *mechanical* —
+    `tools` without Edit/Write enforces "report only" that prose could only request. This is the
+    "mechanical teeth" principle applied to a role.
+  - Remaining for Phase 2 (Slice 7): README's ROUTE gate-record paragraph and the STATE.md ROUTE
+    pointer near it still describe the route model; they retire with ROUTE.md, not here.
