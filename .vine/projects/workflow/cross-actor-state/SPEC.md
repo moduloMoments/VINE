@@ -190,7 +190,7 @@ vine-reviewer). ROUTE.md still exists but the new agents don't consume it.
   other four triggers follow.
 **Complexity signal**: Low — targeted edits at known lines.
 
-## Phase 2: Retire the old machinery + repo-wide alignment (Slices 5-7) ⬜
+## Phase 2: Retire the old machinery + repo-wide alignment (Slices 5-7) ✅
 Summary: Remove ROUTE.md and navigate's in-session headless route now that the new path replaces
 them, then sweep the whole repo so every command reads as human-in-the-loop and update the ROADMAP.
 Session boundary: After this phase the old autonomous machinery is gone, no stale references remain,
@@ -228,6 +228,13 @@ reverse, plus a closing alignment pass.
   renumbering).
 **Complexity signal**: High — navigate is the most cross-referenced command, and the Decision
   Delegation policy is policy-class; touch carefully.
+> **Deviation (Slice 6, engineer-directed):** the `decision-class` sweep was taken **repo-wide**
+> — all 36 tags removed across all 8 commands (navigate, inquire, evolve, verify, resume, pause,
+> pair, init) — not navigate-only as scoped above. Rationale: `vine-coder` implements from the
+> SPEC/ticket and never executes command files, so every per-site tag is vestigial, not just
+> navigate's; the engineer asked that every command read as human-triggered-only. The Decision
+> Delegation policy was correspondingly reframed to judgment-applied governance (no per-site
+> roster). See NAVIGATION.md Slice 6.
 
 ### Slice 7: Repo-wide alignment sweep + ROADMAP update
 **Goal**: After Slices 5-6 land, sweep the *entire* repo for any remaining ROUTE references or

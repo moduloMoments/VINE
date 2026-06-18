@@ -77,15 +77,16 @@ When adding or removing a VINE command, update all of these:
 - `.vine/context/verify.md` — command count reference
 
 ### State Artifact Addition Checklist
-When adding or removing a state artifact (the ROUTE.md addition in the routing-foundation cycle is
-the worked example), update all of these:
+When adding or removing a state artifact (ROUTE.md's addition in the routing-foundation cycle and
+its removal one cycle later in cross-actor-state are the worked examples — the same checklist run
+forward, then in reverse), update all of these:
 - `references/STATE.md` — the artifact template (every heading marked `<!-- required -->` /
   `<!-- optional -->`), its place in the artifact chain, and the Source-of-Truth and Committing
   Artifacts tables
 - `CLAUDE.md` — the State Artifact Chain line
 - `README.md` — the State Artifacts table
 - `.claude/commands/trellis.md` — the Step 5a template-parse list, the Step 5b discovery glob, and
-  Check A's applies-to set (plus a shape check like Check E if the artifact has contractual fields)
+  Check A's applies-to set (plus a per-artifact shape check if the artifact has contractual fields)
 
 ### Availability-Gated Pointer
 When VINE knowledge must be referenced from a surface non-VINE teammates load (CLAUDE.md), use an availability-gated pointer: gate the suggestion on whether the vine commands are actually present in the session's skill list, and point at this file for routing. The gate is what Claude can see, not where files live — so mixed-adoption teams and global installs both resolve correctly. Future commands reuse this pattern instead of reinventing the mixed-adoption answer.
@@ -220,33 +221,30 @@ Apply these to every `AskUserQuestion` call, in any phase:
 ## Decision Delegation
 <!-- class: policy -->
 
-Routing policy (#55 — the policy half of Decision Delegation) for how each `AskUserQuestion`
-decision behaves when a phase runs **headless** (an unattended actor executes; a reviewer checks
-after). It sorts every decision into one of two classes; each `AskUserQuestion` site in the
-commands carries a `<!-- decision-class: ... -->` tag so a headless actor knows how to act
-without a human present.
+Routing policy (#55 — the policy half of Decision Delegation) for how the autonomous actor — the
+`vine-coder` agent (the autonomous coding role) — handles each decision it meets while implementing
+a ticketed SPEC slice. It sorts every decision into one of two classes. The interactive VINE
+commands are human-driven: a person answers every `AskUserQuestion` as today, so this policy never
+changes their behavior — it governs autonomous (`vine-coder`) runs only. `vine-coder` does not
+execute the command files; it applies these classes by judgment to the decisions its work surfaces.
 
 This section is **policy-class**: the personal `.local` layer cannot weaken it (see Overlay
 Precedence). A *repo* overlay can still reclassify a decision by overriding this content — that
 override path is the intended #55 mechanism, available to the team, not the individual.
 
-In an **interactive** session this section is inert — the human answers every prompt exactly as
-today. It governs headless behavior only.
-
-- **`default-able`** — the actor takes the **recommended option** (the first one, the one
+- **`default-able`** — `vine-coder` takes the **recommended option** (the first one, the one
   carrying "(Recommended)") and records it in NAVIGATION.md as a **Decision Taken Autonomously**
   with section-scoped `(slice N)` attribution. Use for decisions where proceeding on the
   recommended default is safe and a reviewer can ratify after the fact (gearing, continuation,
   test-coverage defer, profile/growth updates, feature selection, commit confirmation).
-- **`human-required`** — the actor does **not** choose. It **escalates to the structured handoff
-  and stops** (the handoff block in `navigate.md`). Use for decisions a reviewer must own:
-  design choices, spec sign-off, scope/acceptance, blocker resolution, and anything that commits
-  the work to a direction expensive to reverse.
+- **`human-required`** — `vine-coder` does **not** choose. It **escalates via the Headless Handoff
+  block and stops** (written to NAVIGATION.md — format in `references/STATE.md`; the leash is the PR
+  review). Use for decisions a reviewer must own: design choices, spec sign-off, scope/acceptance,
+  blocker resolution, and anything that commits the work to a direction expensive to reverse.
 
-The per-site assignments live at the tagged `AskUserQuestion` sites, not here — this section
-defines the two classes and their headless semantics; the commands carry the roster. When a
-site's class is genuinely ambiguous, default to `human-required`: escalation is always safe,
-silent autonomy is not.
+This section defines the two classes and their autonomous semantics; `vine-coder`'s recipe
+(`agents/vine-coder.md`) carries how it acts on them. When a decision's class is genuinely
+ambiguous, treat it as `human-required`: escalation is always safe, silent autonomy is not.
 
 ## Team Context
 <!-- class: policy -->

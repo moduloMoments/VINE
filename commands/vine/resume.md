@@ -46,7 +46,7 @@ If a feature path was passed as an argument, use it directly. Otherwise:
 
 - If there's exactly one active feature, use it.
 - If there are multiple active features, use `AskUserQuestion` to let the engineer pick which
-  one to resume. <!-- decision-class: default-able -->
+  one to resume.
 
 ## Gather State
 
@@ -131,7 +131,6 @@ PR column, prompt the engineer to fill them in:
 
 > "These shipped phases don't have PR numbers recorded. Want to add them?"
 
-<!-- decision-class: human-required -->
 Use `AskUserQuestion` with one question per missing PR (up to 4). For each answer, update the
 PR column in PROJECT-MAP.md. This keeps the project map accurate for evolve's cross-PR review.
 
@@ -216,7 +215,7 @@ same session.
 
 **Multiple features with PAUSE.md**: If more than one active feature has a PAUSE.md, show a
 brief summary of each (feature name, phase, time since pause) and let the engineer pick via
-`AskUserQuestion`. <!-- decision-class: default-able -->
+`AskUserQuestion`.
 
 **Stale pause state**: If PAUSE.md says "navigate in progress on Slice 3" but NAVIGATION.md
 shows Slice 3 is complete, trust the artifacts over PAUSE.md. Note the discrepancy:

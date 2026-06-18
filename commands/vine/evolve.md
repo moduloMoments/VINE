@@ -41,7 +41,7 @@ ship — every feature is an opportunity to grow on three dimensions.
 
 Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
 there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to review. <!-- decision-class: default-able --> Filter out resolved projects (directories containing a `.resolved` file) and
+feature to review. Filter out resolved projects (directories containing a `.resolved` file) and
 archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
 tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
 in its own fenced code block so it's copy-pastable.
@@ -147,7 +147,7 @@ Compile from NAVIGATION.md's "discovered items" and any gaps found during verifi
 Suggest concrete backlog items with enough context that someone else could pick them up.
 
 If there are actionable follow-up items (not just "consider someday" notes), offer to create
-tickets. <!-- decision-class: human-required --> Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which items
+tickets. Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which items
 should become tickets. For each selected item:
 
 - A title that stands alone (not "follow-up from [feature]")
@@ -210,7 +210,6 @@ project's equivalent configuration). These might include:
 - **Tribal knowledge codified**: Things from CONTEXT.md that should be persistent project knowledge
   rather than living in one VINE session's artifacts.
 
-<!-- decision-class: human-required -->
 Use `AskUserQuestion` with `multiSelect: true` to let the engineer batch their decisions on
 which suggestions to accept. Max 4 options per question — if you have more suggestions, split
 across multiple calls by category. Put the strongest recommendation first with "(Recommended)"
@@ -272,7 +271,6 @@ updates to `.vine/context/`:
 - Conventions discovered that should apply to all future VINE work (add to the shared.md overlay)
 - Domain-specific questions that should always be asked in verify (add to the verify.md overlay)
 
-<!-- decision-class: human-required -->
 Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which overlay updates
 to apply. For each accepted suggestion, write the update directly to the overlay file.
 
@@ -318,7 +316,7 @@ Check the current feature's domain against the profile:
 - **If no profile exists yet**: Offer to create `.vine/PROFILE.md` with an initial entry for
   this domain.
 
-Use `AskUserQuestion` to present the proposed change: <!-- decision-class: default-able -->
+Use `AskUserQuestion` to present the proposed change:
 
 > "Based on this cycle, I'd suggest updating your profile for the [domain] domain:"
 
@@ -336,7 +334,6 @@ the engineer writes their own narrative:
 > "Want to add a growth log entry for this cycle? It's a few bullet points on what stood
 > out — your call whether anything is worth recording."
 
-<!-- decision-class: default-able -->
 Use `AskUserQuestion`:
 1. "Use your draft" — "I'll draft bullet points from the cycle; you can edit before saving"
 2. "I'll write my own" — "I'll add the date/domain header, you fill in the bullets"
@@ -362,7 +359,6 @@ Examples of what to surface:
 - Learning style: "Engineer engages most when patterns are compared to ones they already know"
 - Review preferences: "Engineer wants to see smaller code chunks more frequently"
 
-<!-- decision-class: default-able -->
 Use `AskUserQuestion` with `multiSelect: true` to let the engineer pick which observations
 to persist. For each accepted item, suggest the exact Claude memory entry or CLAUDE.md line.
 
@@ -399,10 +395,9 @@ a real alternative, or a gotcha that cost time to learn, is a candidate. A resta
 plainly shows is not.
 
 **Let the engineer choose.** Present the mined candidates via `AskUserQuestion` (`multiSelect: true`)
-so the engineer picks which become records. <!-- decision-class: default-able --> Proposing a record is
-reviewer-ratifiable, so a headless run takes the recommended set and records the choice; an interactive
-engineer decides directly. Batch into one call; if there are more than four candidates, split by
-category across calls (Interaction Constraints, `shared.md`). **If no candidate rises to a durable
+so the engineer picks which become records — proposing a record is reviewer-ratifiable, never
+auto-applied; the engineer decides directly. Batch into one call; if there are more than four
+candidates, split by category across calls (Interaction Constraints, `shared.md`). **If no candidate rises to a durable
 record, write nothing** — declining all is current behavior, fully backward-compatible.
 
 **Write each accepted record.** One date-prefixed file per record under `.vine/knowledge/<domain>/`,
@@ -511,7 +506,7 @@ Update PROJECT-MAP.md (if it exists) — set the evolve row to ✅ with today's 
 ### Mark as Resolved
 
 After presenting the completion block, offer to mark the project as resolved using
-`AskUserQuestion`: <!-- decision-class: default-able -->
+`AskUserQuestion`:
 
 > "This VINE cycle is complete. Want to mark this project as resolved? Resolved projects
 > are filtered out of future command prompts but stay accessible by explicit path."
@@ -532,7 +527,6 @@ consumption triggers follow (PAUSE.md lifecycle in `references/STATE.md`).
 the project, offer to archive it — move it to `.vine/projects/.archive/<domain>/<feature-slug>/`, which
 preserves the artifacts but gets completed work fully out of the way (lifecycle in `references/STATE.md`,
 "Project Lifecycle"). An active project is never archived. Use `AskUserQuestion`:
-<!-- decision-class: default-able -->
 
 Options (mutually exclusive):
 1. "Archive now (Recommended)" — "Move the project under `.vine/projects/.archive/`"
@@ -588,7 +582,6 @@ in-flight CI without the engineer seeing it. No-op if `gh` was unavailable or al
 
 > "Ready to open a PR? I have the description and reviewer notes drafted in EVOLUTION.md."
 
-<!-- decision-class: default-able -->
 Use `AskUserQuestion`:
 
 Options (mutually exclusive):

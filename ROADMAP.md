@@ -45,9 +45,10 @@ of it:
 
 VINE already routes by trust at two granularities — verify's scope check (full cycle vs.
 `vine:pair`) and navigate's per-slice gearing (walk-me-through vs. free-climb). v0.4.0 extends
-that gearing axis past the human-attention boundary:
+that gearing axis past the human-attention boundary — autonomous work runs as an **agent role**
+(`vine-coder`), not a human-shaped command run unattended:
 
-**walk-me-through → free-climb → hybrid-parallel → headless**
+**walk-me-through → free-climb → agent-delegated → hybrid-parallel**
 
 How each stage works:
 
@@ -60,10 +61,11 @@ How each stage works:
   overlay must never loosen a team gate.
 - **Execute** — belongs to the platform. Subagents, headless invocation, background tasks,
   parallelization: VINE supplies the decision criteria and consumes the mechanics.
-- **Handoff** — every route is journaled where evolve can read it (decided): the scope-level
-  route in PROJECT-MAP.md, the per-slice route and actor attribution as fields on
-  NAVIGATION.md entries. No new artifact.
-- **Evolve** — calibrates the criteria. Routing outcomes (e.g., a headless scope failing
+- **Handoff** — route and actor attribution are journaled where evolve can read them: the
+  per-slice `**Route**` / `**Actor**` fields on NAVIGATION.md entries (cycle 3 retired the
+  separate ROUTE.md gate record and the PROJECT-MAP route table; the journal fields remain). No
+  new artifact.
+- **Evolve** — calibrates the criteria. Routing outcomes (e.g., an agent-delegated scope failing
   validation twice) feed criteria updates the way learnings feed CLAUDE.md today; the
   Stop-hook reflection pattern (propose updates, never apply them) is the likely plumbing.
 
@@ -84,11 +86,11 @@ Every primitive is checked against three environments:
   gate below.
 - **E2 — committed shared.** `.vine/` tracked in git, multiple actors on one repo. Where
   routing, cross-actor state, and slice ownership earn their keep.
-- **E3 — remote verification.** A reviewer works from the artifact chain alone. The headless
-  route's verification leg.
+- **E3 — remote verification.** A reviewer works from the artifact chain alone. The
+  agent-delegated path's verification leg.
 
-The gearing axis aligns: E1 covers walk-through and free-climb; E2 unlocks hybrid-parallel
-and headless; E3 verifies headless output.
+The gearing axis aligns: E1 covers walk-through and free-climb; E2 unlocks agent-delegated and
+hybrid-parallel runs; E3 verifies delegated output.
 
 ### Guiding principle
 
@@ -142,14 +144,15 @@ reconciliation), which produced the consolidated verification agent the foundati
 assumes. In the rewrite numbering below: Cycles 0 (spike), 1 (Foundation), and 2 (durable
 decisions) are done. Cycle 2's two issues, [#51](https://github.com/moduloMoments/VINE/issues/51)
 and [#56](https://github.com/moduloMoments/VINE/issues/56), both landed in PR
-[#111](https://github.com/moduloMoments/VINE/pull/111). Cycle 3 (cross-actor state) is next.
+[#111](https://github.com/moduloMoments/VINE/pull/111). Cycle 3 (cross-actor state) is in progress,
+**reframed during inquire** (see the cycle-3 row below).
 
 | # | Cycle | Issues | Mode | Loop stage / why this order |
 |---|-------|--------|------|------------------------------|
 | 0 | **Coordination spike** — ✅ done 2026-06-12 | none — throwaway scaffolding | Spike (ugly allowed) | The whole loop, end to end, once: one shepherd + one auto-agent + one reviewer, one feature, one full routing decision — scope arrives → eligibility evaluated → route chosen → headless execution → reviewer consumes the handoff. Ran before the foundation; all six questions answered with run evidence — see `.vine/projects/workflow/coordination-spike/EVOLUTION.md`. Convergent finding for cycle 1: the gate's output (verdict + constraints + allowlist + validation baseline) needs a durable, reviewer-visible artifact. |
 | 1 | **Foundation** — ✅ done 2026-06-16 | [#54](https://github.com/moduloMoments/VINE/issues/54) reshaped: routing-layer eligibility gate; [#53](https://github.com/moduloMoments/VINE/issues/53) headless contract; routing policy as overlay content (Decision Delegation pulled forward from [#55](https://github.com/moduloMoments/VINE/issues/55)); rule-class precedence split | Full cycle | The *route* stage. The precedence split lands first within the cycle — promoting any scope class to auto-route is unsafe without it. #54's gate semantic lives at the routing layer: a missing validation contract makes a scope ineligible for the headless route, while interactive routes keep today's graceful fallback. #53 pairs with it — decision classification (human-required vs. default-able) plus the structured handoff block. |
 | 2 | **Durable decisions convention** — ✅ done 2026-06-16 | [#51](https://github.com/moduloMoments/VINE/issues/51) decisions + gotchas as committed markdown; [#56](https://github.com/moduloMoments/VINE/issues/56) archive-move housekeeping — both shipped in PR [#111](https://github.com/moduloMoments/VINE/pull/111) | Light cycle | Supporting subsystem: the calibration substrate. A committed, append-only, one-file-per-record layer (`.vine/knowledge/<domain>/`, ADR-style) homing durable *judgment* — decisions plus empirical gotchas the code can't reveal — that evolve writes and verify globs. **Not** a regenerable code map: codebase understanding regenerates on demand via agentic search (STATE.md "Source of Truth vs Derived Views"), never persisted to go stale. No freshness/compaction/backfill subsystem. This is where evolve's routing-criteria updates land. Descoped from the bespoke "brain" 2026-06-15. |
-| 3 | **Cross-actor state** | [#79](https://github.com/moduloMoments/VINE/issues/79) | Full cycle | The *execute* and *handoff* stages under E2: slice ownership, in-flight state, handoff payload. Redesigns the three broken-under-E2 artifacts (PAUSE.md, `.vine/ACTIVE`, PROFILE.md) as one state model rather than patching them piecemeal. Shaped by the spike's question 2. Unlocks hybrid-parallel. |
+| 3 | **Cross-actor state** — 🚧 reframed | [#79](https://github.com/moduloMoments/VINE/issues/79) | Full cycle | **Reframed during inquire** to *role-recipe autonomy + ROUTE retirement* (see `.vine/projects/workflow/cross-actor-state/SPEC.md`). Autonomous work runs through a dedicated **agent role** — `vine-coder` writes, `vine-reviewer` reviews — bounded by a ticket and gated by a PR, not an agent impersonating a headless `vine:navigate`. Once that's the model most of #79's original scope dissolves: slice ownership / cross-actor *live* state (git already isolates one-ticket→one-branch→one-PR), the PROFILE.md read-guard (the agent role has no profile step), and **ROUTE.md** — its payload (scope, constraints, validation baseline) lives in the ticket + the `## Validation` block + the PR, so this cycle **retires** it one cycle after the foundation added it (the State Artifact Addition Checklist run in reverse). Ships: two agent recipes, a lightweight ticket convention, navigate→interactive-only, and two ride-along bug fixes. PAUSE.md / `.vine/ACTIVE` / PROFILE.md stay structurally as-is. |
 | 4 | **Team layer** | [#52](https://github.com/moduloMoments/VINE/issues/52) reframed: overlay composition at the team layer | Full cycle | The *route* stage's policy layering. #52's conflict-safe conventions (single-writer feature directories, append-only journal, shared files edited only via evolve's approval flow) and its tracked-by-default flip survive intact; team context relocates from a shared.md section to a composable layer. Needs the precedence split (cycle 1) and the shared decisions layer (cycle 2) first. |
 | 5 | **Plugin** | [#57](https://github.com/moduloMoments/VINE/issues/57) expanded: packaging *plus* team-overlay distribution | Light cycle | Supporting subsystem: distribution. Ships after the team layer exists so the plugin's first release carries it. Propagation is plugin version bump + init recompose, under the backward-compat hard gate. |
 | — | **Maintenance side-track** | #46–#50 (closed as landed) | `vine:pair`, anytime | The first headless test cases — now done. #46 ran as cycle 1's first delegated headless contract test (bounded allowlist, validate, commit, stop for review); #47–#50 had already landed. The pattern held: the delegated run doubled as a contract test for the gate. |
@@ -208,7 +211,8 @@ Check 9 hardening land together at 0.5.
 - Each full cycle gets its own `.vine/projects/` feature with PROJECT-MAP.md; multi-PR cycles use
   the Milestones table.
 - VINE's own construction is the first test bed for routing: roadmap and design sessions stay
-  interactive; mechanical items graduate to headless once the contract exists.
+  interactive; mechanical items graduate to agent-delegated runs now that the contract exists
+  (the `vine-coder` recipe + ticket).
 - Run `/trellis` before committing command changes; `/vine:optimize` after each cycle that touches
   descriptions or workflows.
 - This file is updated at each cycle boundary (evolve's handoff step) — status lives in the GitHub

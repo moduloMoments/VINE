@@ -42,7 +42,7 @@ If a feature path was passed as an argument, use it directly. Otherwise:
 
 - If there's exactly one active feature, use it.
 - If there are multiple active features, use `AskUserQuestion` to let the engineer pick which
-  one to pause. <!-- decision-class: default-able -->
+  one to pause.
 
 ## Detect Current Phase
 
@@ -70,7 +70,6 @@ Present what you found:
 
 ## Capture Notes
 
-<!-- decision-class: human-required -->
 Use `AskUserQuestion` to gather the engineer's pause context. This is free-form — whatever
 will help them (or someone else) pick this up later.
 

@@ -316,7 +316,6 @@ when deciding how much to trust a long or lightly-attended session.
 |------|-------|---------|
 | `CONTEXT.md` | verify | Codebase landscape, tribal knowledge, tech debt |
 | `SPEC.md` | inquire | Feature design, acceptance criteria, work slices |
-| `ROUTE.md` | navigate (head; previewed by inquire) | Routing gate record: verdict, allowlist, constraints, validation baseline — optional, written when a scope is headless-eligible |
 | `NAVIGATION.md` | navigate | Implementation journal, commit-per-slice log |
 | `EVOLUTION.md` | evolve | Verification results, triple evolution report |
 | `PROJECT-MAP.md` | verify (created), all phases (updated) | VINE progress tracker, multi-PR milestone status |
@@ -339,7 +338,7 @@ committed, append-only layer — one Markdown file per record, under `.vine/know
 .vine/knowledge/
 └── workflow/
     ├── 2026-06-15-cut-the-derived-map-cache.md
-    └── 2026-06-16-route-md-headless-eligibility-gate.md
+    └── 2026-06-16-decision-delegation-default-able-vs-human-required.md
 ```
 
 Each record follows a lightweight [ADR](https://adr.github.io) shape — Title / Status / Context /
@@ -369,46 +368,40 @@ VINE projects move through **active → resolved → archived**, all opt-in:
 `.vine/projects/`, and are never moved when a project is archived — the judgment outlives the project
 that produced it.
 
-## Agents running VINE
+## Autonomous delegation
 
-The same phases a human drives can also run **headless** — an agent executes the work
-unattended, and a reviewer (a person, or another agent) checks it afterward. Headless is
-opt-in and gated: nothing about the normal human-driven flow changes unless you deliberately
-delegate a scope.
+Most VINE work is human-driven — you run the phases and review every change. But a scope that's
+**bounded, independent, and carries acceptance criteria** can be delegated to run **unattended**,
+with a reviewer (a person, or another agent) checking the result afterward. Delegation is opt-in:
+nothing about the normal human-driven flow changes unless you deliberately hand work off.
 
-**The routing gate.** At the start of `vine:navigate`, before any code is written, VINE decides
-whether a scope is *eligible* to run headless. It checks four things: a validation baseline
-exists (so the agent can verify its own work), the spec carries acceptance criteria, the work is
-independent of anything in flight, and the files it will touch are enumerable. If any is missing,
-the scope stays interactive — the gate only ever **withholds the headless option**; it never
-alters or degrades the human-driven path. For an ordinary interactive session the gate is a
-no-op.
+**The ticket.** Autonomous work isn't an agent impersonating a human running `vine:navigate` — it's
+a **ticket** handed to the [`vine-coder`](agents/vine-coder.md) agent (the autonomous coding role).
+The ticket carries everything a cold agent needs as plain instructions: which SPEC slice(s) to
+implement, a pointer to SPEC.md and the feature's artifact directory, and any scope constraints.
+`vine-coder` orients from the ticket, implements within scope (deriving its own touched-file
+discipline), syncs the NAVIGATION.md journal per slice, runs the repo's validation contract,
+commits per slice, and opens **one PR** with a handoff. Because a sub-agent can't prompt a human
+mid-task, a decision a human must own is escalated in the handoff and the run stops — never guessed.
 
-**The gate record.** When a scope is eligible, the decision is written to a `ROUTE.md` in the
-feature directory: the verdict, the **allowlist** of files the work may touch, the constraints
-the agent must honor, the validation baseline that must stay green, and a stamp recording the
-repo state the decision was made against. A headless run is bound by this record — touch only the
-allowlist, keep validation green before each commit, and **escalate anything a human must own**.
-Every decision point in the commands is tagged `human-required` or `default-able`; on a
-human-required decision the agent writes a structured handoff to NAVIGATION.md and stops rather
-than guessing.
-
-**The reviewer.** [`agents/vine-reviewer.md`](agents/vine-reviewer.md) is the recipe for a fresh
-reviewer who wasn't part of the session: how to orient (read the originating scope, then the
-journal, then the commits and final files) and what to produce (a verdict, severity-ordered
-findings, and a draft PR description). Its `tools` exclude Edit/Write, so "report only" is enforced
-by the platform, not just asserted. Everything the reviewer needs lives in durable state, not
-session memory.
+**The leash is the PR review.** The PR that comes back is the result; a human or the
+[`vine-reviewer`](agents/vine-reviewer.md) agent reviews it before merge. `vine-reviewer` is the
+recipe for a fresh reviewer who wasn't part of the session: how to orient (read the originating
+scope, then the journal, then the commits and final files) and what to produce (a verdict,
+severity-ordered findings, and a draft PR description). Its `tools` exclude Edit/Write, so "report
+only" is enforced by the platform, not just asserted. Everything the reviewer needs lives in
+durable state, not session memory.
 
 **The agents.** [`agents/`](agents/) ships the agent definitions VINE auto-delegates to by
 description match: `vine-verification` (runs the validation baseline and checks acceptance
 criteria), `vine-codebase-explorer` (structured codebase exploration), `vine-coder` (the autonomous
-coding role — implements a ticketed slice end-to-end and opens a PR), and `vine-reviewer` (the
-cold-reviewer role described above). The verification and exploration agents work the same in an
-interactive or headless run.
+coding role above), and `vine-reviewer` (the cold-reviewer role above). The verification and
+exploration agents work the same whether a human or `vine-coder` drives the work.
 
-See the [State Reference](references/STATE.md) for the ROUTE.md format and the decision-delegation
-and handoff contracts.
+VINE owns the role recipes and the ticket convention; the platform owns how a role is invoked (the
+sub-agent, a CI trigger) — VINE never implements an agent runner. See the
+[State Reference](references/STATE.md) for the journal and handoff contracts, and the ticket
+convention ("Autonomous Delegation — the vine-coder ticket") in `.vine/context/shared.md`.
 
 ## Engineer Profile
 
@@ -426,7 +419,7 @@ This separation avoids duplication: VINE handles what Claude doesn't cover (per-
 
 ## How VINE compares
 
-The AI-assisted development field has settled into camps. **Spec-as-artifact** frameworks treat the written spec as the unit of work; **role-persona** frameworks orchestrate the work through named agent roles; **autonomous-speed** tools optimize for the AI writing code with the human approving at the end. VINE's bet is different: the scarce resource is **human attention**, so the framework's job is routing it — deciding per scope of work how much engagement it deserves, from walking through every change to trusting a slice entirely (and, on the [roadmap](ROADMAP.md), extending that same axis to parallel and headless execution).
+The AI-assisted development field has settled into camps. **Spec-as-artifact** frameworks treat the written spec as the unit of work; **role-persona** frameworks orchestrate the work through named agent roles; **autonomous-speed** tools optimize for the AI writing code with the human approving at the end. VINE's bet is different: the scarce resource is **human attention**, so the framework's job is routing it — deciding per scope of work how much engagement it deserves, from walking through every change to trusting a slice entirely, to delegating a bounded scope to an agent that runs unattended (with parallel execution on the [roadmap](ROADMAP.md)).
 
 Where the named players stand, as of June 2026:
 
@@ -446,7 +439,7 @@ Against the autonomous-speed camp specifically:
 | **Optimizes for** | Speed | Growth (product + agent + user) |
 | **Human role** | Approves at the end | Routes their own attention, steers where it matters |
 | **AI transparency** | Confident by default | Flags its own uncertainty |
-| **Engagement** | One mode fits all | Per-slice gearing (walk me through / free climb; hybrid-parallel and headless on the [roadmap](ROADMAP.md)) |
+| **Engagement** | One mode fits all | Per-slice gearing (walk me through / free climb) + agent delegation; parallel on the [roadmap](ROADMAP.md) |
 | **Commits** | Auto | Validated and journaled per slice |
 | **Best for** | Greenfield / scripted tasks | Established codebases |
 | **Learning model** | One-way (AI executes) | Partnership (both sides learn and teach) |
