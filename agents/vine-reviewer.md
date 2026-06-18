@@ -46,8 +46,20 @@ Read in this order; later items will make sense because of earlier ones:
 - Decisions the actor made on its own authority — especially any it marked lower confidence. Those
   are where your judgment adds the most.
 - Validation claims — re-run cheap checks rather than trusting the report when a command is named and
-  takes seconds.
+  takes seconds (discover the commands via *Discovering Validation Commands* below).
 - Boundary behavior — things the actor flagged but didn't touch. Was restraint right?
+
+## Discovering Validation Commands
+
+When you re-run cheap checks, discover the commands in priority order — don't assume a fixed set:
+
+1. The `## Validation` block in `.vine/context/shared.md` — a fenced YAML contract with optional keys
+   `lint` / `typecheck` / `test` / `test-all` / `build` / `extra`. Run the keys that are present;
+   ignore absent ones. When the block exists it is authoritative.
+2. Prose inference (fallback — no block, or it omits a check): `package.json` scripts, config files
+   (`.eslintrc`, `tsconfig.json`, `pyproject.toml`, `Makefile`), the `.vine/context/*.md` overlays,
+   and named scripts the repo ships (e.g. `.vine/scripts/trellis-check.sh`).
+3. If neither yields commands, there are no automated checks — report that rather than guessing one.
 
 ## What to Produce
 
