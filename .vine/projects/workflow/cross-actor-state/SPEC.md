@@ -124,7 +124,7 @@ Feature-level (verifiable at evolve):
 
 ### Work Slices
 
-## Phase 1: Autonomous agent path — additive (Slices 1-4) ⬜
+## Phase 1: Autonomous agent path — additive (Slices 1-4) ✅
 Summary: Stand up the new model on top of the existing one — both coexist, nothing is removed yet.
 Session boundary: After this phase the autonomous path works end-to-end (ticket → vine-coder → PR →
 vine-reviewer). ROUTE.md still exists but the new agents don't consume it.

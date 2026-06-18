@@ -147,7 +147,7 @@
     additive slice already lands in its post-retirement shape.
 
 ### Slice 4: De-hardcode attribution + fix evolve.md PAUSE delete — Complete
-- **Commit**: pending
+- **Commit**: cb59d39
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
@@ -186,3 +186,26 @@
   - Claude → Engineer: the feature grep `decided by: claude` is sharper than it looks — it only
     matches the autonomous form, so the interactive `engineer | claude` log is safe by construction.
     The two attribution layers were already cleanly separable.
+
+### Remaining Work
+- **Incomplete slices**: Phase 1 (Slices 1–4) complete and verified. Phase 2 (Slices 5–7) not
+  started — Retire ROUTE.md across all surfaces (Slice 5), navigate → interactive-only (Slice 6),
+  repo-wide alignment sweep + ROADMAP update (Slice 7). Phase 2 is its own session and PR.
+- **Blockers encountered**: None.
+- **Handoff context for the Phase 2 session**:
+  - The new model is fully stood up and additive: `vine-coder` + `vine-reviewer` agents exist, the
+    Autonomous Delegation ticket convention is in shared.md, ROUTE.md still exists but the new agents
+    don't consume it. Phase 2 removes the old machinery.
+  - **Known ROUTE references already located** (Slice 5/7 targets), beyond the spec's listed files:
+    README.md still carries the ROUTE "gate record" paragraph (~387–394) and the closing STATE.md
+    ROUTE pointer (~406); these were deliberately left for the retirement PR (Phase 1 is additive).
+  - **Slice 4 already de-hardcoded** the autonomous attribution to `[actor]` and added the
+    role-not-model gloss in STATE.md — Slice 6's Decision Delegation reframe inherits clean wording.
+  - **`**Route**` field fate (Slice 7 explicit call):** the inquire route-preview block (inquire.md
+    ~341–347) is still present and ROUTE-coupled; Slice 5 retires it. The new `🎫 Auto-agent ticket`
+    block was written self-standing so it survives that removal.
+  - **Rebase note:** `origin/main` advanced by #112 (a ROADMAP doc reconciliation) after this branch
+    diverged. No Phase 1 file overlapped, but Slice 7 edits ROADMAP.md — rebase onto fresh main
+    before that slice to avoid a conflict.
+  - Run `/clear` before the Phase 2 session; re-invoke `/vine:navigate workflow/cross-actor-state` —
+    it auto-resumes at Slice 5.
