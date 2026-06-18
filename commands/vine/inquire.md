@@ -346,6 +346,15 @@ plain chat text, with only the `/vine:navigate` command line in a fenced block:
    This is a preview only, like the gearing note: it does not write ROUTE.md, and navigate's
    head gate re-evaluates the volatile legs against fresh repo state and makes the binding call.]
 
+🎫 Auto-agent ticket (when scope is autonomous-eligible): If a phase group is bounded, independent
+   of in-flight work, carries acceptance criteria, and the repo has a validation contract, it can be
+   handed to the `vine-coder` agent (the autonomous coding role — implements a ticketed slice
+   end-to-end and opens a PR) instead of being run with a human in `/vine:navigate`. Emit a ticket
+   per the **Autonomous Delegation** convention in shared.md — scope (which slices), the SPEC.md
+   pointer, the constraints, and dispatch to `vine-coder` — and the PR it opens is reviewed (by the
+   engineer or the `vine-reviewer` agent) before merge. Omit this block when the scope is
+   interactive.
+
 🌱 Phase retro:
    - CLAUDE.md suggestion: [any project conventions or decisions worth persisting]
    - Skill suggestion: [any design pattern that could be templated]

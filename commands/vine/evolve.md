@@ -521,9 +521,12 @@ Options (mutually exclusive):
 2. "Keep active" — "Leave the project in active state for now"
 
 If the engineer chooses to resolve, write an empty `.resolved` file to
-`.vine/projects/<domain>/<feature-slug>/.resolved`. Also silently delete
-`.vine/projects/<domain>/<feature-slug>/PAUSE.md` if it exists — a resolved project's pause
-state is definitionally stale. No prompt, no message to the engineer.
+`.vine/projects/<domain>/<feature-slug>/.resolved`. Then consume any
+`.vine/projects/<domain>/<feature-slug>/PAUSE.md` that still exists — the backstop delete. Evolve's
+session-start consumption normally removed it already, so a PAUSE.md surviving to here appeared
+*after* evolve began and its notes aren't necessarily stale: surface them to the engineer first,
+then delete the file. Never delete it silently — the same surface-then-delete rule the other
+consumption triggers follow (PAUSE.md lifecycle in `references/STATE.md`).
 
 **Offer to archive (#56 — move resolved work out of the way).** Only when the engineer just resolved
 the project, offer to archive it — move it to `.vine/projects/.archive/<domain>/<feature-slug>/`, which

@@ -384,7 +384,7 @@ stronger than that. For each slice, capture:
 **Decisions made during implementation**:
   - [decision]: [rationale] (decided by: [engineer | claude]) [confidence: high | medium | low]
 **Decisions Taken Autonomously**: [headless only — omit when interactive]
-  - [decision]: [rationale] (decided by: claude — autonomous, slice N)
+  - [decision]: [rationale] (decided by: [actor] — autonomous, slice N)
 **Acceptance criteria**:
   - [x] [AC from spec — verified]
   - [ ] [AC skipped — reason]
