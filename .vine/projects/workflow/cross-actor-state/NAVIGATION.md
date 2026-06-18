@@ -251,7 +251,7 @@
 
 ### Slice 6: navigate → interactive-only — Complete
 - **Started**: 2026-06-17 22:58
-- **Commit**: pending
+- **Commit**: 308b71d
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
