@@ -249,6 +249,70 @@
     *artifact* (template, chain, tables), Slice 6 the headless *model*, Slice 7 the `**Route**` *field* fate.
     Scrubbing tokens without ripping out the kept field is the discipline that keeps them separable.
 
+### Slice 6: navigate → interactive-only — Complete
+- **Started**: 2026-06-17 22:58
+- **Commit**: pending
+- **Route**: interactive — `mechanism: n/a`
+- **Actor**: human
+- **Gear**: free-climb
+- **Approach taken**: Made navigate human-only and swept the headless-as-command machinery repo-wide.
+  (a) `commands/vine/navigate.md`: deleted the two unnumbered headless sections — `### Route the Work —
+  Eligibility Gate` (the navigate-head routing gate that wrote ROUTE.md) and `### Running Headless —
+  Decision Protocol & Handoff` (lines 137–252, by range — both unnumbered, so no `step N` ripple). Trimmed
+  navigate's slice-entry journal template to its interactive subset — removed the headless-only `**Route**`,
+  `**Actor**`, and `**Decisions Taken Autonomously**` fields (kept `**Gear**`), and reframed the surrounding
+  prose so navigate writes the human-driven journal shape and points at `references/STATE.md` for the full
+  schema (whose `**Route**`-field fate is Slice 7's call — kept the pointer neutral). (b) **Full
+  decision-class sweep** (engineer's call: vine-coder doesn't run the commands, so every command reads
+  human-triggered-only): removed all 36 `<!-- decision-class: … -->` tags across 8 commands (navigate,
+  inquire, evolve, verify, resume, pause, pair, init) via a two-pass perl (delete standalone-tag lines;
+  strip inline tags, collapsing surrounding spaces) — verified each inline removal preserved the sentence.
+  (c) `.vine/context/shared.md`: rewrote the `class: policy` **Decision Delegation** section — the autonomous
+  actor is now `vine-coder` applying the two classes *by judgment* (not a phase running headless reading
+  per-site command tags); fixed the dangling "handoff block in navigate.md" pointer → the Headless Handoff
+  vine-coder writes to NAVIGATION.md (per STATE.md; the leash is the PR review); preserved policy-class, the
+  #55 repo-override path, both class definitions, and the ambiguity→human-required default.
+- **Deviations from spec**: Scope expansion (engineer-directed). The spec scoped Slice 6's tag work to
+  navigate ("remove or neutralize their headless purpose in navigate"); the engineer asked for the full
+  repo-wide sweep here ("ensure the commands are given the full sweep and treat them as only triggered by a
+  human"), so all 8 commands' tags were removed in this slice rather than splitting navigate (6) from the
+  rest (7). Slice 7 now verifies the grep + does ROADMAP + the `**Route**`-field decision.
+- **Validation**: pass — `trellis-check.sh` 11/11 commands, cross-reference anchors resolve (8 pairs), stamp
+  `status: pass`; navigate residual `headless` grep is one intentional line ("navigate never runs
+  unattended"); shared.md residual is the intentional "Headless Handoff" block reference; no dangling
+  pointers to the removed sections; steps 1–8 sequential and STATE.md `step 4c/6/8` cross-refs resolve.
+  Pre-existing `.vine/hooks/` warnings in init.md unrelated.
+- **Decisions made during implementation**:
+  - Full decision-class sweep across all 8 commands, not navigate-only — the engineer's call, grounded in
+    "vine-coder doesn't (and shouldn't) execute command files," so every per-site tag is vestigial, not just
+    navigate's (decided by: engineer) [confidence: high]
+  - Delete the two headless sections by line range (sed 137,252d) rather than reproducing 115 lines of exact
+    old_string — lower risk after confirming the exact unnumbered-section boundaries (decided by: claude)
+    [confidence: high]
+  - Trim navigate's journal template to the interactive subset but keep the STATE.md pointer neutral about the
+    `**Route**`/`**Actor**` field fate — navigate (human) legitimately omits them regardless of whether Slice 7
+    keeps them in the schema, so this doesn't pre-empt that decision (decided by: claude) [confidence: high]
+  - Reframe Decision Delegation as judgment-applied governance (vine-coder classifies decisions) rather than a
+    per-site command roster — the roster framing died with the tags; kept the section policy-class and the #55
+    repo-override intact so governance isn't weakened (decided by: claude) [confidence: high]
+- **Acceptance criteria**:
+  - [x] navigate is interactive-only — no ROUTE references, no headless-execution prose (the two sections gone)
+  - [x] Decision Delegation policy reads coherently against the new model (vine-coder applies the classes)
+  - [x] `/trellis` passes (11/11, anchors resolve, stamp green)
+  - [x] STATE.md `step N` cross-references stay intact (removed sections were unnumbered — no renumbering)
+  - [x] Every command reads as human-triggered-only (all 36 decision-class tags removed)
+- **Engineer feedback incorporated**: Took the decision-class sweep repo-wide (all 8 commands) on the
+  engineer's "full sweep / human-triggered-only" directive, rather than the narrower navigate-only spec scope.
+- **Learnings**:
+  - Engineer → Claude: the reframe's logical end is that *no* command runs headless, so per-site decision-class
+    tags are universally dead, not just navigate's — sweep them all and let vine-coder carry the semantics.
+  - Claude → Engineer: the two headless sections were unnumbered by design (the CLAUDE.md authoring convention),
+    which is exactly what let them be excised by line-range with zero `step N` cross-reference fallout.
+  - Deferred to Slice 7 (noted): CLAUDE.md:31 still cites "navigate's head-only routing gate" as an unnumbered-
+    section example (now stale); STATE.md:182's Headless Handoff contract still says "vine:navigate's headless
+    decision protocol writes it" (→ vine-coder); the `**Route**`/`**Actor**`/Headless-Handoff schema fields and
+    README's "Agents running VINE" section remain for the sweep + the explicit `**Route**`-field decision.
+
 ### Remaining Work
 - **Incomplete slices**: Phase 1 (Slices 1–4) complete and verified. Phase 2 (Slices 5–7) not
   started — Retire ROUTE.md across all surfaces (Slice 5), navigate → interactive-only (Slice 6),

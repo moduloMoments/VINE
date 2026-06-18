@@ -499,7 +499,7 @@ under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).
   offer to add just that line — don't rewrite the rest.
 - **If both are present and accurate**, skip silently — no offer, no mention.
 
-Offer via `AskUserQuestion` (`multiSelect: false`, 2 options): <!-- decision-class: default-able -->
+Offer via `AskUserQuestion` (`multiSelect: false`, 2 options):
 
 - **"Add the VINE pointer (Recommended)"** — description: "Write the availability-gated block
   to CLAUDE.md (or add the missing durable-decisions line)"
@@ -565,7 +565,7 @@ list them and offer to archive them, mirroring evolve's archive mechanics (lifec
 `references/STATE.md`, "Project Lifecycle"):
 
 1. **Present the list** of resolved-but-unarchived projects (`<domain>/<feature-slug>`), then
-   offer via `AskUserQuestion` (`multiSelect: false`): <!-- decision-class: default-able -->
+   offer via `AskUserQuestion` (`multiSelect: false`):
    - **"Archive all N (Recommended)"** — description: "Move every resolved project under
      `.vine/projects/.archive/` — gets completed work fully out of the way"
    - **"Pick which to archive"** — description: "Choose a subset"
