@@ -8,12 +8,12 @@
 |-------|--------|---------|
 | verify | ✅ | 2026-06-16 |
 | inquire | ✅ | 2026-06-17 |
-| navigate | ⬜ | — |
+| navigate | 🚧 | 2026-06-17 |
 | evolve | ⬜ | — |
 
 ### Milestones
 
 | Phase | Slices | Status | PR |
 |-------|--------|--------|----|
-| Phase 1: Autonomous agent path (additive) | 1-4 | ⬜ Pending | — |
+| Phase 1: Autonomous agent path (additive) | 1-4 | 🚧 Active | — |
 | Phase 2: Retire old machinery + repo-wide alignment | 5-7 | ⬜ Pending | — |
