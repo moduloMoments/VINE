@@ -191,7 +191,7 @@
 
 ### Slice 5: Retire ROUTE.md across all surfaces — Complete
 - **Started**: 2026-06-17 22:30
-- **Commit**: 5fb3c1f
+- **Commit**: 4cb1921
 - **Route**: interactive — `mechanism: n/a`
 - **Actor**: human
 - **Gear**: free-climb
