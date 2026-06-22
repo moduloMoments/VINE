@@ -260,6 +260,15 @@ directory tree from `.vine.local/projects/` to `.vine/projects/`), then commits 
 **Acceptance criteria**: AC8 (evolve half).
 **Complexity signal**: Low-Medium — directory move + commit interaction.
 
+> **Addendum (implemented 2026-06-22):** beyond the literal "promotion" goal, Slice 8 also made
+> evolve's `.resolved` marker write and its archive destination **root-aware** — the project resolves/
+> archives within its *own* root (`.vine/projects/.archive/` shared, `.vine.local/projects/.archive/`
+> local), matching init.md's root-aware archive sweep from Slice 4. Both were explicitly deferred to
+> "Slice 8 (evolve local→shared) territory" in the Slice 5 and Slice 6 journal entries, so they're
+> planned scope, not creep. Placement: the promotion offer sits between the completion block and Mark
+> as Resolved, so a promotion makes the subsequent resolve/archive/commit operate on the new shared
+> path with no special-casing.
+
 ### Slice 9: The `.gitignore` flip + init scaffold + Upgrade Mode + repo migration
 **Goal**: Replace the root `.gitignore` deny-allowlist with `.vine.local/` (single rule). Update
 init Step 6 (gitignore template) and Step 8 Upgrade Mode to offer existing repos an opt-in

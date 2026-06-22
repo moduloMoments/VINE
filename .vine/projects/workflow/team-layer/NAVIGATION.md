@@ -291,7 +291,7 @@ approve-edits continuity from Slice 5 (each edit reviewed as it landed).
 
 ### Slice 7: verify shared-vs-local prompt — Complete
 **Started**: 2026-06-22 14:16
-**Commit**: pending
+**Commit**: 2a07dfb
 **Gear**: free-climb
 **Approach taken**: Added a **Shared or local?** decision to verify's project-creation flow
 (`commands/vine/verify.md`, inside "### 6. Write CONTEXT.md", right after the domain/slug
@@ -336,6 +336,56 @@ redirection.
     adjacent gitignore guidance — the old first-cycle note was the pre-flip model and would have
     shipped as a self-contradiction next to the new shared/local choice. Same pattern as the
     Slice 4/5 in-flow corrections: getting the visible change right pulls in the coupled stale prose.
+
+### Slice 8: evolve local→shared promotion — Complete
+**Started**: 2026-06-22 14:22
+**Commit**: pending
+**Gear**: walk-me-through (continued in this session from Slice 7; previewed the three-part approach
+in prose before editing, edits reviewable at the slice boundary)
+**Approach taken**: Three coupled changes to evolve's wrap-up flow (`commands/vine/evolve.md`).
+(1) **Promotion offer** — added a `### Promote a Local Project to Shared?` section between the Phase
+Completion block and Mark as Resolved. It fires only for a local project (detected via the per-path
+`git check-ignore` test) and offers, via AskUserQuestion, to move the directory tree from
+`.vine.local/projects/` to `.vine/projects/` (default: promote). The source is gitignored/untracked,
+so the move is a plain `mv` (not `git mv`); the existing *Commit Evolve Changes* step then stages the
+artifacts at their now-tracked path. Placement-before-resolve is deliberate: after the move the
+per-path test reads the project as tracked, so resolve/archive/commit operate on the shared path with
+no special-casing. (2) **`.resolved` marker root-aware** — writes to `<root>/projects/<domain>/<feature-slug>/.resolved`
+(`.vine/` shared, `.vine.local/` if kept local), not the hardcoded `.vine/projects/`. (3) **Archive
+destination root-aware** — archives within the project's *own* root's `.archive/`
+(`.vine/projects/.archive/` shared, `.vine.local/projects/.archive/` local), matching init.md's
+root-aware sweep from Slice 4; the Commit step's post-archive path reference updated to match.
+**Deviations from spec**: Parts (2) and (3) go beyond the SPEC Slice 8 goal's literal "promotion"
+wording, but were explicitly deferred to "Slice 8 territory" in the Slice 5 and Slice 6 journal
+entries — planned scope, not creep. Recorded in the SPEC Slice 8 addendum.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs; `.vine/.trellis-ok` stamped). Grep confirms the only remaining `.vine/projects/.archive/`
+mention is the prose example illustrating root-awareness, not a hardcoded path. The two pre-existing
+allowlisted `.vine/hooks/` legacy warnings (init.md:104-105) are unrelated. AC8 (evolve half) confirmed
+by inspection: evolve detects a local project, offers promotion, moves the tree to `.vine/projects/`,
+and the commit step stages it as shared.
+**Decisions made during implementation**:
+  - Place the promotion offer *before* Mark as Resolved (not after), so a promotion makes the
+    subsequent resolve/archive/commit see a tracked project automatically — avoids re-deriving the
+    root mid-wrap-up (decided by: claude; confidence: high)
+  - Plain `mv`, not `git mv`, for the promotion: the source is gitignored (untracked), so `git mv`
+    would fail; the existing per-path-aware commit step stages the artifacts at the new tracked path
+    (decided by: claude; confidence: high)
+  - Absorb the deferred root-aware `.resolved` + archive fixes here rather than leave them — Slices
+    5/6 named Slice 8 as their home, and they're in the same wrap-up paths the promotion touches
+    (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC8 (evolve half) — evolve detects a local project and offers local→shared promotion (move
+    the directory tree), then commits as usual
+**Engineer feedback incorporated**: Engineer chose "continue in this session" after Slice 7; I
+suggested flipping back to approve-edits for this slice's move/commit logic. Approach previewed in
+prose (the three coupled parts) before editing.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: Ordering a lifecycle step matters — putting promotion *before* resolve/archive
+    means the location change propagates through the per-path test for free, so the downstream steps
+    stay root-agnostic. The deferred-fix notes from Slices 5/6 paid off: the root-aware `.resolved` and
+    archive work was already scoped and waiting in the exact paths this slice opened.
 
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
