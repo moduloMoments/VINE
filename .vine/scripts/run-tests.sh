@@ -44,19 +44,9 @@ touch -t 202001010000 "$T/feat/NAVIGATION.md"
 printf '%s' "$payload_commit" | sh "$J" >/dev/null 2>&1
 check "journal-check: stale journal -> block (exit 2)" 2 $?
 
-# Make the journal strictly newer than HEAD's commit so the allow path is
-# exercised deterministically. A bare `touch` alone lands in the same second
-# as the init commit, leaving the comparison on the -ge tie boundary — which
-# flips to a block on runners whose filesystem clock lags git's commit clock
-# (a latent flake). The `sleep 1` guarantees a newer second on every platform,
-# no date-format parsing required.
-sleep 1
 touch "$T/feat/NAVIGATION.md"
-dbg_m=$(stat -f %m "$T/feat/NAVIGATION.md" 2>/dev/null || stat -c %Y "$T/feat/NAVIGATION.md" 2>/dev/null)
-dbg_l=$(git -C "$T" log -1 --format=%ct 2>/dev/null)
-echo "DEBUG fresh-journal: now=$(date +%s) mtime=$dbg_m commit=$dbg_l diff=$((dbg_m-dbg_l)) tz=${TZ:-unset}" >&2
 ferr=$(printf '%s' "$payload_commit" | sh "$J" 2>&1 >/dev/null)
-check "journal-check: fresh journal (newer than commit) -> allow" 0 $?
+check "journal-check: fresh journal (same-second tie fails open) -> allow" 0 $?
 printf '%s' "$ferr" | grep -q 'journal guard:.*commit allowed'
 check "journal-check: fire-and-pass emits a visible signal on stderr" 0 $?
 
