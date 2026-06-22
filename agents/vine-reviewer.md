@@ -57,7 +57,12 @@ Read in this order; later items will make sense because of earlier ones:
 When you re-run cheap checks, discover the commands in priority order — don't assume a fixed set:
 
 1. The `## Validation` block in `.vine/context/shared.md` — a fenced YAML contract with optional keys
-   `lint` / `typecheck` / `test` / `test-all` / `build` / `extra`. Run the keys that are present;
+   `lint` / `typecheck` / `test` / `test-all` / `build` / `extra`. **Locate it precisely**: grep for
+   the literal `## Validation` heading (`grep -n '^## Validation' .vine/context/shared.md`) — it is a
+   top-level section, typically near the end of the file — then read the fenced ```yaml block beneath
+   it. Do **not** infer its absence from prose: the `## Decision Delegation` section discusses
+   "validation" in prose and is **not** this block, and a `grep validation` substring scan will hit
+   that section and other mentions. Only the heading match counts. Run the keys that are present;
    ignore absent ones. When the block exists it is authoritative.
 2. Prose inference (fallback — no block, or it omits a check): `package.json` scripts, config files
    (`.eslintrc`, `tsconfig.json`, `pyproject.toml`, `Makefile`), the `.vine/context/*.md` overlays,
