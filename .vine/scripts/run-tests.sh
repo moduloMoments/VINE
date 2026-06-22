@@ -52,6 +52,9 @@ check "journal-check: stale journal -> block (exit 2)" 2 $?
 # no date-format parsing required.
 sleep 1
 touch "$T/feat/NAVIGATION.md"
+dbg_m=$(stat -f %m "$T/feat/NAVIGATION.md" 2>/dev/null || stat -c %Y "$T/feat/NAVIGATION.md" 2>/dev/null)
+dbg_l=$(git -C "$T" log -1 --format=%ct 2>/dev/null)
+echo "DEBUG fresh-journal: now=$(date +%s) mtime=$dbg_m commit=$dbg_l diff=$((dbg_m-dbg_l)) tz=${TZ:-unset}" >&2
 ferr=$(printf '%s' "$payload_commit" | sh "$J" 2>&1 >/dev/null)
 check "journal-check: fresh journal (newer than commit) -> allow" 0 $?
 printf '%s' "$ferr" | grep -q 'journal guard:.*commit allowed'
