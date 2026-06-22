@@ -94,9 +94,12 @@ Overlay Loading Protocol" pulls in.
   of the command; overlay instructions take precedence over command defaults when they conflict.
   (Precedence *between* the overlay layers — shared vs. personal vs. policy — is governed by
   **Overlay Precedence** below, the source of truth; this line does not override it.)
-- **Personal layer.** After reading `shared.md` and the phase overlay, read
-  `.vine/context/shared.local.md` if present and compose it per the **Personal layer** rule in
-  Overlay Precedence. Absent it, nothing changes.
+- **Personal layer.** After reading each repo overlay from `.vine/context/` (`shared.md` and the
+  phase overlay), read its personal counterpart at the mirrored path under the personal root —
+  `.vine.local/context/<name>.md` (e.g. `.vine.local/context/shared.md`,
+  `.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
+  Precedence. The personal overlay is distinguished by its root, not a filename suffix (the `.local`
+  suffix is dropped). Absent any personal file, nothing changes.
 - **Legacy fallback (supported through 0.4.x).** If `.vine/context/` doesn't exist but legacy
   `.vine/hooks/` does, read the same files from `.vine/hooks/` instead and nudge once per
   session: "Heads up: this project uses the legacy `.vine/hooks/` directory — run `/vine:init`
@@ -111,22 +114,22 @@ file (and thus this protocol) is absent: the bootstrap's own read carries the mi
 ## Overlay Precedence
 
 VINE composes context from command defaults, this shared overlay (`shared.md`), and the
-engineer's personal layer (`shared.local.md`). They resolve as **flat personal-wins with
+engineer's personal layer (`.vine.local/context/`). They resolve as **flat personal-wins with
 policy carve-outs**, mirroring how Claude's own settings resolve — local overrides project,
 except an immutable enterprise-policy ceiling:
 
-- **Preference content** (every unmarked section) is personal-overridable: where `shared.local.md`
-  and `shared.md` conflict, the personal layer wins.
+- **Preference content** (every unmarked section) is personal-overridable: where a personal overlay
+  and its repo counterpart conflict, the personal layer wins.
 - **Policy content** is immutable from the personal layer. A section marked `<!-- class: policy -->`
-  directly under its heading always wins over personal overrides — `shared.local.md` cannot weaken
+  directly under its heading always wins over personal overrides — a personal overlay cannot weaken
   or replace it. Policy sections carry team governance the repo enforces regardless of personal
   preference (CI/CD gates, the team operating model).
 
-**Personal layer (`shared.local.md`).** Each command's *Load Context Overlays* step, after
-reading `shared.md` and the phase overlay, reads `.vine/context/shared.local.md` if present and
-composes it by the rule above — it overrides preference content and is ignored where it would
-override a policy-class section. The file is gitignored (personal scope); absent it, nothing
-changes.
+**Personal layer (`.vine.local/context/`).** Each command's *Load Context Overlays* step, after
+reading a repo overlay (`shared.md`, a phase overlay), reads its personal counterpart at the
+mirrored path `.vine.local/context/<name>.md` if present and composes it by the rule above — it
+overrides preference content and is ignored where it would override a policy-class section. Personal
+overlays live under the gitignored personal root (`.vine.local/`); absent them, nothing changes.
 
 Only policy-class sections carry the marker; unmarked means preference.
 
