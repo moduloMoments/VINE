@@ -35,7 +35,10 @@ Read in this order; later items will make sense because of earlier ones:
    are addressed to you.
 3. **The commits** — `git log` + `git show` for each commit the journal names. The diff is the
    ground truth; the journal is the actor's account of it. Discrepancies between the two are
-   findings.
+   findings. When computing the PR's change range, fetch and compare against the remote base —
+   `git fetch origin <base> && git log origin/<base>..HEAD` — not the local base ref, which may be
+   stale (especially in a linked worktree, where the base branch is checked out elsewhere); a stale
+   local base makes already-merged work look like part of this PR.
 4. **The touched files in their final state** — read enough of each changed file to judge the change
    in context, not just the diff hunks.
 
