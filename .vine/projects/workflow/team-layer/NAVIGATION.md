@@ -161,9 +161,19 @@ need — the personal-layer convention never shipped (see Slice 2 decision). Dec
   - **PR 1 reviewer note**: STATE.md documents the `.vine.local/` end-state (ACTIVE/PAUSE/PROFILE/
     gitignore) ahead of the command + hook machinery, which relocates in Phases 2-3. This is the
     intended "contract leads implementation" phasing (maintainer-directed in Slice 1), not drift.
-  - **Slice 10 docs-sweep deferrals** (left bare on purpose this phase): init.md's `.vine/README.md`
-    scaffold (`init.md` ~292/368 + the `shared.local.md` scaffold lines ~302-362), and shared.md's
-    gitignore-tracking note (~line 70/82).
+  - **Shipped-command ref hygiene (done post-Phase-1, in PR #122)**: per a maintainer directive,
+    removed all VINE-internal references that shouldn't ship to downstream users — the `vine:team`
+    command (never built), the issue links #57/#52/#56, and the README scaffold's "on the roadmap /
+    not yet shipped" forward-looking block (collapsed to shipped-only "Team distribution" guidance).
+    Also corrected the never-shipped `shared.local.md` convention references in init's customize
+    bullet + the team distribution block to `.vine.local/context/`. Mirrored the team-recommendation
+    fix into `.vine/context/shared.md`.
+  - **Slice 10 docs-sweep deferrals** (remaining): the README scaffold's directory **table**
+    (`init.md` ~302/304/306 — the `shared.local.md` / `PROFILE.md` / `ACTIVE`,`PAUSE.md` rows) needs
+    the two-root rework, gated on Phase 2's final locations (per the worktree ADR, `ACTIVE` lands in
+    the per-worktree git dir, NOT `.vine.local/` — so don't bake `.vine.local/ACTIVE` into the table).
+    Plus shared.md's gitignore-tracking note (~line 70/82), CLAUDE.md, README.md, and STATE.md's
+    surfaces per the State Artifact Addition Checklist.
   - **Worktree resolution (Phase 2 — design added 2026-06-22)**: gitignored personal state is invisible
     to git worktrees/clones (confirmed live — the main checkout's `.vine/PROFILE.md` was unseen by this
     worktree session). Phase 2 must resolve the personal root from git, not cwd: shared root (profile,

@@ -140,10 +140,9 @@ VINE ships the mechanism, not a fixed shape. To make conventions travel with the
 the tracked repo overlay (`.vine/context/shared.md`) and mark anything the team enforces regardless of
 personal preference with `<!-- class: policy -->` (per Overlay Precedence above, the personal
 `.vine.local/` layer cannot weaken a policy section). That pair — tracked `shared.md` plus the policy
-marker — is the whole team layer; no separate team-overlay file or `vine:team` command is needed.
-Distributing those overlays across repos, so an engineer installs the team conventions they belong to,
-is the job of plugin distribution in a later cycle ([#57](https://github.com/moduloMoments/VINE/issues/57):
-overlay distribution as plugins).
+marker — is the whole team layer; no separate team-overlay file or dedicated command is needed. To
+share those overlays across repos today, commit the overlay files your team needs; packaged
+cross-repo distribution is a separate, future concern.
 
 ## Project Directory Convention
 
@@ -358,19 +357,14 @@ and config. Full schema: `references/STATE.md`.
   folds in newly discovered tooling without clobbering your edits.
 - **Add per-phase guidance.** Create or extend `context/<phase>.md` to give one phase context the
   others don't need.
-- **Keep personal tweaks local.** Drop preferences you don't want to commit into
-  `context/shared.local.md` — it overrides preference sections but never policy ones.
+- **Keep personal tweaks local.** Drop preferences you don't want to commit into the personal
+  overlay at `.vine.local/context/shared.md` — it overrides preference sections but never policy ones.
 
-### Plugins & team distribution (forward-looking)
+### Team distribution
 
-Packaging VINE as a Claude Code plugin and distributing shared team overlays are on the roadmap,
-not yet shipped. Track progress here:
-
-- [VINE #57 — Claude Code plugin: packaging + team-overlay distribution](https://github.com/moduloMoments/VINE/issues/57)
-- [VINE #52 — Team layer](https://github.com/moduloMoments/VINE/issues/52)
-
-Until those land, share overlays the manual way: commit the files under `.vine/context/` you want
-your team to share, and keep personal-only tweaks in the gitignored `.local` layer.
+To share overlays with your team, commit the files under `.vine/context/` you want shared, and mark
+team-enforced sections `<!-- class: policy -->` so a personal overlay can't weaken them. Keep
+personal-only tweaks in the gitignored personal root (`.vine.local/context/`).
 ````
 
 ## Step 5: Create Projects Directory

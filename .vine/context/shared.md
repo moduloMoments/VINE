@@ -64,10 +64,9 @@ VINE ships the mechanism, not a fixed shape. To make conventions travel with the
 the tracked repo overlay (`.vine/context/shared.md`) and mark anything the team enforces regardless of
 personal preference with `<!-- class: policy -->` (per Overlay Precedence above, the personal
 `.vine.local/` layer cannot weaken a policy section). That pair — tracked `shared.md` plus the policy
-marker — is the whole team layer; no separate team-overlay file or `vine:team` command is needed.
-Distributing those overlays across repos, so an engineer installs the team conventions they belong to,
-is the job of plugin distribution in a later cycle ([#57](https://github.com/moduloMoments/VINE/issues/57):
-overlay distribution as plugins).
+marker — is the whole team layer; no separate team-overlay file or dedicated command is needed. To
+share those overlays across repos today, commit the overlay files your team needs; packaged
+cross-repo distribution is a separate, future concern.
 
 ## Tooling Notes
 

@@ -525,7 +525,7 @@ session-start consumption normally removed it already, so a PAUSE.md surviving t
 then delete the file. Never delete it silently — the same surface-then-delete rule the other
 consumption triggers follow (PAUSE.md lifecycle in `references/STATE.md`).
 
-**Offer to archive (#56 — move resolved work out of the way).** Only when the engineer just resolved
+**Offer to archive — move resolved work out of the way.** Only when the engineer just resolved
 the project, offer to archive it — move it to `.vine/projects/.archive/<domain>/<feature-slug>/`, which
 preserves the artifacts but gets completed work fully out of the way (lifecycle in `references/STATE.md`,
 "Project Lifecycle"). An active project is never archived. Use `AskUserQuestion`:
