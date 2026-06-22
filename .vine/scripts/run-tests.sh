@@ -44,7 +44,14 @@ touch -t 202001010000 "$T/feat/NAVIGATION.md"
 printf '%s' "$payload_commit" | sh "$J" >/dev/null 2>&1
 check "journal-check: stale journal -> block (exit 2)" 2 $?
 
-touch "$T/feat/NAVIGATION.md"
+# Pin the journal mtime to exactly HEAD's commit second so the tie is real
+# every run. A bare `touch` lands ~simultaneously with the init commit, so on
+# runners where the filesystem clock lags git's commit clock the comparison
+# flips from tie (allow) to stale (block) — a latent flake. GNU touch takes
+# `-d @epoch`; BSD touch falls back to a formatted timestamp.
+htime=$(git -C "$T" log -1 --format=%ct)
+touch -d "@$htime" "$T/feat/NAVIGATION.md" 2>/dev/null \
+  || touch -t "$(date -r "$htime" +%Y%m%d%H%M.%S)" "$T/feat/NAVIGATION.md"
 printf '%s' "$payload_commit" | sh "$J" >/dev/null 2>&1
 check "journal-check: fresh journal (same-second tie fails open) -> allow" 0 $?
 
