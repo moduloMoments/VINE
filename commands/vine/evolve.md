@@ -303,7 +303,7 @@ say so and move on — not every feature is a learning experience.
 
 ### Update Engineer Profile
 
-Based on the completed cycle, propose updates to `.vine/PROFILE.md`. This is the concrete,
+Based on the completed cycle, propose updates to `.vine.local/PROFILE.md`. This is the concrete,
 persistent output of user evolution — the profile grows with each VINE cycle.
 
 **Domain expertise update:**
@@ -315,7 +315,7 @@ Check the current feature's domain against the profile:
   areas that suggest the level was too high? Propose an update only if the level should change.
 - **If the domain doesn't exist**: Propose adding it with a level based on what you observed
   during the cycle.
-- **If no profile exists yet**: Offer to create `.vine/PROFILE.md` with an initial entry for
+- **If no profile exists yet**: Offer to create `.vine.local/PROFILE.md` with an initial entry for
   this domain.
 
 Use `AskUserQuestion` to present the proposed change:
@@ -346,7 +346,7 @@ only when the engineer genuinely wants to record something. If they choose the d
 write bullet points focused on the engineer's contributions and decisions — not what they
 "learned." Present the draft for editing before writing to the file.
 
-For each accepted change, write the update to `.vine/PROFILE.md` directly. Create the file
+For each accepted change, write the update to `.vine.local/PROFILE.md` directly. Create the file
 if needed, using the format documented in `references/STATE.md`.
 
 ### Suggest Claude Memory Updates
@@ -383,7 +383,7 @@ Route each candidate learning to exactly one home, first match wins:
 
 1. Regenerable from the code? (structure, where-is-X) → home it nowhere; it regenerates on demand.
 2. Non-regenerable judgment or gotcha tied to a domain? → `.vine/knowledge/<domain>/` (**this step**).
-3. Per-engineer depth or expertise? → `.vine/PROFILE.md` (handled in *Update Engineer Profile*).
+3. Per-engineer depth or expertise? → `.vine.local/PROFILE.md` (handled in *Update Engineer Profile*).
 4. Cross-phase VINE protocol / inter-phase routing? → `.vine/context/shared.md` (*Context Overlay Update*).
 5. Repo fact every session needs, VINE or not? → `CLAUDE.md` (*CLAUDE.md Suggestions*).
 
@@ -499,7 +499,7 @@ Update PROJECT-MAP.md (if it exists) — set the evolve row to ✅ with today's 
    - Product: [brief summary of quality state]
    - Agent: [brief summary of capability growth]
    - User: [brief summary of knowledge growth]
-   - Profile: [updated/created/unchanged] (.vine/PROFILE.md)
+   - Profile: [updated/created/unchanged] (.vine.local/PROFILE.md)
 
    "Grow features on solid roots."
 ---
@@ -525,7 +525,7 @@ session-start consumption normally removed it already, so a PAUSE.md surviving t
 then delete the file. Never delete it silently — the same surface-then-delete rule the other
 consumption triggers follow (PAUSE.md lifecycle in `references/STATE.md`).
 
-**Offer to archive (#56 — move resolved work out of the way).** Only when the engineer just resolved
+**Offer to archive — move resolved work out of the way.** Only when the engineer just resolved
 the project, offer to archive it — move it to `.vine/projects/.archive/<domain>/<feature-slug>/`, which
 preserves the artifacts but gets completed work fully out of the way (lifecycle in `references/STATE.md`,
 "Project Lifecycle"). An active project is never archived. Use `AskUserQuestion`:
@@ -559,7 +559,7 @@ under *Committing Artifacts*):
 - **EVOLUTION.md** and the **`.resolved`** marker (if resolved) — VINE artifacts; stage them
   **only when the repo tracks `.vine/` artifacts**. When artifacts are untracked (gitignored, or
   a personal scope) they update on disk but stay out of the commit.
-- **`.vine/PROFILE.md`** updates (if accepted) — commonly gitignored (it's personal); stage only
+- **`.vine.local/PROFILE.md`** updates (if accepted) — commonly gitignored (it's personal); stage only
   if the repo tracks it.
 
 Never force-add a gitignored artifact. If the project was just archived, its artifacts now live

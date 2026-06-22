@@ -42,7 +42,7 @@ that seeds new domains:
   3. "Learning" — "I've seen it but haven't worked in it much"
   4. "New" — "This is my first time in this area"
 
-  Add the domain to `.vine/PROFILE.md` with the selected level and today's date. If
+  Add the domain to `.vine.local/PROFILE.md` with the selected level and today's date. If
   PROFILE.md doesn't exist yet, create it with the format documented in `references/STATE.md`.
 
 If no profile exists and the engineer hasn't confirmed a domain yet, do nothing — the prompt

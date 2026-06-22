@@ -14,9 +14,12 @@ the Overlay Loading Protocol" pulls in.
   they conflict — they are the team's customization of VINE for this codebase. (Precedence
   *between* the overlay layers — shared vs. personal vs. policy — is governed by **Overlay
   Precedence** below; that section is the source of truth and this line does not override it.)
-- **Personal layer.** After reading `shared.md` and the phase overlay, read
-  `.vine/context/shared.local.md` if present and compose it per the **Personal layer** rule in
-  Overlay Precedence. Absent it, nothing changes.
+- **Personal layer.** After reading each repo overlay from `.vine/context/` (`shared.md` and the
+  phase overlay), read its personal counterpart at the mirrored path under the personal root —
+  `.vine.local/context/<name>.md` (e.g. `.vine.local/context/shared.md`,
+  `.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
+  Precedence. The personal overlay is distinguished by its root, not a filename suffix (the `.local`
+  suffix is dropped). Absent any personal file, nothing changes.
 - **Legacy fallback (supported through 0.4.x).** If `.vine/context/` doesn't exist but legacy
   `.vine/hooks/` does, read the same files from `.vine/hooks/` instead and nudge once per
   session, no more: "Heads up: this project uses the legacy `.vine/hooks/` directory — run
@@ -33,26 +36,37 @@ minimal behavior, and missing overlays mean the command runs on its built-in def
 ## Overlay Precedence
 
 VINE composes context from command defaults, this shared overlay (`shared.md`), and the
-engineer's personal layer (`shared.local.md`). They resolve as **flat personal-wins with
+engineer's personal layer (`.vine.local/context/`). They resolve as **flat personal-wins with
 policy carve-outs**, mirroring how Claude's own settings resolve — local overrides project,
 except an immutable enterprise-policy ceiling:
 
-- **Preference content** (every unmarked section) is personal-overridable: where `shared.local.md`
-  and `shared.md` conflict, the personal layer wins.
+- **Preference content** (every unmarked section) is personal-overridable: where a personal overlay
+  and its repo counterpart conflict, the personal layer wins.
 - **Policy content** is immutable from the personal layer. A section marked `<!-- class: policy -->`
-  directly under its heading always wins over personal overrides — `shared.local.md` cannot weaken
+  directly under its heading always wins over personal overrides — a personal overlay cannot weaken
   or replace it. Policy sections carry team governance the repo enforces regardless of personal
   preference (CI/CD gates, the team operating model).
 
-**Personal layer (`shared.local.md`).** Each command's *Load Context Overlays* step, after
-reading `shared.md` and the phase overlay, reads `.vine/context/shared.local.md` if present and
-composes it by the rule above — it overrides preference content and is ignored where it would
-override a policy-class section. The file is gitignored (personal scope); absent it, nothing
-changes.
+**Personal layer (`.vine.local/context/`).** Each command's *Load Context Overlays* step, after
+reading a repo overlay (`shared.md`, a phase overlay), reads its personal counterpart at the
+mirrored path `.vine.local/context/<name>.md` if present and composes it by the rule above — it
+overrides preference content and is ignored where it would override a policy-class section. Personal
+overlays live under the gitignored personal root (`.vine.local/`); absent them, nothing changes.
 
 Only policy-class sections carry the marker; unmarked means preference. This is the single
-resolution rule — the `.local` load step, init's upgrade pass, and the reviewer orientation
+resolution rule — the personal-overlay load step, init's upgrade pass, and the reviewer orientation
 reference it rather than restating it.
+
+### Team conventions (recommendation)
+
+Team conventions are **repo-owned, not framework-prescribed** — team structure varies org to org, so
+VINE ships the mechanism, not a fixed shape. To make conventions travel with the project, put them in
+the tracked repo overlay (`.vine/context/shared.md`) and mark anything the team enforces regardless of
+personal preference with `<!-- class: policy -->` (per Overlay Precedence above, the personal
+`.vine.local/` layer cannot weaken a policy section). That pair — tracked `shared.md` plus the policy
+marker — is the whole team layer; no separate team-overlay file or dedicated command is needed. To
+share those overlays across repos today, commit the overlay files your team needs; packaged
+cross-repo distribution is a separate, future concern.
 
 ## Tooling Notes
 
@@ -222,7 +236,7 @@ Internal, not shown to the engineer. Apply this stance in all VINE phases:
 
 ## Engineer Profile Protocol
 
-After loading overlays, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
+After loading overlays, check for `.vine.local/PROFILE.md`. If it exists, read the Domain Expertise
 table. Match the feature's domain against the profile's entries.
 
 - **If the domain is in the profile**: Note their level for this session. Use it to calibrate

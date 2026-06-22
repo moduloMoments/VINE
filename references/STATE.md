@@ -4,11 +4,18 @@ This document defines the state artifacts that flow between VINE phases. Each ph
 
 ## Directory Structure
 
-Per-feature artifacts live under `.vine/projects/<domain>/<feature-slug>/` in the project root. The domain is the logical area the feature touches (e.g., `payments`, `auth`, `onboarding`). The feature slug is a short, lowercase, hyphenated name for the specific work (e.g., `webhook-support`, `retry-logic`). Both are confirmed with the engineer during vine:verify via structured select prompts.
+Per-feature artifacts live under `<root>/projects/<domain>/<feature-slug>/` in the project root — the shared root `.vine/` by default, or the personal root `.vine.local/` for local-only work (see *The two roots* below). The domain is the logical area the feature touches (e.g., `payments`, `auth`, `onboarding`). The feature slug is a short, lowercase, hyphenated name for the specific work (e.g., `webhook-support`, `retry-logic`). Both are confirmed with the engineer during vine:verify via structured select prompts.
 
 This namespacing allows multiple features to be VINEd concurrently without collision — even features in the same domain. It also provides discoverability: `ls .vine/projects/payments/` shows all payment-related VINE work at a glance.
 
-Per-repo artifacts (like `.vine/PROFILE.md`) live directly under `.vine/` and persist across all VINE cycles.
+### The two roots: `.vine/` (shared) and `.vine.local/` (personal)
+
+VINE state lives under two sibling roots in the project root:
+
+- **`.vine/`** — the **shared** tree, tracked by default, travels with the repo: team overlays (`.vine/context/`), shared feature projects (`.vine/projects/`), durable knowledge (`.vine/knowledge/`), and `.vine/README.md`.
+- **`.vine.local/`** — the **personal** tree: a gitignored sibling root that mirrors `.vine/`'s structure on demand (`context/`, `projects/`, optionally `knowledge/`, plus `PROFILE.md` and `ACTIVE`). It holds everything personal to one machine — personal overlays, the engineer profile (`.vine.local/PROFILE.md`), the active-session sentinel (`.vine.local/ACTIVE`), pause state (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`), and local-only feature projects. The **whole root is gitignored** — a single `.vine.local/` rule, with no per-file ignore rules inside `.vine/`.
+
+The shared/personal split is **location-based**: a file's root marks its scope, not a filename suffix. A repo overlay at `.vine/context/shared.md` has a personal counterpart at `.vine.local/context/shared.md` (the `.local` filename suffix is dropped — the root already signals personal scope). The overlay loader composes personal-over-repo with the policy-class carve-out unchanged (see `.vine/context/shared.md`, "Overlay Precedence"). Per-repo personal state persists across all VINE cycles.
 
 ## State Files
 
@@ -234,11 +241,11 @@ thinking, what to pick up first, anything that won't survive a session break]
 
 **Lifecycle:**
 
-1. **Created** by `vine:pause` — detects current phase from artifact presence, asks the engineer for notes, writes PAUSE.md to the feature directory.
+1. **Created** by `vine:pause` — detects current phase from artifact presence, asks the engineer for notes, writes PAUSE.md under the feature's mirrored path in `.vine.local/projects/<domain>/<feature-slug>/` (the personal root, so pause state stays local even for a shared `.vine/projects/` feature).
 2. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
 3. **Consumed** (read, surfaced, then deleted) by whatever picks the work back up. Every deletion trigger:
    - `vine:resume` — after displaying the notes.
-   - `vine:navigate` — at session start, the same moment `.vine/ACTIVE` is written; notes are surfaced in the starting-point summary first.
+   - `vine:navigate` — at session start, the same moment `.vine.local/ACTIVE` is written; notes are surfaced in the starting-point summary first.
    - `vine:inquire` — at session start, after reading CONTEXT.md (handles a pause taken after verify); notes are surfaced in the context summary first.
    - `vine:evolve` — at session start, after reading the feature's artifacts; notes are surfaced first.
    - `vine:evolve` when writing `.resolved` — backstop; session-start consumption normally removed PAUSE.md already, so a surviving one is surfaced then deleted like the rest (its notes appeared after evolve began and aren't necessarily stale).
@@ -252,9 +259,9 @@ thinking, what to pick up first, anything that won't survive a session break]
 - **One per feature.** No history of pause states. The most recent pause is the only one that matters.
 - **Consumed-once.** Picking the work back up deletes the file. Notes worth keeping beyond the resume belong in NAVIGATION.md's Remaining Work, not in PAUSE.md.
 
-### .vine/ACTIVE (active-session sentinel, written by vine:navigate)
+### .vine.local/ACTIVE (active-session sentinel, written by vine:navigate)
 
-An ephemeral repo-level sentinel marking "a navigate session is active on this feature right now." It lives at `.vine/ACTIVE` (repo root, not under a feature directory), is covered by the standard `.vine/*` gitignore, and never leaves the machine — so pulled In-Progress journals from teammates can never make installed hooks fire.
+An ephemeral repo-level sentinel marking "a navigate session is active on this feature right now." It lives at `.vine.local/ACTIVE` (repo root, under the gitignored personal tree, not inside a feature directory) and never leaves the machine — so pulled In-Progress journals from teammates can never make installed hooks fire.
 
 ```
 feature: .vine/projects/<domain>/<feature-slug>
@@ -268,7 +275,7 @@ Its consumers are native hook scripts (see `.vine/scripts/`): they test the sent
 
 1. **Written** by `vine:navigate` at session start, the same moment any PAUSE.md is consumed. At a phase group boundary where the engineer continues immediately, navigate updates the `phase:` line instead of rewriting.
 2. **Deleted** at every session end: navigate's completion and pause-between-slices paths, `vine:pause`, and `vine:evolve` at session start (an evolve session means no navigate session is active).
-3. **Stale sentinel escape hatch:** if a session dies without cleanup (crash, closed terminal), hooks may fire against inactive work. The fix is `rm .vine/ACTIVE` — hook block messages name this command.
+3. **Stale sentinel escape hatch:** if a session dies without cleanup (crash, closed terminal), hooks may fire against inactive work. The fix is `rm .vine.local/ACTIVE` — hook block messages name this command.
 
 **Design constraints:**
 
@@ -278,11 +285,11 @@ Its consumers are native hook scripts (see `.vine/scripts/`): they test the sent
 
 ### .vine/scripts/ (native hook scripts)
 
-Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (declinable; declining changes nothing on disk). All scripts are POSIX sh, treat `.vine/ACTIVE`'s feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
+Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (declinable; declining changes nothing on disk). All scripts are POSIX sh, treat `.vine.local/ACTIVE`'s feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
 
 | Script | Hook event | Behavior |
 |--------|------------|----------|
-| `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine/ACTIVE` escape hatch. |
+| `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine.local/ACTIVE` escape hatch. |
 
 Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). VINE's validation contract is the optional fenced `## Validation` block in `.vine/context/shared.md` (keys `lint`/`typecheck`/`test`/`test-all`/`build`/`extra`, all optional); `vine-verification` reads it and falls back to prose inference when it is absent.
 
@@ -344,7 +351,7 @@ The universal progress tracker. Shows at-a-glance where a feature stands in the 
 
 The engineer profile. Tracks per-domain expertise within this specific repo so VINE commands can adjust explanation depth — more narration in unfamiliar areas, more concise in comfort zones.
 
-Unlike per-feature artifacts, PROFILE.md lives at `.vine/PROFILE.md` (repo root, not under a feature directory). It persists across all VINE cycles and grows over time.
+Unlike per-feature artifacts, PROFILE.md lives at `.vine.local/PROFILE.md` (under the gitignored personal root, not under a feature directory). It persists across all VINE cycles and grows over time.
 
 ```markdown
 # Engineer Profile
@@ -471,7 +478,7 @@ shared.md's identity in one line: cross-phase protocols + project-development co
 
 1. **Regenerable from the code?** (structure, call graph, where-is-X) → home it nowhere; it regenerates on demand via agentic search (see "Source of Truth vs Derived Views").
 2. **Non-regenerable judgment or gotcha tied to one domain?** (why this approach over the alternatives; "module Y is mid-migration, don't touch it") → `.vine/knowledge/<domain>/`.
-3. **Per-engineer depth, expertise, or preference?** → `.vine/PROFILE.md`.
+3. **Per-engineer depth, expertise, or preference?** → `.vine.local/PROFILE.md`.
 4. **Cross-phase VINE protocol or inter-phase routing?** → `.vine/context/shared.md` (or `.vine/context/<phase>.md` when it's one phase's mapping).
 5. **A repo fact every session needs, VINE or not?** → `CLAUDE.md`.
 
@@ -480,10 +487,6 @@ The order is narrowest-qualifying-reader-scope first, so a domain-scoped judgmen
 When a fact moves homes, leave a one-line pointer at the old location.
 
 Other surfaces reference a domain's records with a one-line pointer (`See .vine/knowledge/<domain>/`), never by inlining them.
-
-**Forward references** (conventions defined now, implemented in later cycles):
-
-- `.vine.local/` (backlog idea) — the sharing boundary for projects: tracked `.vine/projects/` is team-shared; personal work lives outside the shared tree in a gitignored sibling root mirroring `.vine/`'s structure.
 
 ## Source of Truth vs Derived Views
 
@@ -495,7 +498,7 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 |-------|-----------------|-----------|
 | The plan — what slices and phase groups exist | `SPEC.md` | durable |
 | Implementation progress — which slices are done, with commits, decisions, learnings | `NAVIGATION.md` | durable |
-| What's active right now | `.vine/ACTIVE` | ephemeral |
+| What's active right now | `.vine.local/ACTIVE` | ephemeral |
 | Handoff notes across a session gap | `PAUSE.md` | ephemeral |
 
 **Derived views** (never authoritative; rebuilt from the sources above):
@@ -507,10 +510,12 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 
 ## Committing Artifacts
 
-Whether VINE artifacts (`CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is the repo's choice, drawn by `.gitignore`:
+Whether a feature's VINE artifacts (`CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md`, `PROJECT-MAP.md`) are committed is determined **per feature directory**, by which root the project lives in:
 
-- **Tracked** (`.vine/projects/` not gitignored) = the team-shared choice (see the Knowledge Boundary rule). The artifacts travel with the code through history and PRs.
-- **Untracked / personal scope** (gitignored, or a future `.vine.local/` root) = artifacts stay local to the engineer. Fully supported.
+- **Shared** (`.vine/projects/<domain>/<feature-slug>/`, tracked) = the team-shared choice (see the Knowledge Boundary rule). The artifacts travel with the code through history and PRs.
+- **Local** (`.vine.local/projects/<domain>/<feature-slug>/`, under the gitignored personal root) = artifacts stay local to the engineer. Fully supported.
+
+The **commit-or-skip test** runs `git check-ignore` against the **specific feature directory**, not the `.vine/projects/` root: a path under `.vine/projects/` reads as committable, one under `.vine.local/projects/` reads as ignored — so the same test routes shared and local projects correctly with no special-casing. `vine:verify`, `vine:inquire`, `vine:navigate`, and `vine:evolve` apply it per-path before committing artifacts.
 
 The journal-before-commit guarantee holds either way: `journal-check.sh` compares NAVIGATION.md's *modification time*, not commit contents (chosen precisely because the artifacts are gitignored in most repos). Tracking changes only *what each commit carries*, never the mechanics.
 
@@ -525,7 +530,7 @@ The journal-before-commit guarantee holds either way: `journal-check.sh` compare
 | **Evolve commit** (`vine:evolve`) | — | EVOLUTION.md and the `.resolved` marker |
 | **PR** (= one phase group) | the group's commits | the group's full artifact state — SPEC (plan), NAVIGATION (record), PROJECT-MAP (tracker) — so a reviewer sees plan-vs-result beside the diff |
 
-`CLAUDE.md` and `.vine/context/` overlays are ordinary tracked repo files — commit them whenever they change, regardless of the artifact-tracking choice. `PROFILE.md` is commonly gitignored (it's personal); commit it only if the repo tracks it.
+`CLAUDE.md` and the repo overlays under `.vine/context/` are ordinary tracked repo files — commit them whenever they change, regardless of the artifact-tracking choice. `PROFILE.md` and any personal overlay live under the gitignored personal root (`.vine.local/PROFILE.md`, `.vine.local/context/`) and are never committed.
 
 **When the repo does not track artifacts**, commits carry code only; the artifacts still update on disk (for the mtime guarantee and the engineer's own continuity) but never enter a commit. No command should force-add a gitignored artifact.
 
@@ -583,13 +588,20 @@ This gets completed work fully out of the way while preserving artifacts. Archiv
 
 ### Filtering Convention
 
-Commands that present feature directory lists via `AskUserQuestion` must:
+Commands that enumerate feature directories — status, resume, pause, navigate, inquire, evolve,
+init's archive sweep, and trellis's glob — **scan both roots** and apply the same filters to each:
 
-1. Skip directories containing a `.resolved` file
-2. Skip anything under `.vine/projects/.archive/`
-3. If all projects are resolved/archived, tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command in its own fenced code block so it's copy-pastable
+1. Scan **both** `.vine/projects/*/*/` (shared) **and** `.vine.local/projects/*/*/` (local-only) — a
+   feature can live in either root, so every enumeration covers the pair.
+2. Skip directories containing a `.resolved` file.
+3. Skip anything under a `.archive/` subtree in either root (`.vine/projects/.archive/`,
+   `.vine.local/projects/.archive/`).
+4. If all projects across both roots are resolved/archived, tell the engineer and suggest starting a
+   new cycle with `/vine:verify` — present the command in its own fenced code block so it's copy-pastable.
 
-If the engineer needs to access a resolved project, they can pass its path explicitly as an argument.
+This two-root scan is stated **once, here**; the scan sites reference this convention rather than
+restating the rule per site (the referential-homes anti-duplication stance). If the engineer needs to
+access a resolved project, they can pass its path explicitly as an argument.
 
 ## Chaining Protocol
 

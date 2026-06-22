@@ -22,7 +22,7 @@ gracefully: read the phase overlay if present, otherwise proceed on command defa
 
 ## Load Engineer Profile
 
-After loading overlays, check for the engineer's profile at `.vine/PROFILE.md`.
+After loading overlays, check for the engineer's profile at `.vine.local/PROFILE.md`.
 
 If it exists, note it for the status display. No depth hint needed — status is a read-only
 display command.
