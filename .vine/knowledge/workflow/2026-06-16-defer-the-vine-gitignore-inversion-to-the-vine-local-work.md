@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — 2026-06-16
+Superseded by 2026-06-22-vine-ships-a-team-layer-recommendation-not-a-prescribed-mechanism — 2026-06-22
 Source: workflow/durable-decisions · Actor: Rob
 
 ## Context

@@ -14,6 +14,13 @@
   session and leave PROJECT-MAP's PR cell stale (`—`), so evolve must verify against `main` rather
   than trust the tracker — otherwise it tries to re-open work that already merged, or worse, opens a
   PR from a now-stale branch that reverts later main commits.
+- **All-phases-merged is a valid evolve entry state.** A multi-PR feature can have *every*
+  phase-group PR already merged before evolve runs — evolve is the cycle-close, not the final
+  phase's shipper. When `git diff origin/main HEAD` shows the product files identical to main, there
+  is no product handoff to draft. Evolve then produces only the cycle-close artifacts (EVOLUTION.md,
+  the `.resolved` marker, any knowledge ADR, the PROJECT-MAP evolve row), which still need their own
+  small PR to reach main — and that PR must be cut against current `origin/main` (merge it in first)
+  so it carries no stale-branch revert of commits that landed after the feature's last phase PR.
 
 ## Follow-up Tracking
 
