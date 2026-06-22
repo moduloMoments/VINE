@@ -599,6 +599,15 @@ init's archive sweep, and trellis's glob — **scan both roots** and apply the s
 4. If all projects across both roots are resolved/archived, tell the engineer and suggest starting a
    new cycle with `/vine:verify` — present the command in its own fenced code block so it's copy-pastable.
 
+**Resolving the personal root.** The shared tree `.vine/` is checked out in every worktree, so
+`.vine/projects/` is always cwd-relative. The personal tree is gitignored and therefore *not* checked
+out into a linked worktree, so resolve `.vine.local/projects/` at the repository's **primary**
+worktree — `git rev-parse --git-common-dir`, whose parent is the main worktree root where
+`.vine.local/` lives — rather than cwd-relative. Every worktree then enumerates the *same* local-only
+projects instead of silently finding none. A non-git directory falls back to the cwd-relative
+`.vine.local/`. (This is the shared-personal-root anchoring; the `ACTIVE` sentinel resolves
+differently — per-working-tree — and is specified in its own section.)
+
 This two-root scan is stated **once, here**; the scan sites reference this convention rather than
 restating the rule per site (the referential-homes anti-duplication stance). If the engineer needs to
 access a resolved project, they can pass its path explicitly as an argument.

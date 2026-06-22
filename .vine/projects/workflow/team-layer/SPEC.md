@@ -183,6 +183,15 @@ site.
 **Acceptance criteria**: AC6.
 **Complexity signal**: Medium — many sites, but mechanical once the convention is referenced.
 
+> **Addendum (implemented 2026-06-22):** Slice 4 also made two bounded corrections in code paths it
+> was already editing, beyond the literal "scan" scope: (1) `init.md`'s archive-sweep *destination* is
+> now root-aware — a project archives within its own root's `.archive/` (the `git mv`/plain-`mv` branch
+> maps to shared/local), not always `.vine/projects/.archive/`; (2) trellis's profile path was corrected
+> to `.vine.local/PROFILE.md` (a leftover from Slice 3's AC3 profile move, surfaced because trellis's
+> discovery section was in scope). STATE.md's Slice-4 amendment is scoped to the **Filtering Convention**
+> (personal-root resolution via `git rev-parse --git-common-dir`); the general two-roots contract and the
+> `ACTIVE` per-tree split remain Slice 5's, so STATE.md stays internally consistent at each step.
+
 ### Slice 5: Relocate PAUSE + ACTIVE and update hook scripts
 **Goal**: pause writes `PAUSE.md` under `.vine.local/projects/<d>/<f>/`; resume and the consume
 sites (inquire/navigate/evolve) read it there. navigate writes `.vine.local/ACTIVE`

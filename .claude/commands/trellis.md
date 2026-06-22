@@ -255,15 +255,15 @@ markers found at all), print a warning and skip Steps 6–7.
 
 ### 5b: Discover Artifacts
 
-Use Glob to find all artifacts in `.vine/projects/`:
+Use Glob to find all artifacts per the Filtering Convention in `references/STATE.md` (both roots):
 
-- Look for `CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md` under
-  `.vine/projects/*/*/` (domain/feature-slug directories)
-- Look for `PROFILE.md` at `.vine/PROFILE.md`
+- Look for `CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md` under `.vine/projects/*/*/`
+  **and** `.vine.local/projects/*/*/` (domain/feature-slug directories)
+- Look for `PROFILE.md` at `.vine.local/PROFILE.md`
 - **Filter out**: any path containing `.archive/` and any directory containing a `.resolved` file
 - For each discovered artifact, record its path and artifact type
 
-If no `.vine/projects/` directory exists or no artifacts are found, record this — Step 7 will
+If neither root has a `projects/` directory or no artifacts are found, record this — Step 7 will
 handle the "no artifacts" case cleanly.
 
 ## Step 6: Validate Artifacts
@@ -403,13 +403,13 @@ Command validation results above are unaffected.
 
 ### Case 2: No Artifacts Found
 
-If Step 5 ran but no artifacts were discovered in `.vine/projects/` and no `.vine/PROFILE.md`
+If Step 5 ran but no artifacts were discovered in either projects root and no `.vine.local/PROFILE.md`
 exists, print:
 
 ```
 ## Artifact Validation
 
-No artifacts found in .vine/projects/ or .vine/PROFILE.md — nothing to validate.
+No artifacts found in .vine/projects/, .vine.local/projects/, or .vine.local/PROFILE.md — nothing to validate.
 This is expected if no VINE cycles have been run in this repo.
 ```
 
@@ -422,7 +422,7 @@ Print a results table with artifacts as rows and checks as columns:
 
 | Artifact                              | Sections | Table | Slice Fields | Nav Fields |
 |---------------------------------------|----------|-------|--------------|------------|
-| .vine/PROFILE.md                      | ✅       | ✅    | —            | —          |
+| .vine.local/PROFILE.md                | ✅       | ✅    | —            | —          |
 | .vine/projects/auth/login/CONTEXT.md  | ✅       | —     | —            | —          |
 | .vine/projects/auth/login/SPEC.md     | ✅       | —     | ✅           | —          |
 | .vine/projects/auth/login/NAV...md    | ✅       | —     | —            | ✅         |

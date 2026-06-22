@@ -137,6 +137,58 @@ team recommendation glosses #57 (reads without dereferencing).
     moves only the reader silently breaks the feature; the SPEC's per-slice file lists are a guide, not
     a hard partition when correctness spans them.
 
+### Slice 4: Two-root project discovery — Complete
+**Started**: 2026-06-22 12:15
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Taught all 8 discovery sites to scan both `.vine/projects/` and
+`.vine.local/projects/` by referencing the single Filtering Convention in `references/STATE.md`
+rather than restating the filter rules per site (referential-homes stance). Sites updated:
+`status.md` (preserved its "include resolved, marked" exception), `pause.md`, `resume.md`,
+`navigate.md`, `inquire.md`, `evolve.md`, `init.md`'s archive sweep, and `.claude/commands/trellis.md`'s
+Glob (Step 5b). Amended STATE.md's Filtering Convention with a **Resolving the personal root**
+paragraph: the gitignored `.vine.local/` is resolved at the repository's *primary* worktree via
+`git rev-parse --git-common-dir` (cwd fallback for non-git dirs) so worktree sessions enumerate the
+same local-only projects instead of silently finding none — the discovery half of the worktree ADR.
+Made `init.md`'s archive sweep root-aware (each project archives within its own root's `.archive/`;
+the existing `git mv`/plain-`mv` branch maps cleanly to shared/local). Folded in the Slice-3
+profile-path leftover in trellis (`.vine/PROFILE.md` → `.vine.local/PROFILE.md`, 3 refs).
+**Deviations from spec**: Two bounded additions beyond the literal "discovery" scope, both for
+correctness in the same code paths I was already editing: (1) `init.md` archive-sweep *destination*
+made root-aware (not just the *scan*), else a local project would archive into the shared
+`.vine/projects/.archive/`; (2) the trellis profile-path fix, a Slice-3 leftover (AC3's profile move)
+surfaced because trellis's discovery section was in scope here. Recorded, not silent.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs; `.vine/.trellis-ok` stamped pass at 12:33, fresh after all edits). Artifact validation
+unaffected — Slice 4 touched no artifact files and no STATE.md template fences, so the parsed
+templates and the feature's artifacts (validated in prior slices) are unchanged. The two pre-existing
+allowlisted `.vine/hooks/` legacy warnings (init.md:104-105) are unrelated.
+**Decisions made during implementation**:
+  - Scope Slice 4's STATE.md amendment to the **Filtering Convention** (discovery's git-anchored
+    resolution of the personal root) and leave the general two-roots contract + the `ACTIVE` per-tree
+    git-dir split entirely to Slice 5 — keeps STATE.md internally non-contradictory at every step (no
+    half-changed `ACTIVE` contract), unlike the broad Slice-1 consolidation (decided by: claude, after
+    flagging the alternative to the engineer; confidence: high)
+  - Make each site a thin reference to the Filtering Convention while preserving its distinct tail
+    (status includes-resolved, pause "nothing active to pause", resume/inquire/evolve `/vine:verify`
+    suggestion) rather than a uniform boilerplate swap (decided by: claude; confidence: high)
+  - Fold the trellis `.vine/PROFILE.md` → `.vine.local/PROFILE.md` fix into this slice since trellis's
+    discovery section was already open, rather than leave a known Slice-3 gap (decided by: claude —
+    flagged in preview; confidence: high)
+**Acceptance criteria**:
+  - [x] AC6 — all feature-enumerating commands (status, resume, pause, navigate, inquire, evolve,
+    init's archive sweep) and trellis discover projects in **both** roots with `.resolved`/`.archive/`
+    filtering applied to each; the two-root rule is stated once (Filtering Convention) and referenced,
+    not restated per site
+**Engineer feedback incorporated**: Gear choice (free climb) and the two flagged judgment calls were
+presented before coding; engineer chose free climb, trusting the approach. No mid-slice redirection.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: A "discovery" slice can't cleanly stop at the *scan* — the archive *destination*
+    and the personal-root *resolution* live in the same code paths, so getting discovery right pulls in
+    root-awareness and the git-anchoring the worktree ADR specified. The referential-homes home (one
+    Filtering Convention statement) is what kept that from rippling into 8 separate restatements.
+
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
 (suffix dropped) for repos tracking `main`. This is a courtesy migration, not a shipped-version compat

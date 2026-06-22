@@ -36,11 +36,10 @@ to re-read everything yourself.
 
 ## Identify the Feature
 
-Scan `.vine/projects/` for feature directories. Filter out resolved projects (directories
-containing a `.resolved` file) and archived projects (under `.vine/projects/.archive/`). If all
-projects are resolved or archived, tell the engineer there's nothing to resume and suggest
-starting a new cycle with `/vine:verify` — present the command in its own fenced code block
-so it's copy-pastable.
+Scan for feature directories per the Filtering Convention in `references/STATE.md` (both roots;
+resolved and `.archive/` subtrees filtered out). If all projects are resolved or archived, tell the
+engineer there's nothing to resume and suggest starting a new cycle with `/vine:verify` — present
+the command in its own fenced code block so it's copy-pastable.
 
 If a feature path was passed as an argument, use it directly. Otherwise:
 
