@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # run-tests.sh spins up throwaway git repos and commits in them; CI
+      # runners have no default identity, so set one for those commits.
+      - name: Configure git identity
+        run: |
+          git config --global user.email "ci@example.com"
+          git config --global user.name "VINE CI"
+
+      - name: Run hook test matrix
+        run: sh .vine/scripts/run-tests.sh
+
+      - name: Run trellis command checks
+        run: sh .vine/scripts/trellis-check.sh

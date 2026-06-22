@@ -47,13 +47,15 @@ When submitting a PR:
 - Use `/pr` to create your pull request — it fills in the template and checks guidelines
 - Describe what you changed and why in the PR description
 
+CI runs `.vine/scripts/run-tests.sh` and `.vine/scripts/trellis-check.sh` on every PR, so run them locally first to catch failures early.
+
 ## What's not ready for contribution yet
 
 These areas are actively being shaped and aren't ready for outside PRs:
 
 - New phases or commands
 - Changes to the core phase flow or state model
-- CI/automation infrastructure
+- The behavioral/scenario test harness (fixture repos, golden transcripts) — see #116
 
 If you have ideas in these areas, open an issue — the discussion is welcome even if the code isn't yet.
 

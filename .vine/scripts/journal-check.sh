@@ -42,8 +42,12 @@ journal="$root/$feature/NAVIGATION.md"
 
 # "Updated since the last commit" = journal mtime newer than HEAD's commit
 # time. git status can't answer this: NAVIGATION.md is gitignored in most
-# repos. BSD stat first (macOS), then GNU; fail open if neither works.
-mtime=$(stat -f %m "$journal" 2>/dev/null || stat -c %Y "$journal" 2>/dev/null)
+# repos. GNU stat first, then BSD (macOS); fail open if neither works.
+# Order matters: GNU `stat -f` is `--file-system` and exits 0 printing
+# filesystem info (not the mtime), so a BSD-first `stat -f %m` would swallow
+# the GNU fallback and yield non-numeric garbage. `stat -c` is GNU-only and
+# fails cleanly on BSD, so the fallback fires correctly there.
+mtime=$(stat -c %Y "$journal" 2>/dev/null || stat -f %m "$journal" 2>/dev/null)
 [ -n "$mtime" ] || exit 0
 last=$(git -C "$root" log -1 --format=%ct 2>/dev/null)
 # No commits yet — the first commit is always allowed.
