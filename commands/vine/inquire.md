@@ -41,13 +41,13 @@ decide, and document everything. The output is a SPEC.md that vine:navigate can 
 
 ### 1. Load the Context
 
-Identify the feature directory under `.vine/projects/`. Look for the domain/feature-slug path
-(e.g., `.vine/projects/payments/webhook-support/`). Filter out resolved projects (directories
-containing a `.resolved` file) and archived projects (under `.vine/projects/.archive/`). If
-there's only one active feature directory, use that. If there are multiple, use
-`AskUserQuestion` to let the engineer pick which feature to work on. If all projects are
-resolved or archived, tell the engineer and suggest starting a new cycle with `/vine:verify` —
-present the command in its own fenced code block so it's copy-pastable.
+Identify the feature directory per the Filtering Convention in `references/STATE.md` (both roots —
+look for the domain/feature-slug path, e.g. `.vine/projects/payments/webhook-support/` or
+`.vine.local/projects/...` — with resolved and `.archive/` subtrees filtered out). If there's only
+one active feature directory, use that. If there are multiple, use `AskUserQuestion` to let the
+engineer pick which feature to work on. If all projects are resolved or archived, tell the engineer
+and suggest starting a new cycle with `/vine:verify` — present the command in its own fenced code
+block so it's copy-pastable.
 
 Also read `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md` if it exists. If present, update the
 inquire row to 🚧 with today's date. If it doesn't exist, skip — older projects won't have one.
@@ -63,8 +63,10 @@ If CONTEXT.md exists, read it and summarize the key points back to the engineer:
 > "Based on our verify phase, here's what I'm working with: [brief summary]. The open questions
 > were: [list]. Let's start by resolving those."
 
-**Consume any pause state.** If the feature directory contains a PAUSE.md (e.g., the engineer
-paused after verify), surface its notes alongside the summary above, then delete it — the
+**Consume any pause state.** If the feature's mirrored personal path
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per *The two roots* in
+`references/STATE.md`) contains a PAUSE.md (e.g., the engineer paused after verify), surface its
+notes alongside the summary above, then delete it — the
 consumed-once rule (see `references/STATE.md`). A consumed pause must not linger: it would keep
 suggesting `/vine:resume` for work that has already resumed. Anything worth keeping past this
 session belongs in the artifacts, not PAUSE.md. (If no PAUSE.md is present, skip.)
@@ -311,10 +313,11 @@ Once approved:
 
 1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 
-2. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
-   SPEC.md and the PROJECT-MAP.md update (see "Committing Artifacts" in `references/STATE.md`).
-   If the path is gitignored, skip this step silently — personal-scope artifacts never enter
-   a commit.
+2. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
+   directory** — the per-path test in "Committing Artifacts", `references/STATE.md` — and it exits
+   non-zero), commit SPEC.md and the PROJECT-MAP.md update. If the feature directory is gitignored
+   (a local project under `.vine.local/projects/`), skip this step silently — personal-scope
+   artifacts never enter a commit.
 
 3. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — if a retro item should change what

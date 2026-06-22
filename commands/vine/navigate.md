@@ -57,12 +57,12 @@ your approach, and teaching you things about the domain that make the implementa
 
 ### 1. Load Context and Spec
 
-Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
-there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to work on. Filter out resolved projects (directories containing a `.resolved` file) and
-archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
-tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
-in its own fenced code block so it's copy-pastable.
+Identify the feature directory per the Filtering Convention in `references/STATE.md` (both roots —
+e.g. `.vine/projects/payments/webhook-support/` or `.vine.local/projects/...` — with resolved and
+`.archive/` subtrees filtered out). If there are multiple feature directories, use `AskUserQuestion`
+to let the engineer pick which feature to work on. If all projects are resolved or archived, tell
+the engineer and suggest starting a new cycle with `/vine:verify` — present the command in its own
+fenced code block so it's copy-pastable.
 
 Read `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` and `.vine/projects/<domain>/<feature-slug>/SPEC.md`. If either is
 missing, tell the engineer which prior phase needs to run first.
@@ -90,8 +90,10 @@ not a mini-PAUSE.md; handoff state lives in PAUSE.md. Its only job is to mark "a
 session is active on this feature" so installed native hooks can scope their checks to
 active work. It never leaves the machine.
 
-**Consume any pause state.** If the feature directory contains a PAUSE.md, picking the work
-back up consumes it: surface its notes in your starting-point summary, then delete the file.
+**Consume any pause state.** If the feature's mirrored personal path
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per *The two roots* in
+`references/STATE.md`) contains a PAUSE.md, picking the work back up consumes it: surface its
+notes in your starting-point summary, then delete the file.
 A consumed pause must not linger — it would keep suggesting `/vine:resume` for work that has
 already resumed.
 
@@ -287,11 +289,12 @@ and the journal-schema contract behind them — is in `references/STATE.md`.
 
 **c. Commit the slice**
 
-Stage the changed files and commit with this format. **When the repo tracks `.vine/`
-artifacts**, bundle this slice's artifact updates into the same commit so the tracked spec and
-journal never lag the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation
-annotations you made during the slice (step 6). **When artifacts are untracked** — many repos
-gitignore them, or keep them in a personal scope, which is fine — commit code only; the
+Stage the changed files and commit with this format. **When this feature directory is tracked**
+(the per-path `git check-ignore` test — see *Committing Artifacts* in `references/STATE.md`),
+bundle this slice's artifact updates into the same commit so the tracked spec and journal never lag
+the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation annotations you made
+during the slice (step 6). **When the feature directory is gitignored** — a local project under
+`.vine.local/projects/`, which is fine — commit code only; the
 journal-before-commit guarantee compares file modification time, not commit contents, so it holds
 either way. Never force-add a gitignored artifact. (The full per-commit-point breakdown —
 slice / phase-group boundary / evolve / PR — lives in `references/STATE.md` under *Committing
@@ -461,10 +464,10 @@ phase group boundary before showing the completion block:
 3. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.
 4. If there's a next phase, update its Milestones row to `🚧 Active`.
 
-   **When the repo tracks artifacts**, commit these tracker updates at the boundary — the
-   PROJECT-MAP.md row changes and the SPEC.md phase-group ✅ marker are the phase group's
-   closing artifact state, so the PR you open next carries them alongside the code. (Untracked
-   repos: they update on disk only, never in a commit.)
+   **When this feature directory is tracked** (the per-path test), commit these tracker updates at
+   the boundary — the PROJECT-MAP.md row changes and the SPEC.md phase-group ✅ marker are the phase
+   group's closing artifact state, so the PR you open next carries them alongside the code. (A
+   gitignored local project: they update on disk only, never in a commit.)
 5. Suggest opening a PR for the completed phase group:
 
    > "Phase [N: name] is complete. This is a good point to open a PR for this work.

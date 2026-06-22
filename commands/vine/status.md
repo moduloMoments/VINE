@@ -35,8 +35,9 @@ when deciding which feature to pick up.
 
 ## Identify the Feature
 
-Scan `.vine/projects/` for feature directories. Filter out archived projects (under
-`.vine/projects/.archive/`). Include resolved projects but mark them as such.
+Scan for feature directories per the Filtering Convention in `references/STATE.md` (both roots,
+`.archive/` subtrees filtered). Unlike the other enumerating commands, status **includes** resolved
+projects — mark them as such rather than filtering them out.
 
 If a feature path was passed as an argument, use it directly. Otherwise:
 

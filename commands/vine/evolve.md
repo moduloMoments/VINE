@@ -39,12 +39,12 @@ ship — every feature is an opportunity to grow on three dimensions.
 
 ## Getting Started
 
-Identify the feature directory under `.vine/projects/` (e.g., `.vine/projects/payments/webhook-support/`). If
-there are multiple feature directories, use `AskUserQuestion` to let the engineer pick which
-feature to review. Filter out resolved projects (directories containing a `.resolved` file) and
-archived projects (under `.vine/projects/.archive/`). If all projects are resolved or archived,
-tell the engineer and suggest starting a new cycle with `/vine:verify` — present the command
-in its own fenced code block so it's copy-pastable.
+Identify the feature directory per the Filtering Convention in `references/STATE.md` (both roots —
+e.g. `.vine/projects/payments/webhook-support/` or `.vine.local/projects/...` — with resolved and
+`.archive/` subtrees filtered out). If there are multiple feature directories, use `AskUserQuestion`
+to let the engineer pick which feature to review. If all projects are resolved or archived, tell
+the engineer and suggest starting a new cycle with `/vine:verify` — present the command in its own
+fenced code block so it's copy-pastable.
 
 Read all VINE artifacts for this feature:
 - `.vine/projects/<domain>/<feature-slug>/CONTEXT.md` (the landscape)
@@ -59,8 +59,10 @@ If PROJECT-MAP.md exists, update the evolve row to 🚧 with today's date. If it
 table, note which phases shipped in prior PRs — evolve's verification should focus on the final
 phase group and cross-phase integration, not re-verify already-shipped work.
 
-If the feature directory contains a PAUSE.md, picking the work back up consumes it: surface
-its notes, then delete the file — a consumed pause must not linger suggesting `/vine:resume`.
+If the feature's mirrored personal path (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`,
+resolved per *The two roots* in `references/STATE.md`) contains a PAUSE.md, picking the work back up
+consumes it: surface its notes, then delete the file — a consumed pause must not linger suggesting
+`/vine:resume`.
 Also delete `.vine/ACTIVE` (repo root) if it exists: any navigate session on this feature is
 over, and a stale sentinel keeps installed hooks firing against work that's no longer active
 (format and lifecycle in `references/STATE.md`).
@@ -519,7 +521,8 @@ Options (mutually exclusive):
 
 If the engineer chooses to resolve, write an empty `.resolved` file to
 `.vine/projects/<domain>/<feature-slug>/.resolved`. Then consume any
-`.vine/projects/<domain>/<feature-slug>/PAUSE.md` that still exists — the backstop delete. Evolve's
+`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the mirrored personal path) that still
+exists — the backstop delete. Evolve's
 session-start consumption normally removed it already, so a PAUSE.md surviving to here appeared
 *after* evolve began and its notes aren't necessarily stale: surface them to the engineer first,
 then delete the file. Never delete it silently — the same surface-then-delete rule the other
@@ -534,8 +537,9 @@ Options (mutually exclusive):
 1. "Archive now (Recommended)" — "Move the project under `.vine/projects/.archive/`"
 2. "Keep in place" — "Leave it resolved-but-unarchived; archive later by hand"
 
-If the engineer archives, move the project directory — `git mv` when the repo tracks artifacts so
-history follows, plain `mv` when untracked:
+If the engineer archives, move the project directory — `git mv` when this feature directory is
+tracked (the per-path `git check-ignore` test — see *Committing Artifacts* in `references/STATE.md`)
+so history follows, plain `mv` when it's gitignored (a local project):
 
 ```
 mkdir -p .vine/projects/.archive/<domain>
@@ -557,8 +561,9 @@ under *Committing Artifacts*):
 - **CLAUDE.md** and **`.vine/context/`** overlay updates (if accepted) — ordinary tracked repo
   files; commit them whenever they change, regardless of the artifact-tracking choice.
 - **EVOLUTION.md** and the **`.resolved`** marker (if resolved) — VINE artifacts; stage them
-  **only when the repo tracks `.vine/` artifacts**. When artifacts are untracked (gitignored, or
-  a personal scope) they update on disk but stay out of the commit.
+  **only when this feature directory is tracked** (the per-path test). When the feature directory is
+  gitignored (a local project under `.vine.local/projects/`) they update on disk but stay out of the
+  commit.
 - **`.vine.local/PROFILE.md`** updates (if accepted) — commonly gitignored (it's personal); stage only
   if the repo tracks it.
 

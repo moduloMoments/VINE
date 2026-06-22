@@ -137,6 +137,158 @@ team recommendation glosses #57 (reads without dereferencing).
     moves only the reader silently breaks the feature; the SPEC's per-slice file lists are a guide, not
     a hard partition when correctness spans them.
 
+### Slice 4: Two-root project discovery — Complete
+**Started**: 2026-06-22 12:15
+**Commit**: 8cfbfcf
+**Gear**: free-climb
+**Approach taken**: Taught all 8 discovery sites to scan both `.vine/projects/` and
+`.vine.local/projects/` by referencing the single Filtering Convention in `references/STATE.md`
+rather than restating the filter rules per site (referential-homes stance). Sites updated:
+`status.md` (preserved its "include resolved, marked" exception), `pause.md`, `resume.md`,
+`navigate.md`, `inquire.md`, `evolve.md`, `init.md`'s archive sweep, and `.claude/commands/trellis.md`'s
+Glob (Step 5b). Amended STATE.md's Filtering Convention with a **Resolving the personal root**
+paragraph: the gitignored `.vine.local/` is resolved at the repository's *primary* worktree via
+`git rev-parse --git-common-dir` (cwd fallback for non-git dirs) so worktree sessions enumerate the
+same local-only projects instead of silently finding none — the discovery half of the worktree ADR.
+Made `init.md`'s archive sweep root-aware (each project archives within its own root's `.archive/`;
+the existing `git mv`/plain-`mv` branch maps cleanly to shared/local). Folded in the Slice-3
+profile-path leftover in trellis (`.vine/PROFILE.md` → `.vine.local/PROFILE.md`, 3 refs).
+**Deviations from spec**: Two bounded additions beyond the literal "discovery" scope, both for
+correctness in the same code paths I was already editing: (1) `init.md` archive-sweep *destination*
+made root-aware (not just the *scan*), else a local project would archive into the shared
+`.vine/projects/.archive/`; (2) the trellis profile-path fix, a Slice-3 leftover (AC3's profile move)
+surfaced because trellis's discovery section was in scope here. Recorded, not silent.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs; `.vine/.trellis-ok` stamped pass at 12:33, fresh after all edits). Artifact validation
+unaffected — Slice 4 touched no artifact files and no STATE.md template fences, so the parsed
+templates and the feature's artifacts (validated in prior slices) are unchanged. The two pre-existing
+allowlisted `.vine/hooks/` legacy warnings (init.md:104-105) are unrelated.
+**Decisions made during implementation**:
+  - Scope Slice 4's STATE.md amendment to the **Filtering Convention** (discovery's git-anchored
+    resolution of the personal root) and leave the general two-roots contract + the `ACTIVE` per-tree
+    git-dir split entirely to Slice 5 — keeps STATE.md internally non-contradictory at every step (no
+    half-changed `ACTIVE` contract), unlike the broad Slice-1 consolidation (decided by: claude, after
+    flagging the alternative to the engineer; confidence: high)
+  - Make each site a thin reference to the Filtering Convention while preserving its distinct tail
+    (status includes-resolved, pause "nothing active to pause", resume/inquire/evolve `/vine:verify`
+    suggestion) rather than a uniform boilerplate swap (decided by: claude; confidence: high)
+  - Fold the trellis `.vine/PROFILE.md` → `.vine.local/PROFILE.md` fix into this slice since trellis's
+    discovery section was already open, rather than leave a known Slice-3 gap (decided by: claude —
+    flagged in preview; confidence: high)
+**Acceptance criteria**:
+  - [x] AC6 — all feature-enumerating commands (status, resume, pause, navigate, inquire, evolve,
+    init's archive sweep) and trellis discover projects in **both** roots with `.resolved`/`.archive/`
+    filtering applied to each; the two-root rule is stated once (Filtering Convention) and referenced,
+    not restated per site
+**Engineer feedback incorporated**: Gear choice (free climb) and the two flagged judgment calls were
+presented before coding; engineer chose free climb, trusting the approach. No mid-slice redirection.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: A "discovery" slice can't cleanly stop at the *scan* — the archive *destination*
+    and the personal-root *resolution* live in the same code paths, so getting discovery right pulls in
+    root-awareness and the git-anchoring the worktree ADR specified. The referential-homes home (one
+    Filtering Convention statement) is what kept that from rippling into 8 separate restatements.
+
+### Slice 5: Relocate PAUSE + ACTIVE and update hook scripts — Complete
+**Started**: 2026-06-22 12:40
+**Commit**: 0833865
+**Gear**: walk-me-through
+**Approach taken**: Two halves. (1) **PAUSE.md relocated** to the feature's mirrored personal path
+`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (shared personal root, resolved per *The two
+roots* in STATE.md) — pause state is personal, so it lives under `.vine.local/` even for a shared
+`.vine/projects/` feature. Updated the writer (`pause.md`), the reader (`resume.md`), the consume sites
+(`inquire.md`, `navigate.md`, `evolve.md` session-start + backstop delete), and `init.md`'s archive-sweep
+stray-PAUSE delete. (2) **STATE.md contract** amended for git-anchored resolution of the *shared* personal
+root (`dirname "$(git rev-parse --git-common-dir)"`, cwd fallback), generalizing Slice 4's
+discovery-scoped rule; the Slice-4 Filtering Convention paragraph now references the general rule.
+**Mid-slice design pivot (see Decisions): `ACTIVE` does NOT relocate** — it stays at `.vine/ACTIVE`
+(gitignored), so the hook scripts (`journal-check.sh`, `run-tests.sh`) and every command's `ACTIVE`
+read/write/delete are **unchanged**. STATE.md's `ACTIVE` section, escape hatch, scripts intro, and
+source-of-truth table were rewritten to document `.vine/ACTIVE` (per-worktree-by-checkout) rather than
+the git dir.
+**Deviations from spec**: **`ACTIVE` does not move** — the SPEC Goal (and the original worktree ADR)
+had it relocating to `.vine.local/ACTIVE`, then the per-worktree git dir. We kept `.vine/ACTIVE`
+instead (engineer-directed during the slice). Hooks therefore untouched. Annotated in SPEC (Phase 2
+note + Slice 5 addendum) and the knowledge ADR (Status + Decision + Amendment section). New Slice-9
+obligation introduced: the flipped `.gitignore` must carry an explicit `.vine/ACTIVE` line.
+**Validation**: pass — `sh .vine/scripts/run-tests.sh` 24/24 (incl. journal-check stale→block,
+fresh→allow). Live journal-check against this worktree's real `.vine/ACTIVE`: stale→exit 2, fresh→exit 0,
+escape-hatch message reads `rm .vine/ACTIVE` (matches contract). `sh .vine/scripts/trellis-check.sh`
+exit 0 (11/11 commands, 8 anchor pairs; stamp fresh). The real `trellis-gate` hook correctly blocked a
+test Bash command containing `git commit` before the stamp refresh — gate working as designed. Two
+pre-existing allowlisted `.vine/hooks/` legacy warnings, unrelated.
+**Decisions made during implementation**:
+  - **ACTIVE stays at `.vine/ACTIVE` (gitignored), not the per-worktree git dir** (Option B). The
+    engineer questioned the git-dir choice mid-slice; analysis showed `.vine/` is a tracked tree, so each
+    worktree checks out its own copy and a gitignored `.vine/ACTIVE` is per-tree *for free* — equal
+    correctness, zero `git rev-parse` prose in commands/hooks, no app state written into `.git/`. Cost:
+    one extra gitignore glob at the Slice-9 flip. The original ADR simply hadn't considered it (decided
+    by: engineer — chose Option B after I laid out the tradeoff; confidence: high)
+  - **Amend the ADR in place rather than supersede.** Same-cycle (written hours earlier, commit
+    715393c), and the git-dir half never shipped — superseding would leave a confusing two-ADR trail for
+    a mid-implementation correction. Marked the Status line amended, revised the Decision bullet, added an
+    Amendment section; the shared-root anchoring (the ADR's core) is unchanged (decided by: claude —
+    recommended, engineer asked "what about the ADR?"; confidence: high)
+  - **PAUSE.md always at `.vine.local/projects/<d>/<f>/`** even for shared projects, stated as the
+    feature's "mirrored personal path"; sites reference the two-roots resolution rather than restating
+    the common-dir mechanics (referential-homes) (decided by: claude; confidence: high)
+  - **Scope held:** `.resolved` marker path (evolve.md:521) and evolve's archive destination left
+    root-unaware for now — that's Slice 8 (evolve local→shared) territory, not PAUSE/ACTIVE (decided by:
+    claude; confidence: medium)
+**Acceptance criteria**:
+  - [x] AC4 — **intent over letter.** The criterion's letter named `.vine.local/ACTIVE`; the design
+    evolved to `.vine/ACTIVE`. Intent (navigate writes the sentinel, `journal-check.sh`/`run-tests.sh`
+    read it, the active-session hook fires correctly per-worktree) is met and verified live. The hooks
+    read `.vine/ACTIVE` (unchanged); the cross-worktree correctness comes from per-tree checkout.
+  - [x] AC5 — `vine:pause` writes `PAUSE.md` under `.vine.local/projects/...`; resume/inquire/navigate/
+    evolve consume it from there; consumed-once rule intact.
+**Engineer feedback incorporated**: The engineer challenged putting `ACTIVE` in the git dir ("does it
+make sense?"), which drove the pivot to Option B and the ADR amendment — the central shape of this slice.
+**Learnings**:
+  - Engineer → Claude: Question an inherited design decision before implementing it, even one you
+    co-authored days ago — the git-dir relocation was solving a problem (`.vine/ACTIVE` being tracked
+    post-flip) that a one-line gitignore solves far more cheaply. An ADR being Accepted doesn't make its
+    every sub-decision load-bearing.
+  - Claude → Engineer: When a tracked directory is checked out per worktree, a gitignored file inside it
+    is *already* per-worktree — no git-dir gymnastics needed. The two-scope split (shared vs per-tree) the
+    ADR identified is real, but only the *shared* scope actually needs git resolution.
+
+### Slice 6: Per-path commit test — Complete
+**Started**: 2026-06-22 13:05
+**Commit**: d80a95e
+**Gear**: walk-me-through (ran in approve-edits continuity from Slice 5; no separate gear prompt —
+the slice is trivially mechanical, a process note not a redirection)
+**Approach taken**: Replaced the root `git check-ignore -q .vine/projects` test with the per-path test
+(run `git check-ignore` against the **specific feature directory**) at every commit/move decision:
+`verify.md` (CONTEXT+MAP first commit), `inquire.md` (SPEC commit), `navigate.md` (slice commit 4c +
+phase-group boundary), `evolve.md` (archive `git mv`-vs-`mv` + EVOLUTION/.resolved commit). Each site
+now references STATE.md's *Committing Artifacts* per-path rule (which Slice 1 already wrote) rather than
+restating the mechanics, and frames the gitignored case as "a local project under `.vine.local/projects/`."
+**Deviations from spec**: None. Scoped to the four commit-test sites. The evolve archive *destination*
+(`.vine/projects/.archive/` hardcoded, line 544) and the `.resolved` marker path are left root-unaware —
+that's Slice 8 (evolve local→shared) territory, consistent with the Slice 5 scope note.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 anchor pairs;
+`.vine/.trellis-ok` stamped pass). Prose-only change (no scripts/tests touched). Confirmed by grep that
+no `check-ignore -q .vine/projects` root test remains in any command. Two pre-existing allowlisted
+`.vine/hooks/` warnings, unrelated.
+**Decisions made during implementation**:
+  - Reference STATE.md's *Committing Artifacts* per-path rule at each site rather than restate the
+    `git check-ignore` mechanics (referential-homes — the rule has one authoritative home from Slice 1)
+    (decided by: claude; confidence: high)
+  - Leave evolve's archive destination + `.resolved` path root-unaware for Slice 8; Slice 6 is the
+    commit *test*, not evolve's local-project handling (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC7 — the commit-or-skip test runs against the specific feature directory in
+    verify/inquire/navigate/evolve, so shared projects (`.vine/projects/`) commit and local ones
+    (`.vine.local/projects/`) skip, with no `.vine/projects/` root special-casing
+**Engineer feedback incorporated**: Engineer chose "continue in this session" to finish Phase 2;
+approve-edits continuity from Slice 5 (each edit reviewed as it landed).
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: Because Slice 1 homed the per-path rule in STATE.md's *Committing Artifacts*,
+    Slice 6 was a pure reference-the-rule pass — the upfront referential-homes investment paid off as a
+    mechanical, low-risk close to Phase 2.
+
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
 (suffix dropped) for repos tracking `main`. This is a courtesy migration, not a shipped-version compat
@@ -154,10 +306,11 @@ need — the personal-layer convention never shipped (see Slice 2 decision). Dec
     pause/navigate/evolve delete the same path, journal-check.sh/run-tests.sh read it), so the runtime
     is self-consistent; only STATE.md's contract documents the end-state. Fixing `evolve.md:64` in
     isolation now would BREAK it (delete the wrong path while navigate still writes the old one).
-  - **Slice 5 (Phase 2) ACTIVE-relocation checklist** — move all of these from `.vine/ACTIVE` →
-    `.vine.local/ACTIVE` together: `navigate.md:79` (writer) + `:384/:416/:478/:557` (leave/delete),
-    `pause.md:100` (delete), `evolve.md:64` (delete), `journal-check.sh:12` (+ line 4 comment, line 63
-    escape-hatch message), `run-tests.sh:35`. Same slice relocates PAUSE.md to `.vine.local/projects/...`.
+  - **Slice 5 ACTIVE-relocation checklist — SUPERSEDED (done differently).** This planned to move
+    `.vine/ACTIVE` → `.vine.local/ACTIVE`. Slice 5 instead kept `ACTIVE` at `.vine/ACTIVE` (Option B —
+    gitignored, per-worktree by checkout), so none of those `navigate/pause/evolve` lines or the hook
+    scripts (`journal-check.sh`/`run-tests.sh`) moved. PAUSE.md *was* relocated to
+    `.vine.local/projects/...`. See the Slice 5 entry + ADR Amendment.
   - **PR 1 reviewer note**: STATE.md documents the `.vine.local/` end-state (ACTIVE/PAUSE/PROFILE/
     gitignore) ahead of the command + hook machinery, which relocates in Phases 2-3. This is the
     intended "contract leads implementation" phasing (maintainer-directed in Slice 1), not drift.
@@ -174,8 +327,10 @@ need — the personal-layer convention never shipped (see Slice 2 decision). Dec
     AND the directory **table** (`PROFILE.md` / `ACTIVE`,`PAUSE.md` rows ~304/306). The post-Phase-1
     ref-hygiene pass updated only the customize bullet + team-distribution block to `.vine.local/`,
     so the scaffold now names both conventions — Slice 10 must close the entire block, not just the
-    table. Gated on Phase 2's final locations (per the worktree ADR, `ACTIVE` lands in the
-    per-worktree git dir, NOT `.vine.local/` — don't bake `.vine.local/ACTIVE` into the table).
+    table. Phase 2's final locations are now settled: `ACTIVE` stays at `.vine/ACTIVE` (gitignored,
+    per-worktree) — the table should keep an `ACTIVE` → `.vine/ACTIVE` row, and PAUSE.md moves to
+    `.vine.local/projects/<d>/<f>/`. Also: **Slice 9 must add a `.vine/ACTIVE` line to the flipped
+    `.gitignore`** (alongside `.vine.local/` and the contributor-only `.vine/.trellis-ok`).
     Plus shared.md's gitignore-tracking note (~line 70/82), CLAUDE.md, README.md, and STATE.md's
     surfaces per the State Artifact Addition Checklist. (Surfaced by the cold vine-reviewer pass on
     PR #122.)

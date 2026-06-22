@@ -593,15 +593,15 @@ resolved before that offer existed (or where the engineer declined it) sit
 **resolved-but-unarchived** forever, with no command that will ever sweep them. Init closes
 that gap.
 
-Scan `.vine/projects/` for directories containing a `.resolved` marker that are **not already
-under `.vine/projects/.archive/`**. If none, skip silently — no offer, no mention. Otherwise
-list them and offer to archive them, mirroring evolve's archive mechanics (lifecycle in
-`references/STATE.md`, "Project Lifecycle"):
+Scan both roots per the Filtering Convention in `references/STATE.md` for directories containing a
+`.resolved` marker that are **not already under an `.archive/` subtree**. If none, skip silently — no
+offer, no mention. Otherwise list them and offer to archive them, mirroring evolve's archive mechanics
+(lifecycle in `references/STATE.md`, "Project Lifecycle"):
 
 1. **Present the list** of resolved-but-unarchived projects (`<domain>/<feature-slug>`), then
    offer via `AskUserQuestion` (`multiSelect: false`):
-   - **"Archive all N (Recommended)"** — description: "Move every resolved project under
-     `.vine/projects/.archive/` — gets completed work fully out of the way"
+   - **"Archive all N (Recommended)"** — description: "Move every resolved project under its root's
+     `.archive/` — gets completed work fully out of the way"
    - **"Pick which to archive"** — description: "Choose a subset"
    - **"Not now"** — description: "Leave them resolved-but-unarchived — nothing changes on disk"
 
@@ -609,16 +609,18 @@ list them and offer to archive them, mirroring evolve's archive mechanics (lifec
    `AskUserQuestion` (`multiSelect: true`); when there are more than four, split across calls
    by domain (max 4 options per call, per the Interaction Constraints in `shared.md`).
 
-3. **Move each accepted project** — `git mv` when the repo tracks artifacts so history follows,
-   plain `mv` when untracked:
+3. **Move each accepted project within its own root** (`<root>` is `.vine` for a shared project,
+   `.vine.local` for a local one) — `git mv` when the repo tracks the artifact so history follows
+   (shared projects), plain `mv` when untracked (local projects):
 
    ```
-   mkdir -p .vine/projects/.archive/<domain>
-   git mv .vine/projects/<domain>/<feature-slug> .vine/projects/.archive/<domain>/<feature-slug>
+   mkdir -p <root>/projects/.archive/<domain>
+   git mv <root>/projects/<domain>/<feature-slug> <root>/projects/.archive/<domain>/<feature-slug>
    ```
 
-   Before moving, delete any stray `PAUSE.md` in a resolved project — a resolved project's pause
-   state is definitionally stale (consumed-once rule). **`.vine/knowledge/<domain>/` records are
+   Before moving, delete any stray `PAUSE.md` at the project's mirrored personal path
+   (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`) — a resolved project's pause state is
+   definitionally stale (consumed-once rule). **`.vine/knowledge/<domain>/` records are
    never moved** — they live outside `.vine/projects/` and keep their own Accepted→Superseded
    lifecycle, so durable judgment outlives the archived project.
 
