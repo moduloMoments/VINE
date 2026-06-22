@@ -38,13 +38,13 @@ engineer working together on a small change.
 
 ## Before You Start
 
-**Approve-edits mode recommended.** The engineer should see and approve each code change as it
-happens. If running in auto-accept mode:
+**Ask permissions mode recommended.** The engineer should see and approve each code change as it
+happens. If running in Accept edits mode:
 
-> "I'd recommend switching to approve-edits mode so you can review changes as we go. It's not
-> required, but pair works best when you're steering. Want to continue in auto-accept?"
+> "I'd recommend switching to Ask permissions mode so you can review changes as we go. It's not
+> required, but pair works best when you're steering. Want to continue in Accept edits?"
 
-Don't block on this — if the engineer wants auto-accept, proceed.
+Don't block on this — if the engineer wants Accept edits, proceed.
 
 ## Targeted Context Check
 

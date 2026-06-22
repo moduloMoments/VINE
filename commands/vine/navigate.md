@@ -34,12 +34,12 @@ the biggest consumer of the stance — it directly shapes how you work together 
 
 ## Before You Start
 
-**Approve-edits mode recommended.** This phase especially — navigate works best when the engineer
-sees and approves every code change as it happens. If running in auto-accept, ask before writing
+**Ask permissions mode recommended.** This phase especially — navigate works best when the engineer
+sees and approves every code change as it happens. If running in Accept edits, ask before writing
 any code:
 
-> "I'd recommend approve-edits mode for navigate so you review each change as we go. It's not
-> required — want to continue in auto-accept?"
+> "I'd recommend Ask permissions mode for navigate so you review each change as we go. It's not
+> required — want to continue in Accept edits?"
 
 Don't block on this. The mode toggle is the engineer's action: you can ask, never switch it
 yourself or assume it happened. Navigate without review drifts toward autonomous coding with
@@ -162,20 +162,20 @@ After the preview, use `AskUserQuestion` for the gearing decision:
 - Use `multiSelect: false` with 2 options
 - Put the recommended option first based on the profile's expertise level
   (confident/familiar → "Free climb (Recommended)"; learning/new → "Walk me through this (Recommended)")
-- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself (pairs with auto-accept-edits)"
-- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation (pairs with approve-edits)"
+- **"Free climb"** description: "I trust the approach — move fast; I'll review the diff at the slice boundary myself (pairs with Accept edits)"
+- **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation (pairs with Ask permissions)"
 
 **Gearing:** The engineer's choice sets the engagement level for this slice *and* the
 permission mode that fits it. Recommend the matching mode — the toggle is always the
 engineer's action; you can suggest it, never flip it or assume it happened:
 
 - **"Free climb"**: The engineer trusts the approach and wants to move faster. Recommend
-  **auto-accept-edits** (or full auto) for this slice so edits land without a prompt each
+  **Accept edits** for this slice so edits land without a prompt each
   time. Skip step 3b narration and step 3c review pauses. Still do the preview (3a),
   surface decisions (3d), and all of step 4 (validation, commit, NAVIGATION.md). **At the
-  slice boundary (step 4 complete), ask the engineer to switch back to approve-edits** so
+  slice boundary (step 4 complete), ask the engineer to switch back to Ask permissions** so
   they re-engage for the next slice's preview and gear choice.
-- **"Walk me through this"**: Recommend **approve-edits** (per-edit permission prompts) so
+- **"Walk me through this"**: Recommend **Ask permissions** (per-edit permission prompts) so
   the engineer reviews each edit as it lands. Full partnership narration per steps 3b and
   3c. The engineer wants to stay close to the implementation — either because the code is
   unfamiliar, the approach is novel, or they want to learn from the process.
@@ -317,7 +317,7 @@ hash. When task tools are available, `TaskUpdate` this slice's task to `complete
 commit lands — the live view follows the journal, so it flips only after the durable record is
 written.
 
-**Important:** Review depth is set by the engineer's gear choice: in approve-edits they
+**Important:** Review depth is set by the engineer's gear choice: in Ask permissions they
 review each change before it lands; in free climb they review at the slice boundary. Either
 way the commit follows validation and a journal update — structured committing, not
 autonomous committing.
