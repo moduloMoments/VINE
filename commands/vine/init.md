@@ -25,7 +25,8 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
 3. Generates `.vine/context/shared.md` and per-phase overlay files pre-filled with relevant context
 4. Scaffolds `.vine/README.md` — a tracked, human/agent-facing orientation doc for using VINE in
    this repo (written for fresh repos; offered, not forced, in upgrade mode)
-5. Optionally adds `.vine/` to `.gitignore` (keeping `.vine/README.md` tracked)
+5. Sets up `.gitignore` for track-by-default — ignores the personal root `.vine.local/` and the
+   session sentinel `.vine/ACTIVE`, leaving the rest of `.vine/` tracked
 6. Introduces the engineer profile (builds organically through vine:verify)
 7. Offers the native hook scaffold — mechanical enforcement of the journal-before-commit
    guarantee, declinable
@@ -375,29 +376,33 @@ project state (CONTEXT.md, SPEC.md, NAVIGATION.md, etc.) separate from configura
 
 ## Step 6: Gitignore
 
-VINE's working state (active projects, profile, ephemera) is workflow state, not repo artifacts,
-and shouldn't be committed by default — but `.vine/README.md` is the one exception: it's a
-tracked orientation doc meant to be shared. So the ignore rule must exclude `.vine/` **while
-keeping the README tracked**.
+VINE tracks its shared working state by default — context overlays, knowledge records, and
+feature projects are repo artifacts meant to travel with the project (work-in-public). Only
+*personal* and *ephemeral* state stays out of git: the personal root `.vine.local/` (your
+profile, personal overlays, local-only projects, pause state) and the active-session sentinel
+`.vine/ACTIVE`.
 
-The target end-state is always the same two lines (alongside any other `.vine` negations):
+The target end-state is these two lines:
 
 ```
-.vine/*
-!.vine/README.md
+.vine.local/
+.vine/ACTIVE
 ```
 
-Use `.vine/*` (ignore the directory's *contents*), not bare `.vine/` (ignore the directory
-itself) — git can't re-include a file whose parent directory is wholly excluded, so a negation
-under a bare `.vine/` silently does nothing. Reconcile whatever's already in `.gitignore` (or the
-user's global gitignore) toward that end-state:
+That's the whole rule. `.vine.local/` ignores the entire personal root in one line; `.vine/ACTIVE`
+keeps the per-worktree session sentinel out of git while the rest of `.vine/` stays tracked — no
+per-file negations, no `!.vine/README.md` exception (the README is tracked because `.vine/` is).
+Reconcile whatever's already in `.gitignore` toward that end-state:
 
-- **No `.vine` ignore yet:** add the two lines.
-- **Already ignored:** normalize a bare `.vine/` to `.vine/*`, then ensure `!.vine/README.md`
-  follows it (add it if missing). Leave any existing negations like `!.vine/context/` in place.
+- **No `.vine` rules yet:** add the two lines.
+- **Legacy ignore-by-default model** (`.vine/*` + `!.vine/README.md`, or a deny-then-allowlist
+  block re-admitting subdirs): replace it wholesale with the two lines above. This flips the repo
+  from "ignore VINE state" to "track it" — Step 8 Upgrade Mode carries the opt-in migration that
+  relocates personal files into `.vine.local/` *before* the flip, so nothing personal leaks into
+  the tracked tree.
 
-If the engineer wants to commit more VINE artifacts (e.g., overlays for team sharing), they can
-add further negations or `git add -f .vine/<path>` selectively.
+A project you'd rather keep off the shared tree lives under `.vine.local/projects/` (vine:verify
+offers this at creation), so the single `.vine.local/` rule covers it with no per-project entries.
 
 ## Step 7: Introduce Engineer Profile
 
@@ -446,6 +451,36 @@ runs. Run the rest of this step in upgrade mode against the existing `.vine/hook
 Don't show this offer in any other condition. If both directories exist, `.vine/context/`
 is canonical (commands read it first) — point out the leftover `.vine/hooks/` directory to
 the engineer instead of guessing which one they meant to keep.
+
+### Track-by-Default Migration
+
+VINE tracks `.vine/` by default and keeps only the personal root `.vine.local/` (plus the
+session sentinel `.vine/ACTIVE`) out of git — see Step 6. A repo set up under the older
+ignore-by-default model — a `.gitignore` carrying `.vine/*` + `!.vine/README.md`, or a
+deny-then-allowlist block re-admitting subdirs — predates that flip. If you detect that model,
+offer the migration via `AskUserQuestion` (`multiSelect: false`, 2 options):
+
+- **"Migrate to track-by-default (Recommended)"** — description: "Relocate personal files into
+  `.vine.local/`, then flip `.gitignore` to the two-line end-state"
+- **"Not now"** — description: "Keep the current `.gitignore` — nothing changes on disk"
+
+**If the engineer accepts**, relocate *before* flipping so nothing personal lands in the tracked
+tree:
+
+1. Move personal/ephemeral files to the personal root (all gitignored today, so plain `mv`;
+   create `.vine.local/` subdirs as needed):
+   - `.vine/context/*.local.md` → `.vine.local/context/<name>.md` (drop the `.local` suffix)
+   - `.vine/PROFILE.md` → `.vine.local/PROFILE.md`
+   - each `.vine/projects/<d>/<f>/PAUSE.md` → `.vine.local/projects/<d>/<f>/PAUSE.md`
+   - `.vine/ACTIVE` does **not** move — it's per-worktree by checkout and stays at `.vine/ACTIVE`
+2. Replace the old `.vine` ignore rules with the Step 6 end-state (`.vine.local/` + `.vine/ACTIVE`).
+3. Verify with `git status` that every previously-tracked `.vine/` artifact is still tracked and
+   nothing personal is newly staged; `git check-ignore` should report `.vine.local/` and
+   `.vine/ACTIVE` ignored, the rest of `.vine/` tracked.
+
+**If the engineer declines**, this is a no-op (#58 rename-fallback): no files move, no `.gitignore`
+edit, and the offer reappears on the next `/vine:init`. Don't show it when `.gitignore` already
+matches the track-by-default end-state.
 
 ### Upgrade Mode
 

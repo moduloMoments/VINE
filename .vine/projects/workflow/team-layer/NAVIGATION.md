@@ -339,7 +339,7 @@ redirection.
 
 ### Slice 8: evolve local→shared promotion — Complete
 **Started**: 2026-06-22 14:22
-**Commit**: pending
+**Commit**: 8b17ec0
 **Gear**: walk-me-through (continued in this session from Slice 7; previewed the three-part approach
 in prose before editing, edits reviewable at the slice boundary)
 **Approach taken**: Three coupled changes to evolve's wrap-up flow (`commands/vine/evolve.md`).
@@ -386,6 +386,63 @@ prose (the three coupled parts) before editing.
     means the location change propagates through the per-path test for free, so the downstream steps
     stay root-agnostic. The deferred-fix notes from Slices 5/6 paid off: the root-aware `.resolved` and
     archive work was already scoped and waiting in the exact paths this slice opened.
+
+### Slice 9: The `.gitignore` flip + init scaffold + Upgrade Mode + repo migration — Complete
+**Started**: 2026-06-22 15:05
+**Commit**: pending
+**Gear**: walk-me-through
+**Approach taken**: Four parts. (1) **init Step 6 (shipped template)** flipped from the
+ignore-by-default model (`.vine/*` + `!.vine/README.md`) to track-by-default: the scaffolded
+`.gitignore` is now `.vine.local/` + `.vine/ACTIVE` (two lines), tracking the rest of `.vine/`. The
+"What This Does" summary line (`init.md:28`) flipped in lockstep. (2) **init Step 8** gained a new
+`### Track-by-Default Migration` subsection (parallel to Legacy Directory Migration): detects the old
+ignore model, offers via `AskUserQuestion` to relocate personal files into `.vine.local/` *then* flip
+`.gitignore`, where declining is a no-op (#58 rename-fallback). (3) **This repo's `.gitignore`
+flipped** — the deny-then-allowlist block (11 lines, re-admitting context/knowledge/projects/scripts)
+collapsed to three: `.vine.local/`, `.vine/ACTIVE`, `.vine/.trellis-ok` (the last is contributor-only,
+not in the shipped template). (4) **Worked-example migration**: relocated `.vine/PROFILE.md` →
+`.vine.local/PROFILE.md` at the *primary* checkout (where the personal root anchors via git-common-dir),
+removed this worktree's PROFILE symlink stopgap, and verified.
+**Deviations from spec**: Two intent-over-letter resolutions, both pre-flagged (see SPEC Slice 9
+addendum). (1) AC1's "`.vine.local/` is the *only* rule" → the flip also carries `.vine/ACTIVE` (Slice
+5 kept ACTIVE there) and this repo adds contributor-only `.vine/.trellis-ok`; shipped template is two
+lines, this repo's three. (2) The Goal's "relocate ACTIVE wiring" → ACTIVE didn't move, so the real
+relocation was PROFILE, done at the primary checkout because we're in a worktree.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs; `.vine/.trellis-ok` stamped). AC verification by direct `git check-ignore`/`git status`: 104
+tracked `.vine/` artifacts unchanged; `.vine/ACTIVE`+`.vine/.trellis-ok` ignored; all `.vine.local/*`
+paths ignored; `git status` shows only `.gitignore`, `init.md`, NAVIGATION.md (Slice 8 backfill); no
+untracked-not-ignored `.vine/` residue (PROFILE symlink gone). Two pre-existing allowlisted
+`.vine/hooks/` legacy warnings (init.md:105-106) are unrelated.
+**Decisions made during implementation**:
+  - Shipped init Step 6 template = two lines (`.vine.local/` + `.vine/ACTIVE`); this repo's actual
+    `.gitignore` = three (adds `.vine/.trellis-ok`). The trellis stamp is a contributor-only artifact
+    `create-vine` never ships, so it doesn't belong in the downstream scaffold (decided by: claude;
+    confidence: high)
+  - Run the PROFILE relocation at the *primary* checkout (not this worktree), since the personal root
+    anchors there via `git rev-parse --git-common-dir`; drop the worktree symlink stopgap so commands
+    read the profile from the anchored `.vine.local/PROFILE.md` (decided by: engineer — chose "I do all
+    4 steps" via AskUserQuestion after I surfaced the cross-worktree wrinkle; confidence: high)
+  - Place Track-by-Default Migration as a sibling of Legacy Directory Migration inside Step 8 (both are
+    pre-upgrade structural migrations), not inside Upgrade Mode proper (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC1 — root `.gitignore` is track-by-default; `git check-ignore` reports every `.vine/` artifact
+    tracked and `.vine.local/*` ignored. **Intent over letter**: also carries `.vine/ACTIVE` (+ this
+    repo's contributor-only `.vine/.trellis-ok`), not the literal single line.
+  - [x] AC9 — init Step 6 scaffolds the new gitignore for fresh repos; Step 8 Upgrade Mode offers the
+    opt-in migration (relocate personal files + flip) where declining changes nothing (#58).
+  - [x] AC10 — this repo migrated as the worked example: `.gitignore` flipped, PROFILE relocated,
+    `git status` shows no unintended tracking changes for committed artifacts (104 tracked, unchanged).
+**Engineer feedback incorporated**: Chose walk-me-through (approve-edits) for this highest-risk slice
+despite a confident workflow profile; chose "I do all 4 steps" for the cross-worktree PROFILE move
+after I laid out the primary-checkout caveat (the primary, on `feature/out-of-scope-routing`, will
+briefly show `.vine.local/PROFILE.md` untracked until PR 3 merges — cosmetic, self-resolving).
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: A gitignore *inversion* is only safe once the to-be-newly-tracked tree holds
+    nothing personal — the flip's real work is the relocation that precedes it, not the rule swap. In a
+    worktree the relocation must target the git-common-dir-anchored primary, not cwd, or the personal
+    file is either invisible (pre-move) or wrongly tracked (post-flip).
 
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`

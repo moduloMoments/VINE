@@ -280,6 +280,21 @@ repo as the worked example (relocate ACTIVE wiring; flip `.gitignore`); verify w
 **Acceptance criteria**: AC1, AC9, AC10.
 **Complexity signal**: High — the riskiest change; isolated to its own PR by design.
 
+> **Addendum (implemented 2026-06-22):** two intent-over-letter resolutions, both flagged in
+> earlier slices. (1) **AC1 is not literally one line.** The flipped `.gitignore` is track-by-default
+> but carries `.vine/ACTIVE` alongside `.vine.local/` (ACTIVE stayed at `.vine/ACTIVE` per the Slice 5
+> decision), plus this repo adds the contributor-only `.vine/.trellis-ok` (the trellis-gate stamp,
+> which `create-vine` never ships). So the *shipped* init Step 6 template is two lines
+> (`.vine.local/` + `.vine/ACTIVE`); this repo's actual `.gitignore` is three. AC1's intent
+> (track-by-default, personal root ignored, `git check-ignore` clean across both roots) is met.
+> (2) **The Goal's "relocate ACTIVE wiring" became "relocate PROFILE."** ACTIVE didn't move, so the
+> worked-example migration's real personal-file relocation was `.vine/PROFILE.md` →
+> `.vine.local/PROFILE.md`. Because we ran this in a worktree, the canonical move happened at the
+> primary checkout (where the personal root anchors via `git rev-parse --git-common-dir`) and the
+> worktree's PROFILE symlink stopgap was removed; commands now read the profile from the anchored
+> personal root. `git status` post-flip shows only `.gitignore` + `init.md` changed and all 104
+> tracked `.vine/` artifacts still tracked (AC10).
+
 ### Slice 10: Documentation sweep
 **Goal**: README "Piloting" → solo→team graduation path + repo-level team-overlay recommendation;
 CLAUDE.md tracked/gitignored bullets; init's `.vine/README.md` scaffold table + the forward-looking
