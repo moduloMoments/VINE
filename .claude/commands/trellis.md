@@ -169,6 +169,28 @@ The floor covers the product surface (command files). The same rule applies by c
 artifact chain and decision records, but enforcement there rides the writing commands, not this
 linter — and never runs retroactively against immutable historical artifacts.
 
+### Check 12: Personal-Root Resolution (repo-level)
+
+The high-frequency profile and personal-overlay reads must resolve the **shared personal root**
+via `dirname "$(git rev-parse --git-common-dir)"` before reading `.vine.local/PROFILE.md` /
+`context/<name>.md`, never a bare cwd-relative `.vine.local/` read — which a linked git worktree
+does not check out, so the read silently returns nothing (issue #132). The contract lives in
+`.vine/context/shared.md`: a named helper, **Resolving the personal root**, defined once in the
+Overlay Loading Protocol and referenced from the Personal-layer rule and the Engineer Profile
+Protocol.
+
+Like Check 10 this is repo-level, not per-command, and inspects only `.vine/context/shared.md`
+(command files inherit the fix by deferring to these protocols). It asserts:
+
+- the helper is defined — `.vine/context/shared.md` contains the literal `**Resolving the personal
+  root.**`; and
+- the `## Engineer Profile Protocol` section references `Resolving the personal root` (reverting it
+  to a bare cwd-relative `.vine.local/PROFILE.md` read drops the phrase and trips the check).
+
+A gap is a **failure** that counts toward pass/fail, mirroring Check 10. Skipped when `shared.md`
+is absent (it is optional). The same two assertions live in `.vine/scripts/trellis-check.sh` — keep
+them in sync.
+
 ## Step 4: Format Results
 
 Present results as a summary table with commands as rows and checks as columns:
@@ -216,6 +238,12 @@ After the warnings, print the Check 10 anchor result as its own line:
 - Any missing: **"❌ N cross-reference anchor(s) missing"** followed by one line per missing
   pair (file and expected anchor). Unlike Check 9's warnings, anchor failures count toward
   the pass/fail status the stamp records (Step 8).
+
+Then print the Check 12 personal-root result as its own line:
+
+- Wired: **"✅ Personal-root resolution wired into shared.md (#132 guard)"**
+- Any gap: **"❌ N personal-root resolution gap(s) in shared.md"** followed by one line per gap.
+  Like Check 10, gaps count toward the pass/fail status.
 
 The combined summary (covering both command and artifact results) is printed in Step 7.
 

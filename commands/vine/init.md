@@ -91,14 +91,27 @@ file plus its phase overlay, then defers here for the shared loading rules. The 
 in the first place, so it cannot be fully externalized); the rules below are what "follow the
 Overlay Loading Protocol" pulls in.
 
+**Resolving the personal root.** The personal tree `.vine.local/` is gitignored, so it is *not*
+checked out into a linked git worktree — reading it cwd-relative would make a worktree (or
+delegated) session silently see no profile and no personal overlays. So before any read or write
+under `.vine.local/` (PROFILE.md, `context/<name>.md`, local projects, pause state), resolve the
+shared personal root at the repository's **primary** worktree — `dirname "$(git rev-parse
+--git-common-dir)"` — and operate on `<personal-root>/.vine.local/…` there. That path is identical
+from every linked worktree, so one profile / overlay set is seen everywhere; in a single checkout it
+resolves to the same directory as cwd, so behavior is unchanged. A non-git directory falls back to
+the cwd-relative `./.vine.local/`. (The `.vine/ACTIVE` sentinel is the lone exception — it stays
+cwd-relative by design; only the shared personal root needs git resolution.) Full rule and
+rationale: *The two roots → Resolving the roots* in `references/STATE.md`.
+
 - **Apply as overlay instructions.** Treat both files' contents as instructions layered on top
   of the command; overlay instructions take precedence over command defaults when they conflict.
   (Precedence *between* the overlay layers — shared vs. personal vs. policy — is governed by
   **Overlay Precedence** below, the source of truth; this line does not override it.)
 - **Personal layer.** After reading each repo overlay from `.vine/context/` (`shared.md` and the
-  phase overlay), read its personal counterpart at the mirrored path under the personal root —
-  `.vine.local/context/<name>.md` (e.g. `.vine.local/context/shared.md`,
-  `.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
+  phase overlay), read its personal counterpart at the mirrored path under the resolved personal
+  root (**Resolving the personal root** above) —
+  `<personal-root>/.vine.local/context/<name>.md` (e.g. `…/.vine.local/context/shared.md`,
+  `…/.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
   Precedence. The personal overlay is distinguished by its root, not a filename suffix (the `.local`
   suffix is dropped). Absent any personal file, nothing changes.
 - **Legacy fallback (supported through 0.4.x).** If `.vine/context/` doesn't exist but legacy
@@ -128,7 +141,8 @@ except an immutable enterprise-policy ceiling:
 
 **Personal layer (`.vine.local/context/`).** Each command's *Load Context Overlays* step, after
 reading a repo overlay (`shared.md`, a phase overlay), reads its personal counterpart at the
-mirrored path `.vine.local/context/<name>.md` if present and composes it by the rule above — it
+mirrored path `<personal-root>/.vine.local/context/<name>.md` (resolved per **Resolving the personal
+root** in the Overlay Loading Protocol) if present and composes it by the rule above — it
 overrides preference content and is ignored where it would override a policy-class section. Personal
 overlays live under the gitignored personal root (`.vine.local/`); absent them, nothing changes.
 
@@ -178,8 +192,9 @@ Internal, not shown to the engineer. Apply this stance in all VINE phases:
 
 ## Engineer Profile Protocol
 
-After loading overlays, check for `.vine.local/PROFILE.md`. If it exists, read the Domain Expertise
-table. Match the feature's domain against the profile's entries.
+After loading overlays, resolve the shared personal root (**Resolving the personal root** in the
+Overlay Loading Protocol) and check for `<personal-root>/.vine.local/PROFILE.md`. If it exists, read
+the Domain Expertise table. Match the feature's domain against the profile's entries.
 
 - **If the domain is in the profile**: Note their level for this session. Use it to calibrate
   default engagement depth (confident/familiar = concise; learning/new = explain the why).
@@ -419,8 +434,9 @@ After generating overlays, briefly mention the engineer profile to the engineer:
 Do **not** ask any domain rating questions here. The profile seeds itself through vine:verify
 as the engineer works in different domains. This step is purely informational.
 
-If `.vine.local/PROFILE.md` already exists (e.g., from a previous init or manual creation), skip
-this message entirely.
+If `PROFILE.md` already exists at the resolved shared personal root (**Resolving the personal root**
+in the Overlay Loading Protocol — `<personal-root>/.vine.local/PROFILE.md`), e.g. from a previous
+init or manual creation, skip this message entirely.
 
 ## Step 8: Upgrade Existing Projects
 

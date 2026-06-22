@@ -23,6 +23,9 @@
 # Plus one repo-level check (not per-command, no table column):
 #  10 Cross-reference anchors resolve (verification-tier contract family:
 #     STATE.md note, agent mode/scope names, command pointers) -> FAILURE
+#  12 Personal-root resolution wired into shared.md — the profile/overlay reads
+#     route through the "Resolving the personal root" helper, not a bare
+#     cwd-relative .vine.local/ read (#132 regression guard) -> FAILURE
 #
 # Writes .vine/.trellis-ok in the format the gate expects: a "status: pass"
 # (or "status: fail") first line. Warnings never change pass/fail (matches the
@@ -310,6 +313,34 @@ if [ "$ANCHOR_TOTAL" -eq 0 ]; then
   - PAIRS list is empty — the anchor check verified nothing"
 fi
 
+# ---------- Check 12: personal-root resolution wired into shared.md ----------
+# Guards #132: the high-frequency profile/overlay reads in shared.md's protocols
+# must route through the "Resolving the personal root" helper, never a bare
+# cwd-relative `.vine.local/` read — which a linked git worktree does not check
+# out, so the read silently returns nothing. FAILURE. Skipped when shared.md is
+# absent (it is optional). Only inspects shared.md: command files inherit the
+# fix by deferring to these protocols.
+
+SHARED="$root/.vine/context/shared.md"
+RESOLVE_ISSUES=0
+RESOLVEDETAIL=""
+if [ -f "$SHARED" ]; then
+  # (a) the helper must be defined (lives in the Overlay Loading Protocol).
+  if ! grep -qF '**Resolving the personal root.**' "$SHARED"; then
+    RESOLVE_ISSUES=$((RESOLVE_ISSUES + 1))
+    RESOLVEDETAIL="$RESOLVEDETAIL
+  - shared.md — missing the \`**Resolving the personal root.**\` helper definition"
+  fi
+  # (b) the Engineer Profile Protocol must reference it — reverting to a bare
+  #     cwd-relative PROFILE.md read drops this phrase and trips the check.
+  epp=$(awk '/^## Engineer Profile Protocol/{f=1; next} f && /^## /{exit} f{print}' "$SHARED")
+  if ! printf '%s\n' "$epp" | grep -qF 'Resolving the personal root'; then
+    RESOLVE_ISSUES=$((RESOLVE_ISSUES + 1))
+    RESOLVEDETAIL="$RESOLVEDETAIL
+  - shared.md — Engineer Profile Protocol must route the PROFILE.md read through 'Resolving the personal root' (bare cwd-relative read regresses #132)"
+  fi
+fi
+
 echo
 if [ "$ISSUE_COUNT" -eq 0 ]; then
   SUMMARY="✅ $TOTAL/$TOTAL commands pass all checks"
@@ -327,7 +358,15 @@ fi
 echo "$ANCHOR_SUMMARY"
 [ -n "$ANCHORDETAIL" ] && printf '%s\n' "$ANCHORDETAIL"
 
-if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ]; then
+if [ "$RESOLVE_ISSUES" -eq 0 ]; then
+  RESOLVE_SUMMARY="✅ Personal-root resolution wired into shared.md (#132 guard)"
+else
+  RESOLVE_SUMMARY="❌ $RESOLVE_ISSUES personal-root resolution gap(s) in shared.md"
+fi
+echo "$RESOLVE_SUMMARY"
+[ -n "$RESOLVEDETAIL" ] && printf '%s\n' "$RESOLVEDETAIL"
+
+if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ] && [ "$RESOLVE_ISSUES" -eq 0 ]; then
   STATUS="pass"
 else
   STATUS="fail"
@@ -352,7 +391,7 @@ mkdir -p "$root/.vine"
 {
   echo "status: $STATUS"
   echo "checked: $when"
-  echo "summary: $SUMMARY; $ANCHOR_SUMMARY"
+  echo "summary: $SUMMARY; $ANCHOR_SUMMARY; $RESOLVE_SUMMARY"
 } > "$STAMP"
 
 [ "$STATUS" = pass ]
