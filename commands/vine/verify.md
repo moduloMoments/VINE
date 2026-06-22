@@ -50,13 +50,13 @@ happens naturally when the domain is confirmed during CONTEXT.md creation. No up
 
 ## Before You Start
 
-**Approve-edits mode recommended.** This is a cooperative framework — the engineer reviews every
-change as it happens, not after the fact. If the session is running in auto-accept mode:
+**Ask permissions mode recommended.** This is a cooperative framework — the engineer reviews every
+change as it happens, not after the fact. If the session is running in Accept edits mode:
 
-> "I'd recommend switching to approve-edits mode so you can review what verify writes as we go.
-> It's not required — want to continue in auto-accept?"
+> "I'd recommend switching to Ask permissions mode so you can review what verify writes as we go.
+> It's not required — want to continue in Accept edits?"
 
-Don't block on this — if the engineer prefers auto-accept, proceed. The mode toggle is the
+Don't block on this — if the engineer prefers Accept edits, proceed. The mode toggle is the
 engineer's action: you can ask, never switch it yourself or assume it happened.
 
 **Use AskUserQuestion for all decision points.** Never print markdown lists for the engineer to
