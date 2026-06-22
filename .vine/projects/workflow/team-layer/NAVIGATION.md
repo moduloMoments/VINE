@@ -164,3 +164,11 @@ need — the personal-layer convention never shipped (see Slice 2 decision). Dec
   - **Slice 10 docs-sweep deferrals** (left bare on purpose this phase): init.md's `.vine/README.md`
     scaffold (`init.md` ~292/368 + the `shared.local.md` scaffold lines ~302-362), and shared.md's
     gitignore-tracking note (~line 70/82).
+  - **Worktree resolution (Phase 2 — design added 2026-06-22)**: gitignored personal state is invisible
+    to git worktrees/clones (confirmed live — the main checkout's `.vine/PROFILE.md` was unseen by this
+    worktree session). Phase 2 must resolve the personal root from git, not cwd: shared root (profile,
+    overlays, local projects, pause) via `git rev-parse --git-common-dir`; `ACTIVE` to the per-worktree
+    git dir via `git rev-parse --git-dir` (so hooks don't cross-fire); non-git fallback = cwd. Full
+    rationale in knowledge ADR `2026-06-22-anchor-the-personal-root-at-the-repo-shared-across-worktrees`;
+    SPEC Phase 2 summary annotated. Extends Slices 4-5; amend STATE.md's contract there. Stopgap applied
+    this session: symlinked this worktree's `.vine/PROFILE.md` → main checkout.
