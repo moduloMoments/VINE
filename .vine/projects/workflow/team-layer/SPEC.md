@@ -112,7 +112,7 @@ new command.
 
 ### Work Slices
 
-## Phase 1: Composition Model (Slices 1-3) ⬜
+## Phase 1: Composition Model (Slices 1-3) ✅
 Summary: Formalize the `.vine.local/` contract and teach overlay + profile loading to compose the
 personal root. No `.gitignore` flip yet — loaders learn the new location while the old one still
 works, so nothing breaks mid-cycle.

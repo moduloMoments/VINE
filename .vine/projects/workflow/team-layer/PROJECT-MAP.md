@@ -15,6 +15,6 @@
 
 | Phase | Slices | Status | PR |
 |-------|--------|--------|----|
-| Phase 1: Composition Model | 1-3 | 🚧 Active | — |
+| Phase 1: Composition Model | 1-3 | ✅ Complete | — |
 | Phase 2: Discovery & Session Plumbing | 4-6 | ⬜ Pending | — |
 | Phase 3: Visibility, the Flip & Docs | 7-10 | ⬜ Pending | — |

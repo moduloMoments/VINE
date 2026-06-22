@@ -96,7 +96,7 @@ loader fallback was added.
 
 ### Slice 3: Profile loader path + team recommendation note — Complete
 **Started**: 2026-06-22 10:45
-**Commit**: pending
+**Commit**: df64d3b
 **Gear**: walk-me-through
 **Approach taken**: Relocated the engineer-profile path `.vine/PROFILE.md` → `.vine.local/PROFILE.md`
 across every functional site: the read protocol (`shared.md` Engineer Profile Protocol, `status.md`
@@ -141,3 +141,26 @@ team recommendation glosses #57 (reads without dereferencing).
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
 (suffix dropped) for repos tracking `main`. This is a courtesy migration, not a shipped-version compat
 need — the personal-layer convention never shipped (see Slice 2 decision). Declining must change nothing.
+
+### Remaining Work
+- **Incomplete slices**: Phase 1 (Slices 1-3) complete and committed (3139119, e28a5c8, df64d3b).
+  Phases 2-3 (Slices 4-10) remain — a fresh session each, per the multi-PR plan.
+- **Blockers encountered**: None.
+- **Handoff context**:
+  - **Phase-group verification (Phase 1)**: trellis green; AC1/AC2/AC3/AC6/AC7 all met. The
+    `vine-verification` agent flagged `evolve.md:64` (`delete .vine/ACTIVE`) as mismatching STATE.md's
+    `.vine.local/ACTIVE`. **Not a Phase 1 gap** — deferred to Slice 5. Direct check confirmed the ACTIVE
+    *machinery* is uniformly `.vine/ACTIVE` across all commands + hook scripts (navigate writes it,
+    pause/navigate/evolve delete the same path, journal-check.sh/run-tests.sh read it), so the runtime
+    is self-consistent; only STATE.md's contract documents the end-state. Fixing `evolve.md:64` in
+    isolation now would BREAK it (delete the wrong path while navigate still writes the old one).
+  - **Slice 5 (Phase 2) ACTIVE-relocation checklist** — move all of these from `.vine/ACTIVE` →
+    `.vine.local/ACTIVE` together: `navigate.md:79` (writer) + `:384/:416/:478/:557` (leave/delete),
+    `pause.md:100` (delete), `evolve.md:64` (delete), `journal-check.sh:12` (+ line 4 comment, line 63
+    escape-hatch message), `run-tests.sh:35`. Same slice relocates PAUSE.md to `.vine.local/projects/...`.
+  - **PR 1 reviewer note**: STATE.md documents the `.vine.local/` end-state (ACTIVE/PAUSE/PROFILE/
+    gitignore) ahead of the command + hook machinery, which relocates in Phases 2-3. This is the
+    intended "contract leads implementation" phasing (maintainer-directed in Slice 1), not drift.
+  - **Slice 10 docs-sweep deferrals** (left bare on purpose this phase): init.md's `.vine/README.md`
+    scaffold (`init.md` ~292/368 + the `shared.local.md` scaffold lines ~302-362), and shared.md's
+    gitignore-tracking note (~line 70/82).
