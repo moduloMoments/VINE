@@ -90,8 +90,10 @@ not a mini-PAUSE.md; handoff state lives in PAUSE.md. Its only job is to mark "a
 session is active on this feature" so installed native hooks can scope their checks to
 active work. It never leaves the machine.
 
-**Consume any pause state.** If the feature directory contains a PAUSE.md, picking the work
-back up consumes it: surface its notes in your starting-point summary, then delete the file.
+**Consume any pause state.** If the feature's mirrored personal path
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per *The two roots* in
+`references/STATE.md`) contains a PAUSE.md, picking the work back up consumes it: surface its
+notes in your starting-point summary, then delete the file.
 A consumed pause must not linger — it would keep suggesting `/vine:resume` for work that has
 already resumed.
 

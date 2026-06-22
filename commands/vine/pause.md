@@ -80,7 +80,10 @@ Ask a single question with `freeform: true`:
 
 ## Write PAUSE.md
 
-Write PAUSE.md to the feature directory, matching the template defined in `references/STATE.md`:
+Write PAUSE.md to the feature's **mirrored personal path** —
+`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the shared personal root, resolved per
+*The two roots* in `references/STATE.md`) — matching the template defined there. Pause state is
+personal, so it lives under `.vine.local/` even for a shared `.vine/projects/` feature:
 
 ```markdown
 # Paused: [Feature Name]
@@ -92,7 +95,7 @@ Write PAUSE.md to the feature directory, matching the template defined in `refer
 [Engineer's notes from above, or "No notes captured." if they skipped]
 ```
 
-If a PAUSE.md already exists in the feature directory, overwrite it — only the most recent
+If a PAUSE.md already exists at that path, overwrite it — only the most recent
 pause state matters.
 
 ## Clear the Active-Session Sentinel
@@ -106,7 +109,7 @@ file doesn't exist, skip silently — pausing from a non-navigate phase is norma
 
 ```
 ---
-✅ vine:pause complete → .vine/projects/<domain>/<feature-slug>/PAUSE.md written
+✅ vine:pause complete → .vine.local/projects/<domain>/<feature-slug>/PAUSE.md written
    Feature: [name]
    Phase: [phase]
    Active slice: [slice or N/A]

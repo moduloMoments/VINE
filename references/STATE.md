@@ -13,9 +13,16 @@ This namespacing allows multiple features to be VINEd concurrently without colli
 VINE state lives under two sibling roots in the project root:
 
 - **`.vine/`** — the **shared** tree, tracked by default, travels with the repo: team overlays (`.vine/context/`), shared feature projects (`.vine/projects/`), durable knowledge (`.vine/knowledge/`), and `.vine/README.md`.
-- **`.vine.local/`** — the **personal** tree: a gitignored sibling root that mirrors `.vine/`'s structure on demand (`context/`, `projects/`, optionally `knowledge/`, plus `PROFILE.md` and `ACTIVE`). It holds everything personal to one machine — personal overlays, the engineer profile (`.vine.local/PROFILE.md`), the active-session sentinel (`.vine.local/ACTIVE`), pause state (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`), and local-only feature projects. The **whole root is gitignored** — a single `.vine.local/` rule, with no per-file ignore rules inside `.vine/`.
+- **`.vine.local/`** — the **personal** tree: a gitignored sibling root that mirrors `.vine/`'s structure on demand (`context/`, `projects/`, optionally `knowledge/`, plus `PROFILE.md`). It holds everything personal *and shared across this repo's worktrees* — personal overlays, the engineer profile (`.vine.local/PROFILE.md`), pause state (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`), and local-only feature projects. The root is gitignored by a single `.vine.local/` rule. (The active-session sentinel `ACTIVE` is the one ephemeral file that does *not* live here — it must be per-working-tree, so it stays at `.vine/ACTIVE` inside the shared tree, gitignored; see its section below.)
 
 The shared/personal split is **location-based**: a file's root marks its scope, not a filename suffix. A repo overlay at `.vine/context/shared.md` has a personal counterpart at `.vine.local/context/shared.md` (the `.local` filename suffix is dropped — the root already signals personal scope). The overlay loader composes personal-over-repo with the policy-class carve-out unchanged (see `.vine/context/shared.md`, "Overlay Precedence"). Per-repo personal state persists across all VINE cycles.
+
+**Resolving the roots (git worktrees and clones).** The shared tree `.vine/` is checked out in every worktree, so it is always cwd-relative. The personal tree is gitignored and therefore *not* checked out into a linked worktree — resolving it cwd-relative would make a worktree session silently see no profile, no personal overlays, no local projects. So the personal root is keyed to the **repository**, not the working directory, and splits by scope:
+
+- **Shared personal root** (profile, personal overlays, local-only projects, pause state) → resolve at the repository's **primary** worktree: `dirname "$(git rev-parse --git-common-dir)"`. Identical from every linked worktree, so one profile / overlay set / set of local projects is seen everywhere. This is where `.vine.local/` literally lives (a visible sibling at the main checkout).
+- **`ACTIVE` sentinel** (per-working-tree) → stays at the cwd-relative `.vine/ACTIVE`. No git resolution needed: `.vine/` is a tracked tree, so every worktree checks out its **own** working copy, and a gitignored `.vine/ACTIVE` written in one worktree exists only in that worktree's filesystem. It is therefore per-tree by construction — installed hooks read `$root/.vine/ACTIVE` and never cross-fire between concurrent worktree sessions — without any `git rev-parse`. It is gitignored, and the gitignore inversion (the track-by-default flip) keeps it ignored with an explicit `.vine/ACTIVE` rule alongside `.vine.local/`.
+
+Only the shared personal root needs git resolution; a non-git directory falls back to the cwd-relative `./.vine.local/`. (`ACTIVE` is always just `.vine/ACTIVE`, git or not.) Rationale: knowledge ADR `2026-06-22-anchor-the-personal-root-at-the-repo-shared-across-worktrees`.
 
 ## State Files
 
@@ -245,7 +252,7 @@ thinking, what to pick up first, anything that won't survive a session break]
 2. **Overwritten** by subsequent `vine:pause` calls — only one pause state exists per feature at a time.
 3. **Consumed** (read, surfaced, then deleted) by whatever picks the work back up. Every deletion trigger:
    - `vine:resume` — after displaying the notes.
-   - `vine:navigate` — at session start, the same moment `.vine.local/ACTIVE` is written; notes are surfaced in the starting-point summary first.
+   - `vine:navigate` — at session start, the same moment `ACTIVE` is written; notes are surfaced in the starting-point summary first.
    - `vine:inquire` — at session start, after reading CONTEXT.md (handles a pause taken after verify); notes are surfaced in the context summary first.
    - `vine:evolve` — at session start, after reading the feature's artifacts; notes are surfaced first.
    - `vine:evolve` when writing `.resolved` — backstop; session-start consumption normally removed PAUSE.md already, so a surviving one is surfaced then deleted like the rest (its notes appeared after evolve began and aren't necessarily stale).
@@ -259,9 +266,9 @@ thinking, what to pick up first, anything that won't survive a session break]
 - **One per feature.** No history of pause states. The most recent pause is the only one that matters.
 - **Consumed-once.** Picking the work back up deletes the file. Notes worth keeping beyond the resume belong in NAVIGATION.md's Remaining Work, not in PAUSE.md.
 
-### .vine.local/ACTIVE (active-session sentinel, written by vine:navigate)
+### ACTIVE (active-session sentinel, written by vine:navigate)
 
-An ephemeral repo-level sentinel marking "a navigate session is active on this feature right now." It lives at `.vine.local/ACTIVE` (repo root, under the gitignored personal tree, not inside a feature directory) and never leaves the machine — so pulled In-Progress journals from teammates can never make installed hooks fire.
+An ephemeral repo-level sentinel marking "a navigate session is active on this feature right now." It lives at `.vine/ACTIVE` (repo root, not inside a feature directory), is gitignored, and never leaves the machine — so pulled In-Progress journals from teammates can never make installed hooks fire. It is **per-working-tree**: `.vine/` is a tracked tree, so every worktree checks out its own working copy, and a gitignored `.vine/ACTIVE` exists only in the worktree that wrote it — two concurrent worktree sessions never cross-fire each other's hooks, with no git-dir resolution. (The gitignore inversion keeps it ignored via an explicit `.vine/ACTIVE` rule.)
 
 ```
 feature: .vine/projects/<domain>/<feature-slug>
@@ -275,7 +282,7 @@ Its consumers are native hook scripts (see `.vine/scripts/`): they test the sent
 
 1. **Written** by `vine:navigate` at session start, the same moment any PAUSE.md is consumed. At a phase group boundary where the engineer continues immediately, navigate updates the `phase:` line instead of rewriting.
 2. **Deleted** at every session end: navigate's completion and pause-between-slices paths, `vine:pause`, and `vine:evolve` at session start (an evolve session means no navigate session is active).
-3. **Stale sentinel escape hatch:** if a session dies without cleanup (crash, closed terminal), hooks may fire against inactive work. The fix is `rm .vine.local/ACTIVE` — hook block messages name this command.
+3. **Stale sentinel escape hatch:** if a session dies without cleanup (crash, closed terminal), hooks may fire against inactive work. The fix is `rm .vine/ACTIVE` — hook block messages name this command.
 
 **Design constraints:**
 
@@ -285,11 +292,11 @@ Its consumers are native hook scripts (see `.vine/scripts/`): they test the sent
 
 ### .vine/scripts/ (native hook scripts)
 
-Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (declinable; declining changes nothing on disk). All scripts are POSIX sh, treat `.vine.local/ACTIVE`'s feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
+Shell-script home for VINE's native hook scripts — the enforcement layer behind guarantees that command prose can only request. Scripts are wired into a repo's hook configuration by init's scaffold offer (declinable; declining changes nothing on disk). All scripts are POSIX sh, read the `ACTIVE` sentinel at `.vine/ACTIVE` (per-working-tree, no git resolution), treat its feature path as an opaque repo-relative string, and **fail open**: no sentinel, missing tooling, or ambiguity exits 0 — enforcement degrades, sessions never break.
 
 | Script | Hook event | Behavior |
 |--------|------------|----------|
-| `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine.local/ACTIVE` escape hatch. |
+| `journal-check.sh` | PreToolUse (Bash) | Blocks `git commit` (exit 2) while a navigate session is active and the active feature's NAVIGATION.md is older than the last commit. The block message names the journal and the `rm .vine/ACTIVE` escape hatch. |
 
 Validation/lint enforcement is deliberately outside the scaffold: when and how to run a project's checks depends on its tooling, so that decision stays with the repo (native hooks in `.claude/settings.json` are available directly). VINE's validation contract is the optional fenced `## Validation` block in `.vine/context/shared.md` (keys `lint`/`typecheck`/`test`/`test-all`/`build`/`extra`, all optional); `vine-verification` reads it and falls back to prose inference when it is absent.
 
@@ -498,7 +505,7 @@ Project *state* follows the same single-home discipline the Knowledge Boundary r
 |-------|-----------------|-----------|
 | The plan — what slices and phase groups exist | `SPEC.md` | durable |
 | Implementation progress — which slices are done, with commits, decisions, learnings | `NAVIGATION.md` | durable |
-| What's active right now | `.vine.local/ACTIVE` | ephemeral |
+| What's active right now | `.vine/ACTIVE` (per-worktree, gitignored) | ephemeral |
 | Handoff notes across a session gap | `PAUSE.md` | ephemeral |
 
 **Derived views** (never authoritative; rebuilt from the sources above):
@@ -599,14 +606,10 @@ init's archive sweep, and trellis's glob — **scan both roots** and apply the s
 4. If all projects across both roots are resolved/archived, tell the engineer and suggest starting a
    new cycle with `/vine:verify` — present the command in its own fenced code block so it's copy-pastable.
 
-**Resolving the personal root.** The shared tree `.vine/` is checked out in every worktree, so
-`.vine/projects/` is always cwd-relative. The personal tree is gitignored and therefore *not* checked
-out into a linked worktree, so resolve `.vine.local/projects/` at the repository's **primary**
-worktree — `git rev-parse --git-common-dir`, whose parent is the main worktree root where
-`.vine.local/` lives — rather than cwd-relative. Every worktree then enumerates the *same* local-only
-projects instead of silently finding none. A non-git directory falls back to the cwd-relative
-`.vine.local/`. (This is the shared-personal-root anchoring; the `ACTIVE` sentinel resolves
-differently — per-working-tree — and is specified in its own section.)
+**Resolving the personal root.** `.vine/projects/` is cwd-relative, but `.vine.local/projects/` must
+be resolved at the shared personal root (`dirname "$(git rev-parse --git-common-dir)"`) so a worktree
+session enumerates the *same* local-only projects instead of silently finding none — see *The two
+roots → Resolving the roots* above for the full rule and the non-git fallback.
 
 This two-root scan is stated **once, here**; the scan sites reference this convention rather than
 restating the rule per site (the referential-homes anti-duplication stance). If the engineer needs to

@@ -59,8 +59,10 @@ If PROJECT-MAP.md exists, update the evolve row to 🚧 with today's date. If it
 table, note which phases shipped in prior PRs — evolve's verification should focus on the final
 phase group and cross-phase integration, not re-verify already-shipped work.
 
-If the feature directory contains a PAUSE.md, picking the work back up consumes it: surface
-its notes, then delete the file — a consumed pause must not linger suggesting `/vine:resume`.
+If the feature's mirrored personal path (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`,
+resolved per *The two roots* in `references/STATE.md`) contains a PAUSE.md, picking the work back up
+consumes it: surface its notes, then delete the file — a consumed pause must not linger suggesting
+`/vine:resume`.
 Also delete `.vine/ACTIVE` (repo root) if it exists: any navigate session on this feature is
 over, and a stale sentinel keeps installed hooks firing against work that's no longer active
 (format and lifecycle in `references/STATE.md`).
@@ -519,7 +521,8 @@ Options (mutually exclusive):
 
 If the engineer chooses to resolve, write an empty `.resolved` file to
 `.vine/projects/<domain>/<feature-slug>/.resolved`. Then consume any
-`.vine/projects/<domain>/<feature-slug>/PAUSE.md` that still exists — the backstop delete. Evolve's
+`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the mirrored personal path) that still
+exists — the backstop delete. Evolve's
 session-start consumption normally removed it already, so a PAUSE.md surviving to here appeared
 *after* evolve began and its notes aren't necessarily stale: surface them to the engineer first,
 then delete the file. Never delete it silently — the same surface-then-delete rule the other

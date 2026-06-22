@@ -53,7 +53,9 @@ Read whatever exists in the feature directory. Build your understanding in layer
 
 ### Layer 1: PAUSE.md (if present)
 
-Read `.vine/projects/<domain>/<feature-slug>/PAUSE.md`. Extract:
+Read `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` — the feature's mirrored personal path
+(shared personal root, resolved per *The two roots* in `references/STATE.md`); pause state lives under
+`.vine.local/` even for a shared `.vine/projects/` feature. Extract:
 - **Phase** at time of pause
 - **Active slice** (if navigate was in progress)
 - **Timestamp** — calculate how long ago the pause was

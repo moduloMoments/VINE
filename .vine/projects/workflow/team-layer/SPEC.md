@@ -164,12 +164,18 @@ Session boundary: After this phase, all commands operate correctly across both r
 **Added 2026-06-22 (worktree resolution — see knowledge ADR
 `2026-06-22-anchor-the-personal-root-at-the-repo-shared-across-worktrees`):** gitignored personal
 state is invisible to git worktrees/clones (a worktree session can't see the main checkout's
-`.vine.local/`). Phase 2 must resolve the personal root from git, not cwd: the **shared** personal
-root (profile, overlays, local projects, pause) anchors at the primary worktree via
-`git rev-parse --git-common-dir`, while the **`ACTIVE`** sentinel moves to the per-worktree git dir
-(`git rev-parse --git-dir`) so hooks don't cross-fire between worktrees. Non-git dirs fall back to
-cwd-relative. This extends Slice 4 (discovery resolves the shared root) and Slice 5 (ACTIVE/PAUSE
-relocation uses the git anchors); STATE.md's `.vine.local/` contract is amended here to match.
+`.vine.local/`). Phase 2 must resolve the **shared** personal root (profile, overlays, local projects,
+pause) from git, not cwd: it anchors at the primary worktree via `git rev-parse --git-common-dir`
+(non-git dirs fall back to cwd-relative). This extends Slice 4 (discovery resolves the shared root) and
+Slice 5 (PAUSE relocation uses the git-anchored shared root); STATE.md's `.vine.local/` contract is
+amended across both to match.
+
+> **Amended 2026-06-22 (Slice 5):** the ADR originally moved the **`ACTIVE`** sentinel to the
+> per-worktree git dir (`git rev-parse --git-dir`). During implementation we kept it at `.vine/ACTIVE`
+> (gitignored) instead — `.vine/` is tracked, so each worktree checks out its own copy and a gitignored
+> `.vine/ACTIVE` is per-tree for free, with **no** `git rev-parse` and **no** hook-script changes. Cost:
+> the Slice-9 gitignore flip carries an explicit `.vine/ACTIVE` rule alongside `.vine.local/`. The ADR's
+> Status + Decision + an Amendment section record this; the shared-root anchoring is unchanged.
 
 ### Slice 4: Two-root project discovery
 **Goal**: Extend the 7 prose scan sites (status, resume, pause, navigate, inquire, evolve, init's
@@ -202,6 +208,18 @@ location.
 `.vine/scripts/journal-check.sh`, `.vine/scripts/run-tests.sh`.
 **Acceptance criteria**: AC4, AC5.
 **Complexity signal**: Medium — hook scripts must move in lockstep with navigate's writer.
+
+> **Addendum (implemented 2026-06-22): ACTIVE does not relocate.** The Goal above assumed
+> `ACTIVE` moves to `.vine.local/ACTIVE` (per the original worktree ADR, then the git dir). During
+> implementation we kept it at `.vine/ACTIVE` (gitignored) — see the Phase 2 amendment note above and
+> the ADR's Amendment section. Consequences for this slice: **the hook scripts are NOT touched**
+> (`journal-check.sh`/`run-tests.sh` already read `.vine/ACTIVE`), and navigate/pause/evolve's `ACTIVE`
+> read/write/delete lines are unchanged. The slice's *real* work was (a) relocating `PAUSE.md` to the
+> feature's mirrored personal path `.vine.local/projects/<d>/<f>/PAUSE.md` across pause/resume/inquire/
+> navigate/evolve (+ init's archive-sweep stray-PAUSE delete), and (b) amending STATE.md's two-roots
+> contract for the shared-root git-anchored resolution while clarifying `ACTIVE` stays at `.vine/ACTIVE`.
+> AC4 is met by the unchanged-but-now-documented `.vine/ACTIVE` machinery + the contract; AC5 by the
+> PAUSE relocation. **Slice 9 must add a `.vine/ACTIVE` line to the flipped `.gitignore`.**
 
 ### Slice 6: Per-path commit test
 **Goal**: Replace the `git check-ignore -q .vine/projects` root test (`verify.md:331`,

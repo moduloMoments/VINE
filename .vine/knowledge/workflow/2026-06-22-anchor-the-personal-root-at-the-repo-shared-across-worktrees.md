@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted — 2026-06-22
+Accepted — 2026-06-22 (amended 2026-06-22 during Slice 5 implementation — see *Amendment* below;
+`ACTIVE` stays at `.vine/ACTIVE` gitignored rather than moving to the private git dir, the shared-root
+anchoring is unchanged)
 Source: workflow/team-layer · Actor: Rob + Claude
 Supersedes: none
 
@@ -45,17 +47,21 @@ Resolve the personal root from git, not from the working directory, and split it
   worktree root). Profile, personal overlays, local-only projects, and pause state live there once
   and are seen identically from every worktree. It remains a visible sibling root at the main
   checkout.
-- **`ACTIVE` sentinel** — move it *out* of `.vine.local/` into the per-worktree private git dir
-  (`git rev-parse --git-dir` → `.git` in the main tree, `.git/worktrees/<id>/` in a linked worktree).
-  Per-tree, inherently un-committed, and the hooks resolve it the same way, so scoping stays correct.
+- **`ACTIVE` sentinel** — keep it at `.vine/ACTIVE` (gitignored), **not** in `.vine.local/`.
+  *(Amended — the original decision moved it into the per-worktree private git dir via
+  `git rev-parse --git-dir`; see Amendment below for why `.vine/ACTIVE` is simpler and equally
+  correct.)* Because `.vine/` is a tracked tree, every worktree checks out its own working copy, so a
+  gitignored `.vine/ACTIVE` written in one worktree exists only in that worktree's filesystem — it is
+  per-tree by construction, with no `git rev-parse` resolution. The gitignore inversion keeps it
+  ignored with an explicit `.vine/ACTIVE` rule alongside `.vine.local/`.
 
 Commands and hook scripts resolve these anchors rather than assuming a cwd-relative `./.vine.local/`.
 A non-git directory (no `git` available) falls back to the cwd-relative root — the single-checkout
 case is unaffected.
 
-This is folded into **Phase 2 (Discovery & Session Plumbing)** of #52, which already relocates
-`ACTIVE`/`PAUSE` and edits the hook scripts; the `references/STATE.md` `.vine.local/` contract is
-amended there to specify git-anchored resolution and the `ACTIVE`-stays-per-tree split. Phase 1's
+This is folded into **Phase 2 (Discovery & Session Plumbing)** of #52, which relocates `PAUSE` to the
+shared personal root and amends the `references/STATE.md` contract to specify git-anchored resolution
+of that root. (`ACTIVE` does not relocate and the hook scripts are unchanged — see Amendment.) Phase 1's
 composition model is unchanged — `.vine.local/` at the main checkout is still the correct literal
 path; Phase 2 only adds *how a worktree resolves to it*. Considered and rejected: a `~/.vine/<repo-key>/`
 home outside the repo — it also survives clones, but loses in-repo discoverability and complicates
@@ -66,16 +72,38 @@ local-only projects living next to their code; reach for it only if clone-portab
 - Worktree and main-checkout sessions share one profile / personal-overlay set per repo, so the
   silent "no profile here" failure disappears. A cold reader of a worktree that lacks a literal
   `.vine.local/` learns from this record that resolution is git-anchored by design, not missing.
-- `ACTIVE` leaves `.vine.local/`, correcting the conflation of an ephemeral session sentinel with
-  durable personal state; the per-tree git dir is its natural home and keeps the hooks from
-  cross-firing between concurrent worktree sessions.
-- Phase 2 carries a real implementation cost: every command/hook that touches the personal root or
-  `ACTIVE` must resolve via `git rev-parse` (with a non-git fallback) instead of a literal path, and
-  STATE.md's contract is amended. This is the right phase for it — the session plumbing already lives
-  there.
+- `ACTIVE` stays out of `.vine.local/` (the shared personal root), correcting the conflation of an
+  ephemeral session sentinel with durable personal state; `.vine/ACTIVE` is per-worktree by checkout
+  and keeps the hooks from cross-firing between concurrent worktree sessions.
+- Phase 2's implementation cost is narrower than first scoped: only the **shared** personal root needs
+  `git rev-parse --git-common-dir` resolution (discovery, profile, overlays, pause). `ACTIVE` stays a
+  literal `.vine/ACTIVE` with no resolution, so the hook scripts and every command's `ACTIVE` read/write
+  are unchanged. STATE.md's contract is amended for the shared-root resolution.
 - Pairs with the deferred gitignore inversion (`2026-06-16-defer-the-vine-gitignore-inversion-to-the-vine-local-work`):
   the inversion ignores `.vine.local/` at the main checkout, which this resolution model keeps as the
   one shared personal root, so the two remain coherent.
 - A short-term stopgap exists independent of the redesign: symlink a worktree's `.vine/PROFILE.md`
   (or `.vine.local/`) to the main checkout's. Used this cycle to unblock the live worktree; not a
   substitute for git-anchored resolution.
+
+## Amendment (2026-06-22, Slice 5)
+
+The original Decision moved `ACTIVE` into the per-worktree private git dir
+(`$(git rev-parse --git-dir)/vine/ACTIVE`). During Slice 5 we kept it at `.vine/ACTIVE` (gitignored)
+instead. The simpler option was simply not considered when the record was first written.
+
+**Why.** `ACTIVE`'s only hard requirement is to be *per-working-tree* (so worktree B's hooks don't fire
+on worktree A's session). `.vine/` is a **tracked** tree, so each worktree already checks out its own
+working copy — a gitignored `.vine/ACTIVE` therefore exists only in the worktree that wrote it, which
+is per-tree *for free*, with no `git rev-parse` resolution at any command or hook site. The git dir
+would also have worked, but it pushed `git rev-parse` prose into navigate/pause/evolve and the hook
+scripts (a real burden and fumble-risk for a markdown framework) and wrote app state into git's private
+directory, all to avoid one extra gitignore glob.
+
+**Cost accepted.** The track-by-default gitignore inversion is no longer a single `.vine.local/` rule —
+it carries an explicit `.vine/ACTIVE` line alongside it (and the contributor-only `.vine/.trellis-ok`).
+Two simple globs, still far less brittle than the deny-then-allowlist #108 removes.
+
+**Unchanged.** The shared-personal-root anchoring (`dirname "$(git rev-parse --git-common-dir)"` for
+profile, overlays, local projects, pause) — the core fix this record exists for — stands exactly as
+decided.

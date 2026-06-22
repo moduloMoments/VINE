@@ -618,8 +618,9 @@ offer, no mention. Otherwise list them and offer to archive them, mirroring evol
    git mv <root>/projects/<domain>/<feature-slug> <root>/projects/.archive/<domain>/<feature-slug>
    ```
 
-   Before moving, delete any stray `PAUSE.md` in a resolved project — a resolved project's pause
-   state is definitionally stale (consumed-once rule). **`.vine/knowledge/<domain>/` records are
+   Before moving, delete any stray `PAUSE.md` at the project's mirrored personal path
+   (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`) — a resolved project's pause state is
+   definitionally stale (consumed-once rule). **`.vine/knowledge/<domain>/` records are
    never moved** — they live outside `.vine/projects/` and keep their own Accepted→Superseded
    lifecycle, so durable judgment outlives the archived project.
 
