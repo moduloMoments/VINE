@@ -16,5 +16,5 @@
 | Phase | Slices | Status | PR |
 |-------|--------|--------|----|
 | Phase 1: Composition Model | 1-3 | ✅ Complete | [#122](https://github.com/moduloMoments/VINE/pull/122) |
-| Phase 2: Discovery & Session Plumbing | 4-6 | ✅ Complete | — |
+| Phase 2: Discovery & Session Plumbing | 4-6 | ✅ Complete | [#123](https://github.com/moduloMoments/VINE/pull/123) |
 | Phase 3: Visibility, the Flip & Docs | 7-10 | ⬜ Pending | — |
