@@ -230,7 +230,7 @@ directory, so shared projects commit and local ones skip.
 **Acceptance criteria**: AC7.
 **Complexity signal**: Low.
 
-## Phase 3: Visibility, the Flip & Docs (Slices 7-10) ⬜
+## Phase 3: Visibility, the Flip & Docs (Slices 7-10) ✅
 Summary: Add the user-facing shared/local choice, perform the `.gitignore` inversion and migrate
 this repo, and update all documentation. The flip lands last, after everything reads the new
 locations.
@@ -245,6 +245,13 @@ Constraints.
 **Acceptance criteria**: AC8 (verify half).
 **Complexity signal**: Low.
 
+> **Addendum (implemented 2026-06-22):** beyond the literal "prompt" scope, Slice 7 also replaced
+> verify.md's stale first-cycle note (old lines 262-265, *"suggest adding `.vine/` to `.gitignore`
+> … `git add -f .vine/`"*) — the pre-flip model, directly contradicted by the shared/local choice
+> added in the same creation flow. It's in no other slice's file list, so leaving it would ship a
+> self-contradiction. Replaced with the **Shared or local?** model (tracked `.vine/` default,
+> gitignored `.vine.local/` opt-out). Engineer-approved as a bounded in-flow cleanup.
+
 ### Slice 8: evolve local→shared promotion
 **Goal**: At wrap-up, evolve detects a local project and offers to promote it to shared (move the
 directory tree from `.vine.local/projects/` to `.vine/projects/`), then commits as usual.
@@ -252,6 +259,15 @@ directory tree from `.vine.local/projects/` to `.vine/projects/`), then commits 
 **Files likely touched**: `commands/vine/evolve.md`.
 **Acceptance criteria**: AC8 (evolve half).
 **Complexity signal**: Low-Medium — directory move + commit interaction.
+
+> **Addendum (implemented 2026-06-22):** beyond the literal "promotion" goal, Slice 8 also made
+> evolve's `.resolved` marker write and its archive destination **root-aware** — the project resolves/
+> archives within its *own* root (`.vine/projects/.archive/` shared, `.vine.local/projects/.archive/`
+> local), matching init.md's root-aware archive sweep from Slice 4. Both were explicitly deferred to
+> "Slice 8 (evolve local→shared) territory" in the Slice 5 and Slice 6 journal entries, so they're
+> planned scope, not creep. Placement: the promotion offer sits between the completion block and Mark
+> as Resolved, so a promotion makes the subsequent resolve/archive/commit operate on the new shared
+> path with no special-casing.
 
 ### Slice 9: The `.gitignore` flip + init scaffold + Upgrade Mode + repo migration
 **Goal**: Replace the root `.gitignore` deny-allowlist with `.vine.local/` (single rule). Update
@@ -263,6 +279,21 @@ repo as the worked example (relocate ACTIVE wiring; flip `.gitignore`); verify w
 **Files likely touched**: `.gitignore`, `commands/vine/init.md` (Steps 6, 8).
 **Acceptance criteria**: AC1, AC9, AC10.
 **Complexity signal**: High — the riskiest change; isolated to its own PR by design.
+
+> **Addendum (implemented 2026-06-22):** two intent-over-letter resolutions, both flagged in
+> earlier slices. (1) **AC1 is not literally one line.** The flipped `.gitignore` is track-by-default
+> but carries `.vine/ACTIVE` alongside `.vine.local/` (ACTIVE stayed at `.vine/ACTIVE` per the Slice 5
+> decision), plus this repo adds the contributor-only `.vine/.trellis-ok` (the trellis-gate stamp,
+> which `create-vine` never ships). So the *shipped* init Step 6 template is two lines
+> (`.vine.local/` + `.vine/ACTIVE`); this repo's actual `.gitignore` is three. AC1's intent
+> (track-by-default, personal root ignored, `git check-ignore` clean across both roots) is met.
+> (2) **The Goal's "relocate ACTIVE wiring" became "relocate PROFILE."** ACTIVE didn't move, so the
+> worked-example migration's real personal-file relocation was `.vine/PROFILE.md` →
+> `.vine.local/PROFILE.md`. Because we ran this in a worktree, the canonical move happened at the
+> primary checkout (where the personal root anchors via `git rev-parse --git-common-dir`) and the
+> worktree's PROFILE symlink stopgap was removed; commands now read the profile from the anchored
+> personal root. `git status` post-flip shows only `.gitignore` + `init.md` changed and all 104
+> tracked `.vine/` artifacts still tracked (AC10).
 
 ### Slice 10: Documentation sweep
 **Goal**: README "Piloting" → solo→team graduation path + repo-level team-overlay recommendation;

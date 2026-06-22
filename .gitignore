@@ -8,19 +8,10 @@ Thumbs.db
 *.swp
 *.swo
 
-# VINE workflow artifacts (dogfooding)
-# Track context overlays and resolved projects for contributor context
-# Ignore active work, profile, and ephemeral state
-.vine/*
-!.vine/README.md
-!.vine/context/
-!.vine/knowledge/
-!.vine/projects/
-!.vine/scripts/
-.vine/projects/*/*/PAUSE.md
-.vine/PROFILE.md
-# Personal overlay layer — gitignored by design (absent .local changes nothing)
-.vine/context/*.local.md
+# VINE workflow artifacts (dogfooding) — track by default; ignore only personal + ephemeral state
+.vine.local/
+.vine/ACTIVE
+.vine/.trellis-ok
 
 # Claude Code worktrees
 .claude/worktrees/

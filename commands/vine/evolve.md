@@ -507,6 +507,38 @@ Update PROJECT-MAP.md (if it exists) — set the evolve row to ✅ with today's 
 ---
 ```
 
+### Promote a Local Project to Shared?
+
+This step runs **only for a local project** — one living under `.vine.local/projects/`. Detect it
+with the per-path `git check-ignore` test from *Committing Artifacts* in `references/STATE.md`: a
+local project's feature directory reads as ignored. For a shared project (`.vine/projects/`), skip
+this step silently.
+
+A finished local project is the natural moment to decide whether the work graduates to shared
+visibility. Offer the promotion with `AskUserQuestion`:
+
+> "This project has been local to your machine. Now that the cycle's wrapping up, want to promote it
+> to shared so its artifacts commit with the repo?"
+
+Options (mutually exclusive):
+1. "Promote to shared (Recommended)" — "Move the project to `.vine/projects/` so it commits with the repo"
+2. "Keep local" — "Leave it under `.vine.local/projects/`; it stays on this machine"
+
+If the engineer promotes, move the directory tree from the personal root to the shared root. The
+source is gitignored (untracked), so this is a plain `mv`, not `git mv`; the *Commit Evolve Changes*
+step then stages the artifacts at their new tracked path. Resolve `.vine.local/` at the shared
+personal root (the repo's primary worktree), per *The two roots* in `references/STATE.md`:
+
+```
+mkdir -p .vine/projects/<domain>
+mv "<personal-root>/.vine.local/projects/<domain>/<feature-slug>" .vine/projects/<domain>/<feature-slug>
+```
+
+After the move the project is shared: the per-path test now reads it as tracked, so the resolve
+marker, any archive, and the evolve commit below all operate on the `.vine/projects/` path
+automatically. Declining changes nothing — the project stays local and the steps below use its
+`.vine.local/projects/` path.
+
 ### Mark as Resolved
 
 After presenting the completion block, offer to mark the project as resolved using
@@ -519,8 +551,10 @@ Options (mutually exclusive):
 1. "Mark resolved (Recommended)" — "Add .resolved marker to this project directory"
 2. "Keep active" — "Leave the project in active state for now"
 
-If the engineer chooses to resolve, write an empty `.resolved` file to
-`.vine/projects/<domain>/<feature-slug>/.resolved`. Then consume any
+If the engineer chooses to resolve, write an empty `.resolved` file to the project's directory —
+`<root>/projects/<domain>/<feature-slug>/.resolved`, where `<root>` is `.vine/` for a shared project
+or `.vine.local/` for one kept local (the promotion step above may have just made it shared). Then
+consume any
 `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the mirrored personal path) that still
 exists — the backstop delete. Evolve's
 session-start consumption normally removed it already, so a PAUSE.md surviving to here appeared
@@ -529,21 +563,24 @@ then delete the file. Never delete it silently — the same surface-then-delete 
 consumption triggers follow (PAUSE.md lifecycle in `references/STATE.md`).
 
 **Offer to archive — move resolved work out of the way.** Only when the engineer just resolved
-the project, offer to archive it — move it to `.vine/projects/.archive/<domain>/<feature-slug>/`, which
+the project, offer to archive it — move it under its own root's `.archive/`
+(`<root>/projects/.archive/<domain>/<feature-slug>/`, root-aware so a shared project archives within
+`.vine/projects/.archive/` and a project kept local within `.vine.local/projects/.archive/`), which
 preserves the artifacts but gets completed work fully out of the way (lifecycle in `references/STATE.md`,
 "Project Lifecycle"). An active project is never archived. Use `AskUserQuestion`:
 
 Options (mutually exclusive):
-1. "Archive now (Recommended)" — "Move the project under `.vine/projects/.archive/`"
+1. "Archive now (Recommended)" — "Move the project under its root's `.archive/`"
 2. "Keep in place" — "Leave it resolved-but-unarchived; archive later by hand"
 
-If the engineer archives, move the project directory — `git mv` when this feature directory is
-tracked (the per-path `git check-ignore` test — see *Committing Artifacts* in `references/STATE.md`)
-so history follows, plain `mv` when it's gitignored (a local project):
+If the engineer archives, move the project directory within its own root — `git mv` when this feature
+directory is tracked (the per-path `git check-ignore` test — see *Committing Artifacts* in
+`references/STATE.md`) so history follows, plain `mv` when it's gitignored (a project kept local).
+With `<root>` the project's root (`.vine/` shared, `.vine.local/` local):
 
 ```
-mkdir -p .vine/projects/.archive/<domain>
-git mv .vine/projects/<domain>/<feature-slug> .vine/projects/.archive/<domain>/<feature-slug>
+mkdir -p <root>/projects/.archive/<domain>
+git mv <root>/projects/<domain>/<feature-slug> <root>/projects/.archive/<domain>/<feature-slug>
 ```
 
 The move carries the artifacts only: PAUSE.md is already gone (consumed-once, deleted at resolve above),
@@ -568,8 +605,8 @@ under *Committing Artifacts*):
   if the repo tracks it.
 
 Never force-add a gitignored artifact. If the project was just archived, its artifacts now live
-under `.vine/projects/.archive/<domain>/<feature-slug>/` — `git mv` already staged the rename, so
-stage any post-move edits at that path. Stage the applicable files and commit with a message like:
+under its root's `.archive/` (`<root>/projects/.archive/<domain>/<feature-slug>/`) — for a tracked
+project `git mv` already staged the rename, so stage any post-move edits at that path. Stage the applicable files and commit with a message like:
 
 ```
 evolve: [feature name] — evolution report and cycle artifacts

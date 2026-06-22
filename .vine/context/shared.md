@@ -78,7 +78,7 @@ The command and agent inventory lives in the harness's native skill list, not in
 ## Project Conventions
 
 ### Repository Structure
-See `CLAUDE.md` — repo facts live there (Knowledge Boundary rule, `references/STATE.md`). All `.vine/context/` overlays are tracked in git for contributor onboarding (this repo runs E2-shaped: `.vine/projects/` is tracked too, with PAUSE.md and PROFILE.md excluded).
+See `CLAUDE.md` — repo facts live there (Knowledge Boundary rule, `references/STATE.md`). This repo tracks `.vine/` by default (overlays, knowledge, and feature projects travel with the repo for contributor onboarding); personal and ephemeral state lives in the gitignored personal root `.vine.local/` (profile, personal overlays, pause state, local-only projects), with the `.vine/ACTIVE` session sentinel gitignored in place.
 
 ### Writing Style
 Command authoring conventions live in `CLAUDE.md` (Knowledge Boundary rule: repo facts every contributor session needs).

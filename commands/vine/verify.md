@@ -239,8 +239,10 @@ Use them verbatim. Extending a heading with subtitle text after a colon or dash 
 not. Downstream phases and artifact-format validation locate sections by these headings, so
 a custom heading breaks the chain silently.
 
-Save this to a domain-namespaced directory under `.vine/projects/`. The path follows the pattern:
-`.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
+Save this to a domain-namespaced directory. The path follows the pattern
+`<root>/projects/<domain>/<feature-slug>/CONTEXT.md`, where `<root>` is `.vine/` for a shared
+project (the default) or `.vine.local/` for a local one — the **Shared or local?** prompt below
+decides which. The examples here show the shared default:
 
 The domain is the root area or module the feature lives in — not the repo name, but the
 logical domain the work touches. For example:
@@ -259,10 +261,21 @@ an "Other" option for custom input. Follow up with a second prompt for the featu
 
 Confirm both before creating the directory.
 
-If this is the first VINE cycle in this repo, suggest adding `.vine/` to `.gitignore`. The
-artifacts are valuable for the engineer's workflow but don't need to be committed until the
-team decides they want them in the repo. If the engineer later wants to share VINE artifacts
-(for example, opening a PR with the feature), they can `git add -f .vine/` selectively.
+**Shared or local?** Once the domain and slug are confirmed, decide which root the project lives
+under. Use `AskUserQuestion` (one question, per the Interaction Constraints in `shared.md`):
+
+- **"Shared — commit with the repo (Recommended)"**: create under
+  `.vine/projects/<domain>/<feature-slug>/`. This is the default — `.vine/` is tracked, so the
+  artifacts travel with the repo and fit working in public. Most projects want this.
+- **"Keep this local"**: create under `.vine.local/projects/<domain>/<feature-slug>/` instead. The
+  `.vine.local/` root is gitignored entirely, so the project stays on this machine — nothing about
+  it enters a commit. Use this for spikes, throwaway exploration, or work you're not ready to share.
+
+Resolve `.vine.local/` at the shared personal root (the repo's primary worktree), per *The two
+roots* in `references/STATE.md` — not cwd, so the choice holds across worktrees. Whichever root the
+engineer picks, the rest of the cycle follows it automatically: discovery scans both roots, and the
+per-path commit test (Sign-Off Gate, below) commits a shared project and skips a local one with no
+special-casing.
 
 This file is the contract between verify and inquire — everything inquire needs to know about
 the landscape should be here.

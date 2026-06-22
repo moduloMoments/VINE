@@ -289,16 +289,251 @@ approve-edits continuity from Slice 5 (each edit reviewed as it landed).
     Slice 6 was a pure reference-the-rule pass — the upfront referential-homes investment paid off as a
     mechanical, low-risk close to Phase 2.
 
+### Slice 7: verify shared-vs-local prompt — Complete
+**Started**: 2026-06-22 14:16
+**Commit**: 2a07dfb
+**Gear**: free-climb
+**Approach taken**: Added a **Shared or local?** decision to verify's project-creation flow
+(`commands/vine/verify.md`, inside "### 6. Write CONTEXT.md", right after the domain/slug
+confirmation). An `AskUserQuestion` defaults to **shared** ("Shared — commit with the repo
+(Recommended)" → `.vine/projects/<domain>/<feature-slug>/`) and offers "Keep this local" →
+`.vine.local/projects/<domain>/<feature-slug>/`. Used a bold lead-in (`**Shared or local?**`)
+rather than a `###` heading so it stays within step 6's prose instead of reading as a new
+top-level step. Updated the "Save this to…" intro (was hardcoded `.vine/projects/`) to the
+root-neutral `<root>/projects/<domain>/<feature-slug>/` pattern, noting `<root>` is `.vine/`
+(default) or `.vine.local/`. The prompt text references *The two roots* for personal-root
+resolution and points at the per-path commit test (Sign-Off Gate) so the routing reads as
+automatic downstream.
+**Deviations from spec**: One bounded addition (engineer-approved via AskUserQuestion, recorded
+in SPEC Slice 7 addendum): replaced verify.md's stale first-cycle note (old lines 262-265,
+"suggest adding `.vine/` to `.gitignore` … `git add -f .vine/`") — the pre-flip model, directly
+contradicted by the shared/local choice in the same flow and in no other slice's file list.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref
+anchor pairs; `.vine/.trellis-ok` stamped). Grep confirms no stale gitignore note remains. The two
+pre-existing allowlisted `.vine/hooks/` legacy warnings (init.md:104-105) are unrelated. AC8
+(verify half) confirmed by inspection: default routes to `.vine/projects/`, opt-out to
+`.vine.local/projects/`, single AskUserQuestion per Interaction Constraints.
+**Decisions made during implementation**:
+  - Use a bold lead-in (`**Shared or local?**`) instead of a `###` heading, so the prompt sits in
+    step 6's prose and doesn't renumber/disrupt the numbered-step flow trellis cross-references
+    (decided by: claude; confidence: high)
+  - Fix the stale `.vine/`-to-gitignore note here rather than defer to Slice 10 — it's coupled to
+    the visibility model and in no other slice's file list, so deferring risks dropping it (decided
+    by: engineer — chose "Fix it here" via AskUserQuestion; confidence: high)
+  - Leave the PROJECT-MAP `## Feature:` and completion-block path placeholders showing the shared
+    `.vine/projects/` default rather than churning every placeholder to `<root>/` — the agent fills
+    the real path it just chose at runtime, so a local project gets the correct path without the
+    extra token noise (decided by: claude; confidence: medium)
+**Acceptance criteria**:
+  - [x] AC8 (verify half) — verify defaults new projects to shared and offers a "keep local" option
+    that creates the project under `.vine.local/projects/`
+**Engineer feedback incorporated**: Gear (free climb) and the gitignore-note disposition were both
+presented before coding via AskUserQuestion; engineer chose free climb + fix-here. No mid-slice
+redirection.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: A "prompt" slice in the project-creation flow can't cleanly ignore the
+    adjacent gitignore guidance — the old first-cycle note was the pre-flip model and would have
+    shipped as a self-contradiction next to the new shared/local choice. Same pattern as the
+    Slice 4/5 in-flow corrections: getting the visible change right pulls in the coupled stale prose.
+
+### Slice 8: evolve local→shared promotion — Complete
+**Started**: 2026-06-22 14:22
+**Commit**: 8b17ec0
+**Gear**: walk-me-through (continued in this session from Slice 7; previewed the three-part approach
+in prose before editing, edits reviewable at the slice boundary)
+**Approach taken**: Three coupled changes to evolve's wrap-up flow (`commands/vine/evolve.md`).
+(1) **Promotion offer** — added a `### Promote a Local Project to Shared?` section between the Phase
+Completion block and Mark as Resolved. It fires only for a local project (detected via the per-path
+`git check-ignore` test) and offers, via AskUserQuestion, to move the directory tree from
+`.vine.local/projects/` to `.vine/projects/` (default: promote). The source is gitignored/untracked,
+so the move is a plain `mv` (not `git mv`); the existing *Commit Evolve Changes* step then stages the
+artifacts at their now-tracked path. Placement-before-resolve is deliberate: after the move the
+per-path test reads the project as tracked, so resolve/archive/commit operate on the shared path with
+no special-casing. (2) **`.resolved` marker root-aware** — writes to `<root>/projects/<domain>/<feature-slug>/.resolved`
+(`.vine/` shared, `.vine.local/` if kept local), not the hardcoded `.vine/projects/`. (3) **Archive
+destination root-aware** — archives within the project's *own* root's `.archive/`
+(`.vine/projects/.archive/` shared, `.vine.local/projects/.archive/` local), matching init.md's
+root-aware sweep from Slice 4; the Commit step's post-archive path reference updated to match.
+**Deviations from spec**: Parts (2) and (3) go beyond the SPEC Slice 8 goal's literal "promotion"
+wording, but were explicitly deferred to "Slice 8 territory" in the Slice 5 and Slice 6 journal
+entries — planned scope, not creep. Recorded in the SPEC Slice 8 addendum.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs; `.vine/.trellis-ok` stamped). Grep confirms the only remaining `.vine/projects/.archive/`
+mention is the prose example illustrating root-awareness, not a hardcoded path. The two pre-existing
+allowlisted `.vine/hooks/` legacy warnings (init.md:104-105) are unrelated. AC8 (evolve half) confirmed
+by inspection: evolve detects a local project, offers promotion, moves the tree to `.vine/projects/`,
+and the commit step stages it as shared.
+**Decisions made during implementation**:
+  - Place the promotion offer *before* Mark as Resolved (not after), so a promotion makes the
+    subsequent resolve/archive/commit see a tracked project automatically — avoids re-deriving the
+    root mid-wrap-up (decided by: claude; confidence: high)
+  - Plain `mv`, not `git mv`, for the promotion: the source is gitignored (untracked), so `git mv`
+    would fail; the existing per-path-aware commit step stages the artifacts at the new tracked path
+    (decided by: claude; confidence: high)
+  - Absorb the deferred root-aware `.resolved` + archive fixes here rather than leave them — Slices
+    5/6 named Slice 8 as their home, and they're in the same wrap-up paths the promotion touches
+    (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC8 (evolve half) — evolve detects a local project and offers local→shared promotion (move
+    the directory tree), then commits as usual
+**Engineer feedback incorporated**: Engineer chose "continue in this session" after Slice 7; I
+suggested flipping back to approve-edits for this slice's move/commit logic. Approach previewed in
+prose (the three coupled parts) before editing.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: Ordering a lifecycle step matters — putting promotion *before* resolve/archive
+    means the location change propagates through the per-path test for free, so the downstream steps
+    stay root-agnostic. The deferred-fix notes from Slices 5/6 paid off: the root-aware `.resolved` and
+    archive work was already scoped and waiting in the exact paths this slice opened.
+
+### Slice 9: The `.gitignore` flip + init scaffold + Upgrade Mode + repo migration — Complete
+**Started**: 2026-06-22 15:05
+**Commit**: 9c465dc
+**Gear**: walk-me-through
+**Approach taken**: Four parts. (1) **init Step 6 (shipped template)** flipped from the
+ignore-by-default model (`.vine/*` + `!.vine/README.md`) to track-by-default: the scaffolded
+`.gitignore` is now `.vine.local/` + `.vine/ACTIVE` (two lines), tracking the rest of `.vine/`. The
+"What This Does" summary line (`init.md:28`) flipped in lockstep. (2) **init Step 8** gained a new
+`### Track-by-Default Migration` subsection (parallel to Legacy Directory Migration): detects the old
+ignore model, offers via `AskUserQuestion` to relocate personal files into `.vine.local/` *then* flip
+`.gitignore`, where declining is a no-op (#58 rename-fallback). (3) **This repo's `.gitignore`
+flipped** — the deny-then-allowlist block (11 lines, re-admitting context/knowledge/projects/scripts)
+collapsed to three: `.vine.local/`, `.vine/ACTIVE`, `.vine/.trellis-ok` (the last is contributor-only,
+not in the shipped template). (4) **Worked-example migration**: relocated `.vine/PROFILE.md` →
+`.vine.local/PROFILE.md` at the *primary* checkout (where the personal root anchors via git-common-dir),
+removed this worktree's PROFILE symlink stopgap, and verified.
+**Deviations from spec**: Two intent-over-letter resolutions, both pre-flagged (see SPEC Slice 9
+addendum). (1) AC1's "`.vine.local/` is the *only* rule" → the flip also carries `.vine/ACTIVE` (Slice
+5 kept ACTIVE there) and this repo adds contributor-only `.vine/.trellis-ok`; shipped template is two
+lines, this repo's three. (2) The Goal's "relocate ACTIVE wiring" → ACTIVE didn't move, so the real
+relocation was PROFILE, done at the primary checkout because we're in a worktree.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs; `.vine/.trellis-ok` stamped). AC verification by direct `git check-ignore`/`git status`: 104
+tracked `.vine/` artifacts unchanged; `.vine/ACTIVE`+`.vine/.trellis-ok` ignored; all `.vine.local/*`
+paths ignored; `git status` shows only `.gitignore`, `init.md`, NAVIGATION.md (Slice 8 backfill); no
+untracked-not-ignored `.vine/` residue (PROFILE symlink gone). Two pre-existing allowlisted
+`.vine/hooks/` legacy warnings (init.md:105-106) are unrelated.
+**Decisions made during implementation**:
+  - Shipped init Step 6 template = two lines (`.vine.local/` + `.vine/ACTIVE`); this repo's actual
+    `.gitignore` = three (adds `.vine/.trellis-ok`). The trellis stamp is a contributor-only artifact
+    `create-vine` never ships, so it doesn't belong in the downstream scaffold (decided by: claude;
+    confidence: high)
+  - Run the PROFILE relocation at the *primary* checkout (not this worktree), since the personal root
+    anchors there via `git rev-parse --git-common-dir`; drop the worktree symlink stopgap so commands
+    read the profile from the anchored `.vine.local/PROFILE.md` (decided by: engineer — chose "I do all
+    4 steps" via AskUserQuestion after I surfaced the cross-worktree wrinkle; confidence: high)
+  - Place Track-by-Default Migration as a sibling of Legacy Directory Migration inside Step 8 (both are
+    pre-upgrade structural migrations), not inside Upgrade Mode proper (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC1 — root `.gitignore` is track-by-default; `git check-ignore` reports every `.vine/` artifact
+    tracked and `.vine.local/*` ignored. **Intent over letter**: also carries `.vine/ACTIVE` (+ this
+    repo's contributor-only `.vine/.trellis-ok`), not the literal single line.
+  - [x] AC9 — init Step 6 scaffolds the new gitignore for fresh repos; Step 8 Upgrade Mode offers the
+    opt-in migration (relocate personal files + flip) where declining changes nothing (#58).
+  - [x] AC10 — this repo migrated as the worked example: `.gitignore` flipped, PROFILE relocated,
+    `git status` shows no unintended tracking changes for committed artifacts (104 tracked, unchanged).
+**Engineer feedback incorporated**: Chose walk-me-through (approve-edits) for this highest-risk slice
+despite a confident workflow profile; chose "I do all 4 steps" for the cross-worktree PROFILE move
+after I laid out the primary-checkout caveat (the primary, on `feature/out-of-scope-routing`, will
+briefly show `.vine.local/PROFILE.md` untracked until PR 3 merges — cosmetic, self-resolving).
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: A gitignore *inversion* is only safe once the to-be-newly-tracked tree holds
+    nothing personal — the flip's real work is the relocation that precedes it, not the rule swap. In a
+    worktree the relocation must target the git-common-dir-anchored primary, not cwd, or the personal
+    file is either invisible (pre-move) or wrongly tracked (post-flip).
+
+### Slice 10: Documentation sweep — Complete
+**Started**: 2026-06-22 15:35
+**Commit**: 924cfc8
+**Gear**: free-climb
+**Approach taken**: Swept five doc surfaces to the now-real `.vine.local/` track-by-default model.
+(1) **CLAUDE.md** — dropped "PAUSE.md gitignored" from the projects bullet (PAUSE now under
+`.vine.local/`), replaced the `.vine/PROFILE.md` bullet with a `.vine.local/` personal-root bullet,
+and moved the two prose path refs (`Load Engineer Profile` reader, the profile-tracking line) +
+the pause-location line to `.vine.local/`. (2) **shared.md** line 81 — the "E2-shaped … PAUSE.md
+and PROFILE.md excluded" note → "tracks `.vine/` by default; personal/ephemeral state in
+`.vine.local/`". (3) **init.md Step 4 `.vine/README.md` scaffold** — reconciled the split-brain
+flagged in the Slice 8 handoff: dropped the `shared.local.md`/`PROFILE.md` table rows, narrowed the
+ephemeral row to `ACTIVE`, added a personal-root paragraph, and updated the overlay-list item 3 +
+the precedence prose from `shared.local.md` to `.vine.local/context/<name>.md`. (4) **README
+"Piloting"** — reframed from "gitignore all of `.vine/`, commit later" (backwards under
+track-by-default) to a solo→team graduation path: keep-features-local via verify, or whole-`.vine/`
+global-gitignore for full-local piloting, then graduate by committing `.vine/context/` + policy
+markers (points at shared.md's team recommendation). Also fixed the README profile-layer path
+`.vine/PROFILE.md` → `.vine.local/PROFILE.md`. (5) **STATE.md** — fixed the stale "README is the one
+tracked file under `.vine/` (init adds `!.vine/README.md`)" claim (`STATE.md:408`) to track-by-default;
+the contract surfaces (Filtering Convention, Committing Artifacts, ACTIVE guarantee, two roots) were
+already correct from Slices 1/4/5. **Session hygiene**: merged `origin/main` into the branch first
+(engineer chose "continue + get updates from main") — brought in #124 (vine-reviewer diff range) and
+#125 (permission-mode copy alignment); clean auto-merge, no conflicts; the gitignore flip survived.
+**Deviations from spec**: None. AC11's STATE.md surfaces were mostly closed in earlier slices; this
+slice closed the one straggler (the README-orientation-doc description) plus the four other surfaces.
+The State Artifact Addition Checklist applies only loosely — `.vine.local/` is a directory/gitignore
+convention, not a CONTEXT→…→EVOLUTION state artifact — so the pass was verifying the checklist-covered
+surfaces (STATE.md, CLAUDE.md, README, trellis) all reflect it, which they now do.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs). Final cross-surface grep confirms no stale `shared.local.md`, `.vine/PROFILE.md` (outside the
+migration prose that names it as a move *source*), `.vine/...PAUSE`, or `E2-shaped`/allowlist remnants.
+Two pre-existing allowlisted `.vine/hooks/` legacy warnings (init.md:105-106) are unrelated.
+**Phase-group verification follow-up**: the `vine-verification` agent caught two ASCII-art stragglers
+the backtick-pattern grep missed — README's `.vine/` directory-tree illustration showed `PROFILE.md`
+under `.vine/` and `PAUSE.md` under `.vine/projects/`, and the State Artifacts table's PROFILE/PAUSE
+rows lacked a location qualifier. Both fixed: the illustration now shows a tracked `.vine/` tree
+(with `ACTIVE` gitignored in place) plus a sibling `.vine.local/` personal-root tree, and the table
+rows note `.vine.local/`. Lesson logged below: a grep safety-net only catches the path format it
+matches.
+**Decisions made during implementation**:
+  - Move personal files OUT of the init `.vine/README.md` scaffold table (rather than relabel the
+    rows) — the table is titled "What lives under `.vine/`" and personal state now lives under
+    `.vine.local/`, so a pointer paragraph is more honest than rows for files that aren't there
+    (decided by: claude; confidence: high)
+  - Keep README "Piloting" offering the whole-`.vine/`-global-gitignore escape hatch alongside the
+    per-feature keep-local option — full-local piloting is still a real need under track-by-default
+    (decided by: claude; confidence: high)
+  - Merge (not rebase) origin/main, to preserve the Slice 7/8/9 commit hashes the journal records
+    (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC11 — README "Piloting", CLAUDE.md tracked/gitignored bullets, init's `.vine/README.md`
+    scaffold, and `references/STATE.md` reflect the `.vine.local/` contract + team recommendation
+  - [x] AC12 — `/trellis` passes; no command file references a personal path that has moved
+    (verified by grep across commands/, references/, README.md, CLAUDE.md, .vine/context/)
+**Engineer feedback incorporated**: Chose free-climb for the docs sweep (confident workflow profile);
+chose "continue this session + get updates from main", which drove the pre-sweep merge of origin/main.
+**Learnings**:
+  - Engineer → Claude: Sync from main before the final slice of a multi-PR feature — parallel PRs
+    (#124, #125) had landed, and folding them in now means PR 3 builds on current main rather than
+    surprising the reviewer with a stale base.
+  - Claude → Engineer: A docs sweep after a model change is really a grep-for-the-old-model pass —
+    the stragglers (STATE.md's README description, the README profile path) lived outside the SPEC's
+    named surfaces and only a cross-surface grep caught them. Naming the surfaces in the SPEC gets you
+    80%; the grep gets the rest.
+
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
 (suffix dropped) for repos tracking `main`. This is a courtesy migration, not a shipped-version compat
 need — the personal-layer convention never shipped (see Slice 2 decision). Declining must change nothing.
 
 ### Remaining Work
-- **Incomplete slices**: Phase 1 (Slices 1-3) complete and committed (3139119, e28a5c8, df64d3b).
-  Phases 2-3 (Slices 4-10) remain — a fresh session each, per the multi-PR plan.
+- **Incomplete slices**: **All 10 slices complete.** Phase 1 (1-3): 3139119, e28a5c8, df64d3b →
+  PR #122. Phase 2 (4-6): 8cfbfcf, 0833865, d80a95e → PR #123. Phase 3 (7-10): 2a07dfb, 8b17ec0,
+  9c465dc, 924cfc8 (+ a merge of origin/main bringing #124/#125) → PR 3 pending.
 - **Blockers encountered**: None.
-- **Handoff context**:
+- **Handoff context for evolve (PR 3 / feature wrap-up)**:
+  - **Open PR 3 for Phase 3 (Slices 7-10)** before evolve's full-feature pass: the visibility
+    prompts (verify shared/local, evolve promotion), the `.gitignore` flip (closes #108), init's
+    Step 6/8 changes, and the docs sweep.
+  - **Deviations to review** (all SPEC-annotated): Slice 9's AC1 intent-over-letter (gitignore is
+    three lines here, two in the shipped template — `.vine/ACTIVE` + contributor-only `.vine/.trellis-ok`
+    beyond `.vine.local/`) and the "relocate ACTIVE wiring → relocate PROFILE" Goal shift; the earlier
+    Slice 4/5/7/8 in-flow corrections.
+  - **Cosmetic, self-resolving**: the primary checkout (on `feature/out-of-scope-routing`) shows
+    `.vine.local/PROFILE.md` untracked until PR 3 merges to main and the new ignore rule reaches it.
+  - **#52 AC reinterpretation** stands (prescribed team-layer dropped as over-engineering; intent met
+    by tracked `shared.md` + policy marker + #57 plugin distribution) — evolve's knowledge ADR should
+    record the cycle's reshape if not already covered by the existing workflow ADRs.
+  - **Earlier-phase notes (historical, for reviewer context):**
   - **Phase-group verification (Phase 1)**: trellis green; AC1/AC2/AC3/AC6/AC7 all met. The
     `vine-verification` agent flagged `evolve.md:64` (`delete .vine/ACTIVE`) as mismatching STATE.md's
     `.vine.local/ACTIVE`. **Not a Phase 1 gap** — deferred to Slice 5. Direct check confirmed the ACTIVE
