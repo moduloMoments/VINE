@@ -44,16 +44,16 @@ touch -t 202001010000 "$T/feat/NAVIGATION.md"
 printf '%s' "$payload_commit" | sh "$J" >/dev/null 2>&1
 check "journal-check: stale journal -> block (exit 2)" 2 $?
 
-# Pin the journal mtime to exactly HEAD's commit second so the tie is real
-# every run. A bare `touch` lands ~simultaneously with the init commit, so on
-# runners where the filesystem clock lags git's commit clock the comparison
-# flips from tie (allow) to stale (block) — a latent flake. GNU touch takes
-# `-d @epoch`; BSD touch falls back to a formatted timestamp.
-htime=$(git -C "$T" log -1 --format=%ct)
-touch -d "@$htime" "$T/feat/NAVIGATION.md" 2>/dev/null \
-  || touch -t "$(date -r "$htime" +%Y%m%d%H%M.%S)" "$T/feat/NAVIGATION.md"
+# Make the journal strictly newer than HEAD's commit so the allow path is
+# exercised deterministically. A bare `touch` alone lands in the same second
+# as the init commit, leaving the comparison on the -ge tie boundary — which
+# flips to a block on runners whose filesystem clock lags git's commit clock
+# (a latent flake). The `sleep 1` guarantees a newer second on every platform,
+# no date-format parsing required.
+sleep 1
+touch "$T/feat/NAVIGATION.md"
 ferr=$(printf '%s' "$payload_commit" | sh "$J" 2>&1 >/dev/null)
-check "journal-check: fresh journal (same-second tie fails open) -> allow" 0 $?
+check "journal-check: fresh journal (newer than commit) -> allow" 0 $?
 printf '%s' "$ferr" | grep -q 'journal guard:.*commit allowed'
 check "journal-check: fire-and-pass emits a visible signal on stderr" 0 $?
 
