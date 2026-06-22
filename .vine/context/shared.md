@@ -57,6 +57,18 @@ Only policy-class sections carry the marker; unmarked means preference. This is 
 resolution rule — the personal-overlay load step, init's upgrade pass, and the reviewer orientation
 reference it rather than restating it.
 
+### Team conventions (recommendation)
+
+Team conventions are **repo-owned, not framework-prescribed** — team structure varies org to org, so
+VINE ships the mechanism, not a fixed shape. To make conventions travel with the project, put them in
+the tracked repo overlay (`.vine/context/shared.md`) and mark anything the team enforces regardless of
+personal preference with `<!-- class: policy -->` (per Overlay Precedence above, the personal
+`.vine.local/` layer cannot weaken a policy section). That pair — tracked `shared.md` plus the policy
+marker — is the whole team layer; no separate team-overlay file or `vine:team` command is needed.
+Distributing those overlays across repos, so an engineer installs the team conventions they belong to,
+is the job of plugin distribution in a later cycle ([#57](https://github.com/moduloMoments/VINE/issues/57):
+overlay distribution as plugins).
+
 ## Tooling Notes
 
 The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
@@ -225,7 +237,7 @@ Internal, not shown to the engineer. Apply this stance in all VINE phases:
 
 ## Engineer Profile Protocol
 
-After loading overlays, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
+After loading overlays, check for `.vine.local/PROFILE.md`. If it exists, read the Domain Expertise
 table. Match the feature's domain against the profile's entries.
 
 - **If the domain is in the profile**: Note their level for this session. Use it to calibrate

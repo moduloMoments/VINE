@@ -133,6 +133,18 @@ overlays live under the gitignored personal root (`.vine.local/`); absent them, 
 
 Only policy-class sections carry the marker; unmarked means preference.
 
+### Team conventions (recommendation)
+
+Team conventions are **repo-owned, not framework-prescribed** — team structure varies org to org, so
+VINE ships the mechanism, not a fixed shape. To make conventions travel with the project, put them in
+the tracked repo overlay (`.vine/context/shared.md`) and mark anything the team enforces regardless of
+personal preference with `<!-- class: policy -->` (per Overlay Precedence above, the personal
+`.vine.local/` layer cannot weaken a policy section). That pair — tracked `shared.md` plus the policy
+marker — is the whole team layer; no separate team-overlay file or `vine:team` command is needed.
+Distributing those overlays across repos, so an engineer installs the team conventions they belong to,
+is the job of plugin distribution in a later cycle ([#57](https://github.com/moduloMoments/VINE/issues/57):
+overlay distribution as plugins).
+
 ## Project Directory Convention
 
 All VINE project artifacts MUST be created under `.vine/projects/<domain>/<feature-slug>/`.
@@ -166,7 +178,7 @@ Internal, not shown to the engineer. Apply this stance in all VINE phases:
 
 ## Engineer Profile Protocol
 
-After loading overlays, check for `.vine/PROFILE.md`. If it exists, read the Domain Expertise
+After loading overlays, check for `.vine.local/PROFILE.md`. If it exists, read the Domain Expertise
 table. Match the feature's domain against the profile's entries.
 
 - **If the domain is in the profile**: Note their level for this session. Use it to calibrate
@@ -405,7 +417,7 @@ After generating overlays, briefly mention the engineer profile to the engineer:
 Do **not** ask any domain rating questions here. The profile seeds itself through vine:verify
 as the engineer works in different domains. This step is purely informational.
 
-If `.vine/PROFILE.md` already exists (e.g., from a previous init or manual creation), skip
+If `.vine.local/PROFILE.md` already exists (e.g., from a previous init or manual creation), skip
 this message entirely.
 
 ## Step 8: Upgrade Existing Projects
@@ -640,7 +652,7 @@ list them and offer to archive them, mirroring evolve's archive mechanics (lifec
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your context overlays will be loaded automatically.
 
-👤 Your engineer profile (.vine/PROFILE.md) will build as you work —
+👤 Your engineer profile (.vine.local/PROFILE.md) will build as you work —
    each new domain prompts a quick familiarity check during verify.
 
 💡 Tip: As you complete VINE cycles, `/vine:evolve` will suggest

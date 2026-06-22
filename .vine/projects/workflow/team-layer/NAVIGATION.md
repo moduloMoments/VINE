@@ -51,7 +51,7 @@ project is done") rather than a transitional note — simplifying the section to
 
 ### Slice 2: Overlay composition reads the personal root — Complete
 **Started**: 2026-06-22 10:25
-**Commit**: pending
+**Commit**: e28a5c8
 **Gear**: walk-me-through
 **Approach taken**: Updated the Overlay Loading Protocol (Personal layer bullet) and Overlay
 Precedence (intro, the two conflict bullets, the Personal layer paragraph, the closing
@@ -93,6 +93,49 @@ loader fallback was added.
   - Claude → Engineer: `shared.md` and init.md's embedded template must move in lockstep; the
     personal layer generalizes cleanly from "one file `shared.local.md`" to "any overlay's mirrored
     counterpart under `.vine.local/context/`".
+
+### Slice 3: Profile loader path + team recommendation note — Complete
+**Started**: 2026-06-22 10:45
+**Commit**: pending
+**Gear**: walk-me-through
+**Approach taken**: Relocated the engineer-profile path `.vine/PROFILE.md` → `.vine.local/PROFILE.md`
+across every functional site: the read protocol (`shared.md` Engineer Profile Protocol, `status.md`
+Load Engineer Profile, `init.md`'s embedded protocol), the write/create sites (`verify.md` domain-add,
+`evolve.md` Update Engineer Profile × create/update/write, `init.md` Upgrade-Mode existence check), the
+routing-tree pointer + completion-summary line in `evolve.md`, and the init completion message. Added a
+`### Team conventions (recommendation)` subsection to `shared.md`'s Overlay Precedence (mirrored in
+init.md's embedded template): team conventions are repo-owned — put them in the tracked `shared.md` and
+mark governance `<!-- class: policy -->`; no `vine:team` command or separate team-overlay file; plugin
+distribution is #57.
+**Deviations from spec**: None — but a scope clarification worth recording (AC intent over letter):
+AC3 names only the profile *reader*, yet no later slice moves the profile *writers*. Moving only the
+read path would break the profile (written to `.vine/`, read from `.vine.local/`), so this slice moves
+all functional read+write+existence sites together. Deferred to Slice 9/10 (deliberately, not missed):
+the bare-`PROFILE.md` mentions in init.md's `.vine/README.md` scaffold (init.md:292, 368) and the repo
+gitignore-tracking note (shared.md:70) — those describe the directory/gitignore model the flip changes.
+**Validation**: pass — `/trellis` engine green (11/11 commands, 8 cross-ref anchor pairs;
+`.vine/.trellis-ok` stamped pass). Same two pre-existing allowlisted `.vine/hooks/` warnings, unrelated.
+AC3 confirmed: loader reads `.vine.local/PROFILE.md`, absent → unchanged default-depth behavior; the
+team recommendation glosses #57 (reads without dereferencing).
+**Decisions made during implementation**:
+  - Move profile write paths (verify/evolve) in this slice, not just the reader, for read/write
+    coherence — intent over letter, since no other slice covers them (decided by: claude; confidence: high)
+  - File-wide swap of the full path `.vine/PROFILE.md` (backticked + the two non-backticked output
+    strings), leaving bare `PROFILE.md` scaffold/gitignore mentions for the docs sweep — the bare/full
+    split happens to map exactly onto the functional/cosmetic boundary (decided by: claude; confidence: high)
+  - Home the team recommendation under Overlay Precedence (not Team Context), so it sits with the
+    layering/policy-marker explanation it builds on and Slice 10's README can point to it (decided by:
+    claude; confidence: medium)
+**Acceptance criteria**:
+  - [x] AC3 — profile loader reads `.vine.local/PROFILE.md`; absent → no prompt/warning, default depth
+  - [x] Team recommendation present in shared.md + init.md embedded template, reads without
+    dereferencing (Reference Legibility — #57 glossed)
+**Engineer feedback incorporated**: None beyond the gear choice; approach matched the preview.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: When a path moves, the read and write sites are one atomic unit — a slice that
+    moves only the reader silently breaks the feature; the SPEC's per-slice file lists are a guide, not
+    a hard partition when correctness spans them.
 
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
