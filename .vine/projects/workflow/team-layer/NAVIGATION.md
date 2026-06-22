@@ -168,12 +168,17 @@ need — the personal-layer convention never shipped (see Slice 2 decision). Dec
     Also corrected the never-shipped `shared.local.md` convention references in init's customize
     bullet + the team distribution block to `.vine.local/context/`. Mirrored the team-recommendation
     fix into `.vine/context/shared.md`.
-  - **Slice 10 docs-sweep deferrals** (remaining): the README scaffold's directory **table**
-    (`init.md` ~302/304/306 — the `shared.local.md` / `PROFILE.md` / `ACTIVE`,`PAUSE.md` rows) needs
-    the two-root rework, gated on Phase 2's final locations (per the worktree ADR, `ACTIVE` lands in
-    the per-worktree git dir, NOT `.vine.local/` — so don't bake `.vine.local/ACTIVE` into the table).
+  - **Slice 10 docs-sweep deferrals** (remaining): the WHOLE `.vine/README.md` scaffold in init.md
+    is currently split-brained on the personal layer and must be reworked as one unit — both the
+    overlay-precedence **prose** (the `shared.local.md` lines ~302/307/315/318, left as-is this phase)
+    AND the directory **table** (`PROFILE.md` / `ACTIVE`,`PAUSE.md` rows ~304/306). The post-Phase-1
+    ref-hygiene pass updated only the customize bullet + team-distribution block to `.vine.local/`,
+    so the scaffold now names both conventions — Slice 10 must close the entire block, not just the
+    table. Gated on Phase 2's final locations (per the worktree ADR, `ACTIVE` lands in the
+    per-worktree git dir, NOT `.vine.local/` — don't bake `.vine.local/ACTIVE` into the table).
     Plus shared.md's gitignore-tracking note (~line 70/82), CLAUDE.md, README.md, and STATE.md's
-    surfaces per the State Artifact Addition Checklist.
+    surfaces per the State Artifact Addition Checklist. (Surfaced by the cold vine-reviewer pass on
+    PR #122.)
   - **Worktree resolution (Phase 2 — design added 2026-06-22)**: gitignored personal state is invisible
     to git worktrees/clones (confirmed live — the main checkout's `.vine/PROFILE.md` was unseen by this
     worktree session). Phase 2 must resolve the personal root from git, not cwd: shared root (profile,
