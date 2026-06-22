@@ -446,7 +446,7 @@ briefly show `.vine.local/PROFILE.md` untracked until PR 3 merges — cosmetic, 
 
 ### Slice 10: Documentation sweep — Complete
 **Started**: 2026-06-22 15:35
-**Commit**: pending
+**Commit**: 924cfc8
 **Gear**: free-climb
 **Approach taken**: Swept five doc surfaces to the now-real `.vine.local/` track-by-default model.
 (1) **CLAUDE.md** — dropped "PAUSE.md gitignored" from the projects bullet (PAUSE now under
@@ -477,6 +477,13 @@ surfaces (STATE.md, CLAUDE.md, README, trellis) all reflect it, which they now d
 pairs). Final cross-surface grep confirms no stale `shared.local.md`, `.vine/PROFILE.md` (outside the
 migration prose that names it as a move *source*), `.vine/...PAUSE`, or `E2-shaped`/allowlist remnants.
 Two pre-existing allowlisted `.vine/hooks/` legacy warnings (init.md:105-106) are unrelated.
+**Phase-group verification follow-up**: the `vine-verification` agent caught two ASCII-art stragglers
+the backtick-pattern grep missed — README's `.vine/` directory-tree illustration showed `PROFILE.md`
+under `.vine/` and `PAUSE.md` under `.vine/projects/`, and the State Artifacts table's PROFILE/PAUSE
+rows lacked a location qualifier. Both fixed: the illustration now shows a tracked `.vine/` tree
+(with `ACTIVE` gitignored in place) plus a sibling `.vine.local/` personal-root tree, and the table
+rows note `.vine.local/`. Lesson logged below: a grep safety-net only catches the path format it
+matches.
 **Decisions made during implementation**:
   - Move personal files OUT of the init `.vine/README.md` scaffold table (rather than relabel the
     rows) — the table is titled "What lives under `.vine/`" and personal state now lives under
@@ -509,10 +516,24 @@ Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.
 need — the personal-layer convention never shipped (see Slice 2 decision). Declining must change nothing.
 
 ### Remaining Work
-- **Incomplete slices**: Phase 1 (Slices 1-3) complete and committed (3139119, e28a5c8, df64d3b).
-  Phases 2-3 (Slices 4-10) remain — a fresh session each, per the multi-PR plan.
+- **Incomplete slices**: **All 10 slices complete.** Phase 1 (1-3): 3139119, e28a5c8, df64d3b →
+  PR #122. Phase 2 (4-6): 8cfbfcf, 0833865, d80a95e → PR #123. Phase 3 (7-10): 2a07dfb, 8b17ec0,
+  9c465dc, 924cfc8 (+ a merge of origin/main bringing #124/#125) → PR 3 pending.
 - **Blockers encountered**: None.
-- **Handoff context**:
+- **Handoff context for evolve (PR 3 / feature wrap-up)**:
+  - **Open PR 3 for Phase 3 (Slices 7-10)** before evolve's full-feature pass: the visibility
+    prompts (verify shared/local, evolve promotion), the `.gitignore` flip (closes #108), init's
+    Step 6/8 changes, and the docs sweep.
+  - **Deviations to review** (all SPEC-annotated): Slice 9's AC1 intent-over-letter (gitignore is
+    three lines here, two in the shipped template — `.vine/ACTIVE` + contributor-only `.vine/.trellis-ok`
+    beyond `.vine.local/`) and the "relocate ACTIVE wiring → relocate PROFILE" Goal shift; the earlier
+    Slice 4/5/7/8 in-flow corrections.
+  - **Cosmetic, self-resolving**: the primary checkout (on `feature/out-of-scope-routing`) shows
+    `.vine.local/PROFILE.md` untracked until PR 3 merges to main and the new ignore rule reaches it.
+  - **#52 AC reinterpretation** stands (prescribed team-layer dropped as over-engineering; intent met
+    by tracked `shared.md` + policy marker + #57 plugin distribution) — evolve's knowledge ADR should
+    record the cycle's reshape if not already covered by the existing workflow ADRs.
+  - **Earlier-phase notes (historical, for reviewer context):**
   - **Phase-group verification (Phase 1)**: trellis green; AC1/AC2/AC3/AC6/AC7 all met. The
     `vine-verification` agent flagged `evolve.md:64` (`delete .vine/ACTIVE`) as mismatching STATE.md's
     `.vine.local/ACTIVE`. **Not a Phase 1 gap** — deferred to Slice 5. Direct check confirmed the ACTIVE

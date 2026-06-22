@@ -230,7 +230,7 @@ directory, so shared projects commit and local ones skip.
 **Acceptance criteria**: AC7.
 **Complexity signal**: Low.
 
-## Phase 3: Visibility, the Flip & Docs (Slices 7-10) ⬜
+## Phase 3: Visibility, the Flip & Docs (Slices 7-10) ✅
 Summary: Add the user-facing shared/local choice, perform the `.gitignore` inversion and migrate
 this repo, and update all documentation. The flip lands last, after everything reads the new
 locations.
