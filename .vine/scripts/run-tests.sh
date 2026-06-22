@@ -52,8 +52,18 @@ check "journal-check: stale journal -> block (exit 2)" 2 $?
 htime=$(git -C "$T" log -1 --format=%ct)
 touch -d "@$htime" "$T/feat/NAVIGATION.md" 2>/dev/null \
   || touch -t "$(date -r "$htime" +%Y%m%d%H%M.%S)" "$T/feat/NAVIGATION.md"
-printf '%s' "$payload_commit" | sh "$J" >/dev/null 2>&1
+ferr=$(printf '%s' "$payload_commit" | sh "$J" 2>&1 >/dev/null)
 check "journal-check: fresh journal (same-second tie fails open) -> allow" 0 $?
+printf '%s' "$ferr" | grep -q 'journal guard:.*commit allowed'
+check "journal-check: fire-and-pass emits a visible signal on stderr" 0 $?
+
+# The fail-open early exits must stay silent — only the real fire-and-pass
+# path signals, so the note never spams routine no-session/non-commit calls.
+rm "$T/.vine/ACTIVE"
+nserr=$(printf '%s' "$payload_commit" | sh "$J" 2>&1 >/dev/null)
+check "journal-check: no sentinel (didn't fire) -> allow" 0 $?
+printf '%s' "$nserr" | grep -q 'journal guard'
+check "journal-check: didn't-fire path stays silent (no signal)" 1 $?
 
 rm -rf "$T"
 
