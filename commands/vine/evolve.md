@@ -305,8 +305,11 @@ say so and move on — not every feature is a learning experience.
 
 ### Update Engineer Profile
 
-Based on the completed cycle, propose updates to `.vine.local/PROFILE.md`. This is the concrete,
-persistent output of user evolution — the profile grows with each VINE cycle.
+Based on the completed cycle, propose updates to `PROFILE.md` at the resolved shared personal root
+(**Resolving the personal root** in `shared.md`'s Overlay Loading Protocol —
+`<personal-root>/.vine.local/PROFILE.md`, not cwd, so the profile is read and written at the same
+place from every worktree). This is the concrete, persistent output of user evolution — the profile
+grows with each VINE cycle.
 
 **Domain expertise update:**
 
@@ -348,8 +351,9 @@ only when the engineer genuinely wants to record something. If they choose the d
 write bullet points focused on the engineer's contributions and decisions — not what they
 "learned." Present the draft for editing before writing to the file.
 
-For each accepted change, write the update to `.vine.local/PROFILE.md` directly. Create the file
-if needed, using the format documented in `references/STATE.md`.
+For each accepted change, write the update to the resolved-root `PROFILE.md` directly (the
+`<personal-root>/.vine.local/PROFILE.md` resolved above). Create the file if needed, using the
+format documented in `references/STATE.md`.
 
 ### Suggest Claude Memory Updates
 

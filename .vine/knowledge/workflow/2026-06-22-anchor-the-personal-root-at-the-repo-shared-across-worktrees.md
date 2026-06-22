@@ -107,3 +107,20 @@ Two simple globs, still far less brittle than the deny-then-allowlist #108 remov
 **Unchanged.** The shared-personal-root anchoring (`dirname "$(git rev-parse --git-common-dir)"` for
 profile, overlays, local projects, pause) — the core fix this record exists for — stands exactly as
 decided.
+
+## Amendment (issue #132): loading surface adopts the resolution
+
+When this record shipped, the contract (`references/STATE.md`) and this ADR specified git-anchored
+resolution of the shared personal root, but the two high-frequency read protocols in
+`.vine/context/shared.md` — the Engineer Profile Protocol and the Overlay Loading Protocol's
+Personal-layer rule — still read cwd-relative `.vine.local/…`. From a linked worktree, where
+`.vine.local/` is gitignored and not checked out, those reads silently returned nothing — the
+"short-term stopgap" (the symlink, Consequences above) was the only thing bridging the gap.
+
+Issue #132 closes it. `shared.md` now defines the resolution once as a named helper — **Resolving
+the personal root** — in the Overlay Loading Protocol, and the Personal-layer rule and Engineer
+Profile Protocol reference it before any `PROFILE.md` / `context/<name>.md` read. The
+profile-writing command paths (`verify`, `evolve`) and `status`'s inline read were routed through
+the same resolution; `init` carries the matching scaffold. A `trellis` Check 12 guards against a
+cwd-relative read regressing. The symlink stopgap is now obsolete. `ACTIVE` is untouched, per the
+Slice 5 amendment above.

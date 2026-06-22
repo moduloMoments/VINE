@@ -9,15 +9,28 @@ reads `.vine/context/shared.md` and `.vine/context/<phase>.md` (and is the step 
 file in the first place, so it cannot be fully externalized); everything below is what "follow
 the Overlay Loading Protocol" pulls in.
 
+**Resolving the personal root.** The personal tree `.vine.local/` is gitignored, so it is *not*
+checked out into a linked git worktree — reading it cwd-relative would make a worktree (or
+delegated) session silently see no profile and no personal overlays. So before any read or write
+under `.vine.local/` (PROFILE.md, `context/<name>.md`, local projects, pause state), resolve the
+shared personal root at the repository's **primary** worktree — `dirname "$(git rev-parse
+--git-common-dir)"` — and operate on `<personal-root>/.vine.local/…` there. That path is identical
+from every linked worktree, so one profile / overlay set is seen everywhere; in a single checkout it
+resolves to the same directory as cwd, so behavior is unchanged. A non-git directory falls back to
+the cwd-relative `./.vine.local/`. (The `.vine/ACTIVE` sentinel is the lone exception — it stays
+cwd-relative by design; only the shared personal root needs git resolution.) Full rule and
+rationale: *The two roots → Resolving the roots* in `references/STATE.md`.
+
 - **Apply as overlay instructions.** Treat the contents of both files as additional instructions
   layered on top of the command. Overlay instructions take precedence over command defaults when
   they conflict — they are the team's customization of VINE for this codebase. (Precedence
   *between* the overlay layers — shared vs. personal vs. policy — is governed by **Overlay
   Precedence** below; that section is the source of truth and this line does not override it.)
 - **Personal layer.** After reading each repo overlay from `.vine/context/` (`shared.md` and the
-  phase overlay), read its personal counterpart at the mirrored path under the personal root —
-  `.vine.local/context/<name>.md` (e.g. `.vine.local/context/shared.md`,
-  `.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
+  phase overlay), read its personal counterpart at the mirrored path under the resolved personal
+  root (**Resolving the personal root** above) —
+  `<personal-root>/.vine.local/context/<name>.md` (e.g. `…/.vine.local/context/shared.md`,
+  `…/.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
   Precedence. The personal overlay is distinguished by its root, not a filename suffix (the `.local`
   suffix is dropped). Absent any personal file, nothing changes.
 - **Legacy fallback (supported through 0.4.x).** If `.vine/context/` doesn't exist but legacy
@@ -49,7 +62,8 @@ except an immutable enterprise-policy ceiling:
 
 **Personal layer (`.vine.local/context/`).** Each command's *Load Context Overlays* step, after
 reading a repo overlay (`shared.md`, a phase overlay), reads its personal counterpart at the
-mirrored path `.vine.local/context/<name>.md` if present and composes it by the rule above — it
+mirrored path `<personal-root>/.vine.local/context/<name>.md` (resolved per **Resolving the personal
+root** in the Overlay Loading Protocol) if present and composes it by the rule above — it
 overrides preference content and is ignored where it would override a policy-class section. Personal
 overlays live under the gitignored personal root (`.vine.local/`); absent them, nothing changes.
 
@@ -236,8 +250,9 @@ Internal, not shown to the engineer. Apply this stance in all VINE phases:
 
 ## Engineer Profile Protocol
 
-After loading overlays, check for `.vine.local/PROFILE.md`. If it exists, read the Domain Expertise
-table. Match the feature's domain against the profile's entries.
+After loading overlays, resolve the shared personal root (**Resolving the personal root** in the
+Overlay Loading Protocol) and check for `<personal-root>/.vine.local/PROFILE.md`. If it exists, read
+the Domain Expertise table. Match the feature's domain against the profile's entries.
 
 - **If the domain is in the profile**: Note their level for this session. Use it to calibrate
   default engagement depth (confident/familiar = concise; learning/new = explain the why).
