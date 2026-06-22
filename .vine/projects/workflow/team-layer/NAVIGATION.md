@@ -255,7 +255,7 @@ make sense?"), which drove the pivot to Option B and the ADR amendment — the c
 
 ### Slice 6: Per-path commit test — Complete
 **Started**: 2026-06-22 13:05
-**Commit**: pending
+**Commit**: d80a95e
 **Gear**: walk-me-through (ran in approve-edits continuity from Slice 5; no separate gear prompt —
 the slice is trivially mechanical, a process note not a redirection)
 **Approach taken**: Replaced the root `git check-ignore -q .vine/projects` test with the per-path test

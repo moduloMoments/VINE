@@ -155,7 +155,7 @@ command "Load Engineer Profile" references.
 (Reference Legibility).
 **Complexity signal**: Low.
 
-## Phase 2: Discovery & Session Plumbing (Slices 4-6) ⬜
+## Phase 2: Discovery & Session Plumbing (Slices 4-6) ✅
 Summary: Make every command find projects in both roots, relocate the session-state files
 (PAUSE/ACTIVE) and update the hook scripts that read them, and switch the commit test to per-path.
 Session boundary: After this phase, all commands operate correctly across both roots while the
