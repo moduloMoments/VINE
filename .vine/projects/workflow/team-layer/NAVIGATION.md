@@ -289,6 +289,54 @@ approve-edits continuity from Slice 5 (each edit reviewed as it landed).
     Slice 6 was a pure reference-the-rule pass — the upfront referential-homes investment paid off as a
     mechanical, low-risk close to Phase 2.
 
+### Slice 7: verify shared-vs-local prompt — Complete
+**Started**: 2026-06-22 14:16
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Added a **Shared or local?** decision to verify's project-creation flow
+(`commands/vine/verify.md`, inside "### 6. Write CONTEXT.md", right after the domain/slug
+confirmation). An `AskUserQuestion` defaults to **shared** ("Shared — commit with the repo
+(Recommended)" → `.vine/projects/<domain>/<feature-slug>/`) and offers "Keep this local" →
+`.vine.local/projects/<domain>/<feature-slug>/`. Used a bold lead-in (`**Shared or local?**`)
+rather than a `###` heading so it stays within step 6's prose instead of reading as a new
+top-level step. Updated the "Save this to…" intro (was hardcoded `.vine/projects/`) to the
+root-neutral `<root>/projects/<domain>/<feature-slug>/` pattern, noting `<root>` is `.vine/`
+(default) or `.vine.local/`. The prompt text references *The two roots* for personal-root
+resolution and points at the per-path commit test (Sign-Off Gate) so the routing reads as
+automatic downstream.
+**Deviations from spec**: One bounded addition (engineer-approved via AskUserQuestion, recorded
+in SPEC Slice 7 addendum): replaced verify.md's stale first-cycle note (old lines 262-265,
+"suggest adding `.vine/` to `.gitignore` … `git add -f .vine/`") — the pre-flip model, directly
+contradicted by the shared/local choice in the same flow and in no other slice's file list.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref
+anchor pairs; `.vine/.trellis-ok` stamped). Grep confirms no stale gitignore note remains. The two
+pre-existing allowlisted `.vine/hooks/` legacy warnings (init.md:104-105) are unrelated. AC8
+(verify half) confirmed by inspection: default routes to `.vine/projects/`, opt-out to
+`.vine.local/projects/`, single AskUserQuestion per Interaction Constraints.
+**Decisions made during implementation**:
+  - Use a bold lead-in (`**Shared or local?**`) instead of a `###` heading, so the prompt sits in
+    step 6's prose and doesn't renumber/disrupt the numbered-step flow trellis cross-references
+    (decided by: claude; confidence: high)
+  - Fix the stale `.vine/`-to-gitignore note here rather than defer to Slice 10 — it's coupled to
+    the visibility model and in no other slice's file list, so deferring risks dropping it (decided
+    by: engineer — chose "Fix it here" via AskUserQuestion; confidence: high)
+  - Leave the PROJECT-MAP `## Feature:` and completion-block path placeholders showing the shared
+    `.vine/projects/` default rather than churning every placeholder to `<root>/` — the agent fills
+    the real path it just chose at runtime, so a local project gets the correct path without the
+    extra token noise (decided by: claude; confidence: medium)
+**Acceptance criteria**:
+  - [x] AC8 (verify half) — verify defaults new projects to shared and offers a "keep local" option
+    that creates the project under `.vine.local/projects/`
+**Engineer feedback incorporated**: Gear (free climb) and the gitignore-note disposition were both
+presented before coding via AskUserQuestion; engineer chose free climb + fix-here. No mid-slice
+redirection.
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: A "prompt" slice in the project-creation flow can't cleanly ignore the
+    adjacent gitignore guidance — the old first-cycle note was the pre-flip model and would have
+    shipped as a self-contradiction next to the new shared/local choice. Same pattern as the
+    Slice 4/5 in-flow corrections: getting the visible change right pulls in the coupled stale prose.
+
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`
 (suffix dropped) for repos tracking `main`. This is a courtesy migration, not a shipped-version compat

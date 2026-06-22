@@ -245,6 +245,13 @@ Constraints.
 **Acceptance criteria**: AC8 (verify half).
 **Complexity signal**: Low.
 
+> **Addendum (implemented 2026-06-22):** beyond the literal "prompt" scope, Slice 7 also replaced
+> verify.md's stale first-cycle note (old lines 262-265, *"suggest adding `.vine/` to `.gitignore`
+> … `git add -f .vine/`"*) — the pre-flip model, directly contradicted by the shared/local choice
+> added in the same creation flow. It's in no other slice's file list, so leaving it would ship a
+> self-contradiction. Replaced with the **Shared or local?** model (tracked `.vine/` default,
+> gitignored `.vine.local/` opt-out). Engineer-approved as a bounded in-flow cleanup.
+
 ### Slice 8: evolve local→shared promotion
 **Goal**: At wrap-up, evolve detects a local project and offers to promote it to shared (move the
 directory tree from `.vine.local/projects/` to `.vine/projects/`), then commits as usual.
