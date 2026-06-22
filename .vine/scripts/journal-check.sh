@@ -52,7 +52,14 @@ last=$(git -C "$root" log -1 --format=%ct 2>/dev/null)
 # -ge, not -gt: mtimes have second granularity, and a journal touched in the
 # same second as HEAD's commit was plausibly updated alongside it — ties fail
 # open like every other ambiguous path here.
+#
+# This is the only fire-and-pass exit: the guard reached a real commit in an
+# active session, found the journal, and confirmed it's current. Emit one
+# stderr line so a reviewer can tell "fired and passed" apart from "never
+# fired" (both exit 0). Low-noise by construction — it prints once per allowed
+# commit, not on the fail-open early exits above.
 if [ "$mtime" -ge "$last" ] 2>/dev/null; then
+  echo "VINE journal guard: $feature/NAVIGATION.md is current — commit allowed." >&2
   exit 0
 fi
 
