@@ -389,7 +389,7 @@ prose (the three coupled parts) before editing.
 
 ### Slice 9: The `.gitignore` flip + init scaffold + Upgrade Mode + repo migration — Complete
 **Started**: 2026-06-22 15:05
-**Commit**: pending
+**Commit**: 9c465dc
 **Gear**: walk-me-through
 **Approach taken**: Four parts. (1) **init Step 6 (shipped template)** flipped from the
 ignore-by-default model (`.vine/*` + `!.vine/README.md`) to track-by-default: the scaffolded
@@ -443,6 +443,65 @@ briefly show `.vine.local/PROFILE.md` untracked until PR 3 merges — cosmetic, 
     nothing personal — the flip's real work is the relocation that precedes it, not the rule swap. In a
     worktree the relocation must target the git-common-dir-anchored primary, not cwd, or the personal
     file is either invisible (pre-move) or wrongly tracked (post-flip).
+
+### Slice 10: Documentation sweep — Complete
+**Started**: 2026-06-22 15:35
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Swept five doc surfaces to the now-real `.vine.local/` track-by-default model.
+(1) **CLAUDE.md** — dropped "PAUSE.md gitignored" from the projects bullet (PAUSE now under
+`.vine.local/`), replaced the `.vine/PROFILE.md` bullet with a `.vine.local/` personal-root bullet,
+and moved the two prose path refs (`Load Engineer Profile` reader, the profile-tracking line) +
+the pause-location line to `.vine.local/`. (2) **shared.md** line 81 — the "E2-shaped … PAUSE.md
+and PROFILE.md excluded" note → "tracks `.vine/` by default; personal/ephemeral state in
+`.vine.local/`". (3) **init.md Step 4 `.vine/README.md` scaffold** — reconciled the split-brain
+flagged in the Slice 8 handoff: dropped the `shared.local.md`/`PROFILE.md` table rows, narrowed the
+ephemeral row to `ACTIVE`, added a personal-root paragraph, and updated the overlay-list item 3 +
+the precedence prose from `shared.local.md` to `.vine.local/context/<name>.md`. (4) **README
+"Piloting"** — reframed from "gitignore all of `.vine/`, commit later" (backwards under
+track-by-default) to a solo→team graduation path: keep-features-local via verify, or whole-`.vine/`
+global-gitignore for full-local piloting, then graduate by committing `.vine/context/` + policy
+markers (points at shared.md's team recommendation). Also fixed the README profile-layer path
+`.vine/PROFILE.md` → `.vine.local/PROFILE.md`. (5) **STATE.md** — fixed the stale "README is the one
+tracked file under `.vine/` (init adds `!.vine/README.md`)" claim (`STATE.md:408`) to track-by-default;
+the contract surfaces (Filtering Convention, Committing Artifacts, ACTIVE guarantee, two roots) were
+already correct from Slices 1/4/5. **Session hygiene**: merged `origin/main` into the branch first
+(engineer chose "continue + get updates from main") — brought in #124 (vine-reviewer diff range) and
+#125 (permission-mode copy alignment); clean auto-merge, no conflicts; the gitignore flip survived.
+**Deviations from spec**: None. AC11's STATE.md surfaces were mostly closed in earlier slices; this
+slice closed the one straggler (the README-orientation-doc description) plus the four other surfaces.
+The State Artifact Addition Checklist applies only loosely — `.vine.local/` is a directory/gitignore
+convention, not a CONTEXT→…→EVOLUTION state artifact — so the pass was verifying the checklist-covered
+surfaces (STATE.md, CLAUDE.md, README, trellis) all reflect it, which they now do.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 cross-ref anchor
+pairs). Final cross-surface grep confirms no stale `shared.local.md`, `.vine/PROFILE.md` (outside the
+migration prose that names it as a move *source*), `.vine/...PAUSE`, or `E2-shaped`/allowlist remnants.
+Two pre-existing allowlisted `.vine/hooks/` legacy warnings (init.md:105-106) are unrelated.
+**Decisions made during implementation**:
+  - Move personal files OUT of the init `.vine/README.md` scaffold table (rather than relabel the
+    rows) — the table is titled "What lives under `.vine/`" and personal state now lives under
+    `.vine.local/`, so a pointer paragraph is more honest than rows for files that aren't there
+    (decided by: claude; confidence: high)
+  - Keep README "Piloting" offering the whole-`.vine/`-global-gitignore escape hatch alongside the
+    per-feature keep-local option — full-local piloting is still a real need under track-by-default
+    (decided by: claude; confidence: high)
+  - Merge (not rebase) origin/main, to preserve the Slice 7/8/9 commit hashes the journal records
+    (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC11 — README "Piloting", CLAUDE.md tracked/gitignored bullets, init's `.vine/README.md`
+    scaffold, and `references/STATE.md` reflect the `.vine.local/` contract + team recommendation
+  - [x] AC12 — `/trellis` passes; no command file references a personal path that has moved
+    (verified by grep across commands/, references/, README.md, CLAUDE.md, .vine/context/)
+**Engineer feedback incorporated**: Chose free-climb for the docs sweep (confident workflow profile);
+chose "continue this session + get updates from main", which drove the pre-sweep merge of origin/main.
+**Learnings**:
+  - Engineer → Claude: Sync from main before the final slice of a multi-PR feature — parallel PRs
+    (#124, #125) had landed, and folding them in now means PR 3 builds on current main rather than
+    surprising the reviewer with a stale base.
+  - Claude → Engineer: A docs sweep after a model change is really a grep-for-the-old-model pass —
+    the stragglers (STATE.md's README description, the README profile path) lived outside the SPEC's
+    named surfaces and only a cross-surface grep caught them. Naming the surfaces in the SPEC gets you
+    80%; the grep gets the rest.
 
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`

@@ -299,14 +299,16 @@ feature stands.
 |------|------------|
 | `context/shared.md` | Repo-wide overlay, loaded by every phase |
 | `context/<phase>.md` | Per-phase overlays — `verify.md`, `inquire.md`, `navigate.md`, `evolve.md`, `pair.md` |
-| `context/shared.local.md` | Your personal overlay layer (optional, gitignored) |
 | `projects/<domain>/<feature-slug>/` | Per-feature artifacts: CONTEXT → SPEC → NAVIGATION → EVOLUTION, plus PROJECT-MAP |
-| `PROFILE.md` | Your per-domain expertise, used to tune explanation depth (gitignored) |
 | `scripts/` | Native hook scripts (e.g. `journal-check.sh`) |
-| `ACTIVE`, `projects/**/PAUSE.md` | Ephemeral session state (gitignored) |
+| `ACTIVE` | Ephemeral session sentinel (gitignored, per-worktree) |
 
 `references/STATE.md` in the repo root is the **authoritative** contract for every artifact's
 format and lifecycle. Treat this table as a map; consult STATE.md for the details.
+
+Personal and ephemeral state that shouldn't be committed lives in the sibling **`.vine.local/`**
+root (gitignored, mirrors `.vine/`): your `PROFILE.md`, personal overlays under `context/`, pause
+state, and any local-only feature projects. `.vine/` is tracked by default; `.vine.local/` is not.
 
 ## Context overlays
 
@@ -316,18 +318,19 @@ Each phase composes its context from up to three layers:
    collaboration stance, the validation contract).
 2. **`<phase>.md`** — guidance only one phase needs (which agents `navigate` invokes, what
    `verify` should always explore). These exist only where there's something to add.
-3. **`shared.local.md`** — your personal layer. Gitignored; absent it, nothing changes.
+3. **`.vine.local/context/<name>.md`** — your personal layer, in the gitignored personal root
+   (any overlay can have a personal counterpart at the mirrored path). Absent it, nothing changes.
 
 ### Overlay precedence
 
 The layers resolve as **flat personal-wins with policy carve-outs** — like Claude's own
 settings, where local overrides project except for an immutable policy ceiling:
 
-- **Preference content** (every unmarked section) is personal-overridable: where
-  `shared.local.md` and `shared.md` conflict, your personal layer wins.
+- **Preference content** (every unmarked section) is personal-overridable: where your personal
+  overlay (`.vine.local/context/shared.md`) and `shared.md` conflict, your personal layer wins.
 - **Policy content** is immutable from the personal layer. A section marked
   `<!-- class: policy -->` directly under its heading (e.g. **Team Context**, **CI/CD**) always
-  wins; `shared.local.md` can't weaken or replace it.
+  wins; your personal overlay can't weaken or replace it.
 
 Only policy-class sections carry the marker — unmarked means preference.
 

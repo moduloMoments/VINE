@@ -157,17 +157,17 @@ cp -r commands/vine .claude/commands/vine
 
 ### Piloting in an existing project (e.g., at work)
 
-VINE creates a `.vine/` directory for feature artifacts and context overlays. If you're trying VINE in a repo you don't want to modify tracked files in, add `.vine/` to your global gitignore so it stays local:
+VINE creates a `.vine/` directory for context overlays and feature artifacts, and tracks it by default — the artifacts are meant to travel with the repo (work-in-public). Personal and ephemeral state stays out of git in the sibling `.vine.local/` root (your profile, personal overlays, pause state). Two ways to pilot before committing to the shared tree:
+
+- **Keep individual features local.** At project creation, `vine:verify` offers a "keep local" option that routes the feature into the gitignored `.vine.local/projects/` instead of the tracked tree.
+- **Keep everything local.** To try VINE in a repo without adding any tracked files, add `.vine/` to your global gitignore:
 
 ```bash
-# Create a global gitignore if you don't have one
 git config --global core.excludesFile ~/.gitignore_global
-
-# Add .vine/ to it
 echo '.vine/' >> ~/.gitignore_global
 ```
 
-This keeps your `.vine/` artifacts out of version control across all repos. When your team is ready to adopt VINE together, you can remove it from the global gitignore and commit `.vine/context/` to the repo instead.
+**Graduating to a team.** When your team adopts VINE together, commit the overlays under `.vine/context/` you want shared and mark team-enforced sections `<!-- class: policy -->` so a personal overlay can't weaken them — see the team-overlay recommendation in `.vine/context/shared.md`. Packaged cross-repo distribution of overlays is a future concern.
 
 ### Optional: GitHub CLI
 
@@ -409,7 +409,7 @@ With AI assistance, engineers at every level are moving into unfamiliar domains 
 
 VINE tracks your growth through a layered profile model:
 
-**VINE layer** (`.vine/PROFILE.md`) — Tracks which domains of this codebase you're comfortable with, based on actual VINE cycles. Four levels: **confident**, **familiar**, **learning**, **new**. Commands use this to calibrate the partnership — your expertise level informs the default engagement style and how much Claude narrates, but you always choose per-slice how closely to work together.
+**VINE layer** (`.vine.local/PROFILE.md`) — Tracks which domains of this codebase you're comfortable with, based on actual VINE cycles. Four levels: **confident**, **familiar**, **learning**, **new**. Commands use this to calibrate the partnership — your expertise level informs the default engagement style and how much Claude narrates, but you always choose per-slice how closely to work together.
 
 **Claude layer** (memory + CLAUDE.md) — General preferences, interaction style, learning patterns. Suggested by `vine:evolve` after each cycle.
 

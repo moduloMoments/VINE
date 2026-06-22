@@ -15,16 +15,16 @@ VINE is a pure-markdown AI-assisted development framework. There is no build ste
 - `ROADMAP.md` — Canonical cycle structure; the GitHub milestone is issue-level truth
 - `.github/` — PR template, issue templates (bug, friction, idea)
 - `.vine/context/` — Contributor context overlays (tracked)
-- `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (tracked; PAUSE.md gitignored)
+- `.vine/projects/<domain>/<feature-slug>/` — Per-feature VINE artifacts (tracked)
 - `.vine/knowledge/<domain>/` — Committed durable-decision ADR records (tracked); independent of the project lifecycle, never moved by archival
-- `.vine/PROFILE.md` — Engineer profile (gitignored)
+- `.vine.local/` — Gitignored personal root mirroring `.vine/`: engineer profile (`PROFILE.md`), personal overlays (`context/`), pause state, and local-only feature projects. The `.vine/ACTIVE` session sentinel stays gitignored in place.
 
 ## Command Authoring Conventions
 
 - YAML frontmatter on every command: `name`, `description`, `argument-hint`, `allowed-tools`
 - Valid tool names for `allowed-tools`: Read, Glob, Grep, Write, Edit, Bash, Agent, WebFetch, AskUserQuestion, TaskCreate, TaskUpdate, TaskList (the native task tools are used "when available" by navigate/resume for the live progress view; trellis validates the set by consensus — the union across all commands)
 - Every command (except help) starts with a "Load Context Overlays" section (reads `.vine/context/shared.md` + `.vine/context/<phase>.md`, with a legacy `.vine/hooks/` fallback through 0.4.x)
-- Every command (except init and help) follows overlays with a "Load Engineer Profile" section (reads `.vine/PROFILE.md`). Init creates overlays/profile rather than loading them. Help is a pure reference command that doesn't need project context.
+- Every command (except init and help) follows overlays with a "Load Engineer Profile" section (reads `.vine.local/PROFILE.md`). Init creates overlays/profile rather than loading them. Help is a pure reference command that doesn't need project context.
 - Load Context Overlays must appear before Load Engineer Profile — this ordering is enforced by `/trellis`
 - Commands are written in second-person instructional markdown ("Scan the project for...", "Present a summary...")
 - Sections use `##` headers for major steps, `###` for substeps; anti-patterns and constraints are called out explicitly
@@ -45,11 +45,11 @@ All live in `.vine/projects/<domain>/<feature-slug>/`. Formats are defined in `r
 
 `vine:verify` also creates `PROJECT-MAP.md` as a progress tracker. For multi-PR features, `vine:inquire` adds a Milestones table mapping phase groups to PRs.
 
-`vine:pause` writes an ephemeral `PAUSE.md` to the feature directory. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is consumed-once: whatever picks the work back up deletes it (resume after displaying the notes, navigate, inquire, or evolve at session start), with evolve's `.resolved` write as the backstop. `vine:navigate` also maintains `.vine/ACTIVE`, a gitignored active-session sentinel that installed hooks use to scope their checks — full lifecycle in `references/STATE.md`.
+`vine:pause` writes an ephemeral `PAUSE.md` to the feature's mirrored path under `.vine.local/projects/`. `vine:resume` reads it (plus existing artifacts) to reconstruct session state. PAUSE.md is consumed-once: whatever picks the work back up deletes it (resume after displaying the notes, navigate, inquire, or evolve at session start), with evolve's `.resolved` write as the backstop. `vine:navigate` also maintains `.vine/ACTIVE`, a gitignored active-session sentinel that installed hooks use to scope their checks — full lifecycle in `references/STATE.md`.
 
 ## Engineer Profile
 
-`.vine/PROFILE.md` tracks per-domain expertise (confident, familiar, learning, new). Commands use a one-sentence depth hint to adjust explanation depth:
+`.vine.local/PROFILE.md` tracks per-domain expertise (confident, familiar, learning, new). Commands use a one-sentence depth hint to adjust explanation depth:
 
 > "The engineer's profile indicates they are [level] with the [domain] domain. Adjust your explanation depth accordingly — be concise where they're confident, explain the why behind decisions where they're learning or new."
 
