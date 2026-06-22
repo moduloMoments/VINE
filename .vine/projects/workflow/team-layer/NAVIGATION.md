@@ -191,7 +191,7 @@ presented before coding; engineer chose free climb, trusting the approach. No mi
 
 ### Slice 5: Relocate PAUSE + ACTIVE and update hook scripts — Complete
 **Started**: 2026-06-22 12:40
-**Commit**: pending
+**Commit**: 0833865
 **Gear**: walk-me-through
 **Approach taken**: Two halves. (1) **PAUSE.md relocated** to the feature's mirrored personal path
 `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (shared personal root, resolved per *The two
@@ -252,6 +252,42 @@ make sense?"), which drove the pivot to Option B and the ADR amendment — the c
   - Claude → Engineer: When a tracked directory is checked out per worktree, a gitignored file inside it
     is *already* per-worktree — no git-dir gymnastics needed. The two-scope split (shared vs per-tree) the
     ADR identified is real, but only the *shared* scope actually needs git resolution.
+
+### Slice 6: Per-path commit test — Complete
+**Started**: 2026-06-22 13:05
+**Commit**: pending
+**Gear**: walk-me-through (ran in approve-edits continuity from Slice 5; no separate gear prompt —
+the slice is trivially mechanical, a process note not a redirection)
+**Approach taken**: Replaced the root `git check-ignore -q .vine/projects` test with the per-path test
+(run `git check-ignore` against the **specific feature directory**) at every commit/move decision:
+`verify.md` (CONTEXT+MAP first commit), `inquire.md` (SPEC commit), `navigate.md` (slice commit 4c +
+phase-group boundary), `evolve.md` (archive `git mv`-vs-`mv` + EVOLUTION/.resolved commit). Each site
+now references STATE.md's *Committing Artifacts* per-path rule (which Slice 1 already wrote) rather than
+restating the mechanics, and frames the gitignored case as "a local project under `.vine.local/projects/`."
+**Deviations from spec**: None. Scoped to the four commit-test sites. The evolve archive *destination*
+(`.vine/projects/.archive/` hardcoded, line 544) and the `.resolved` marker path are left root-unaware —
+that's Slice 8 (evolve local→shared) territory, consistent with the Slice 5 scope note.
+**Validation**: pass — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 commands, 8 anchor pairs;
+`.vine/.trellis-ok` stamped pass). Prose-only change (no scripts/tests touched). Confirmed by grep that
+no `check-ignore -q .vine/projects` root test remains in any command. Two pre-existing allowlisted
+`.vine/hooks/` warnings, unrelated.
+**Decisions made during implementation**:
+  - Reference STATE.md's *Committing Artifacts* per-path rule at each site rather than restate the
+    `git check-ignore` mechanics (referential-homes — the rule has one authoritative home from Slice 1)
+    (decided by: claude; confidence: high)
+  - Leave evolve's archive destination + `.resolved` path root-unaware for Slice 8; Slice 6 is the
+    commit *test*, not evolve's local-project handling (decided by: claude; confidence: high)
+**Acceptance criteria**:
+  - [x] AC7 — the commit-or-skip test runs against the specific feature directory in
+    verify/inquire/navigate/evolve, so shared projects (`.vine/projects/`) commit and local ones
+    (`.vine.local/projects/`) skip, with no `.vine/projects/` root special-casing
+**Engineer feedback incorporated**: Engineer chose "continue in this session" to finish Phase 2;
+approve-edits continuity from Slice 5 (each edit reviewed as it landed).
+**Learnings**:
+  - Engineer → Claude: (none new this slice)
+  - Claude → Engineer: Because Slice 1 homed the per-path rule in STATE.md's *Committing Artifacts*,
+    Slice 6 was a pure reference-the-rule pass — the upfront referential-homes investment paid off as a
+    mechanical, low-risk close to Phase 2.
 
 ### Handoff note for Slice 9 (init Upgrade Mode)
 Upgrade Mode should offer to relocate a legacy `.vine/context/*.local.md` → `.vine.local/context/*.md`

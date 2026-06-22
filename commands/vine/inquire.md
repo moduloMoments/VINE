@@ -313,10 +313,11 @@ Once approved:
 
 1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 
-2. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
-   SPEC.md and the PROJECT-MAP.md update (see "Committing Artifacts" in `references/STATE.md`).
-   If the path is gitignored, skip this step silently — personal-scope artifacts never enter
-   a commit.
+2. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
+   directory** — the per-path test in "Committing Artifacts", `references/STATE.md` — and it exits
+   non-zero), commit SPEC.md and the PROJECT-MAP.md update. If the feature directory is gitignored
+   (a local project under `.vine.local/projects/`), skip this step silently — personal-scope
+   artifacts never enter a commit.
 
 3. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — if a retro item should change what

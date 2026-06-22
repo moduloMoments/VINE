@@ -328,10 +328,11 @@ from the absence of objections; ask for it. This is the gate that closes verify,
 
 Once approved:
 
-1. If the repo tracks artifacts (`git check-ignore -q .vine/projects` exits non-zero), commit
-   CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history (see "Committing
-   Artifacts" in `references/STATE.md`). If the path is gitignored, skip this step silently —
-   personal-scope artifacts never enter a commit.
+1. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
+   directory** — the per-path test in "Committing Artifacts", `references/STATE.md` — and it exits
+   non-zero), commit CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history. If
+   the feature directory is gitignored (a local project under `.vine.local/projects/`), skip this
+   step silently — personal-scope artifacts never enter a commit.
 2. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — anything inquire should act on
    belongs in the relevant CONTEXT.md section (open questions, tribal knowledge,

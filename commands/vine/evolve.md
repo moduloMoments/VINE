@@ -537,8 +537,9 @@ Options (mutually exclusive):
 1. "Archive now (Recommended)" — "Move the project under `.vine/projects/.archive/`"
 2. "Keep in place" — "Leave it resolved-but-unarchived; archive later by hand"
 
-If the engineer archives, move the project directory — `git mv` when the repo tracks artifacts so
-history follows, plain `mv` when untracked:
+If the engineer archives, move the project directory — `git mv` when this feature directory is
+tracked (the per-path `git check-ignore` test — see *Committing Artifacts* in `references/STATE.md`)
+so history follows, plain `mv` when it's gitignored (a local project):
 
 ```
 mkdir -p .vine/projects/.archive/<domain>
@@ -560,8 +561,9 @@ under *Committing Artifacts*):
 - **CLAUDE.md** and **`.vine/context/`** overlay updates (if accepted) — ordinary tracked repo
   files; commit them whenever they change, regardless of the artifact-tracking choice.
 - **EVOLUTION.md** and the **`.resolved`** marker (if resolved) — VINE artifacts; stage them
-  **only when the repo tracks `.vine/` artifacts**. When artifacts are untracked (gitignored, or
-  a personal scope) they update on disk but stay out of the commit.
+  **only when this feature directory is tracked** (the per-path test). When the feature directory is
+  gitignored (a local project under `.vine.local/projects/`) they update on disk but stay out of the
+  commit.
 - **`.vine.local/PROFILE.md`** updates (if accepted) — commonly gitignored (it's personal); stage only
   if the repo tracks it.
 

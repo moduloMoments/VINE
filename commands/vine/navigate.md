@@ -289,11 +289,12 @@ and the journal-schema contract behind them — is in `references/STATE.md`.
 
 **c. Commit the slice**
 
-Stage the changed files and commit with this format. **When the repo tracks `.vine/`
-artifacts**, bundle this slice's artifact updates into the same commit so the tracked spec and
-journal never lag the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation
-annotations you made during the slice (step 6). **When artifacts are untracked** — many repos
-gitignore them, or keep them in a personal scope, which is fine — commit code only; the
+Stage the changed files and commit with this format. **When this feature directory is tracked**
+(the per-path `git check-ignore` test — see *Committing Artifacts* in `references/STATE.md`),
+bundle this slice's artifact updates into the same commit so the tracked spec and journal never lag
+the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation annotations you made
+during the slice (step 6). **When the feature directory is gitignored** — a local project under
+`.vine.local/projects/`, which is fine — commit code only; the
 journal-before-commit guarantee compares file modification time, not commit contents, so it holds
 either way. Never force-add a gitignored artifact. (The full per-commit-point breakdown —
 slice / phase-group boundary / evolve / PR — lives in `references/STATE.md` under *Committing
@@ -463,10 +464,10 @@ phase group boundary before showing the completion block:
 3. Update the SPEC.md phase group header — replace the `⬜` or `🚧` marker with `✅`.
 4. If there's a next phase, update its Milestones row to `🚧 Active`.
 
-   **When the repo tracks artifacts**, commit these tracker updates at the boundary — the
-   PROJECT-MAP.md row changes and the SPEC.md phase-group ✅ marker are the phase group's
-   closing artifact state, so the PR you open next carries them alongside the code. (Untracked
-   repos: they update on disk only, never in a commit.)
+   **When this feature directory is tracked** (the per-path test), commit these tracker updates at
+   the boundary — the PROJECT-MAP.md row changes and the SPEC.md phase-group ✅ marker are the phase
+   group's closing artifact state, so the PR you open next carries them alongside the code. (A
+   gitignored local project: they update on disk only, never in a commit.)
 5. Suggest opening a PR for the completed phase group:
 
    > "Phase [N: name] is complete. This is a good point to open a PR for this work.
