@@ -264,3 +264,53 @@ the redundant `trellis.yml` once I surfaced that `ci.yml` already covers it.
     the layout — moving `journal-check.sh` (Slice 3) and rewiring the trellis scripts (Slice 4) both
     silently broke it because no PR had exercised CI yet. A layout move isn't done until its tests move
     with it; checking CI status at each restructure would have caught this two slices earlier.
+
+### Slice 6: init legacy-install migration (+ obsolete hook-scaffold revision) — Complete
+**Started**: 2026-06-23 07:40
+**Commit**: <pending>
+**Gear**: free-climb
+**Approach taken**: Edited the live `plugins/vine/skills/init/SKILL.md`. Two coupled changes: (1)
+**Replaced the obsolete "Native Hook Scaffold" section** — the journal-before-commit hook now ships
+*with the plugin* (`hooks/hooks.json`, default-on, Slice 3), so init's offer to scaffold it into a
+repo's `.claude/settings.json` (and its `npx create-vine` / `.vine/scripts/journal-check.sh`
+references) is dead. The section is now "### Legacy npx-Install Cleanup" plus a blockquote noting the
+hook is plugin-provided (no scaffold step) and that validation/lint stays out of scope. (2) **Added the
+legacy npx-install cleanup** — init detects a legacy `.claude/commands/vine/` (old file-copy install,
+or a symlink to one), offers a one-time removal (`git rm -r` tracked / `rm -rf` untracked; remove the
+link not the target if symlinked), no-ops on decline, and is gated on the directory existing (#58
+offer-migration pattern, shaped to mirror the existing "Legacy Directory Migration" offer). Three
+contradiction-fixes the revision forced: item 7 in "What This Does" (hook-scaffold → legacy cleanup),
+the Output block's `.claude/settings.json hooks` line, and the `.vine/scripts/ | …journal-check.sh`
+structure-table row (removed — journal-check no longer lives in a user's `.vine/scripts/`).
+**Deviations from spec**: None beyond the addendum's own added scope (the hook-scaffold revision),
+which is recorded in SPEC Slice 6. The broader internal-docs sweep (STATE.md's init-hook description,
+the rest of init's structure prose) is left to Slice 8 as specced.
+**Validation**: pass — `trellis-check.sh` 11/11 skills (init row ✅ Front/NoFire/H1/Tools/AskUsr,
+overlays/profile/order `skip` as init is exempt), 8 anchors resolve, #132 guard; green stamp written
+(satisfies the trellis-gate for this skill-touching commit). The only residual `npx create-vine`
+string is intentional historical context in the new section; the two init `.vine/hooks` warnings are
+pre-existing (noted in Slice 4), not introduced here.
+**Decisions made during implementation**:
+  - Replace the hook-scaffold section in place with the legacy-cleanup section (rather than delete it and add the cleanup elsewhere) — keeps the obsolete content and its replacement in one edit, no orphaned references (decided by: claude) [confidence: high]
+  - Remove the `.vine/scripts/` structure-table row — init no longer scaffolds journal-check into a user's `.vine/scripts/`; leaving it would contradict the new plugin-provided note (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC7 (init half) — with a legacy `.claude/commands/vine/` present, init offers cleanup and removes it on accept; no-ops on decline; with no legacy dir the offer is suppressed so init behaves exactly as before
+  - [x] Obsolete hook-scaffold revised — the Native Hook Scaffold offer is gone; the hook is documented as plugin-provided (addendum scope)
+**Engineer feedback incorporated**: Chose free-climb with the trellis-run proof as the review surface.
+**Learnings**:
+  - Engineer → Claude: None new this slice.
+  - Claude → Engineer: Removing a capability from a skill (the hook scaffold) is a multi-site edit even
+    in a single file — the feature list, the section, the Output block, and a structure table all
+    referenced it. Grepping the file for the removed concept before committing is what keeps the skill
+    internally consistent.
+
+### Remaining Work
+- **Incomplete slices**: Phase 3 (Slices 4–6) complete. Phase 4 (Slices 7–9: docs + cycle knowledge) not started.
+- **Blockers encountered**: None.
+- **Handoff context**: Phase-group boundary reached — Phase 3 ships as PR 3. GitHub repo-admin still
+  owed: set `develop` as the default PR base + branch protection (branch exists, tracks origin/develop).
+  Routed-to-Slice-8 items: STATE.md's description of init's hook scaffold (now plugin-provided);
+  init's broader `.vine/` structure prose; how skills cite repo-internal contracts (`references/STATE.md`,
+  `.vine/context/shared.md`) for plugin users now that those files are outside the plugin payload
+  (Slice 3 discovered item). Phase 4 also carries the ADRs (Slice 9), including the (d) plugin-layout /
+  payload-control ADR from the Slice 3 addendum.

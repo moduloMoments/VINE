@@ -271,6 +271,12 @@ have a migration path. Ships as PR 3.
   > Revise/remove that section here, in the same init pass as the legacy-install cleanup. Edit
   > `plugins/vine/skills/init/SKILL.md` (the live product); the legacy `commands/vine/init.md` is deleted
   > in Slice 5.
+  >
+  > **Done (navigate, 2026-06-23, commit `<pending>`):** "Native Hook Scaffold" section replaced with
+  > "Legacy npx-Install Cleanup" (detect `.claude/commands/vine/`, offer one-time removal, no-op on
+  > decline) + a blockquote noting the hook is now plugin-provided. Contradiction-fixes: "What This
+  > Does" item 7, the Output block's settings-hooks line, and the `.vine/scripts/` structure-table row.
+  > trellis-check 11/11. STATE.md's init-hook description + broader structure prose left to Slice 8.
 
 ## Phase 4: Docs + Cycle Knowledge (Slices 7–9) ⬜
 Summary: Make every doc surface describe the skills/plugin product and record the load-bearing

@@ -28,8 +28,8 @@ team patterns, then scaffolding `.vine/context/` with project-specific templates
 5. Sets up `.gitignore` for track-by-default — ignores the personal root `.vine.local/` and the
    session sentinel `.vine/ACTIVE`, leaving the rest of `.vine/` tracked
 6. Introduces the engineer profile (builds organically through vine:verify)
-7. Offers the native hook scaffold — mechanical enforcement of the journal-before-commit
-   guarantee, declinable
+7. Detects a legacy npx install (`.claude/commands/vine/`) and offers a one-time cleanup —
+   declinable; the journal-before-commit hook now ships with the plugin (active automatically)
 8. In upgrade mode, offers single-homing of CLAUDE.md/shared.md duplicates per the
    Knowledge Boundary rule — declinable
 9. Ensures CLAUDE.md carries the availability-gated VINE pointer block (which names the
@@ -315,7 +315,6 @@ feature stands.
 | `context/shared.md` | Repo-wide overlay, loaded by every phase |
 | `context/<phase>.md` | Per-phase overlays — `verify.md`, `inquire.md`, `navigate.md`, `evolve.md`, `pair.md` |
 | `projects/<domain>/<feature-slug>/` | Per-feature artifacts: CONTEXT → SPEC → NAVIGATION → EVOLUTION, plus PROJECT-MAP |
-| `scripts/` | Native hook scripts (e.g. `journal-check.sh`) |
 | `ACTIVE` | Ephemeral session sentinel (gitignored, per-worktree) |
 
 `references/STATE.md` in the repo root is the **authoritative** contract for every artifact's
@@ -598,47 +597,36 @@ Knowledge Boundary rule). **Declining is a no-op** — no file changes, and the 
 the next `/vine:init`. CLAUDE.md is an ordinary tracked repo file, so an accepted edit is
 committed normally with the other init changes.
 
-### Native Hook Scaffold
+### Legacy npx-Install Cleanup
 
-VINE ships one native hook script that mechanically enforces a guarantee the commands
-otherwise only request (full behavior in `references/STATE.md`):
+Before plugin packaging, VINE installed via `npx create-vine`, which file-copied the command
+files into `.claude/commands/vine/`. Plugin users now get every phase as a
+`skills/<name>/SKILL.md` through the plugin, resolving to the same `/vine:<name>` colon form — so
+a leftover `.claude/commands/vine/` is a stale duplicate. It doesn't collide (the two coexist),
+but it's dead weight that can drift from the shipped skills. Init offers to remove it (#58
+offer-migration pattern).
 
-- **journal-before-commit** (`journal-check.sh`, PreToolUse on Bash) — blocks `git commit`
-  while a navigate session is active and the feature's NAVIGATION.md hasn't been updated
-  since the last commit.
+**Only when `.claude/commands/vine/` exists** (a directory of command `*.md` files, or a symlink
+to one — the old npx install, not the plugin), offer the cleanup via `AskUserQuestion`
+(`multiSelect: false`, 2 options):
 
-Validation and lint enforcement are deliberately NOT part of the scaffold — when and how
-to run a project's checks depends on its tooling, and that decision belongs to the repo
-(native hooks are available directly in `.claude/settings.json` for teams that want them).
+- **"Remove the legacy npx install (Recommended)"** — description: "Deletes
+  `.claude/commands/vine/` — the plugin already provides every `/vine:` phase; this is a leftover
+  from the old npx install"
+- **"Keep it"** — description: "Leave `.claude/commands/vine/` in place — nothing changes on disk"
 
-Offer to install it whenever `.claude/settings.json` doesn't already wire it (fresh init
-or upgrade):
+**If the engineer accepts:** remove it — `git rm -r .claude/commands/vine` when it's tracked
+(staged for the engineer to commit with the rest of the init changes), plain `rm -rf
+.claude/commands/vine` when it isn't. If it's a symlink, remove the link, never its target.
 
-1. **Check the script exists** at `.vine/scripts/journal-check.sh`. Project-level
-   `npx create-vine` installs it; if it's missing (global-only install, pre-0.4 install),
-   offer to run `npx create-vine` first — or skip the scaffold offer entirely if the
-   engineer declines that.
+**If the engineer declines:** this is a no-op — nothing on disk changes, and the offer repeats on
+the next `/vine:init`. Don't show this offer when `.claude/commands/vine/` is absent.
 
-2. **Offer the hook** via `AskUserQuestion` (`multiSelect: false`, 2 options):
-   - **"Install journal-before-commit hook (Recommended)"** — description: "Blocks commits
-     during navigate until NAVIGATION.md is updated — makes the journal guarantee real"
-   - **"Not now"** — description: "Keep the journal guarantee advisory — nothing changes
-     on disk"
-
-3. **Merge the accepted hook into `.claude/settings.json`** (tracked — it enforces a
-   team-advertised guarantee; an engineer's personal opt-out is declining this offer or
-   `settings.local.json`). Merge carefully, never clobber:
-   - If the file doesn't exist, create it with just the new hook entry.
-   - If it exists, read it first and add to the existing structure: append to an existing
-     `PreToolUse` matcher group for `Bash` if one exists, otherwise add the group.
-     Leave every unrelated key and existing hook untouched.
-   - The hook entry is `{"type": "command", "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/journal-check.sh\""}`
-     under matcher `Bash`.
-   - Tell the engineer hooks load at session start — the scaffold takes effect next session.
-
-4. **Declining changes nothing on disk** — no settings edit, no script copy, and VINE keeps
-   working exactly as before; the journal guarantee just stays advisory. The offer repeats
-   on the next `/vine:init`.
+> **The journal-before-commit hook is no longer scaffolded here.** It now ships **with the VINE
+> plugin** (`hooks/hooks.json`, PreToolUse on Bash) and is active automatically for every plugin
+> user — no per-repo `.claude/settings.json` step (full behavior in `references/STATE.md`).
+> Validation and lint enforcement remain deliberately out of scope: when and how to run a
+> project's checks depends on its tooling, and that decision belongs to the repo.
 
 ### Archive Legacy Resolved Projects
 
@@ -697,7 +685,7 @@ offer, no mention. Otherwise list them and offer to archive them, mirroring evol
    - .vine/context/pair.md (if applicable)
    - .vine/README.md (orientation doc — tracked; offered, not written, in upgrade mode)
    - .vine/projects/ (project artifacts directory)
-   - .claude/settings.json hooks (if the scaffold offer was accepted)
+   - .claude/commands/vine/ removed (if the legacy npx-install cleanup was accepted)
 
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your context overlays will be loaded automatically.
