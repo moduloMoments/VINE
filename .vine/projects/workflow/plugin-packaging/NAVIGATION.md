@@ -384,7 +384,7 @@ slice — no lint/typecheck/test toolchain; trellis-check is untouched since no 
 
 ### Slice 9: Knowledge ADR(s) — Complete
 **Started**: 2026-06-23 09:22
-**Commit**: pending
+**Commit**: ca91e83
 **Gear**: free-climb
 **Approach taken**: Wrote four new ADRs under `.vine/knowledge/workflow/` in the Nygard format
 (Title-as-declarative-sentence / Status / Context / Decision / Consequences), each sourced
@@ -405,3 +405,13 @@ Then **amended the team-layer ADR** (`2026-06-22-vine-ships-a-team-layer-recomme
 **Learnings**:
   - Engineer → Claude: None new this slice.
   - Claude → Engineer: The knowledge layer has its own cross-reference convention (backtick-wrapped slugs, never `[[ ]]`) and its own immutability discipline (append an Amendment + flag the Status line, never rewrite the body) — both visible only by reading the existing records first. Matching a durable layer's house style is a read-before-write task, exactly like code.
+
+### Phase-group verification (Phase 4) + corrections
+**Commit**: 8e4d6f2 (corrections — shared.md:302 + pr-review.md)
+Delegated a phase-group-scope `vine-verification` pass over the Phase 4 diff (Slices 7–9). Verdict:
+AC9/AC10/AC11 (doc/knowledge halves) **all met**; trellis-check 11/11; ADRs present in Nygard format
+with the team-layer amendment in place. It surfaced **two real stale `agents/…` refs my Slice-8 grep
+missed** (my pattern didn't match the `` (`agents/… `` backtick form):
+  - **shared.md:302** (in Slice-8 scope) — `agents/vine-coder.md` → `plugins/vine/agents/vine-coder.md`. Fixed.
+  - **pr-review.md** (contributor tool, outside the Phase-4 diff / Slice-8 cold-check) — 4× `agents/vine-reviewer.md` → `plugins/vine/agents/vine-reviewer.md`. **Folded into this PR by engineer decision** (same restructure fallout, trivial, this cycle owns removing old-layout fingerprints) rather than spun out.
+Re-swept backtick-tolerant: zero root-relative `agents/vine-*` refs remain; remaining `commands/vine`/`create-vine` strings are all intentional (init's legacy-cleanup section + README migration context). **Learning:** a stale-path grep must be delimiter-tolerant — `(`, backtick, and space all precede a path in prose, so `\bagents/` beats `\(agents/`.
