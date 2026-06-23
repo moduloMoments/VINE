@@ -79,3 +79,41 @@ evidence that disproved the "skills ignore allowed-tools" premise.
     <500-line "ideal." Not a conversion blocker (kept verbatim per recipe decision), but a candidate
     trim — overlaps the existing optimize-scope per-phase context-trim backlog item. Route there, not
     into this packaging cycle.
+
+---
+
+## Phase 2: Convert the Product to Skills
+
+### Slice 2: Convert the remaining 10 commands to skills — Complete
+**Started**: 2026-06-23 06:05
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Applied the Slice 1 recipe to all 10 remaining commands (init, verify, inquire,
+navigate, evolve, pair, pause, resume, help, optimize) → `skills/<name>/SKILL.md`. Per-file frontmatter
+transform: drop `name:`, insert `disable-model-invocation: true` after `argument-hint` (matching
+`status`'s field order), keep `description`/`argument-hint`/`allowed-tools` verbatim; body copied
+byte-for-byte. Done with a deterministic awk frontmatter-rewrite rather than hand-copy — precisely
+because AC-1 demands behavior-identical bodies and several are 30KB+, so transcription drift was the
+only real risk and a script removes it.
+**Deviations from spec**: None — recipe applied as designed; the schema deviations (drop `name`, add
+the flag) were already recorded in Slice 1's SPEC addendum.
+**Validation**: pass — (1) all 10 bodies diff byte-identical to their source commands
+(697/373/342/574/640/151/104/212/65/475 lines); (2) frontmatter check across all 10 — `name:` absent,
+exactly one `disable-model-invocation: true`, `argument-hint` preserved; (3) `claude plugin validate .`
+passes; (4) local-scope reinstall refreshes the `0.4.0` snapshot, which now carries all 11 skills + 4
+agents with the converted frontmatter intact.
+**Decisions made during implementation**:
+  - Deterministic awk conversion + body-diff proof instead of file-by-file hand edit: byte-identical bodies are an AC-1 correctness requirement, not a stylistic preference (decided by: engineer) [confidence: high]
+  - Insert `disable-model-invocation` after `argument-hint` (status's field order) for consistency across all 11 skills (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC1 colon form `/vine:<name>` — structurally identical to `status` (plugin `vine` + skill dir name); the recipe was empirically proven colon in Slice 1; all 11 skills present in the installed snapshot. Final cross-skill colon re-confirm is the human-only gate (nested `claude -p` 401s — Slice 1 discovered item).
+  - [x] AC2 no auto-fire — `disable-model-invocation: true` on all 10 (verified count)
+  - [x] AC3 arguments preserved — `argument-hint` retained; `$ARGUMENTS` carried in the verbatim bodies
+**Engineer feedback incorporated**: Chose free-climb for the mechanical 10x repeat, with the body-diff
+proof standing in as the review surface.
+**Learnings**:
+  - Engineer → Claude: None new — Slice 1's recipe carried over directly.
+  - Claude → Engineer: A local-scope marketplace (Slice 1's `--scope local`) is invisible to user-scope
+    `claude plugin marketplace update <name>` ("marketplace not found"); the dev-loop refresh from a
+    worktree is re-`marketplace add ./ --scope local` + reinstall, which re-syncs the directory-source
+    snapshot. Refines the Slice 1 dev-loop note.
