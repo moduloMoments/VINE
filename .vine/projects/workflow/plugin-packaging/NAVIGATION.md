@@ -407,7 +407,7 @@ Then **amended the team-layer ADR** (`2026-06-22-vine-ships-a-team-layer-recomme
   - Claude → Engineer: The knowledge layer has its own cross-reference convention (backtick-wrapped slugs, never `[[ ]]`) and its own immutability discipline (append an Amendment + flag the Status line, never rewrite the body) — both visible only by reading the existing records first. Matching a durable layer's house style is a read-before-write task, exactly like code.
 
 ### Phase-group verification (Phase 4) + corrections
-**Commit**: 8e4d6f2 (corrections — shared.md:302 + pr-review.md)
+**Commit**: 345f661 (corrections — shared.md:302 + pr-review.md)
 Delegated a phase-group-scope `vine-verification` pass over the Phase 4 diff (Slices 7–9). Verdict:
 AC9/AC10/AC11 (doc/knowledge halves) **all met**; trellis-check 11/11; ADRs present in Nygard format
 with the team-layer amendment in place. It surfaced **two real stale `agents/…` refs my Slice-8 grep
@@ -415,3 +415,13 @@ missed** (my pattern didn't match the `` (`agents/… `` backtick form):
   - **shared.md:302** (in Slice-8 scope) — `agents/vine-coder.md` → `plugins/vine/agents/vine-coder.md`. Fixed.
   - **pr-review.md** (contributor tool, outside the Phase-4 diff / Slice-8 cold-check) — 4× `agents/vine-reviewer.md` → `plugins/vine/agents/vine-reviewer.md`. **Folded into this PR by engineer decision** (same restructure fallout, trivial, this cycle owns removing old-layout fingerprints) rather than spun out.
 Re-swept backtick-tolerant: zero root-relative `agents/vine-*` refs remain; remaining `commands/vine`/`create-vine` strings are all intentional (init's legacy-cleanup section + README migration context). **Learning:** a stale-path grep must be delimiter-tolerant — `(`, backtick, and space all precede a path in prose, so `\bagents/` beats `\(agents/`.
+
+### Remaining Work
+- **Incomplete slices**: All slices complete. Phase 4 (Slices 7–9) done; Phases 1–3 shipped (#134, #135). The full cycle (#57) is implemented.
+- **Blockers encountered**: None.
+- **Handoff context for evolve**:
+  - **Phase 4 ships as PR 4** into `develop` (not yet opened — navigate suggested it; PROJECT-MAP Phase-4 row is ✅ Complete, PR# pending). Branch `feature/plugin-packaging`, 4 commits on top of `develop`: `2e3af85` (S7), `c5056ad` (S8), `ca91e83` (S9), `345f661` (verify corrections), plus the pre-existing `1ecfd4c` "mark shipped" tracker.
+  - **Full-feature verification** is evolve's job (the tier above navigate's phase-group pass): AC-traceability across all 11 cycle ACs, spec-deviation review, the multi-PR prior-PR check (#134/#135). The phase-group `vine-verification` pass covered AC9/10/11 (doc/knowledge halves) only.
+  - **Repo-admin still owed (outside code)**: set `develop` as the default PR base + branch protection on GitHub. The branch model is documented (shared.md, CONTRIBUTING, pr.md, ADR-c) but the forge setting is manual. Flag in the PR or cycle close.
+  - **The human-only AC gate** persists: AC1 (cross-skill colon-form re-confirm under a real plugin install) can't be CI-automated (nested `claude -p` 401s — Slice 1/2 discovered item). Slice 1 confirmed it empirically for `status`; the other 10 are structurally identical. Evolve should note this as the one acceptance check that rode on human confirmation, not automation.
+  - **#57 is closeable** after PR 4 merges + evolve writes EVOLUTION.md. Per the PR issue-close convention, the impl PR uses `Refs #57`; evolve still owes the EVOLUTION report and has already produced the cycle's knowledge ADRs (Slice 9).

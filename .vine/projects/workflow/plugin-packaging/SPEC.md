@@ -278,7 +278,7 @@ have a migration path. Ships as PR 3.
   > Does" item 7, the Output block's settings-hooks line, and the `.vine/scripts/` structure-table row.
   > trellis-check 11/11. STATE.md's init-hook description + broader structure prose left to Slice 8.
 
-## Phase 4: Docs + Cycle Knowledge (Slices 7–9) ⬜
+## Phase 4: Docs + Cycle Knowledge (Slices 7–9) ✅
 Summary: Make every doc surface describe the skills/plugin product and record the load-bearing
 decisions.
 Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 4.
