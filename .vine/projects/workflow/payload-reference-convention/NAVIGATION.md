@@ -7,7 +7,7 @@ Strictly sequential: Slice 0 → 1 → 2 → 3. Single PR (4 tightly-coupled sli
 
 ### Slice 0: Rename STATE.md → CONTRACTS.md (live surfaces) — Complete
 **Started**: 2026-06-23 17:05
-**Commit**: pending
+**Commit**: e75b744
 **Gear**: free-climb
 **Approach taken**: `git mv references/STATE.md references/CONTRACTS.md`, then a scoped
 per-file `sed 's/STATE.md/CONTRACTS.md/g'` over the live/operative set only — the renamed file's
@@ -37,4 +37,32 @@ Pre-existing legacy `.vine/hooks/` warnings in init unchanged (warnings, not fai
   - Claude → Engineer: the Check 10 anchor pair lives in three coupled places (the
     `trellis.md` table, `trellis-check.sh`'s PAIRS heredoc, and `run-tests.sh`'s fixture) — a file
     rename has to update all three in lockstep or the anchor check fails / the test fixture drifts.
+  - Engineer → Claude: None.
+
+### Slice 1: Document the convention — Complete
+**Started**: 2026-06-23 17:25
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Wrote the three-bucket reference convention into its two homes. CLAUDE.md
+"Skill Authoring Conventions" gets one bullet + three sub-bullets (the authoring rule: payload-internal
+→ invocable name / `${CLAUDE_PLUGIN_ROOT}`; consumer working tree → as-is; VINE-source-internal →
+forbidden, inline via operative-copy; init writes no VINE-internal pointer). CONTRACTS.md gets a
+"Path resolution by audience" subsection under Reference Legibility, framed as the *why* (the #138
+two-audience split — plugin user cwd vs contributor repo root) and cross-linking CLAUDE.md as the
+authoring home. Minimal duplication: CLAUDE.md = rule, CONTRACTS.md = rationale.
+**Deviations from spec**: None.
+**Validation**: `pass` — trellis-check exit 0; run-tests 27/27; both homes state the three buckets.
+**Decisions made during implementation**:
+  - Split the content by purpose rather than duplicating verbatim (AC requires both homes state the
+    buckets, but CLAUDE.md carries the rule and CONTRACTS.md the audience-resolution why) — keeps the
+    doc-growth surface tight (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] Both homes state the three buckets
+  - [x] Self-contained rule for shipped skills stated
+  - [x] Name / `${CLAUDE_PLUGIN_ROOT}` rule for payload cross-refs stated
+  - [x] Init writes no VINE-internal pointer stated
+**Engineer feedback incorporated**: None (free climb; review at slice boundary).
+**Learnings**:
+  - Claude → Engineer: the AC "both homes state the buckets" risks pure duplication; splitting by
+    purpose (rule vs rationale) satisfies it without two copies drifting apart.
   - Engineer → Claude: None.

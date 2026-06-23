@@ -36,6 +36,11 @@ VINE is a pure-markdown AI-assisted development framework, distributed as a nati
 - `AskUserQuestion` is preferred for all decision points: max 4 questions per call, max 4 options per question, recommended option first with "(Recommended)" suffix
 - Shared patterns (collaboration stance, profile protocol) live in `.vine/context/shared.md` — skills reference them with "Follow the [Protocol] from shared.md" rather than repeating the full block. This saves ~150 tokens per skill invocation. Skills still work without shared.md (graceful fallback).
 - Run `/trellis` to validate skill structure and artifact format compliance before submitting changes
+- **Reference convention — shipped skills are self-contained.** A shipped skill runs with the *consuming* repo as cwd, so a path in a shipped skill/agent/hook must fall into exactly one bucket:
+  - **Payload-internal** (ships under `plugins/vine/`): reference an agent or hook by its **invocable name** (agents are invoked by name, not path); when a literal path is unavoidable write `${CLAUDE_PLUGIN_ROOT}/…`, never a bare `agents/…`, `skills/…`, or `hooks/…`.
+  - **Consumer working tree** (`.vine/…`, `.vine.local/…` in the consuming repo): legitimate runtime paths that resolve against the consumer's cwd — cite as-is.
+  - **VINE-source-internal** (`references/…`, repo-root docs, `.claude/…`): these do **not** exist in a consuming repo — **forbidden in shipped skills/agents/hooks.** `references/CONTRACTS.md` is contributor documentation, not a runtime contract; inline what the runtime needs via the *operative-copy* pattern (an inline copy, canonical source cited only as provenance) and drop the rest.
+  - **Init writes no VINE-internal pointer** into the artifacts it creates in a consuming repo (its README and CLAUDE.md templates) — that's framework plumbing the consumer repo lacks. A `/trellis` guard flags violations on the shipped surface. Full rationale: "Path resolution by audience" under Reference Legibility in `references/CONTRACTS.md`.
 
 ## State Artifact Chain
 

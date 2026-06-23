@@ -561,6 +561,16 @@ The cost is asymmetric (same logic as the Knowledge Boundary's "who pays the tok
 
 This is the PR no-shorthand rule (CLAUDE.md, "Pull Requests") generalized to every durable artifact. `/trellis` enforces a mechanical floor on the product surface (Check 11: a bare `#<n>` in a command file with no gloss warns); enforcement inside the artifact chain and decision records rides the writing commands, not the linter — and applies going forward only, never retroactively against immutable historical artifacts.
 
+### Path resolution by audience
+
+Legibility governs *glossing* a pointer; this companion governs *which paths may appear on a shipped surface at all*, and how they resolve. A shipped skill/agent/hook runs with the **consuming repo as cwd**, and the *same* `SKILL.md` line is read by two audiences — plugin users (cwd = their repo, payload = the install cache) and contributors (reading from the VINE source-repo root). A bare `references/…` path is dead for the first and misleading for the second. So a path on a shipped surface falls into exactly one of three buckets:
+
+- **Payload-internal** — ships under `plugins/vine/`. Reference by **invocable name** where possible (agents are invoked by name, not path); a literal path is written `${CLAUDE_PLUGIN_ROOT}/…`, never a bare `agents/…`.
+- **Consumer working tree** — `.vine/…`, `.vine.local/…`; resolves against the consumer's cwd (e.g. the `## Validation` block the shipped `vine-verification` agent reads). Cite as-is.
+- **VINE-source-internal** — `references/…`, repo-root docs, `.claude/…`. Absent in a consuming repo, so **forbidden on shipped surfaces**: inline runtime needs via the operative-copy pattern, drop provenance-only pointers. This file (`references/CONTRACTS.md`) is one such file — contributor documentation, not a shipped runtime contract.
+
+Shipped skills are therefore **self-contained**: a skill body references no VINE-source-internal file. The authoring home for this rule is CLAUDE.md "Skill Authoring Conventions"; a `/trellis` guard enforces it mechanically. Non-shipped surfaces (contributor commands and agents under `.claude/`, the overlays, this file) reference each other freely — the bucket rule scopes to what ships.
+
 ## Artifact-Free Commands
 
 Not all VINE commands produce state artifacts. `vine:pair` is a lightweight mode that compresses verify → navigate → evolve into a single session without writing CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. Its only outputs are code changes and a single commit.
