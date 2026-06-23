@@ -117,6 +117,19 @@ recipe is proven and the colon-form risk is retired. Ships as PR 1.
   Convert one low-risk command
   (`status`) to `skills/status/SKILL.md` with `disable-model-invocation: true`, mapping frontmatter
   (`name`/`description`/`argument-hint`/`allowed-tools`) and confirming `$ARGUMENTS` carries over.
+
+  > **Addendum (navigate, 2026-06-23):** Two schema realities differed from the above and were
+  > applied during implementation:
+  > - **Marketplace `source` = relative `"./"`, not a github-source object.** For a plugin living in
+  >   the *same repo* as the marketplace, the documented form is the relative path `"./"`; a
+  >   github-source object is for a plugin in a *different* repo. The intent is unchanged — adding
+  >   the github repo tracks its default branch (`main`) with no `ref`, and the entry omits
+  >   `version` so plugin.json wins. (`marketplace.json` also requires `owner` and a
+  >   `metadata.description` to validate cleanly.)
+  > - **Frontmatter: `name` is omitted, not mapped.** The `/vine:status` colon form derives from
+  >   plugin name (`vine`) + skill dir (`status`); an explicit `name: vine:status` risks
+  >   double-namespacing. `argument-hint` + `allowed-tools` are kept (empirically tolerated — 66/68
+  >   installed GSD skills carry `allowed-tools`), and `disable-model-invocation: true` is added.
   Install the plugin locally (`claude plugin marketplace add .` + install) and verify end-to-end.
 - **Depends on**: Nothing.
 - **Files likely touched**: `.claude-plugin/plugin.json` (new), `.claude-plugin/marketplace.json`
