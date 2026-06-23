@@ -219,6 +219,25 @@ warnout=$(sh "$C" 2>/dev/null)
 printf '%s' "$warnout" | grep -q 'fb/SKILL.md:.*\.vine/hooks'
 check "trellis-check: allowlisted fallback paragraph does not warn" 1 $?
 
+# Check 13: shipped-surface reference convention (#142/#141/#138).
+# A `references/…` path in a shipped skill must fail the run.
+mkcmd "$T" shipref shipref 'Consult `references/CONTRACTS.md` for detail.'
+sh "$C" >/dev/null 2>&1
+check "trellis-check: references/ path in shipped skill -> fail (exit 1)" 1 $?
+rm -rf "$T/plugins/vine/skills/shipref"
+
+# A bare agents/|skills/|hooks/ plugin-root path must fail.
+mkcmd "$T" shipbare shipbare 'Run `hooks/journal-check.sh` directly.'
+sh "$C" >/dev/null 2>&1
+check "trellis-check: bare hooks/ path in shipped skill -> fail (exit 1)" 1 $?
+rm -rf "$T/plugins/vine/skills/shipbare"
+
+# Bucket-2 consumer paths (.vine/context/…) and name-based agent refs must NOT trip it.
+mkcmd "$T" shipok shipok 'Reads `.vine/context/shared.md`; the `vine-verification` agent owns the checklist.'
+sh "$C" >/dev/null 2>&1
+check "trellis-check: bucket-2 + name-based agent refs do not trip guard -> pass" 0 $?
+rm -rf "$T/plugins/vine/skills/shipok"
+
 # Check 10: a missing anchor file must flip the run red.
 rm "$T/references/CONTRACTS.md"
 sh "$C" >/dev/null 2>&1

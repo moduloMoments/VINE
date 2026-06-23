@@ -155,6 +155,12 @@ bare `agents/…|skills/…|hooks/…` path not written `${CLAUDE_PLUGIN_ROOT}/�
 bucket-2 consumer paths (`.vine/…`, `.vine.local/…`) or name-based agent references.
 **Files likely touched**: `.claude/commands/trellis.md` (+ `.vine/scripts/trellis-check.sh` /
 `run-tests.sh` if the check is scripted for CI parity).
+**Addendum (navigate, Slice 3)**: implemented as **Check 13** in `trellis-check.sh` (scripted for CI
+parity) + documented in `trellis.md` + 3 tests in `run-tests.sh`. The bare-path regex anchors on a
+non-slash boundary (every legitimate `agents|skills|hooks/` token is `/`-preceded). One surprise: the
+guard flagged a *prose* "skills/agents" at `init/SKILL.md:45` ("available skills/agents") — a
+two-word slash, not a path. Despaced to "skills and agents" (same fix as evolve "skills/commands"),
+noted because prose `X/Y` is a known limitation of the non-slash-boundary heuristic.
 **Acceptance criteria**: a deliberately-added `references/CONTRACTS.md` line in a skill fails
 `/trellis`; the corrected tree passes; the shipped agent's `.vine/context/…` references do not trip
 it.

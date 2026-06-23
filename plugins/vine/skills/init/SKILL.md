@@ -42,7 +42,7 @@ Scan the project for available tooling. Check each of these and catalog what you
 
 **Claude configuration:**
 - `.claude/commands/` — available slash commands (these can be suggested in overlay files)
-- `.claude/skills/` — available skills/agents (these can be wired into specific phases)
+- `.claude/skills/` — available skills and agents (these can be wired into specific phases)
 - `.claude/settings.json` or `.claude/settings.local.json` — project-level settings
 - `CLAUDE.md` — project conventions already documented
 

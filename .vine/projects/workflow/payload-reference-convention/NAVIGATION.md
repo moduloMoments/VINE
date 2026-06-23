@@ -69,7 +69,7 @@ authoring home. Minimal duplication: CLAUDE.md = rule, CONTRACTS.md = rationale.
 
 ### Slice 2: Make shipped skills self-contained — Complete
 **Started**: 2026-06-23 17:40
-**Commit**: pending
+**Commit**: e72f448
 **Gear**: free-climb
 **Approach taken**: Applied the three-bucket convention across all 9 affected skills, batched by
 size (small six → init → navigate → evolve). Triaged each `references/STATE.md` citation as binary:
@@ -120,3 +120,56 @@ review at slice boundary.
     couples the skill's pointer phrase to an anchor pair, so deleting the pointer requires deleting
     its pair (the Slice 0 lockstep, run in reverse).
   - Engineer → Claude: None.
+
+### Slice 3: Add the /trellis regression guard — Complete
+**Started**: 2026-06-23 18:05
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Added **Check 13** to `.vine/scripts/trellis-check.sh` (repo-level, modeled on
+Check 12): scans `plugins/vine/{skills,agents,hooks}/` and fails on (1) any `references/…` path or
+(2) a bare `agents|skills|hooks/` plugin-root path. Key design move: every *legitimate* occurrence
+of those tokens is `/`-preceded (`${CLAUDE_PLUGIN_ROOT}/`, `**/`, `.claude/`, `.vine/`), so the
+bare-path regex `(^|[^/[:alnum:]])(agents|skills|hooks)/[A-Za-z<]` anchors on a non-slash boundary —
+no allowlist of legitimate prefixes needed. Wired into the summary line, the STATUS pass/fail gate,
+and the `.trellis-ok` stamp. Documented as Check 13 in `.claude/commands/trellis.md` (the check + the
+Step 4 result line). Added 3 CI-parity tests to `run-tests.sh` (references/ fails, bare hooks/ fails,
+bucket-2 + name-based agent refs pass).
+**Deviations from spec**: One, annotated in SPEC.md Slice 3 addendum — the guard flagged a *prose*
+"skills/agents" at `init/SKILL.md:45` (two-word slash, not a path); despaced to "skills and agents",
+the same fix evolve "skills/commands" got in Slice 2. Known limitation of the non-slash-boundary
+heuristic, documented in the Check 13 prose.
+**Validation**: `pass` — `sh .vine/scripts/trellis-check.sh` exit 0 (all four repo-level guards green,
+including the new "Shipped surfaces carry no VINE-source-internal reference" line); `sh .vine/scripts/run-tests.sh`
+30/30 (was 27; +3 Check 13 tests). Manual battery confirmed: clean→pass, `references/` injection→fail,
+bare `hooks/` injection→fail, agent's 2 `.vine/context` refs→do not trip.
+**Decisions made during implementation**:
+  - Non-slash-boundary regex over an explicit prefix allowlist — simpler and self-maintaining, since
+    new legitimate prefixes (any `…/agents/`) are `/`-preceded by construction (decided by: claude) [confidence: high]
+  - Despace prose `X/Y` rather than complicate the regex to distinguish prose from paths — only two
+    such cases exist, and a slash-free "X and Y" reads fine (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] A deliberately-added `references/CONTRACTS.md` line in a skill fails `/trellis` (tested, both
+        scripted and manual)
+  - [x] The corrected tree passes
+  - [x] The shipped agent's `.vine/context/…` references do not trip it (tested)
+  - [x] Bare `agents|skills|hooks/` path also caught (beyond the SPEC's references/ example)
+**Engineer feedback incorporated**: Free climb; continue in session (engineer's gear + proceed choices).
+**Learnings**:
+  - Claude → Engineer: a guard's regex is only as good as its false-positive profile — writing the
+    guard immediately surfaced a prose `X/Y` the human eye skips over. Running it against the live tree
+    *before* trusting it caught the one case the design hadn't anticipated.
+  - Engineer → Claude: None.
+
+### Remaining Work
+- **Incomplete slices**: All slices complete (0–3).
+- **Blockers encountered**: None.
+- **Handoff context for evolve**: Single PR, 4 tightly-coupled slices (commits e75b744, bc04aef,
+  e72f448, + Slice 3 pending). Closes #142/#141/#138 — use `Refs #N` on the impl PR (evolve + a
+  knowledge ADR still owe their part per the issue-close-timing convention). Deviations to review:
+  (a) optimize's consumer-CLAUDE.md template carried the same #141 dead pointer as init (fixed,
+  beyond spec's named scope); (b) the navigate/evolve Check 10 anchor pair was removed across all
+  three coupled homes (consequence of Slice 2's pointer removal); (c) two prose `X/Y` despaced
+  (init, evolve) for the guard. New durable knowledge candidate: the three-bucket reference
+  convention itself + the non-slash-boundary guard heuristic. Verify the v0.4.x CHANGELOG/version
+  bump and whether this ships as a patch or minor (it's prose/tooling + a new guard — likely patch,
+  but the guard is arguably a new capability).

@@ -339,6 +339,33 @@ if [ -f "$SHARED" ]; then
   fi
 fi
 
+# ---------- Check 13: shipped-surface reference convention (#142/#141/#138) ----------
+# Shipped skills/agents/hooks run with the *consuming* repo as cwd, so they must
+# carry no VINE-source-internal path. FAILURE on either:
+#   (1) any `references/…` path (absent in a consuming repo), or
+#   (2) a bare `agents/|skills/|hooks/` plugin-root path — payload cross-refs go
+#       by invocable name or `${CLAUDE_PLUGIN_ROOT}/…`.
+# Every legitimate occurrence is `/`-preceded (`${CLAUDE_PLUGIN_ROOT}/`, `**/`,
+# `.claude/`, `.vine/`), so the bare-path regex anchors on a non-slash boundary.
+# Bucket-2 consumer paths (.vine/…, .vine.local/…) and name-based agent refs are
+# never flagged. Full rule: CLAUDE.md "Skill Authoring Conventions".
+
+SHIP_PATHS="plugins/vine/skills plugins/vine/agents plugins/vine/hooks"
+SHIP_ISSUES=0
+SHIPDETAIL=""
+refhits=$(cd "$root" && grep -rnE 'references/' $SHIP_PATHS 2>/dev/null)
+if [ -n "$refhits" ]; then
+  SHIP_ISSUES=$((SHIP_ISSUES + $(printf '%s\n' "$refhits" | wc -l | tr -d ' ')))
+  SHIPDETAIL="$SHIPDETAIL
+$(printf '%s\n' "$refhits" | sed 's/^/  - references\/ path: /')"
+fi
+barehits=$(cd "$root" && grep -rnE '(^|[^/[:alnum:]])(agents|skills|hooks)/[A-Za-z<]' $SHIP_PATHS 2>/dev/null)
+if [ -n "$barehits" ]; then
+  SHIP_ISSUES=$((SHIP_ISSUES + $(printf '%s\n' "$barehits" | wc -l | tr -d ' ')))
+  SHIPDETAIL="$SHIPDETAIL
+$(printf '%s\n' "$barehits" | sed 's/^/  - bare payload path: /')"
+fi
+
 echo
 if [ "$ISSUE_COUNT" -eq 0 ]; then
   SUMMARY="✅ $TOTAL/$TOTAL skills pass all checks"
@@ -364,7 +391,15 @@ fi
 echo "$RESOLVE_SUMMARY"
 [ -n "$RESOLVEDETAIL" ] && printf '%s\n' "$RESOLVEDETAIL"
 
-if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ] && [ "$RESOLVE_ISSUES" -eq 0 ]; then
+if [ "$SHIP_ISSUES" -eq 0 ]; then
+  SHIP_SUMMARY="✅ Shipped surfaces carry no VINE-source-internal reference (#142/#141/#138 guard)"
+else
+  SHIP_SUMMARY="❌ $SHIP_ISSUES shipped-surface reference violation(s)"
+fi
+echo "$SHIP_SUMMARY"
+[ -n "$SHIPDETAIL" ] && printf '%s\n' "$SHIPDETAIL"
+
+if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ] && [ "$RESOLVE_ISSUES" -eq 0 ] && [ "$SHIP_ISSUES" -eq 0 ]; then
   STATUS="pass"
 else
   STATUS="fail"
@@ -389,7 +424,7 @@ mkdir -p "$root/.vine"
 {
   echo "status: $STATUS"
   echo "checked: $when"
-  echo "summary: $SUMMARY; $ANCHOR_SUMMARY; $RESOLVE_SUMMARY"
+  echo "summary: $SUMMARY; $ANCHOR_SUMMARY; $RESOLVE_SUMMARY; $SHIP_SUMMARY"
 } > "$STAMP"
 
 [ "$STATUS" = pass ]

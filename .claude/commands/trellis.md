@@ -194,6 +194,29 @@ A gap is a **failure** that counts toward pass/fail, mirroring Check 10. Skipped
 is absent (it is optional). The same two assertions live in `.vine/scripts/trellis-check.sh` — keep
 them in sync.
 
+### Check 13: Shipped-Surface Reference Convention (repo-level)
+
+Shipped skills, agents, and hooks run with the **consuming repo as cwd**, so a path in any of them
+must fall into exactly one bucket (full rule: CLAUDE.md "Skill Authoring Conventions"). This guard
+prevents regression of #142/#141/#138 by scanning `plugins/vine/{skills,agents,hooks}/` and failing
+on either violation:
+
+- **any `references/…` path** — VINE-source-internal, absent in a consuming repo; inline runtime
+  needs via the operative-copy pattern instead; and
+- **a bare `agents/|skills/|hooks/` plugin-root path** — payload cross-references go by invocable
+  name or `${CLAUDE_PLUGIN_ROOT}/…`, never a bare plugin-root-relative path.
+
+Every legitimate occurrence of those tokens is `/`-preceded — `${CLAUDE_PLUGIN_ROOT}/hooks/…`,
+`**/skills/…` (the portable help glob), `.claude/skills/…` and `.claude/commands/…` (consumer-tree
+discovery scans), `.vine/hooks/…` (legacy) — so the bare-path check anchors on a **non-slash
+boundary**. Bucket-2 consumer paths (`.vine/…`, `.vine.local/…`) and name-based agent references
+("the `vine-verification` agent") are never flagged. Prose that happens to read `X/Y` (e.g. "skills
+and commands") must avoid the slash, since the check can't tell a two-word slash from a path.
+
+Like Checks 10 and 12 this is repo-level, not per-command, and is a **failure** that counts toward
+pass/fail. The same two patterns live in `.vine/scripts/trellis-check.sh` (Check 13) — keep them in
+sync.
+
 ## Step 4: Format Results
 
 Present results as a summary table with skills as rows and checks as columns:
@@ -247,6 +270,13 @@ Then print the Check 12 personal-root result as its own line:
 - Wired: **"✅ Personal-root resolution wired into shared.md (#132 guard)"**
 - Any gap: **"❌ N personal-root resolution gap(s) in shared.md"** followed by one line per gap.
   Like Check 10, gaps count toward the pass/fail status.
+
+Then print the Check 13 shipped-surface result as its own line:
+
+- Clean: **"✅ Shipped surfaces carry no VINE-source-internal reference (#142/#141/#138 guard)"**
+- Any violation: **"❌ N shipped-surface reference violation(s)"** followed by one line per hit
+  (file:line, tagged `references/ path` or `bare payload path`). Like Check 10, violations count
+  toward the pass/fail status.
 
 The combined summary (covering both command and artifact results) is printed in Step 7.
 
