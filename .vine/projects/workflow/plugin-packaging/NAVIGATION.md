@@ -357,7 +357,7 @@ slice — no lint/typecheck/test toolchain; trellis-check is untouched since no 
 
 ### Slice 8: Internal docs (CLAUDE.md, shared.md, STATE.md, +cold-check) — Complete
 **Started**: 2026-06-23 02:52
-**Commit**: pending
+**Commit**: c5056ad
 **Gear**: free-climb
 **Approach taken**: Swept every internal doc to the skills/plugin reality.
   - **CLAUDE.md** — "What This Repo Is" + Repository Structure rewritten for `plugins/vine/` (skills at `plugins/vine/skills/<name>/SKILL.md`, agents/hooks under the plugin, manifest + marketplace pointers); "Command Authoring Conventions" → "Skill Authoring Conventions" (frontmatter drops `name`, adds `disable-model-invocation: true`; "command"→"skill" throughout); optimize line de-pluralized to "all skills".
@@ -381,3 +381,27 @@ slice — no lint/typecheck/test toolchain; trellis-check is untouched since no 
 **Learnings**:
   - Engineer → Claude: When a branch-model change touches a contributor tool *and* its guide, retarget them together — a half-retargeted flow (diff vs `main`, create vs `develop`) is worse than either end-state.
   - Claude → Engineer: The npx→plugin restructure left "command"/`commands/vine`/`create-vine` fingerprints spread across six contributor docs that no skill-linter checks; a single repo-wide grep for the old vocabulary is the only reliable net, and it belongs in the Skill Addition Checklist's spirit (multi-file drift) even though these files sit outside it.
+
+### Slice 9: Knowledge ADR(s) — Complete
+**Started**: 2026-06-23 09:22
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Wrote four new ADRs under `.vine/knowledge/workflow/` in the Nygard format
+(Title-as-declarative-sentence / Status / Context / Decision / Consequences), each sourced
+`workflow/plugin-packaging · Rob + Claude`:
+  - **(a) `2026-06-23-vine-ships-as-a-plugin-and-drops-npx`** — plugin-only, skills-not-commands (the colon-form driver), drop npx, revised #57 gate ("keep npx working" → "migrate npx users"), `disable-model-invocation` rationale.
+  - **(b) `2026-06-23-overlay-distribution-is-documentation-not-a-mechanism`** — overlays are consumer-owned, VINE ships no distribution mechanism; the "harder half" of #57 resolved by scoping out.
+  - **(c) `2026-06-23-plugin-json-is-the-single-version-source-main-release-develop-integration`** — pin-not-float (the repo is the dev tree), `plugin.json` single version source, SemVer policy, `main`-release/`develop`-integration branch model, `package.json` removed (closes the 0.3.0/0.4.0 drift).
+  - **(d) `2026-06-23-scope-the-plugin-payload-with-a-plugins-vine-source-dir`** — no file-level payload exclusion exists (verified vs official docs); a scoped `source` subdir is the only control; supersedes the Slice-1 `.claudeignore` backlog idea.
+Then **amended the team-layer ADR** (`2026-06-22-vine-ships-a-team-layer-recommendation-not-a-prescribed-mechanism`): appended an "## Amendment (2026-06-23, #57)" section correcting its "seam where plugin distribution attaches" expectation (the seam carries documentation, not a mechanism → points to (b)), and flagged the amendment in its Status line — both per the established append-an-Amendment precedent in this layer (the anchor-personal-root ADR), keeping the immutable body intact.
+**Deviations from spec**: None. (Initial drafts used `[[wiki-link]]` cross-ref syntax — the memory-file convention, not VINE's; corrected to backtick-wrapped slugs to match the existing 9 records before commit. Not a spec deviation, a convention fix.)
+**Validation**: pass — all 4 ADRs carry the full Status/Context/Decision/Consequences structure; every backtick-slug cross-reference (6 distinct, incl. the amendment's) resolves to a real file; workflow ADR count 9 → 13; slugs follow `YYYY-MM-DD-<kebab>.md`. (Knowledge records aren't skills, so trellis-check doesn't gate them; the commit touches no `plugins/vine/skills/` file, so the trellis-gate is a no-op.)
+**Decisions made during implementation**:
+  - Four distinct ADRs rather than merging (a)+(c) or folding (d) — each answers a different "why" (packaging / scoping-out / versioning / repo-layout) and the `ls`-as-table-of-contents principle favors separate discoverable records; the SPEC enumerated them separately (decided by: engineer, via SPEC; ratified by: claude) [confidence: high]
+  - Amend the team-layer ADR via an appended Amendment + Status flag rather than supersede it — (b) corrects one forward-looking Consequence, it doesn't replace the record's decision; matches the anchor-personal-root precedent (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC10 — ADRs exist in the committed knowledge format; the team-layer "seam" expectation is explicitly amended (not left dangling); the drop-npx (revised gate), overlay-consumer-owned, versioning + branch-model, and plugin-layout/payload-control decisions are all captured
+**Engineer feedback incorporated**: Chose free-climb; the four-ADR split follows the SPEC's enumeration.
+**Learnings**:
+  - Engineer → Claude: None new this slice.
+  - Claude → Engineer: The knowledge layer has its own cross-reference convention (backtick-wrapped slugs, never `[[ ]]`) and its own immutability discipline (append an Amendment + flag the Status line, never rewrite the body) — both visible only by reading the existing records first. Matching a durable layer's house style is a read-before-write task, exactly like code.

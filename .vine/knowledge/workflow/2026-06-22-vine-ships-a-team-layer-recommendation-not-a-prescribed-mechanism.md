@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — 2026-06-22
+Accepted — 2026-06-22 (amended 2026-06-23, #57 — the seam carries documentation, not a mechanism; see *Amendment* below)
 Source: workflow/team-layer · Actor: Rob + Claude
 Supersedes: 2026-06-16-defer-the-vine-gitignore-inversion-to-the-vine-local-work
 
@@ -64,3 +64,14 @@ patterns the knowledge layer already uses.
   the team-overlay *recommendation* is the explicit seam where plugin distribution attaches.
 - Reviving a VINE-level multi-team composition engine needs a fresh, concrete need — it was
   considered and rejected here as imposing shape orgs should own.
+
+## Amendment (2026-06-23, #57): the seam carries documentation, not a mechanism
+
+This record named the team-overlay recommendation as "the explicit seam where plugin distribution
+attaches" (Consequences, above), which read as a promise that the plugin cycle (#57) would attach a
+*mechanism* there. #57 resolved it the other way: VINE ships **no overlay-distribution mechanism** —
+overlay content is consumer-owned, and cross-repo reach is achieved by forking the plugin's
+skills/agents, not by VINE delivering overlays. The seam was a documentation boundary all along.
+See `2026-06-23-overlay-distribution-is-documentation-not-a-mechanism` for the decision and its
+rationale. The body above stands; this only corrects the forward-looking expectation so a reader
+doesn't await machinery that was deliberately not built.

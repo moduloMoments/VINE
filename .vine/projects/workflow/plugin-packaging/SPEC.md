@@ -334,7 +334,7 @@ Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 
 - **Complexity signal**: Medium — the old layout is referenced across several contributor docs; the
   Command/State Addition checklists in shared.md exist to catch exactly this kind of multi-file drift.
 
-  > **Done + deviation (navigate, 2026-06-23, commit `<slice8>`):** All specced + cold-check items
+  > **Done + deviation (navigate, 2026-06-23, commit `c5056ad`):** All specced + cold-check items
   > landed (CLAUDE.md, shared.md CI/CD + checklists + Branch Naming, verify.md, navigate.md, STATE.md
   > agent-paths/create-vine/`.vine/scripts` section, help/SKILL.md citation via Glob, pr.md +
   > CONTRIBUTING `commands/vine`→`plugins/vine/skills`). No STATE.md "version note" existed to change —
