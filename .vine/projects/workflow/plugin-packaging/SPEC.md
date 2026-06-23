@@ -46,9 +46,24 @@ dogfooding, and the npm publish flow are removed.
 - **Hook home = plugin** — journal-check wires natively via `hooks/hooks.json` using
   `${CLAUDE_PLUGIN_ROOT}`. Contributor-only hooks (`trellis-gate.sh`, `main-guard.sh`) stay unshipped,
   wired by the repo's own `.claude/settings.json` as today.
-- **Version** — with npm gone, `plugin.json` `version` becomes the single version source; bump to
-  `0.4.0` (clearing the pre-existing package.json drift). The marketplace entry omits `version`
-  (plugin.json wins silently).
+- **Versioning & release** — with npm gone, the version strategy follows from one platform fact:
+  Claude Code resolves a plugin's version as `plugin.json version` → marketplace `version` → git SHA,
+  and **a set `version` gates updates** (users move only when the *string* changes; an omitted version
+  floats on every commit). Because our plugin source repo *is* the contributor tree, floating would
+  ship WIP to users — so we **pin**:
+  - `plugin.json` `version` (SemVer) is the **single source of truth**; bump to `0.4.0`. The
+    marketplace entry omits `version` (plugin.json wins silently). `package.json` is removed entirely
+    (Slice 5) so no competing version field survives.
+  - **SemVer policy** (no API — only command behavior): **major** = a command/skill removed/renamed or
+    an invocation/artifact-contract break; **minor** = new command/skill/agent/hook or capability;
+    **patch** = prose/doc/non-behavioral fixes.
+  - **Users update** via `/plugin update vine` (or auto-update) — replaces `npx create-vine@latest`.
+  - **Branch model: `main` = release, `develop` = integration.** `main` holds only released states, so
+    the marketplace `source` tracks `main` (the default branch) with **zero ref/sha management** and
+    every released version is reproducible. All development (including this cycle's remaining PRs)
+    targets `develop`; cutting a release = merge `develop`→`main`, bump `plugin.json` version, tag
+    `vX.Y.Z`, GitHub release. The existing main-guard hook ("don't commit directly to main") already
+    fits this model.
 - **Contributor dogfooding moves to local plugin install** — the old `.claude/commands/vine/` symlink
   is removed; contributors load the repo as a plugin (`claude plugin marketplace add .`). The dev loop
   (how a skill edit is picked up) is established and documented in Slice 1.
@@ -80,8 +95,12 @@ dogfooding, and the npm publish flow are removed.
 9. **Docs current.** README leads with plugin install; CLAUDE.md, `shared.md`, `references/STATE.md`,
    and CHANGELOG describe the skills/plugin product; the solo→team graduation path documents overlays
    as consumer-owned with no VINE distribution mechanism.
-10. **Decisions recorded.** Knowledge ADR(s) capture the drop-npx decision (revised gate) and the
-    overlay-is-consumer-owned decision (amending the team-layer ADR's "seam" expectation).
+10. **Decisions recorded.** Knowledge ADR(s) capture the drop-npx decision (revised gate), the
+    overlay-is-consumer-owned decision (amending the team-layer ADR's "seam" expectation), and the
+    versioning + `main`-release/`develop`-integration branch model.
+11. **Versioning coherent.** `plugin.json` `version` is the sole version source (`0.4.0`); no
+    `package.json` version competes; marketplace `source` tracks `main` with no `ref`; `main` holds
+    only released states; the documented user-update path is `/plugin update vine`.
 
 ### Work Slices
 
@@ -93,7 +112,9 @@ recipe is proven and the colon-form risk is retired. Ships as PR 1.
 
 ### Slice 1: Plugin manifest, marketplace, and invocation spike
 - **Goal**: Stand up `.claude-plugin/plugin.json` (name `vine`, version `0.4.0`) and
-  `.claude-plugin/marketplace.json` (one entry, `source` = repo root). Convert one low-risk command
+  `.claude-plugin/marketplace.json` (one entry; `source` = github tracking the default branch, **no
+  `ref`** — per the branch model, `main` holds only releases; omit `version` so plugin.json wins).
+  Convert one low-risk command
   (`status`) to `skills/status/SKILL.md` with `disable-model-invocation: true`, mapping frontmatter
   (`name`/`description`/`argument-hint`/`allowed-tools`) and confirming `$ARGUMENTS` carries over.
   Install the plugin locally (`claude plugin marketplace add .` + install) and verify end-to-end.
@@ -150,18 +171,23 @@ have a migration path. Ships as PR 3.
   malformed SKILL.md; the gate blocks a commit touching `skills/` without a green trellis run (AC 8).
 - **Complexity signal**: Medium — trellis encodes the old layout in multiple checks; each must move.
 
-### Slice 5: Remove the npx distribution
-- **Goal**: Delete `bin/cli.js`, the migrated `commands/vine/` tree, and the `.claude/commands/vine/`
-  symlink; update `package.json` (drop `bin`/`create-vine` packaging and the commands entries from
-  `files`; keep only what repo metadata needs); replace `publish.yml`'s npm publish with a git-tag +
-  GitHub-release flow (the marketplace installs from git).
+### Slice 5: Remove the npx distribution + rework the release flow
+- **Goal**: Delete `bin/cli.js`, the migrated `commands/vine/` tree, the `.claude/commands/vine/`
+  symlink, and **`package.json` entirely** (nothing functional needs it post-npm — the only
+  references are the deleted `bin/cli.js` and prose examples). Rework `.github/workflows/publish.yml`:
+  read the version from `plugin.json`, drop the `npm publish` + node smoke-test steps (replace the
+  smoke test with a plugin-load / `trellis-check` validation), keep the tag-exists-check +
+  CHANGELOG-extract + GitHub-release steps. Adopt the branch model: create `develop`, set it as the
+  PR base for ongoing work, leave `main` as the release branch the marketplace tracks.
 - **Depends on**: Slices 2–4 (skills + tooling must be live before the old path is removed).
 - **Files likely touched**: `bin/cli.js` (delete), `commands/vine/` (delete), `.claude/commands/vine/`
-  symlink (delete), `package.json`, `.github/workflows/publish.yml`.
-- **Acceptance criteria**: No `create-vine`/npm artifacts remain; the release flow tags + releases for
-  the marketplace; contributor dogfooding via local plugin install works (AC 6–8).
+  symlink (delete), `package.json` (delete), `.github/workflows/publish.yml`.
+- **Acceptance criteria**: No `create-vine`/npm artifacts or competing version source remain; the
+  release workflow tags + creates a GitHub release sourced from `plugin.json` version with no npm step;
+  contributor dogfooding via local plugin install works (AC 6–8, 11).
 - **Complexity signal**: Medium — deletion is easy; reworking `publish.yml` and confirming nothing
-  else references the removed paths is the care point.
+  else references the removed paths (grep for `package.json` / `create-vine` / `commands/vine`) is the
+  care point.
 
 ### Slice 6: init legacy-install migration
 - **Goal**: `/vine:init` detects a legacy `.claude/commands/vine/` (old npx install) and offers a
@@ -178,8 +204,9 @@ decisions.
 Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 4.
 
 ### Slice 7: README + CHANGELOG
-- **Goal**: Lead the README with plugin install (`claude plugin marketplace add` → install); remove
-  the npx/manual-copy sections; add a migration note for existing npx users; document the solo→team
+- **Goal**: Lead the README with plugin install (`claude plugin marketplace add` → install) and the
+  update path (`/plugin update vine`, replacing `npx create-vine@latest`); remove the npx/manual-copy
+  sections; add a migration note for existing npx users; document the solo→team
   graduation path (fork the plugin's skills/agents; overlays stay repo-local and consumer-authored —
   no VINE distribution mechanism). Add the 0.4.0 CHANGELOG entry. Note journal-check's default-on
   change for plugin users.
@@ -193,31 +220,39 @@ Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 
 ### Slice 8: Internal docs (CLAUDE.md, shared.md, STATE.md)
 - **Goal**: Rewrite CLAUDE.md "What This Repo Is" / Repository Structure / Command Authoring
   Conventions for the skills/plugin product; rename shared.md's "Command Addition Checklist" →
-  "Skill Addition Checklist" and update the Skill Workflows install step; update `references/STATE.md`
-  product references and add the version-sync note (plugin.json single source).
+  "Skill Addition Checklist" and update the Skill Workflows install step; rewrite shared.md's CI/CD
+  **Release checklist** for the new flow (bump `plugin.json` version per SemVer → CHANGELOG → merge
+  `develop`→`main` → tag `vX.Y.Z` → GitHub release; no npm) and record the SemVer policy + the
+  `main`-release/`develop`-integration branch model + the Branch Naming convention (feature branches
+  now off `develop`); update `references/STATE.md` product references and the version note
+  (`plugin.json` single source).
 - **Depends on**: Slices 1–6.
-- **Files likely touched**: `CLAUDE.md`, `.vine/context/shared.md`, `.vine/context/verify.md` (command
-  count), `references/STATE.md`.
+- **Files likely touched**: `CLAUDE.md`, `.vine/context/shared.md` (CI/CD Release checklist, Branch
+  Naming, Skill Addition Checklist, Skill Workflows), `.vine/context/verify.md` (command count),
+  `references/STATE.md`.
 - **Acceptance criteria**: No internal doc describes the product as "11 command files in
-  `commands/vine/`" or references the npx-only install; the addition checklist targets skills (AC 9).
+  `commands/vine/`" or references the npx-only install; the addition checklist targets skills; the
+  release checklist and branch model are documented (AC 9, 11).
 - **Complexity signal**: Medium — the old layout is referenced across several contributor docs; the
   Command/State Addition checklists in shared.md exist to catch exactly this kind of multi-file drift.
 
 ### Slice 9: Knowledge ADR(s)
-- **Goal**: Record (a) the plugin-only / drop-npx decision and its rationale (revised hard gate), and
+- **Goal**: Record (a) the plugin-only / drop-npx decision and its rationale (revised hard gate),
   (b) overlay distribution = document-only / consumer-owned, amending the team-layer ADR's "seam"
-  expectation.
+  expectation, and (c) the versioning strategy + `main`-release/`develop`-integration branch model
+  (plugin.json as version gate; pin-not-float because the repo is the dev tree).
 - **Depends on**: Slices 1–8 (decisions are settled by the work).
-- **Files likely touched**: `.vine/knowledge/workflow/2026-06-*-*.md` (1–2 ADRs).
+- **Files likely touched**: `.vine/knowledge/workflow/2026-06-*-*.md` (2–3 ADRs).
 - **Acceptance criteria**: ADRs exist in the committed knowledge format; the team-layer "seam"
-  expectation is explicitly amended rather than left dangling (AC 10).
+  expectation is explicitly amended rather than left dangling; the versioning/branch-model decision is
+  captured (AC 10).
 - **Complexity signal**: Low — durable-decision capture in the established ADR format.
 
 ### Tech Debt Integration
 
 - **Version drift (package.json 0.3.0 vs 0.4.0 CHANGELOG)** — *Addressed now.* `plugin.json` becomes
-  the single version source at `0.4.0`; package.json's npm version stops mattering once npm publish is
-  removed (Slice 5).
+  the single version source at `0.4.0`; `package.json` is removed entirely (Slice 5), eliminating the
+  competing version field rather than just neutralizing it.
 - **`commands/vine/` nesting vs. flat plugin discovery** — *Resolved by design.* The skills layout
   sidesteps it entirely; no nested-command discovery is relied on.
 - **Unverified "flat commands deprecated, use skills/" claim** — *Resolved.* Verified against current
@@ -242,6 +277,11 @@ Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 
   checklists in shared.md.
 - **Dependency — Claude Code plugin/marketplace feature.** GA per current docs; no preview flag
   needed.
+- **Process change — branch model adoption.** `develop` must exist and become the PR base before
+  Phase 1's PR merges; `main` is reserved for releases the marketplace tracks. This is repo-admin
+  (branch creation + default-PR-base/branch-protection settings) plus doc updates — light, but it
+  retargets this cycle's remaining PRs to `develop`, so the navigator should branch from and PR into
+  `develop`, not `main`.
 
 ### Backlog Updates
 
