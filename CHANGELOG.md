@@ -4,12 +4,16 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-23
+
 This is the 0.4.0 "platform alignment" cycle — aligning VINE's vocabulary and mechanics with
 Claude Code's native platform surface: context overlays vs. native hooks, honest enforcement,
-the knowledge boundary, native task tools, and gearing↔permission-mode. The `#` tags below
-are the per-phase tracking issues (#58–#62).
+the knowledge boundary, native task tools, gearing↔permission-mode, and — closing the cycle —
+repackaging VINE as a native Claude Code plugin (#57). The `#` tags below are the per-phase
+tracking issues (#57–#62).
 
 ### Added
+- **VINE ships as a native Claude Code plugin (#57)** — Install via the self-hosted `moduloMoments` marketplace (`claude plugin marketplace add moduloMoments/VINE` → `claude plugin install vine@moduloMoments`) and update with `/plugin update vine` — replacing `npx create-vine`. All 11 phases now ship as `skills/<name>/SKILL.md` and invoke in colon form (`/vine:<name>`), with the two phase-support agents (`vine-codebase-explorer`, `vine-verification`) and the journal-check hook riding in the same plugin. The two autonomous-role agents (`vine-coder`, `vine-reviewer`) are repo-resident under `.claude/agents/`, not shipped by default. Every skill carries `disable-model-invocation: true`, so a phase never auto-fires from model reasoning. The product lives under `plugins/vine/` so the published payload is product-only (Claude Code has no file-level payload exclusion — a scoped `source` directory is the only control). The journal-check hook is now **default-on** for plugin users (wired via `hooks/hooks.json` + `${CLAUDE_PLUGIN_ROOT}`), where the npx scaffold made it opt-in.
 - **Honest enforcement scaffold (#59)** — A `.vine/ACTIVE` session sentinel scopes installed hooks to active navigate sessions, and a POSIX `journal-check.sh` hook blocks `git commit` until the feature's NAVIGATION.md is updated (mtime-based, so it works whether `.vine/` is tracked or gitignored). `/vine:init` offers to wire the scaffold into `.claude/settings.json`; declining changes nothing on disk. README gains an **Enforced vs Advisory** section that's honest about which guarantees are mechanical (one, with the scaffold installed) and which are advisory.
 - **Native task tracking (#61)** — When the harness provides task tools, `vine:navigate` builds an ephemeral live view of slice progress, and `vine:resume`/`vine:status` read it for an at-a-glance picture. The live view is a derived mirror of NAVIGATION.md — always rebuilt from the journal, never the reverse. STATE.md adds a **Source of Truth vs Derived Views** contract codifying the split.
 - **Inquire sign-off gate + artifact review links (#62)** — `vine:inquire` now gates completion on an explicit `AskUserQuestion` sign-off on the written SPEC, presented as a clickable link with a request-changes/iterate loop; `vine:verify` presents CONTEXT.md as a clickable link on creation. Auto-opening the file is documented as optional repo wiring, never hardcoded.
@@ -23,6 +27,10 @@ are the per-phase tracking issues (#58–#62).
 - **Knowledge Boundary rule (#60)** — A new rule in `references/STATE.md` draws the line between repo facts (which live in CLAUDE.md / STATE.md) and the harness's native skill inventory (which VINE reads live, never duplicates in files). `vine:optimize` is rewritten around the rule, the "this repo" overlay is deduped, and `/vine:init` offers a dedup pass. The **Skill Workflows** map moved from CLAUDE.md to `.vine/context/shared.md` — superseding the 0.3.0 "Skill Workflows in CLAUDE.md" location — and CLAUDE.md now carries an availability-gated pointer instead of the inline map.
 - **Gearing ↔ permission-mode preference (#62)** — `vine:navigate`'s per-slice gearing now recommends the matching permission mode: **free climb → auto-accept-edits**, **walk me through → approve-edits**. The recommendation is explicit; flipping the toggle stays the engineer's action — VINE recommends, never switches modes for you.
 - **Artifact-commit guidance for tracked repos (#62)** — `vine:navigate` and `vine:evolve` now state a consistent, self-sufficient staging rule: tracked artifacts → bundle the artifact with its commit (slice → NAVIGATION/SPEC deviations; phase-group boundary → PROJECT-MAP/SPEC header); untracked → code only, the mtime guarantee preserved. STATE.md carries the consolidated per-commit-point contract for contributors.
+- **Versioning + branch model (#57)** — `plugins/vine/.claude-plugin/plugin.json` `version` is the single source of truth (`0.4.0`); `package.json` is removed, so no competing version field survives. SemVer for a behavior-only product: **major** = a command/skill removed or renamed or an invocation/artifact-contract break, **minor** = a new command/skill/agent/hook or capability, **patch** = prose/doc/non-behavioral fixes. **`main` holds only released states** (the marketplace `source` tracks it, no `ref`), **`develop` is the integration branch**, and feature branches cut from `develop`. Cutting a release = merge `develop`→`main`, bump the plugin version, tag `vX.Y.Z`, GitHub release.
+
+### Removed
+- **npx installer + the `commands/vine/` layout (#57)** — `bin/cli.js`, the `commands/vine/` command tree, the `.claude/commands/vine/` symlink, and `package.json` are deleted; `publish.yml` no longer publishes to npm (it parses the plugin version and cuts a tagged GitHub release). Existing npx users migrate by removing the legacy directory and installing the plugin — `/vine:init` detects a legacy install and offers the cleanup. VINE ships **no overlay-distribution mechanism**: overlay content stays repo-local and consumer-authored, and a company carries conventions across repos by forking the plugin's skills/agents (those distribute natively).
 
 ## [0.3.0] - 2026-04-06
 

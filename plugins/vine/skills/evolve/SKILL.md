@@ -1,7 +1,7 @@
 ---
-name: vine:evolve
 description: "Wrap up a feature — run final verification against acceptance criteria, update CLAUDE.md and context overlays, capture engineer growth, and prepare the PR handoff"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob

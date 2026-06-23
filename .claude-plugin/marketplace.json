@@ -1,0 +1,16 @@
+{
+  "name": "moduloMoments",
+  "owner": {
+    "name": "moduloMoments",
+    "url": "https://github.com/moduloMoments/VINE"
+  },
+  "metadata": {
+    "description": "moduloMoments plugins for Claude Code — home of VINE, the AI-assisted feature development workflow"
+  },
+  "plugins": [
+    {
+      "name": "vine",
+      "source": "./plugins/vine"
+    }
+  ]
+}

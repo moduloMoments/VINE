@@ -1,6 +1,6 @@
 ---
 name: trellis
-description: "Lint and validate VINE command files — check frontmatter, section ordering, artifact format compliance, and structural conventions before committing"
+description: "Lint and validate VINE skill files — check frontmatter, section ordering, artifact format compliance, and structural conventions before committing"
 argument-hint: ""
 allowed-tools:
   - Read
@@ -12,41 +12,46 @@ allowed-tools:
 
 # trellis — Command Structure Validation
 
-Validate that all VINE command files in `commands/vine/` follow the structural conventions
-documented in CLAUDE.md. This is a contributor-only tool — it validates the framework's own
-command files but is not part of the distributed VINE product.
+Validate that all VINE skill files in `plugins/vine/skills/<name>/SKILL.md` follow the structural
+conventions documented in CLAUDE.md. This is a contributor-only tool — it validates the framework's
+own skill files but is not part of the distributed VINE product.
 
-## Step 1: Discover Command Files
+## Step 1: Discover Skill Files
 
-Use Glob to find all `.md` files in `commands/vine/`. These are the VINE command files to validate.
+Use Glob to find all `SKILL.md` files under `plugins/vine/skills/*/`. These are the VINE skill files
+to validate. Throughout these checks, a skill's **stem** is its directory name (e.g.
+`plugins/vine/skills/verify/SKILL.md` has stem `verify`).
 
 Read each file in full — you'll need the complete contents for all checks.
 
 ## Step 2: Build the Known Tool List
 
-Before validating individual commands, derive the set of valid tool names by collecting the
-union of all `allowed-tools` entries across every command file. A tool name is valid if any
-command uses it. Store this set for use in Step 3.
+Before validating individual skills, derive the set of valid tool names by collecting the
+union of all `allowed-tools` entries across every skill file. A tool name is valid if any
+skill uses it. Store this set for use in Step 3.
 
-## Step 3: Validate Each Command
+## Step 3: Validate Each Skill
 
-For each command file, run the following checks. Track pass/fail results per check per command.
+For each skill file, run the following checks. Track pass/fail results per check per skill.
 
 ### Check 1: YAML Frontmatter Present
 
 The file must start with `---` on line 1, followed by YAML content, followed by a closing `---`.
 The frontmatter must contain exactly these four fields:
-- `name`
 - `description`
 - `argument-hint`
+- `disable-model-invocation`
 - `allowed-tools`
 
-If any field is missing, this check fails. If extra fields are present, this check fails.
+If any field is missing, this check fails. If extra fields are present, this check fails. (Skills
+deliberately omit `name` — the `/vine:<stem>` colon form derives from the plugin name plus the skill
+directory name, so an explicit `name` would double-namespace.)
 
-### Check 2: Name Matches Filename
+### Check 2: No Auto-Fire (disable-model-invocation)
 
-The `name` field must equal `vine:<stem>` where `<stem>` is the filename without the `.md`
-extension. For example, `verify.md` must have `name: vine:verify`.
+The frontmatter must contain `disable-model-invocation: true`. VINE phases are deliberate,
+user-driven gates — the model must never auto-fire a skill from its own reasoning (AC2 of the
+plugin-packaging cycle). A missing field, or any value other than `true`, fails.
 
 ### Check 3: H1 Title Format
 
@@ -56,7 +61,7 @@ The first line starting with `# ` (after the frontmatter closing `---`) must fol
 # vine:<stem> — <Subtitle>
 ```
 
-Where `<stem>` is the filename without `.md` (e.g., `verify.md` → `# vine:verify — ...`).
+Where `<stem>` is the skill directory name (e.g., `skills/verify/SKILL.md` → `# vine:verify — ...`).
 The subtitle can be any text. The separator must be ` — ` (space, em dash, space) — not a
 hyphen, not a dash without spaces.
 
@@ -65,9 +70,9 @@ hyphen, not a dash without spaces.
 **Skip this check for `init.md`** — init creates overlays rather than loading them.
 **Skip this check for `help.md`** — help is a pure reference command that doesn't need project context.
 
-The command must contain a `## Load Context Overlays` heading. Between that heading and the next
+The skill must contain a `## Load Context Overlays` heading. Between that heading and the next
 `##` heading, the text must contain the string `.vine/context/<phase>.md` where `<phase>` matches
-the command's stem name (e.g., `verify.md` must contain `.vine/context/verify.md` in its
+the skill's stem name (e.g., `skills/verify/SKILL.md` must contain `.vine/context/verify.md` in its
 overlays section).
 
 ### Check 5: Load Engineer Profile Section (non-init, non-help only)
@@ -105,7 +110,7 @@ interaction pattern.
 
 ### Check 9: Legacy Reference Detection (warning-only)
 
-Scan each command file for the string `.vine/hooks`. Legacy references are **warnings, not
+Scan each skill file for the string `.vine/hooks`. Legacy references are **warnings, not
 failures** — they never affect a command's pass/fail status and have no column in the
 Step 4 results table. Through 0.4.x, exactly two locations legitimately name the legacy
 path. Allowlist them precisely:
@@ -126,9 +131,9 @@ check (and both allowlist entries) is slated to harden to a failure.
 
 ### Check 10: Cross-Reference Anchors (repo-level)
 
-The verification-tier contract spans three surfaces — `agents/vine-verification.md` (the
-checklist), `commands/vine/navigate.md` and `commands/vine/evolve.md` (the tier pointers),
-and `references/STATE.md` (the contract note) — held together by literal anchor strings.
+The verification-tier contract spans three surfaces — `plugins/vine/agents/vine-verification.md` (the
+checklist), `plugins/vine/skills/navigate/SKILL.md` and `plugins/vine/skills/evolve/SKILL.md` (the tier
+pointers), and `references/STATE.md` (the contract note) — held together by literal anchor strings.
 This check verifies each anchor still resolves. It catches the drift class where a section
 is renamed but its cross-references aren't updated (the stale "step 9" pointer this check
 was born from).
@@ -144,13 +149,13 @@ Verify each file → anchor pair (literal substring match; the same list lives i
 | File | Expected anchor |
 |------|-----------------|
 | `references/STATE.md` | `**Verification-tier contract.**` |
-| `agents/vine-verification.md` | `### Feature Verification (cross-change)` |
-| `agents/vine-verification.md` | `**Phase-group scope**` |
-| `agents/vine-verification.md` | `**Full-feature scope**` |
-| `agents/vine-verification.md` | `**Base checks**` |
-| `agents/vine-verification.md` | `**Cross-cutting checks**` |
-| `commands/vine/navigate.md` | `verification-tier contract note` |
-| `commands/vine/evolve.md` | `verification-tier contract note` |
+| `plugins/vine/agents/vine-verification.md` | `### Feature Verification (cross-change)` |
+| `plugins/vine/agents/vine-verification.md` | `**Phase-group scope**` |
+| `plugins/vine/agents/vine-verification.md` | `**Full-feature scope**` |
+| `plugins/vine/agents/vine-verification.md` | `**Base checks**` |
+| `plugins/vine/agents/vine-verification.md` | `**Cross-cutting checks**` |
+| `plugins/vine/skills/navigate/SKILL.md` | `verification-tier contract note` |
+| `plugins/vine/skills/evolve/SKILL.md` | `verification-tier contract note` |
 
 The first six pairs confirm the pointed-at anchors exist (the contract note in STATE.md;
 the mode and scope vocabulary in the agent). The last two confirm both commands still carry
@@ -165,7 +170,7 @@ dereference it; the gloss makes the reference legible to humans and self-checkin
 (see `references/STATE.md`, "Reference Legibility"). These are **warnings, not failures** — they
 never affect pass/fail and have no column in the Step 4 table.
 
-The floor covers the product surface (command files). The same rule applies by convention to the
+The floor covers the product surface (skill files). The same rule applies by convention to the
 artifact chain and decision records, but enforcement there rides the writing commands, not this
 linter — and never runs retroactively against immutable historical artifacts.
 
@@ -180,7 +185,7 @@ Overlay Loading Protocol and referenced from the Personal-layer rule and the Eng
 Protocol.
 
 Like Check 10 this is repo-level, not per-command, and inspects only `.vine/context/shared.md`
-(command files inherit the fix by deferring to these protocols). It asserts:
+(skill files inherit the fix by deferring to these protocols). It asserts:
 
 - the helper is defined — `.vine/context/shared.md` contains the literal `**Resolving the personal
   root.**`; and
@@ -193,23 +198,23 @@ them in sync.
 
 ## Step 4: Format Results
 
-Present results as a summary table with commands as rows and checks as columns:
+Present results as a summary table with skills as rows and checks as columns:
 
 ```
-| Command   | Frontmatter | Name | H1  | Overlays | Profile | Order | Tools | AskUser |
-|-----------|-------------|------|-----|----------|---------|-------|-------|---------|
-| init      | ✅          | ✅   | ✅  | skip     | skip    | skip  | ✅    | ✅      |
-| verify    | ✅          | ✅   | ✅  | ✅       | ✅      | ✅    | ✅    | ✅      |
-| ...       |             |      |     |          |         |       |       |         |
+| Skill     | Frontmatter | NoFire | H1  | Overlays | Profile | Order | Tools | AskUser |
+|-----------|-------------|--------|-----|----------|---------|-------|-------|---------|
+| init      | ✅          | ✅     | ✅  | skip     | skip    | skip  | ✅    | ✅      |
+| verify    | ✅          | ✅     | ✅  | ✅       | ✅      | ✅    | ✅    | ✅      |
+| ...       |             |        |     |          |         |       |       |         |
 ```
 
 Use `✅` for pass, `❌` for fail, `skip` for checks that don't apply (init exceptions).
 
-After the table, print a command-specific summary line. Skipped checks count as passing
+After the table, print a skill-specific summary line. Skipped checks count as passing
 (they're intentional exceptions, not failures).
 
-- If all checks pass: **"✅ N/N commands pass all checks"**
-- If any check fails: **"❌ N issues found across M commands"** followed by a brief list of
+- If all checks pass: **"✅ N/N skills pass all checks"**
+- If any check fails: **"❌ N issues found across M skills"** followed by a brief list of
   each failure with the command name, check name, and what was wrong.
 
 After the summary line, print any legacy-reference warnings from Check 9:
@@ -480,7 +485,7 @@ Then print the Check E result as its own repo-level line (like Check 10's anchor
 
 After both the command table (Step 4) and artifact table (Step 7), print a combined summary:
 
-- If everything passes: **"✅ All checks pass — N commands, M artifacts validated"**
+- If everything passes: **"✅ All checks pass — N skills, M artifacts validated"**
 - If only command checks fail: **"❌ N command issues found (artifact validation passed)"**
 - If only artifact checks fail: **"❌ N artifact issues found (command validation passed)"**
 - If both fail: **"❌ N command issues + M artifact issues found"**
@@ -488,7 +493,7 @@ After both the command table (Step 4) and artifact table (Step 7), print a combi
 Follow any failure summary with the detailed list of failures (command name or artifact path,
 check name, what was wrong).
 
-If all checks pass and there are uncommitted changes to command files, suggest:
+If all checks pass and there are uncommitted changes to skill files, suggest:
 
 > "All checks pass. If you're ready to submit, run `/pr` to create a pull request."
 
@@ -501,14 +506,14 @@ check engine so it can't be confused with a hand-written pass ticket — run it 
 sh .vine/scripts/trellis-check.sh
 ```
 
-The script re-runs the command checks (Steps 1–4) mechanically over `commands/vine/*.md` —
+The script re-runs the skill checks (Steps 1–4) mechanically over `plugins/vine/skills/*/SKILL.md` —
 including the repo-level Check 10 anchor pairs — and writes `.vine/.trellis-ok` (gitignored
 via `.vine/*`) itself — `status: pass` and exit 0 on a green run, `status: fail` and exit 1
-otherwise (a failed anchor pair flips it like any command check), overwriting any previous
+otherwise (a failed anchor pair flips it like any skill check), overwriting any previous
 stamp so a red tree can't ride through the gate on a stale green. The contributor trellis
 gate (`.vine/scripts/trellis-gate.sh`, wired in this repo's `.claude/settings.json`) reads
-that stamp before allowing commits that touch `commands/vine/` — a green script run is the
-commit ticket for command changes.
+that stamp before allowing commits that touch `plugins/vine/skills/` — a green script run is the
+commit ticket for skill changes.
 
 If the script's verdict disagrees with your Step 4 results, the script wins for gating
 purposes — report the divergence to the contributor, since it usually means a check has

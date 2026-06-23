@@ -1,6 +1,6 @@
 #!/bin/sh
 # VINE trellis command-check engine (contributor-only — NOT part of the user
-# scaffold; create-vine never copies this script).
+# plugin payload — it lives in the contributor repo only).
 #
 # Runs trellis's command checks (Steps 1-4 of .claude/commands/trellis.md)
 # mechanically, so the .vine/.trellis-ok stamp the gate reads becomes
@@ -8,10 +8,10 @@
 # artifact checks (Steps 5-7, STATE.md template parsing) stay in the skill —
 # they are out of scope here.
 #
-# Checks implemented, per command file in commands/vine/:
-#   1 Frontmatter present with exactly name/description/argument-hint/allowed-tools
-#   2 name == vine:<stem>
-#   3 H1 == "# vine:<stem> — <subtitle>" (with the ` — ` em-dash separator)
+# Checks implemented, per skill file in plugins/vine/skills/<name>/SKILL.md:
+#   1 Frontmatter present with exactly description/argument-hint/disable-model-invocation/allowed-tools
+#   2 disable-model-invocation is true (VINE phases never auto-fire)
+#   3 H1 == "# vine:<stem> — <subtitle>" (` — ` em-dash separator; <stem> = skill dir name)
 #   4 Load Context Overlays section names .vine/context/<stem>.md (skip init/help)
 #   5 Load Engineer Profile section present (skip init/help)
 #   6 Overlays heading precedes Profile heading (skip init/help)
@@ -37,13 +37,13 @@
 set -u
 
 root="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
-CMD_DIR="$root/commands/vine"
+SKILL_DIR="$root/plugins/vine/skills"
 STAMP="$root/.vine/.trellis-ok"
 
-EXPECTED_FIELDS="allowed-tools argument-hint description name"
+EXPECTED_FIELDS="allowed-tools argument-hint description disable-model-invocation"
 
-if [ ! -d "$CMD_DIR" ]; then
-  echo "trellis-check: no commands/vine/ directory at $root — nothing to validate." >&2
+if [ ! -d "$SKILL_DIR" ]; then
+  echo "trellis-check: no plugins/vine/skills/ directory at $root — nothing to validate." >&2
   exit 1
 fi
 
@@ -73,7 +73,7 @@ body_has_askuser() {
 
 # ---------- Step 2: build the union tool set ----------
 
-UNION=$(for f in "$CMD_DIR"/*.md; do fm_tools "$f"; done | sort -u)
+UNION=$(for f in "$SKILL_DIR"/*/SKILL.md; do fm_tools "$f"; done | sort -u)
 
 is_known_tool() {
   printf '%s\n' "$UNION" | grep -qx "$1"
@@ -100,12 +100,12 @@ note_fail() { # note_fail <stem> <check> <detail>
 }
 
 printf '| %-9s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s |\n' \
-  Command Front Name H1 Overlay Profile Order Tools AskUsr
+  Skill Front NoFire H1 Overlay Profile Order Tools AskUsr
 printf '|%s|%s|%s|%s|%s|%s|%s|%s|%s|\n' \
   '-----------' '-------' '-------' '-------' '-------' '-------' '-------' '-------' '-------'
 
-for f in "$CMD_DIR"/*.md; do
-  stem=$(basename "$f" .md)
+for f in "$SKILL_DIR"/*/SKILL.md; do
+  stem=$(basename "$(dirname "$f")")
   cmd_failed=0
 
   case "$stem" in
@@ -127,12 +127,12 @@ for f in "$CMD_DIR"/*.md; do
     cmd_failed=1
   fi
 
-  # --- Check 2: name == vine:<stem> ---
-  name=$(awk 'NR==1{next} /^---$/{exit} /^name:/{sub(/^name:[[:space:]]*/,""); gsub(/["'\'']/,""); sub(/[[:space:]]+$/,""); print; exit}' "$f")
+  # --- Check 2: disable-model-invocation is true (no auto-fire) ---
+  dmi=$(awk 'NR==1{next} /^---$/{exit} /^disable-model-invocation:/{sub(/^disable-model-invocation:[[:space:]]*/,""); gsub(/["'\'']/,""); sub(/[[:space:]]+$/,""); print; exit}' "$f")
   c2=1
-  [ "$name" = "vine:$stem" ] && c2=0
+  [ "$dmi" = "true" ] && c2=0
   if [ "$c2" -ne 0 ]; then
-    note_fail "$stem" Name "name is '$name', expected 'vine:$stem'"
+    note_fail "$stem" NoFire "disable-model-invocation is '$dmi', expected 'true'"
     cmd_failed=1
   fi
 
@@ -229,7 +229,7 @@ for f in "$CMD_DIR"/*.md; do
     while IFS=$(printf '\t') read -r ln txt; do
       [ -n "$ln" ] || continue
       WARNINGS="$WARNINGS
-- $stem.md:$ln — $txt"
+- $stem/SKILL.md:$ln — $txt"
     done <<EOF
 $warn
 EOF
@@ -257,7 +257,7 @@ EOF
     while IFS=$(printf '\t') read -r ln txt; do
       [ -n "$ln" ] || continue
       GLOSSWARN="$GLOSSWARN
-- $stem.md:$ln — $txt"
+- $stem/SKILL.md:$ln — $txt"
     done <<EOF
 $naked
 EOF
@@ -297,13 +297,13 @@ while IFS='|' read -r af anchor; do
   fi
 done <<'PAIRS'
 references/STATE.md|**Verification-tier contract.**
-agents/vine-verification.md|### Feature Verification (cross-change)
-agents/vine-verification.md|**Phase-group scope**
-agents/vine-verification.md|**Full-feature scope**
-agents/vine-verification.md|**Base checks**
-agents/vine-verification.md|**Cross-cutting checks**
-commands/vine/navigate.md|verification-tier contract note
-commands/vine/evolve.md|verification-tier contract note
+plugins/vine/agents/vine-verification.md|### Feature Verification (cross-change)
+plugins/vine/agents/vine-verification.md|**Phase-group scope**
+plugins/vine/agents/vine-verification.md|**Full-feature scope**
+plugins/vine/agents/vine-verification.md|**Base checks**
+plugins/vine/agents/vine-verification.md|**Cross-cutting checks**
+plugins/vine/skills/navigate/SKILL.md|verification-tier contract note
+plugins/vine/skills/evolve/SKILL.md|verification-tier contract note
 PAIRS
 
 # An emptied pair list must not read as green — zero pairs is a failure.
@@ -343,9 +343,9 @@ fi
 
 echo
 if [ "$ISSUE_COUNT" -eq 0 ]; then
-  SUMMARY="✅ $TOTAL/$TOTAL commands pass all checks"
+  SUMMARY="✅ $TOTAL/$TOTAL skills pass all checks"
 else
-  SUMMARY="❌ $ISSUE_COUNT issues found across $FAIL_CMDS commands"
+  SUMMARY="❌ $ISSUE_COUNT issues found across $FAIL_CMDS skills"
 fi
 echo "$SUMMARY"
 [ -n "$FAILDETAIL" ] && printf '%s\n' "$FAILDETAIL"

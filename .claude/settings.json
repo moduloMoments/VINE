@@ -6,10 +6,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/journal-check.sh\""
-          },
-          {
-            "type": "command",
             "command": "sh \"$CLAUDE_PROJECT_DIR/.vine/scripts/trellis-gate.sh\""
           },
           {

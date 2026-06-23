@@ -1,0 +1,16 @@
+{
+  "description": "VINE journal-before-commit guard — blocks `git commit` during an active navigate session (.vine/ACTIVE present) while the active feature's NAVIGATION.md is stale. Fails open on every missing-tooling path.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/journal-check.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

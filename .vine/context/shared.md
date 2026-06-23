@@ -86,7 +86,7 @@ cross-repo distribution is a separate, future concern.
 
 The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
 
-- This repo IS the VINE framework — commands in `commands/vine/` are symlinked into `.claude/commands/vine/`, so running a command runs your working-tree edits.
+- This repo IS the VINE framework — the product lives under `plugins/vine/` (skills, agents, hooks). Contributors dogfood it by installing the repo as a local plugin: `claude plugin marketplace add ./ --scope local` then `claude plugin install vine@moduloMoments --scope local`. **Dev loop:** a directory-source install is a snapshot copy, so a skill edit is picked up by refreshing it — re-run `marketplace add ./ --scope local`, then `uninstall` + `install` (a same-version reinstall is a no-op and won't re-copy the snapshot).
 - Agent reports are findings-trustworthy, diagnosis-unverified: subagent findings (test counts, file lists, AC checks) are reliable, but re-verify root-cause narratives and load-bearing claims with a cheap direct check before acting on them. (Cycle-0 spike evidence: three accurate reports, one inverted root cause.)
 
 ## Project Conventions
@@ -97,12 +97,13 @@ See `CLAUDE.md` — repo facts live there (Knowledge Boundary rule, `references/
 ### Writing Style
 Command authoring conventions live in `CLAUDE.md` (Knowledge Boundary rule: repo facts every contributor session needs).
 
-### Command Addition Checklist
-When adding or removing a VINE command, update all of these:
-- `CLAUDE.md` — command count and list
-- `README.md` — command references, install text, hooks table
-- `references/STATE.md` — if the command affects the artifact chain
-- `.vine/context/verify.md` — command count reference
+### Skill Addition Checklist
+When adding or removing a VINE phase skill, update all of these:
+- `CLAUDE.md` — skill count and list
+- `README.md` — skill references, install text, hooks table
+- `references/STATE.md` — if the skill affects the artifact chain
+- `.vine/context/verify.md` — skill count reference
+- `plugins/vine/skills/<name>/SKILL.md` — the skill file itself (frontmatter: no `name`, plus `disable-model-invocation: true`)
 
 ### State Artifact Addition Checklist
 When adding or removing a state artifact (ROUTE.md's addition in the routing-foundation cycle and
@@ -120,7 +121,7 @@ forward, then in reverse), update all of these:
 When VINE knowledge must be referenced from a surface non-VINE teammates load (CLAUDE.md), use an availability-gated pointer: gate the suggestion on whether the vine commands are actually present in the session's skill list, and point at this file for routing. The gate is what Claude can see, not where files live — so mixed-adoption teams and global installs both resolve correctly. Future commands reuse this pattern instead of reinventing the mixed-adoption answer.
 
 ### Branch Naming
-Feature branches match the VINE project slug: `.vine/projects/<domain>/<feature-slug>` works on `feature/<feature-slug>`. Sessions that arrive on auto-named branches (e.g., worktree sessions) rename to match before the first slice commit.
+Feature branches match the VINE project slug: `.vine/projects/<domain>/<feature-slug>` works on `feature/<feature-slug>`, **cut from `develop`** (the integration branch — see CI/CD's branch model). PRs target `develop`, never `main`. Sessions that arrive on auto-named branches (e.g., worktree sessions) rename to match before the first slice commit.
 
 ### Content Standards
 - Keep command files focused — one phase, one responsibility
@@ -298,7 +299,7 @@ override path is the intended #55 mechanism, available to the team, not the indi
   blocker resolution, and anything that commits the work to a direction expensive to reverse.
 
 This section defines the two classes and their autonomous semantics; `vine-coder`'s recipe
-(`agents/vine-coder.md`) carries how it acts on them. When a decision's class is genuinely
+(`.claude/agents/vine-coder.md`) carries how it acts on them. When a decision's class is genuinely
 ambiguous, treat it as `human-required`: escalation is always safe, silent autonomy is not.
 
 ## Team Context
@@ -333,19 +334,29 @@ extra:
 ## CI/CD
 <!-- class: policy -->
 
+- **Branch model**: `main` holds only released states — the marketplace `source` tracks it (no `ref`),
+  so every released version is reproducible from `main`. `develop` is the integration branch; all
+  development (in-flight cycles included) targets `develop`, and feature branches cut from it. Cutting
+  a release = merge `develop`→`main`, bump the plugin version, tag `vX.Y.Z`, GitHub release.
+- **SemVer policy** (behavior-only product, no API): **major** = a skill removed/renamed or an
+  invocation/artifact-contract break; **minor** = a new skill/agent/hook or capability; **patch** =
+  prose/doc/non-behavioral fixes. The version lives in `plugins/vine/.claude-plugin/plugin.json` and
+  is VINE's single source of truth — the marketplace entry omits `version`, so plugin.json wins.
 - **Trellis gate hook**: this repo's `.claude/settings.json` wires `.vine/scripts/trellis-gate.sh`
-  (PreToolUse on Bash) — commits touching `commands/vine/` are blocked unless `/trellis` has
-  passed since the last command edit (a green run writes `.vine/.trellis-ok`). Contributor-only:
-  `create-vine` never ships this script. The journal-check scaffold hook is wired here too
-  (dogfooding).
+  (PreToolUse on Bash) — commits touching `plugins/vine/skills/` are blocked unless `/trellis` has
+  passed since the last skill edit (a green run writes `.vine/.trellis-ok`). Contributor-only: it
+  isn't in the plugin payload. The journal-check hook now ships *with the plugin* (default-on via
+  `plugins/vine/hooks/hooks.json`) — it is no longer wired in `.claude/settings.json`.
 - **Main guard hook**: `.vine/scripts/main-guard.sh` (PreToolUse on Bash, contributor-only) —
   blocks `git commit` while the checkout is on `main`; sessions that land on the shared
-  checkout get a hard stop telling them to branch or use a worktree.
-- **Publish workflow**: `.github/workflows/publish.yml` — manual dispatch, publishes `create-vine` to npm with provenance
-  - Reads version from `package.json`, extracts release notes from `CHANGELOG.md`
-  - Runs smoke test (`bin/cli.js` in temp dir, verifies command files are installed)
+  checkout get a hard stop telling them to branch or use a worktree. Fits the branch model: `main`
+  is release-only.
+- **Release workflow**: `.github/workflows/publish.yml` ("Release plugin") — manual dispatch, no npm
+  - Parses the version from `plugins/vine/.claude-plugin/plugin.json`, extracts release notes from `CHANGELOG.md`
+  - Runs `sh .vine/scripts/trellis-check.sh` as the validation step (replacing the old node smoke test)
   - Creates git tag + GitHub release with changelog notes
-- **Testing**: Run VINE phases on real repos to test command changes
-- **Validation**: Run `/trellis` before submitting PRs to check command structure and artifact format compliance
+- **PR CI**: `.github/workflows/ci.yml` runs `.vine/scripts/run-tests.sh` + `.vine/scripts/trellis-check.sh` on every PR — a malformed SKILL.md fails the check.
+- **Testing**: Run VINE phases on real repos to test skill changes
+- **Validation**: Run `/trellis` before submitting PRs to check skill structure and artifact format compliance
 - **Build**: None — pure markdown, no compilation step
-- **Release checklist**: Bump version in `package.json`, add entry to `CHANGELOG.md`, then trigger the publish workflow
+- **Release checklist**: Bump `version` in `plugins/vine/.claude-plugin/plugin.json` (per SemVer), add an entry to `CHANGELOG.md`, merge `develop`→`main`, then trigger the Release workflow (tags `vX.Y.Z` + cuts the GitHub release). Users update via `/plugin update vine`.

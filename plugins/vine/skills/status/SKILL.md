@@ -1,7 +1,7 @@
 ---
-name: vine:status
 description: "Check feature progress — see which phase you're in, what's done, what's next, and artifact status without loading full session context"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob

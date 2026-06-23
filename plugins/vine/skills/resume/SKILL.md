@@ -1,7 +1,7 @@
 ---
-name: vine:resume
 description: "Resume a paused VINE session — restore full context, see where you left off and what's blocking, and jump back into the right phase"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob
