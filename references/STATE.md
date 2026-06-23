@@ -129,7 +129,7 @@ basis), joining the chain between SPEC.md and NAVIGATION.md.
 **It is retired.** The artifact chain is now **CONTEXT → SPEC → NAVIGATION → EVOLUTION**, with no
 ROUTE leg. Autonomous work no longer runs by an agent impersonating a human-driven `vine:navigate`
 under a route record — it runs through the `vine-coder` agent (the autonomous coding role, see
-`plugins/vine/agents/vine-coder.md`), bounded by a **ticket** and gated by a **PR review**. ROUTE's whole payload
+`.claude/agents/vine-coder.md`), bounded by a **ticket** and gated by a **PR review**. ROUTE's whole payload
 has a home without it: the scope and constraints live in the ticket, the touched-file leash is the
 agent's self-derived discipline, the validation baseline is the `## Validation` block in
 `.vine/context/shared.md`, and the authorization-vs-execution record is git / the PR. The ticket

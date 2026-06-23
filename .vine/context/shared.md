@@ -299,7 +299,7 @@ override path is the intended #55 mechanism, available to the team, not the indi
   blocker resolution, and anything that commits the work to a direction expensive to reverse.
 
 This section defines the two classes and their autonomous semantics; `vine-coder`'s recipe
-(`plugins/vine/agents/vine-coder.md`) carries how it acts on them. When a decision's class is genuinely
+(`.claude/agents/vine-coder.md`) carries how it acts on them. When a decision's class is genuinely
 ambiguous, treat it as `human-required`: escalation is always safe, silent autonomy is not.
 
 ## Team Context

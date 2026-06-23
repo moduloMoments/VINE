@@ -425,3 +425,27 @@ Re-swept backtick-tolerant: zero root-relative `agents/vine-*` refs remain; rema
   - **Repo-admin still owed (outside code)**: set `develop` as the default PR base + branch protection on GitHub. The branch model is documented (shared.md, CONTRIBUTING, pr.md, ADR-c) but the forge setting is manual. Flag in the PR or cycle close.
   - **The human-only AC gate** persists: AC1 (cross-skill colon-form re-confirm under a real plugin install) can't be CI-automated (nested `claude -p` 401s — Slice 1/2 discovered item). Slice 1 confirmed it empirically for `status`; the other 10 are structurally identical. Evolve should note this as the one acceptance check that rode on human confirmation, not automation.
   - **#57 is closeable** after PR 4 merges + evolve writes EVOLUTION.md. Per the PR issue-close convention, the impl PR uses `Refs #57`; evolve still owes the EVOLUTION report and has already produced the cycle's knowledge ADRs (Slice 9).
+
+### Post-completion refinement (2026-06-23): agent re-homing
+**Commit**: pending
+Engineer raised, before the Phase-4 PR, that not all four agents should ship in the plugin. Reviewed
+the four and confirmed a clean split: the **phase-support** agents (`vine-codebase-explorer`,
+`vine-verification`) are invoked by the skills themselves and must ship; the **autonomous-role**
+agents (`vine-coder`, `vine-reviewer`) are the delegation layer, which has **no safe trigger surface
+yet** (naming-on-tickets is pending integration) and **no auto-delegation gate** (agents lack a
+`disable-model-invocation` equivalent) — so a shipped write-capable `vine-coder` would be a live
+auto-delegation target in every install. Engineer's call: **move both out of the payload, update
+everything as if that was the plan.**
+Done: `git mv` `vine-coder.md` + `vine-reviewer.md` → `.claude/agents/` (repo-resident, native
+project-agent dir, symmetric with `.claude/commands/`; loads for `/pr-review` dogfooding + forks,
+outside the plugin `source` dir so not shipped). Path/count/shipped-phrasing updates across README
+(install count + "The agents" reframe + ticket links), CLAUDE.md (What This Repo Is + Repository
+Structure, added `.claude/agents/` row), CHANGELOG, `shared.md`, `references/STATE.md`, `pr-review.md`
+(4 links). New ADR `2026-06-23-hold-autonomous-role-agents-out-of-the-shipped-payload`; ADR-d's
+payload check `agents(4)`→`agents(2)` with a tie-in. Role/concept descriptions (the delegation design
+in shared.md/STATE.md/ROADMAP/skills) left intact — only *packaging* changed, not the model.
+Validation: trellis-check 11/11 (anchors only reference `vine-verification`, which stayed); payload =
+`agents(2)`; `.claude/agents/` = coder+reviewer; zero residual `plugins/vine/agents/{coder,reviewer}`
+refs; ADR cross-refs resolve. **For evolve:** the cycle now ships **2 agents**, not 4 — fold this into
+the full-feature AC pass (AC4 "agents intact" still holds: the 4 recipes exist and load; 2 ship, 2 are
+repo-resident).

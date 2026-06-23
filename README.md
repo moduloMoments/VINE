@@ -121,7 +121,7 @@ claude plugin marketplace add moduloMoments/VINE
 claude plugin install vine@moduloMoments
 ```
 
-This brings the full product — all 11 phases (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:optimize`, `/vine:help`), the four agents, and the journal-check hook — available in every project. Each phase invokes in colon form: `/vine:<name>`.
+This brings the full product — all 11 phases (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:optimize`, `/vine:help`), the two agents the phases call (codebase exploration + verification), and the journal-check hook — available in every project. Each phase invokes in colon form: `/vine:<name>`. (The autonomous-delegation agents are repo-resident, not shipped by default — see [Autonomous delegation](#autonomous-delegation).)
 
 ### Updating
 
@@ -380,7 +380,7 @@ with a reviewer (a person, or another agent) checking the result afterward. Dele
 nothing about the normal human-driven flow changes unless you deliberately hand work off.
 
 **The ticket.** Autonomous work isn't an agent impersonating a human running `vine:navigate` — it's
-a **ticket** handed to the [`vine-coder`](plugins/vine/agents/vine-coder.md) agent (the autonomous coding role).
+a **ticket** handed to the [`vine-coder`](.claude/agents/vine-coder.md) agent (the autonomous coding role).
 The ticket carries everything a cold agent needs as plain instructions: which SPEC slice(s) to
 implement, a pointer to SPEC.md and the feature's artifact directory, and any scope constraints.
 `vine-coder` orients from the ticket, implements within scope (deriving its own touched-file
@@ -389,18 +389,25 @@ commits per slice, and opens **one PR** with a handoff. Because a sub-agent can'
 mid-task, a decision a human must own is escalated in the handoff and the run stops — never guessed.
 
 **The leash is the PR review.** The PR that comes back is the result; a human or the
-[`vine-reviewer`](plugins/vine/agents/vine-reviewer.md) agent reviews it before merge. `vine-reviewer` is the
+[`vine-reviewer`](.claude/agents/vine-reviewer.md) agent reviews it before merge. `vine-reviewer` is the
 recipe for a fresh reviewer who wasn't part of the session: how to orient (read the originating
 scope, then the journal, then the commits and final files) and what to produce (a verdict,
 severity-ordered findings, and a draft PR description). Its `tools` exclude Edit/Write, so "report
 only" is enforced by the platform, not just asserted. Everything the reviewer needs lives in
 durable state, not session memory.
 
-**The agents.** [`plugins/vine/agents/`](plugins/vine/agents/) ships the agent definitions VINE auto-delegates to by
-description match: `vine-verification` (runs the validation baseline and checks acceptance
-criteria), `vine-codebase-explorer` (structured codebase exploration), `vine-coder` (the autonomous
-coding role above), and `vine-reviewer` (the cold-reviewer role above). The verification and
-exploration agents work the same whether a human or `vine-coder` drives the work.
+**The agents.** The plugin ships the two agents the interactive phases call, auto-delegated by
+description match: [`vine-verification`](plugins/vine/agents/vine-verification.md) (runs the
+validation baseline and checks acceptance criteria) and
+[`vine-codebase-explorer`](plugins/vine/agents/vine-codebase-explorer.md) (structured codebase
+exploration). The two **autonomous-role** agents — [`vine-coder`](.claude/agents/vine-coder.md) (the
+autonomous coding role above) and [`vine-reviewer`](.claude/agents/vine-reviewer.md) (the
+cold-reviewer role above) — live in the repo under `.claude/agents/`, **not** in the plugin payload.
+They're available to contributors and to anyone who forks VINE, but the delegation flow is opt-in and
+deliberately not shipped on-by-default: until it has an intentional trigger surface and a guard
+against accidental auto-delegation (agent definitions carry no `disable-model-invocation` equivalent
+today), a write-capable autonomous coder shouldn't be a live delegation target in every install. The
+verification and exploration agents work the same whether a human or `vine-coder` drives the work.
 
 VINE owns the role recipes and the ticket convention; the platform owns how a role is invoked (the
 sub-agent, a CI trigger) — VINE never implements an agent runner. See the

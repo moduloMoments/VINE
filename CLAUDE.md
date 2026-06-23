@@ -2,18 +2,19 @@
 
 ## What This Repo Is
 
-VINE is a pure-markdown AI-assisted development framework, distributed as a native Claude Code plugin. There is no build step, no runtime code, no compilation. The product lives under `plugins/vine/`: 11 skills at `plugins/vine/skills/<name>/SKILL.md` (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize), four agents at `plugins/vine/agents/`, and the journal-check hook at `plugins/vine/hooks/` — plus a state reference at `references/STATE.md` and a README. The plugin manifest is `plugins/vine/.claude-plugin/plugin.json`; the self-hosted marketplace entry is `.claude-plugin/marketplace.json` at the repo root.
+VINE is a pure-markdown AI-assisted development framework, distributed as a native Claude Code plugin. There is no build step, no runtime code, no compilation. The product lives under `plugins/vine/`: 11 skills at `plugins/vine/skills/<name>/SKILL.md` (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize), the two agents the phases invoke at `plugins/vine/agents/` (`vine-codebase-explorer`, `vine-verification`), and the journal-check hook at `plugins/vine/hooks/` — plus a state reference at `references/STATE.md` and a README. The plugin manifest is `plugins/vine/.claude-plugin/plugin.json`; the self-hosted marketplace entry is `.claude-plugin/marketplace.json` at the repo root. The two autonomous-role agents (`vine-coder`, `vine-reviewer`) are repo-resident under `.claude/agents/`, **not** in the plugin payload (see Repository Structure).
 
 **Editing a skill file changes the tool itself.** Test changes by running the modified phase on a real repo (refresh the local plugin install to pick the edit up — see the dev loop in `.vine/context/shared.md`).
 
 ## Repository Structure
 
 - `plugins/vine/skills/<name>/SKILL.md` — The 11 VINE phase skills (init, verify, inquire, navigate, evolve, pair, pause, resume, status, help, optimize). These ARE the product.
-- `plugins/vine/agents/` — Shipped agent definitions, auto-delegated by description matching
+- `plugins/vine/agents/` — The two shipped agents the phases invoke (`vine-codebase-explorer`, `vine-verification`), auto-delegated by description matching
 - `plugins/vine/hooks/` — The journal-check hook, wired via `hooks/hooks.json` (ships default-on with the plugin)
 - `plugins/vine/.claude-plugin/plugin.json` — Plugin manifest; its `version` is VINE's single source of truth
 - `.claude-plugin/marketplace.json` — Self-hosted marketplace entry (`source: ./plugins/vine`)
-- `.claude/commands/` — Contributor tools (trellis, triage, pr). Not part of the distributed product.
+- `.claude/commands/` — Contributor tools (trellis, triage, pr, pr-review). Not part of the distributed product.
+- `.claude/agents/` — The autonomous-role agents (`vine-coder`, `vine-reviewer`), repo-resident and **not** in the plugin payload. Available for contributor dogfooding (`/pr-review`) and for forks; the autonomous-delegation flow is opt-in (see the agent re-homing ADR in `.vine/knowledge/workflow/`)
 - `references/STATE.md` — State artifact contracts between phases
 - `ROADMAP.md` — Canonical cycle structure; the GitHub milestone is issue-level truth
 - `.github/` — PR template, issue templates (bug, friction, idea)

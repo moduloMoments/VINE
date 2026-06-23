@@ -34,10 +34,13 @@ whole-repo-payload concern.
 
 ## Consequences
 
-- Verified: the installed snapshot contains only `.claude-plugin/ + skills(11) + agents(4) +
-  hooks(2)` — `.vine/`, `commands/`, `bin/`, `references/`, `package.json`, and the contributor-only
-  hooks (`trellis-gate.sh`, `main-guard.sh`) are all absent. AC5 ("contributor hooks not shipped")
-  is met in *letter*, not merely intent — they aren't in the payload at all.
+- Verified: the installed snapshot contains only the product — `.claude-plugin/ + skills(11) +
+  agents(2) + hooks(2)` — `.vine/`, `commands/`, `bin/`, `references/`, `package.json`, the
+  contributor-only hooks (`trellis-gate.sh`, `main-guard.sh`), and the repo-resident autonomous-role
+  agents under `.claude/agents/` are all absent. AC5 ("contributor hooks not shipped") is met in
+  *letter*, not merely intent — they aren't in the payload at all. (The scoped `source` dir is also
+  what keeps `.claude/agents/` out — see
+  `2026-06-23-hold-autonomous-role-agents-out-of-the-shipped-payload`.)
 - A *local directory* source copies gitignored working files into the cache (a local-dev-only leak),
   but a *github* source (production) clones, so only committed files ship — the leak never reaches
   users.
