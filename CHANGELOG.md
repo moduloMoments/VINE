@@ -4,6 +4,8 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-23
+
 This is the 0.4.0 "platform alignment" cycle — aligning VINE's vocabulary and mechanics with
 Claude Code's native platform surface: context overlays vs. native hooks, honest enforcement,
 the knowledge boundary, native task tools, gearing↔permission-mode, and — closing the cycle —
