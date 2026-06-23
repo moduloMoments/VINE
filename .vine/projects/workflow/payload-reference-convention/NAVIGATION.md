@@ -41,7 +41,7 @@ Pre-existing legacy `.vine/hooks/` warnings in init unchanged (warnings, not fai
 
 ### Slice 1: Document the convention — Complete
 **Started**: 2026-06-23 17:25
-**Commit**: pending
+**Commit**: bc04aef
 **Gear**: free-climb
 **Approach taken**: Wrote the three-bucket reference convention into its two homes. CLAUDE.md
 "Skill Authoring Conventions" gets one bullet + three sub-bullets (the authoring rule: payload-internal
@@ -65,4 +65,58 @@ authoring home. Minimal duplication: CLAUDE.md = rule, CONTRACTS.md = rationale.
 **Learnings**:
   - Claude → Engineer: the AC "both homes state the buckets" risks pure duplication; splitting by
     purpose (rule vs rationale) satisfies it without two copies drifting apart.
+  - Engineer → Claude: None.
+
+### Slice 2: Make shipped skills self-contained — Complete
+**Started**: 2026-06-23 17:40
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Applied the three-bucket convention across all 9 affected skills, batched by
+size (small six → init → navigate → evolve). Triaged each `references/STATE.md` citation as binary:
+runtime-critical → inline an operative copy; provenance-only → drop the path. Net: 60 `references/`
+citations removed from skill bodies (58 STATE.md + the agent pair), 0 remain. Runtime-critical
+inlines were few — PROFILE.md format (`## Domain Expertise` table) inlined in verify + evolve; the
+PAUSE.md template (pause), ACTIVE format (navigate), and journal-entry schema (navigate) were
+already inline below their pointers, so the pointers just dropped. For "two roots" pointers, cited
+`shared.md`'s Overlay Loading Protocol (bucket-2) instead — matching verify's existing in-skill
+pattern. Converted the two agent citations (`agents/vine-verification.md` → "the `vine-verification`
+agent") to invocable-name form. Removed the dead consumer-template pointers from init (README step
+4, CLAUDE.md step 8) and — discovered — optimize's CLAUDE.md-pointer template (3e). Reworded three
+descriptive bare-payload-path mentions to satisfy the #138 no-bare-path AC.
+**Deviations from spec**: Three, all annotated in SPEC.md Slice 2 addendum. (1) optimize also wrote
+a dead `references/STATE.md` pointer into a consumer's CLAUDE.md (spec named only init); fixed.
+(2) Removing the bucket-3 "verification-tier contract note" pointer from navigate/evolve broke
+`/trellis` Check 10 — removed the two stale anchor pairs from all three coupled homes
+(`trellis-check.sh`, `trellis.md`, `run-tests.sh`). (3) Reworded three descriptive bare-payload-path
+mentions (init `skills/<name>/SKILL.md`, init `hooks/hooks.json`, evolve "skills/commands").
+**Validation**: `pass` — `sh .vine/scripts/trellis-check.sh` exit 0 (11/11 skills pass; 6 anchor
+pairs resolve; legacy `.vine/hooks/` lines remain warning-only, unchanged); `sh .vine/scripts/run-tests.sh`
+27/27. Greps confirm zero `references/` and zero bare `agents/|skills/|hooks/` file paths in
+`plugins/vine/skills/`; shipped agents/hooks carry only bucket-2 `.vine/` + `${CLAUDE_PLUGIN_ROOT}`
+refs (unchanged — confirmed clean, not edited).
+**Decisions made during implementation**:
+  - Binary triage (inline vs drop), never leave a `references/` path even as provenance — the
+    self-contained rule (CONTRACTS.md:572) forbids any VINE-source-internal path on a shipped
+    surface (decided by: claude) [confidence: high]
+  - Drop dangling enumerated references ("property 4", "the five properties") rather than cite a
+    number the runtime can't resolve — the operative ADR-writing template is inline; the five
+    properties never were (decided by: claude) [confidence: high]
+  - Cite `shared.md`'s Overlay Loading Protocol (bucket-2) for personal-root resolution instead of
+    the bucket-3 *The two roots* — matches verify's pre-existing in-skill pattern (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] Zero `references/STATE.md` (or any `references/…`) in `plugins/vine/skills/` (#142)
+  - [x] No bare `agents/|skills/|hooks/` path in a skill body; payload cross-refs by invocable name (#138)
+  - [x] init's README + CLAUDE.md templates write no `references/…` pointer; same for optimize (#141)
+  - [x] Runtime-critical content inlined (PROFILE.md format); a spot-run produces a correct artifact
+        — the live navigate session itself, plus trellis structural pass on all 11 skills
+  - [x] Shipped agents/hooks confirmed clean (bucket-2 only)
+**Engineer feedback incorporated**: Free climb + batch-by-size checkpointing (engineer's gear choice);
+review at slice boundary.
+**Learnings**:
+  - Claude → Engineer: most of the 58 STATE.md refs were provenance ("see X for detail"), safe to
+    drop — the runtime-critical content was already inlined, confirming verify's read. Only PROFILE.md
+    format needed a fresh inline (in two skills).
+  - Claude → Engineer: a removed cross-reference can break `/trellis` from the *other* side — Check 10
+    couples the skill's pointer phrase to an anchor pair, so deleting the pointer requires deleting
+    its pair (the Slice 0 lockstep, run in reverse).
   - Engineer → Claude: None.

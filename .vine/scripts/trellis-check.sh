@@ -302,8 +302,6 @@ plugins/vine/agents/vine-verification.md|**Phase-group scope**
 plugins/vine/agents/vine-verification.md|**Full-feature scope**
 plugins/vine/agents/vine-verification.md|**Base checks**
 plugins/vine/agents/vine-verification.md|**Cross-cutting checks**
-plugins/vine/skills/navigate/SKILL.md|verification-tier contract note
-plugins/vine/skills/evolve/SKILL.md|verification-tier contract note
 PAIRS
 
 # An emptied pair list must not read as green — zero pairs is a failure.

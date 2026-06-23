@@ -45,8 +45,8 @@ that seeds new domains:
   Add the domain to `PROFILE.md` at the resolved shared personal root (**Resolving the personal
   root** in `shared.md`'s Overlay Loading Protocol — `<personal-root>/.vine.local/PROFILE.md`, not
   cwd, so the profile is written and read at the same place from every worktree) with the selected
-  level and today's date. If PROFILE.md doesn't exist there yet, create it with the format
-  documented in `references/STATE.md`.
+  level and today's date. If PROFILE.md doesn't exist there yet, create it with a
+  `## Domain Expertise` table (columns: Domain, Level, Last Updated, Notes).
 
 If no profile exists and the engineer hasn't confirmed a domain yet, do nothing — the prompt
 happens naturally when the domain is confirmed during CONTEXT.md creation. No upfront questions.
@@ -95,8 +95,8 @@ vine:inquire is for. You just need enough direction to know where to look.
 
 **Start with prior judgment on record.** Before reading code, glob this domain's durable-decision
 records — `.vine/knowledge/<domain>/` (and `.vine/knowledge/` broadly when the domain isn't pinned
-down yet from step 1). These are the team's committed *judgment* about this area (format in
-`references/STATE.md`, "Durable Decisions & Gotchas"): why past approaches were chosen over their
+down yet from step 1). These are the team's committed *judgment* about this area (the "Durable
+Decisions & Gotchas" knowledge records): why past approaches were chosen over their
 alternatives, gotchas that cost someone time. Present what you find in a dedicated **Durable
 Decisions on record** subsection — each record's title, status, and gist — so you and the engineer
 carry prior reasoning into the exploration instead of rediscovering it.
@@ -236,7 +236,7 @@ Structure:
 [Anything unresolved that vine:inquire needs to address]
 ```
 
-The section headings above are the CONTEXT.md template headings from `references/STATE.md`.
+The section headings above are the CONTEXT.md template headings.
 Use them verbatim. Extending a heading with subtitle text after a colon or dash (e.g.,
 `### Current State — Drift Findings`) is fine; replacing or rewording the heading itself is
 not. Downstream phases and artifact-format validation locate sections by these headings, so
@@ -274,8 +274,8 @@ under. Use `AskUserQuestion` (one question, per the Interaction Constraints in `
   `.vine.local/` root is gitignored entirely, so the project stays on this machine — nothing about
   it enters a commit. Use this for spikes, throwaway exploration, or work you're not ready to share.
 
-Resolve `.vine.local/` at the shared personal root (the repo's primary worktree), per *The two
-roots* in `references/STATE.md` — not cwd, so the choice holds across worktrees. Whichever root the
+Resolve `.vine.local/` at the shared personal root (the repo's primary worktree), per **Resolving
+the personal root** in `shared.md`'s Overlay Loading Protocol — not cwd, so the choice holds across worktrees. Whichever root the
 engineer picks, the rest of the cycle follows it automatically: discovery scans both roots, and the
 per-path commit test (Sign-Off Gate, below) commits a shared project and skips a local one with no
 special-casing.
@@ -345,7 +345,7 @@ from the absence of objections; ask for it. This is the gate that closes verify,
 Once approved:
 
 1. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
-   directory** — the per-path test in "Committing Artifacts", `references/STATE.md` — and it exits
+   directory** — the per-path test in "Committing Artifacts" — and it exits
    non-zero), commit CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history. If
    the feature directory is gitignored (a local project under `.vine.local/projects/`), skip this
    step silently — personal-scope artifacts never enter a commit.

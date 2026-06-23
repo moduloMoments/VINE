@@ -128,6 +128,20 @@ a new long section.
   CLAUDE.md template step 8).
 - Confirm shipped agents/hooks stay clean (verify found only bucket-2 `.vine/` refs — leave them).
 **Files likely touched**: `plugins/vine/skills/{evolve,init,navigate,inquire,optimize,verify,pause,resume,status}/SKILL.md`.
+**Addendum (navigate, Slice 2)**: three additions beyond the spec's named scope.
+(1) **optimize also writes a dead consumer pointer.** The spec named only init for the #141
+write-half, but `optimize/SKILL.md`'s "Verify the CLAUDE.md Pointer" template (3e) injected the same
+`(format in references/STATE.md)` into a *consumer's* CLAUDE.md. Removed there too — required by the
+zero-`references/` AC regardless.
+(2) **Stale Check 10 anchor pair.** Removing the bucket-3 "verification-tier contract note" pointer
+from `navigate`/`evolve` left their `trellis-check.sh` Check 10 anchor expectations dangling, failing
+`/trellis`. Removed the two navigate/evolve pairs from all three coupled homes
+(`.vine/scripts/trellis-check.sh` PAIRS, `.claude/commands/trellis.md` Check 10 table + prose,
+`.vine/scripts/run-tests.sh` fixture) — the same lockstep Slice 0 hit. The CONTRACTS.md + agent
+anchors (6 pairs) still resolve.
+(3) **Three descriptive bare-payload-path mentions** (`init` `skills/<name>/SKILL.md` and
+`hooks/hooks.json`; `evolve` "skills/commands") reworded — within the #138 AC ("no bare
+`agents/|skills/|hooks/` path in a skill body"), so the Slice 3 guard can be strict.
 **Acceptance criteria**: the #142/#138/#141 ACs above all hold; a spot-run of one phase still
 produces a correct artifact.
 **Complexity signal**: High — broad (9 files, ~67 refs) though individually mechanical. Navigate may

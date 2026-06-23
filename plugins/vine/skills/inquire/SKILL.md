@@ -41,7 +41,7 @@ decide, and document everything. The output is a SPEC.md that vine:navigate can 
 
 ### 1. Load the Context
 
-Identify the feature directory per the Filtering Convention in `references/STATE.md` (both roots —
+Identify the feature directory per the Filtering Convention (both roots —
 look for the domain/feature-slug path, e.g. `.vine/projects/payments/webhook-support/` or
 `.vine.local/projects/...` — with resolved and `.archive/` subtrees filtered out). If there's only
 one active feature directory, use that. If there are multiple, use `AskUserQuestion` to let the
@@ -64,10 +64,10 @@ If CONTEXT.md exists, read it and summarize the key points back to the engineer:
 > were: [list]. Let's start by resolving those."
 
 **Consume any pause state.** If the feature's mirrored personal path
-(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per *The two roots* in
-`references/STATE.md`) contains a PAUSE.md (e.g., the engineer paused after verify), surface its
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per **Resolving the personal root** in
+`shared.md`'s Overlay Loading Protocol) contains a PAUSE.md (e.g., the engineer paused after verify), surface its
 notes alongside the summary above, then delete it — the
-consumed-once rule (see `references/STATE.md`). A consumed pause must not linger: it would keep
+consumed-once rule. A consumed pause must not linger: it would keep
 suggesting `/vine:resume` for work that has already resumed. Anything worth keeping past this
 session belongs in the artifacts, not PAUSE.md. (If no PAUSE.md is present, skip.)
 
@@ -265,7 +265,7 @@ Compile everything into the spec document:
 [External dependencies, team coordination needed, unknowns]
 ```
 
-The section headings above are the SPEC.md template headings from `references/STATE.md`.
+The section headings above are the SPEC.md template headings.
 Use them verbatim. Extending a heading with subtitle text after a colon or dash is fine;
 replacing or rewording the heading itself is not. Navigate and artifact-format validation
 locate sections by these headings, so a custom heading breaks the chain silently.
@@ -314,7 +314,7 @@ Once approved:
 1. Update PROJECT-MAP.md (if it exists) — set the inquire row to ✅ with today's date.
 
 2. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
-   directory** — the per-path test in "Committing Artifacts", `references/STATE.md` — and it exits
+   directory** — the per-path test in "Committing Artifacts" — and it exits
    non-zero), commit SPEC.md and the PROJECT-MAP.md update. If the feature directory is gitignored
    (a local project under `.vine.local/projects/`), skip this step silently — personal-scope
    artifacts never enter a commit.

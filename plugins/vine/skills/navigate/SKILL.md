@@ -57,7 +57,7 @@ your approach, and teaching you things about the domain that make the implementa
 
 ### 1. Load Context and Spec
 
-Identify the feature directory per the Filtering Convention in `references/STATE.md` (both roots —
+Identify the feature directory per the Filtering Convention (both roots —
 e.g. `.vine/projects/payments/webhook-support/` or `.vine.local/projects/...` — with resolved and
 `.archive/` subtrees filtered out). If there are multiple feature directories, use `AskUserQuestion`
 to let the engineer pick which feature to work on. If all projects are resolved or archived, tell
@@ -76,8 +76,7 @@ previous session. Read it to understand what's already been done and pick up whe
 Check if SPEC.md organizes slices into phase groups. If it does, you're working on one phase
 group per session. Identify which group is next based on NAVIGATION.md progress.
 
-**Mark the session active.** Write `.vine/ACTIVE` (repo root, gitignored — format in
-`references/STATE.md`) before starting work:
+**Mark the session active.** Write `.vine/ACTIVE` (repo root, gitignored) before starting work:
 
 ```
 feature: .vine/projects/<domain>/<feature-slug>
@@ -91,15 +90,15 @@ session is active on this feature" so installed native hooks can scope their che
 active work. It never leaves the machine.
 
 **Consume any pause state.** If the feature's mirrored personal path
-(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per *The two roots* in
-`references/STATE.md`) contains a PAUSE.md, picking the work back up consumes it: surface its
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per **Resolving the personal root** in
+`shared.md`'s Overlay Loading Protocol) contains a PAUSE.md, picking the work back up consumes it: surface its
 notes in your starting-point summary, then delete the file.
 A consumed pause must not linger — it would keep suggesting `/vine:resume` for work that has
 already resumed.
 
 **Build the live task view (when available).** If native task tools are available in this
 session, create the live view of slice progress (the ephemeral, in-session mirror of the
-journal — see "Source of Truth vs Derived Views" in `references/STATE.md`): `TaskCreate` one
+journal): `TaskCreate` one
 task per remaining slice in the current phase group, titled by the slice name. (If SPEC.md
 isn't grouped into phases, use every not-yet-complete slice in the feature.) Order them with
 `blockedBy` so each task depends on the one before it. Skip slices already marked `Complete`
@@ -252,8 +251,7 @@ failures to the next slice.
 Before committing, update the slice's entry in `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md`
 with the full journal record. This is a prerequisite for committing — update the journal
 first, every time. It's mechanically enforced when the scaffold hooks are installed:
-`journal-check.sh` blocks `git commit` while NAVIGATION.md is older than the last commit
-(see `references/STATE.md`). Without the scaffold, honoring the ordering is on you — never
+`journal-check.sh` blocks `git commit` while NAVIGATION.md is older than the last commit. Without the scaffold, honoring the ordering is on you — never
 stronger than that. For each slice, capture:
 
 ```markdown
@@ -276,29 +274,26 @@ stronger than that. For each slice, capture:
 ```
 
 This is navigate's interactive journal entry — the human-driven subset of the NAVIGATION.md
-schema in `references/STATE.md`. Use the labels verbatim: keep the `Slice N:` prefix, the literal
+schema. Use the labels verbatim: keep the `Slice N:` prefix, the literal
 `In Progress` / `Complete` status words (pause matches on them), and the field labels as written.
 Resume, pause, and artifact-format validation locate entries by these strings, so a custom heading
 or relabeled field breaks the chain silently.
 
 `**Gear**` records the gearing choice you'd otherwise lose to prose. Lead `**Validation**` with a
 bare `pass`/`fail` token; a slice that lands in more than one commit lists them `+`-separated
-(`hashA + hashB`) in the single `**Commit**` field. The full schema — including the optional fields
-an autonomous `vine-coder` run adds (it writes the journal itself; navigate never runs unattended)
-and the journal-schema contract behind them — is in `references/STATE.md`.
+(`hashA + hashB`) in the single `**Commit**` field. An autonomous `vine-coder` run adds optional
+fields and writes the journal itself; navigate never runs unattended.
 
 **c. Commit the slice**
 
 Stage the changed files and commit with this format. **When this feature directory is tracked**
-(the per-path `git check-ignore` test — see *Committing Artifacts* in `references/STATE.md`),
+(the per-path `git check-ignore` test),
 bundle this slice's artifact updates into the same commit so the tracked spec and journal never lag
 the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation annotations you made
 during the slice (step 6). **When the feature directory is gitignored** — a local project under
 `.vine.local/projects/`, which is fine — commit code only; the
 journal-before-commit guarantee compares file modification time, not commit contents, so it holds
-either way. Never force-add a gitignored artifact. (The full per-commit-point breakdown —
-slice / phase-group boundary / evolve / PR — lives in `references/STATE.md` under *Committing
-Artifacts*.)
+either way. Never force-add a gitignored artifact.
 
 ```
 <slice-name>: <1-2 sentence summary>
@@ -455,9 +450,8 @@ phase group boundary before showing the completion block:
    handoff prep — but thorough enough that a PR opened after this step is shippable.
 
    > **Verification tiers:** This is the phase-group tier; evolve runs the full-feature
-   > tier. The boundary between them — and the intentional asymmetry — is documented in
-   > the verification-tier contract note in `references/STATE.md`. The checklist itself
-   > lives in `agents/vine-verification.md`.
+   > tier. The two tiers are intentionally asymmetric; the `vine-verification` agent
+   > owns the checklist itself.
 
 2. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
    `✅ Shipped` (or `✅ Complete` if no PR yet).

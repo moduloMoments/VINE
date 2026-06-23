@@ -131,9 +131,10 @@ check (and both allowlist entries) is slated to harden to a failure.
 
 ### Check 10: Cross-Reference Anchors (repo-level)
 
-The verification-tier contract spans three surfaces — `plugins/vine/agents/vine-verification.md` (the
-checklist), `plugins/vine/skills/navigate/SKILL.md` and `plugins/vine/skills/evolve/SKILL.md` (the tier
-pointers), and `references/CONTRACTS.md` (the contract note) — held together by literal anchor strings.
+The verification-tier contract spans two surfaces — `plugins/vine/agents/vine-verification.md` (the
+checklist) and `references/CONTRACTS.md` (the contract note) — held together by literal anchor strings.
+(The shipped skills describe the two tiers but, per the self-contained rule, carry no pointer into
+`references/`, so they are no longer anchored here.)
 This check verifies each anchor still resolves. It catches the drift class where a section
 is renamed but its cross-references aren't updated (the stale "step 9" pointer this check
 was born from).
@@ -154,12 +155,9 @@ Verify each file → anchor pair (literal substring match; the same list lives i
 | `plugins/vine/agents/vine-verification.md` | `**Full-feature scope**` |
 | `plugins/vine/agents/vine-verification.md` | `**Base checks**` |
 | `plugins/vine/agents/vine-verification.md` | `**Cross-cutting checks**` |
-| `plugins/vine/skills/navigate/SKILL.md` | `verification-tier contract note` |
-| `plugins/vine/skills/evolve/SKILL.md` | `verification-tier contract note` |
 
-The first six pairs confirm the pointed-at anchors exist (the contract note in CONTRACTS.md;
-the mode and scope vocabulary in the agent). The last two confirm both commands still carry
-their pointer to the contract note.
+These six pairs confirm the pointed-at anchors exist (the contract note in CONTRACTS.md;
+the mode and scope vocabulary in the agent).
 
 ### Check 11: Naked Issue Pointers (warning-only)
 

@@ -39,7 +39,7 @@ ship — every feature is an opportunity to grow on three dimensions.
 
 ## Getting Started
 
-Identify the feature directory per the Filtering Convention in `references/STATE.md` (both roots —
+Identify the feature directory per the Filtering Convention (both roots —
 e.g. `.vine/projects/payments/webhook-support/` or `.vine.local/projects/...` — with resolved and
 `.archive/` subtrees filtered out). If there are multiple feature directories, use `AskUserQuestion`
 to let the engineer pick which feature to review. If all projects are resolved or archived, tell
@@ -60,12 +60,11 @@ table, note which phases shipped in prior PRs — evolve's verification should f
 phase group and cross-phase integration, not re-verify already-shipped work.
 
 If the feature's mirrored personal path (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`,
-resolved per *The two roots* in `references/STATE.md`) contains a PAUSE.md, picking the work back up
+resolved per **Resolving the personal root** in `shared.md`'s Overlay Loading Protocol) contains a PAUSE.md, picking the work back up
 consumes it: surface its notes, then delete the file — a consumed pause must not linger suggesting
 `/vine:resume`.
 Also delete `.vine/ACTIVE` (repo root) if it exists: any navigate session on this feature is
-over, and a stale sentinel keeps installed hooks firing against work that's no longer active
-(format and lifecycle in `references/STATE.md`).
+over, and a stale sentinel keeps installed hooks firing against work that's no longer active.
 
 ## Evolution 1: Product
 
@@ -112,9 +111,8 @@ Pass the agent:
   otherwise reads the `## Validation` block in `.vine/context/shared.md`, prose-inference fallback)
 
 > **Verification tiers:** This is the full-feature tier; navigate runs the phase-group tier
-> at phase group boundaries. The boundary between them — and the intentional asymmetry — is
-> documented in the verification-tier contract note in `references/STATE.md`. The checklist
-> itself lives in `agents/vine-verification.md`.
+> at phase group boundaries. The two tiers are intentionally asymmetric; the
+> `vine-verification` agent owns the checklist itself.
 
 **For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
 `gh` CLI is available, review the prior PRs as part of integration verification:
@@ -227,7 +225,7 @@ you draft, they commit.
 Before writing any persistent artifacts (CLAUDE.md entries, skills, commands, overlay updates),
 verify they follow current project conventions:
 
-1. Check existing examples first (read other CLAUDE.md entries, existing skills/commands)
+1. Check existing examples first (read other CLAUDE.md entries, existing skills and commands)
 2. Match the naming, structure, and style of what's already there
 3. Flag inconsistencies to the engineer before writing — don't silently create artifacts that
    don't fit the project's patterns
@@ -352,8 +350,8 @@ write bullet points focused on the engineer's contributions and decisions — no
 "learned." Present the draft for editing before writing to the file.
 
 For each accepted change, write the update to the resolved-root `PROFILE.md` directly (the
-`<personal-root>/.vine.local/PROFILE.md` resolved above). Create the file if needed, using the
-format documented in `references/STATE.md`.
+`<personal-root>/.vine.local/PROFILE.md` resolved above). Create the file if needed, using a
+`## Domain Expertise` table (columns: Domain, Level, Last Updated, Notes).
 
 ### Suggest Claude Memory Updates
 
@@ -380,11 +378,10 @@ observations. Domain-specific knowledge goes in the profile, not here.
 
 This cycle produced *judgment* a cold reader can't recover from the code — why an approach won
 over its alternatives, a hard-won gotcha. That judgment has a durable home: `.vine/knowledge/<domain>/`,
-the committed, append-only ADR layer (format and the five properties in `references/STATE.md`,
-"Durable Decisions & Gotchas"). This is the **fourth and last** of evolve's "where does this learning
+the committed, append-only ADR layer. This is the **fourth and last** of evolve's "where does this learning
 go" homes; the routing rule below decides which learnings belong here versus the three you just handled.
 
-**Routing rule (operative copy — canonical version in `references/STATE.md`, "Knowledge Boundary").**
+**Routing rule (operative copy).**
 Route each candidate learning to exactly one home, first match wins:
 
 1. Regenerable from the code? (structure, where-is-X) → home it nowhere; it regenerates on demand.
@@ -409,8 +406,7 @@ candidates, split by category across calls (Interaction Constraints, `shared.md`
 record, write nothing** — declining all is current behavior, fully backward-compatible.
 
 **Write each accepted record.** One date-prefixed file per record under `.vine/knowledge/<domain>/`,
-named `YYYY-MM-DD-<kebab-of-title>.md`, following the Nygard ADR template and the five properties from
-`references/STATE.md`:
+named `YYYY-MM-DD-<kebab-of-title>.md`, following the Nygard ADR template:
 - Title is the decision as a declarative sentence (the filename slug derives from it).
 - Self-contained Context a cold reader understands without session memory; gloss every reference.
 - Status block: `Accepted — <date>` / `Source: <domain>/<feature-slug> · Actor: <who>` /
@@ -426,7 +422,7 @@ one, do both halves of the bidirectional link:
 
 Edit the Status line **only** — never the old record's Context / Decision / Consequences. The body is
 immutable; the single Status-line flip is the lone exception that keeps the layer append-only and
-concurrent-safe (`references/STATE.md`, property 4). Without the flip, a cold reader landing on the old
+concurrent-safe. Without the flip, a cold reader landing on the old
 record would trust a stale `Accepted` and never learn it was replaced.
 
 **Records persist beyond the project.** These files live in `.vine/knowledge/<domain>/`, separate from
@@ -514,7 +510,7 @@ Update PROJECT-MAP.md (if it exists) — set the evolve row to ✅ with today's 
 ### Promote a Local Project to Shared?
 
 This step runs **only for a local project** — one living under `.vine.local/projects/`. Detect it
-with the per-path `git check-ignore` test from *Committing Artifacts* in `references/STATE.md`: a
+with the per-path `git check-ignore` test: a
 local project's feature directory reads as ignored. For a shared project (`.vine/projects/`), skip
 this step silently.
 
@@ -531,7 +527,7 @@ Options (mutually exclusive):
 If the engineer promotes, move the directory tree from the personal root to the shared root. The
 source is gitignored (untracked), so this is a plain `mv`, not `git mv`; the *Commit Evolve Changes*
 step then stages the artifacts at their new tracked path. Resolve `.vine.local/` at the shared
-personal root (the repo's primary worktree), per *The two roots* in `references/STATE.md`:
+personal root (the repo's primary worktree), per **Resolving the personal root** in `shared.md`'s Overlay Loading Protocol:
 
 ```
 mkdir -p .vine/projects/<domain>
@@ -564,22 +560,20 @@ exists — the backstop delete. Evolve's
 session-start consumption normally removed it already, so a PAUSE.md surviving to here appeared
 *after* evolve began and its notes aren't necessarily stale: surface them to the engineer first,
 then delete the file. Never delete it silently — the same surface-then-delete rule the other
-consumption triggers follow (PAUSE.md lifecycle in `references/STATE.md`).
+consumption triggers follow.
 
 **Offer to archive — move resolved work out of the way.** Only when the engineer just resolved
 the project, offer to archive it — move it under its own root's `.archive/`
 (`<root>/projects/.archive/<domain>/<feature-slug>/`, root-aware so a shared project archives within
 `.vine/projects/.archive/` and a project kept local within `.vine.local/projects/.archive/`), which
-preserves the artifacts but gets completed work fully out of the way (lifecycle in `references/STATE.md`,
-"Project Lifecycle"). An active project is never archived. Use `AskUserQuestion`:
+preserves the artifacts but gets completed work fully out of the way. An active project is never archived. Use `AskUserQuestion`:
 
 Options (mutually exclusive):
 1. "Archive now (Recommended)" — "Move the project under its root's `.archive/`"
 2. "Keep in place" — "Leave it resolved-but-unarchived; archive later by hand"
 
 If the engineer archives, move the project directory within its own root — `git mv` when this feature
-directory is tracked (the per-path `git check-ignore` test — see *Committing Artifacts* in
-`references/STATE.md`) so history follows, plain `mv` when it's gitignored (a project kept local).
+directory is tracked (the per-path `git check-ignore` test) so history follows, plain `mv` when it's gitignored (a project kept local).
 With `<root>` the project's root (`.vine/` shared, `.vine.local/` local):
 
 ```
@@ -596,8 +590,7 @@ now live. Declining leaves the project resolved-but-unarchived — a fine termin
 ### Commit Evolve Changes
 
 After resolving (or choosing to keep active), commit the changes generated during the evolve
-phase. What to stage follows the artifact-tracking rule (full breakdown in `references/STATE.md`
-under *Committing Artifacts*):
+phase. What to stage follows the artifact-tracking rule:
 
 - **CLAUDE.md** and **`.vine/context/`** overlay updates (if accepted) — ordinary tracked repo
   files; commit them whenever they change, regardless of the artifact-tracking choice.

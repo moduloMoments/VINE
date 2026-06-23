@@ -153,8 +153,7 @@ EOF
 
 # Check 10 resolves the PAIRS list in trellis-check.sh against
 # $CLAUDE_PROJECT_DIR, so the fixture stubs every anchor. Keep in sync with
-# that heredoc. The navigate/evolve anchors live in skill files, so those
-# stubs must also pass the per-skill checks — mkcmd builds them.
+# that heredoc.
 mkanchors() {
   mkdir -p "$1/references" "$1/plugins/vine/agents"
   printf '%s\n' '**Verification-tier contract.**' > "$1/references/CONTRACTS.md"
@@ -165,8 +164,6 @@ mkanchors() {
 **Base checks**
 **Cross-cutting checks**
 EOF
-  mkcmd "$1" navigate navigate "See the verification-tier contract note."
-  mkcmd "$1" evolve evolve "See the verification-tier contract note."
 }
 
 T=$(mktemp -d)
