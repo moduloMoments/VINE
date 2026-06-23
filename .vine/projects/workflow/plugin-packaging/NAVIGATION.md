@@ -314,3 +314,43 @@ pre-existing (noted in Slice 4), not introduced here.
   `.vine/context/shared.md`) for plugin users now that those files are outside the plugin payload
   (Slice 3 discovered item). Phase 4 also carries the ADRs (Slice 9), including the (d) plugin-layout /
   payload-control ADR from the Slice 3 addendum.
+
+---
+
+## Phase 4: Docs + Cycle Knowledge
+
+### Slice 7: README + CHANGELOG — Complete
+**Started**: 2026-06-23 02:40
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Rewrote the README **Installation** section from the npx Global/Project/Upgrade/
+Manual blocks to a plugin-first flow: `claude plugin marketplace add moduloMoments/VINE` →
+`claude plugin install vine@moduloMoments`, an **Updating** subsection (`/plugin update vine`), and a
+**Migrating from npx** subsection (remove `.claude/commands/vine/`, install the plugin; init offers the
+cleanup). Rewrote **"Graduating to a team"** to the resolved overlay decision — overlay content stays
+repo-local/consumer-authored, VINE ships no distribution mechanism, a company forks the plugin's
+skills/agents (which distribute natively). Updated **Enforced vs Advisory** (intro + heading + Installing
+paragraph) so the journal-check hook reads as **plugin-default-on**, not npx-scaffolded; updated the
+Key-Principles "Commit per slice" anchor text to match. Retargeted three stale `agents/…` links →
+`plugins/vine/agents/…` (the restructure moved agents under the plugin; `docs/artifact-preview.md` stayed
+at root, link unchanged). CHANGELOG: updated the 0.4.0 cycle intro to include #57, added an Added entry
+(plugin/marketplace/colon-form/payload-scoping/default-on hook), a Changed entry (versioning + branch
+model), and a new Removed section (npx installer + `commands/vine/` + `package.json` + no
+overlay-distribution mechanism). Kept the block under `[Unreleased]` — the `[0.4.0]` date stamps at the
+`develop`→`main` release cut, not now (Keep-a-Changelog convention; `publish.yml` extracts at release).
+**Deviations from spec**: None. (The CHANGELOG `[Unreleased]`-vs-date-stamp call was surfaced to the
+engineer in the slice preview and left as `[Unreleased]`.)
+**Validation**: pass — every residual `npx`/`create-vine`/`commands/vine` string in README is intentional
+migration/historical context (Migrating-from-npx section + the Enforced/Advisory historical note); all
+changed links resolve (`plugins/vine/agents/{vine-coder,vine-reviewer}.md`, `plugins/vine/agents/`,
+`docs/artifact-preview.md`); install/update strings present; CHANGELOG #57 entries in place. (Docs-only
+slice — no lint/typecheck/test toolchain; trellis-check is untouched since no skill files changed.)
+**Decisions made during implementation**:
+  - Keep the CHANGELOG entry under `[Unreleased]` rather than stamping `[0.4.0]` now — the tag/date is cut at the release merge, and publish.yml extracts from here at that point (decided by: engineer, surfaced in preview) [confidence: high]
+  - Retarget README `agents/…` links to `plugins/vine/agents/…` as part of this README slice rather than deferring to Slice 8 (Slice 8 owns the *internal* doc sweep; README is Slice 7's surface) (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC9 (README half) — README leads with plugin install; the update path is `/plugin update vine`; overlay distribution is documented as consumer-owned with no VINE mechanism; no stale npx-as-primary instructions remain (only intentional migration context)
+**Engineer feedback incorporated**: Chose free-climb (docs work, confident domain) with the diff as the review surface.
+**Learnings**:
+  - Engineer → Claude: None new this slice.
+  - Claude → Engineer: A path-moving restructure (agents → `plugins/vine/agents/`) leaves stale *relative links* in prose docs that no skill-validator catches — only a path-resolves grep over the doc surfaces them. README links are Slice 7's surface; the internal-doc equivalents are Slice 8's.

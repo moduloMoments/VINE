@@ -106,7 +106,7 @@ your notes and explicit phase tracking, but it's not required.
 
 **Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
 
-**Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought (and mechanically [enforced when the scaffold hooks are installed](#enforced-vs-advisory)).
+**Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought (and mechanically [enforced by the plugin's journal-check hook](#enforced-vs-advisory)).
 
 **Chain, don't rush.** Each phase suggests the next step but doesn't auto-trigger. The engineer decides when to move forward. Each phase completion suggests a fresh session for the next phase — state flows through `.vine/` files, not chat context. Navigate can suggest a `/clear` between slices too, selectively — recommended when context has grown heavy or the next slice is independent; re-invoking `/vine:navigate` auto-resumes at the next unfinished slice, with the journal carrying everything forward.
 
@@ -114,46 +114,40 @@ your notes and explicit phase tracking, but it's not required.
 
 ## Installation
 
-### Global (user-level, recommended)
+VINE installs as a native Claude Code plugin from the moduloMoments marketplace:
 
 ```bash
-npx create-vine --global
+claude plugin marketplace add moduloMoments/VINE
+claude plugin install vine@moduloMoments
 ```
 
-This installs all VINE commands (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:optimize`, `/vine:help`) to `~/.claude/commands/vine/`, making them available in every project.
+This brings the full product — all 11 phases (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:optimize`, `/vine:help`), the four agents, and the journal-check hook — available in every project. Each phase invokes in colon form: `/vine:<name>`.
 
-### Project-level
+### Updating
 
-```bash
-npx create-vine
+```
+/plugin update vine
 ```
 
-Installs to `.claude/commands/vine/` in the current project.
-
-### Upgrade
-
-```bash
-npx create-vine@latest --global
-```
-
-This overwrites command files with the latest versions. Your `.vine/` directory (context overlays,
-artifacts, profile) is untouched — only the commands in `.claude/commands/vine/` are updated. After upgrading,
-run `/vine:init` to discover any new tools or conventions added in the update.
-
+This pulls the latest released version. Your `.vine/` directory (context overlays, artifacts) and the
+personal `.vine.local/` root (profile, personal overlays) are untouched — only the plugin is updated.
 Check the [CHANGELOG](CHANGELOG.md) to see what's new, or watch
 [releases](https://github.com/moduloMoments/VINE/releases) on GitHub for notifications.
 
-### Manual install
+### Migrating from npx
 
-If you prefer not to use npx, copy the commands directly:
+Earlier versions of VINE installed command files via `npx create-vine` (into `.claude/commands/vine/`).
+The commands now ship as plugin skills, so a legacy install is no longer needed — remove it and install
+the plugin instead:
 
 ```bash
-# Global
-cp -r commands/vine ~/.claude/commands/vine
-
-# Project-level
-cp -r commands/vine .claude/commands/vine
+rm -rf .claude/commands/vine    # or ~/.claude/commands/vine for a global install
+claude plugin marketplace add moduloMoments/VINE
+claude plugin install vine@moduloMoments
 ```
+
+`/vine:init` also detects a legacy `.claude/commands/vine/` directory and offers to remove it for you;
+declining changes nothing.
 
 ### Piloting in an existing project (e.g., at work)
 
@@ -167,7 +161,7 @@ git config --global core.excludesFile ~/.gitignore_global
 echo '.vine/' >> ~/.gitignore_global
 ```
 
-**Graduating to a team.** When your team adopts VINE together, commit the overlays under `.vine/context/` you want shared and mark team-enforced sections `<!-- class: policy -->` so a personal overlay can't weaken them — see the team-overlay recommendation in `.vine/context/shared.md`. Packaged cross-repo distribution of overlays is a future concern.
+**Graduating to a team.** When your team adopts VINE together, commit the overlays under `.vine/context/` you want shared and mark team-enforced sections `<!-- class: policy -->` so a personal overlay can't weaken them — see the team-overlay recommendation in `.vine/context/shared.md`. Overlay *content* stays repo-local and consumer-authored: VINE ships no overlay-distribution mechanism. A company that wants conventions to travel across repos can fork the plugin and edit its skills and agents — those distribute natively through the marketplace — while each repo's `.vine/context/` overlays remain its own.
 
 ### Optional: GitHub CLI
 
@@ -276,9 +270,9 @@ should auto-run.
 
 VINE is honest about what it can and can't make a session do. Most of its guarantees are
 advisory — behaviors the commands request and Claude follows, with nothing blocking the
-alternative. One becomes mechanical when you install the native hook scaffold.
+alternative. One is mechanical — the plugin ships the journal-check hook default-on.
 
-### Enforced — when the scaffold hook is installed
+### Enforced — the journal-check hook (ships with the plugin)
 
 | Guarantee | Mechanism |
 |-----------|-----------|
@@ -294,9 +288,11 @@ The staleness check compares the journal's file modification time against the la
 — deliberately not git state — so it works identically whether your repo commits `.vine/`
 artifacts or keeps them gitignored and personal.
 
-**Installing**: project-level `npx create-vine` puts the script in `.vine/scripts/`;
-`/vine:init` then offers to wire it into `.claude/settings.json`. **Declining changes
-nothing on disk**, and every guarantee below stays advisory.
+**Installing**: nothing to install — the hook ships *with the plugin* and is wired
+automatically through its `hooks/hooks.json` (resolved under `${CLAUDE_PLUGIN_ROOT}`), so
+installing VINE turns it on. (Plugin users get it default-on; the earlier npx installer
+offered it opt-in via `/vine:init` instead.) It still scopes itself to active sessions via
+the sentinel, so it never touches non-VINE work, and every guarantee below stays advisory.
 
 Lint and test enforcement are deliberately not part of the scaffold: when to run a
 project's checks depends entirely on its tooling, so that decision stays with the repo —
@@ -384,7 +380,7 @@ with a reviewer (a person, or another agent) checking the result afterward. Dele
 nothing about the normal human-driven flow changes unless you deliberately hand work off.
 
 **The ticket.** Autonomous work isn't an agent impersonating a human running `vine:navigate` — it's
-a **ticket** handed to the [`vine-coder`](agents/vine-coder.md) agent (the autonomous coding role).
+a **ticket** handed to the [`vine-coder`](plugins/vine/agents/vine-coder.md) agent (the autonomous coding role).
 The ticket carries everything a cold agent needs as plain instructions: which SPEC slice(s) to
 implement, a pointer to SPEC.md and the feature's artifact directory, and any scope constraints.
 `vine-coder` orients from the ticket, implements within scope (deriving its own touched-file
@@ -393,14 +389,14 @@ commits per slice, and opens **one PR** with a handoff. Because a sub-agent can'
 mid-task, a decision a human must own is escalated in the handoff and the run stops — never guessed.
 
 **The leash is the PR review.** The PR that comes back is the result; a human or the
-[`vine-reviewer`](agents/vine-reviewer.md) agent reviews it before merge. `vine-reviewer` is the
+[`vine-reviewer`](plugins/vine/agents/vine-reviewer.md) agent reviews it before merge. `vine-reviewer` is the
 recipe for a fresh reviewer who wasn't part of the session: how to orient (read the originating
 scope, then the journal, then the commits and final files) and what to produce (a verdict,
 severity-ordered findings, and a draft PR description). Its `tools` exclude Edit/Write, so "report
 only" is enforced by the platform, not just asserted. Everything the reviewer needs lives in
 durable state, not session memory.
 
-**The agents.** [`agents/`](agents/) ships the agent definitions VINE auto-delegates to by
+**The agents.** [`plugins/vine/agents/`](plugins/vine/agents/) ships the agent definitions VINE auto-delegates to by
 description match: `vine-verification` (runs the validation baseline and checks acceptance
 criteria), `vine-codebase-explorer` (structured codebase exploration), `vine-coder` (the autonomous
 coding role above), and `vine-reviewer` (the cold-reviewer role above). The verification and
