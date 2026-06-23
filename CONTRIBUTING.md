@@ -34,15 +34,15 @@ For anything larger, **please open an issue first** so we can discuss the approa
 These slash commands in `.claude/commands/` help with common contributor workflows:
 
 - `/triage` — check GitHub issues, surface priorities, and discuss next steps
-- `/trellis` — validate structural conventions across VINE command files
+- `/trellis` — validate structural conventions across VINE skill files
 - `/pr` — create a PR using the repo's template and contributing guidelines
 - `/pr-review` — simulate a PR-reviewer auto-agent against a real PR to dogfood the `review.md` reviewer contract
 
 When submitting a PR:
 
-- Branch from `main`
+- Branch from `develop` — the integration branch. PRs target `develop`; `main` holds only released states (the marketplace tracks it). A release is a maintainer-cut `develop`→`main` merge.
 - Keep changes focused — one concern per PR
-- Run `/trellis` to validate structural conventions across command files
+- Run `/trellis` to validate structural conventions across the skill files
 - Test the commands in an actual VINE cycle if you're changing behavior
 - Use `/pr` to create your pull request — it fills in the template and checks guidelines
 - Describe what you changed and why in the PR description

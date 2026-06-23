@@ -16,10 +16,12 @@ allowed-tools:
 Run these commands to gather context:
 
 1. `git status` — check for uncommitted changes (warn if any exist)
-2. `git log main..HEAD --oneline` — see all commits on this branch
-3. `git diff main...HEAD --stat` — see which files changed
+2. `git log develop..HEAD --oneline` — see all commits on this branch
+3. `git diff develop...HEAD --stat` — see which files changed
 
-If the current branch is `main`, stop and tell the user to create a feature branch first.
+VINE uses a `main`-release / `develop`-integration branch model: feature branches cut from
+`develop` and PRs target `develop` (`main` holds only released states). If the current branch is
+`main` or `develop`, stop and tell the user to create a feature branch first.
 
 If there are uncommitted changes, ask whether to proceed or commit first.
 
@@ -42,19 +44,19 @@ If no template exists, use a minimal format:
 Read `CONTRIBUTING.md` if it exists. Extract the PR submission rules — these inform what to check and how to frame the PR.
 
 Key rules from VINE's contributing guide:
-- Branch from `main`
+- Branch from `develop` (the integration branch; `main` is release-only)
 - Keep changes focused — one concern per PR
-- Run `/trellis` to validate structural conventions across command files
+- Run `/trellis` to validate structural conventions across the skill files
 - Test commands in an actual VINE cycle if changing behavior
 - Describe what you changed and why
 
 ## Step 4: Analyze Changes and Draft
 
-Read `git diff main...HEAD` to understand the full diff. Then:
+Read `git diff develop...HEAD` to understand the full diff. Then:
 
 1. **Categorize the change** — is this a command behavior change, docs update, new contributor tool, bug fix, or structural change?
 2. **Check focus** — if changes span multiple unrelated concerns, warn the user and suggest splitting.
-3. **Check for command changes** — if any files in `commands/vine/` were modified, note that `/trellis` validation and VINE cycle testing are expected.
+3. **Check for skill changes** — if any files under `plugins/vine/skills/` were modified, note that `/trellis` validation and VINE cycle testing are expected.
 
 **Check for related issues** — scan the open issues (`gh issue list --state open`) for any that
 this PR resolves. Match by topic, keywords, or explicit references in commit messages. If a
@@ -83,8 +85,11 @@ Push the branch and create the PR:
 
 ```
 git push -u origin HEAD
-gh pr create --title "<title>" --body "<body>"
+gh pr create --base develop --title "<title>" --body "<body>"
 ```
+
+(Target `develop` explicitly — feature PRs integrate there, never into `main`. A release is a
+separate `develop`→`main` merge a maintainer cuts, not a `/pr` flow.)
 
 After creation, display the PR URL.
 

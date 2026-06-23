@@ -278,7 +278,7 @@ have a migration path. Ships as PR 3.
   > Does" item 7, the Output block's settings-hooks line, and the `.vine/scripts/` structure-table row.
   > trellis-check 11/11. STATE.md's init-hook description + broader structure prose left to Slice 8.
 
-## Phase 4: Docs + Cycle Knowledge (Slices 7–9) ⬜
+## Phase 4: Docs + Cycle Knowledge (Slices 7–9) ✅
 Summary: Make every doc surface describe the skills/plugin product and record the load-bearing
 decisions.
 Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 4.
@@ -333,6 +333,18 @@ Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 
   deleted `commands/vine/` path (AC 9, 11).
 - **Complexity signal**: Medium — the old layout is referenced across several contributor docs; the
   Command/State Addition checklists in shared.md exist to catch exactly this kind of multi-file drift.
+
+  > **Done + deviation (navigate, 2026-06-23, commit `c5056ad`):** All specced + cold-check items
+  > landed (CLAUDE.md, shared.md CI/CD + checklists + Branch Naming, verify.md, navigate.md, STATE.md
+  > agent-paths/create-vine/`.vine/scripts` section, help/SKILL.md citation via Glob, pr.md +
+  > CONTRIBUTING `commands/vine`→`plugins/vine/skills`). No STATE.md "version note" existed to change —
+  > `plugin.json`-single-source is documented in CLAUDE.md + shared.md instead.
+  > **Deviation — `main`→`develop` retarget folded in (engineer decision).** Beyond the cold-check's
+  > `commands/vine` line, the develop branch model left `pr.md` and `CONTRIBUTING.md` diffing/branching
+  > against `main`. The engineer chose to retarget both here (rather than a separate change) so the
+  > branch model ships coherently in Phase 4's PR: `pr.md` now uses `develop...HEAD`, stops on
+  > `main`/`develop`, and `gh pr create --base develop`; `CONTRIBUTING.md` says "Branch from develop"
+  > with the branch-model note. trellis-check 11/11.
 
 ### Slice 9: Knowledge ADR(s)
 - **Goal**: Record (a) the plugin-only / drop-npx decision and its rationale (revised hard gate),

@@ -14,7 +14,7 @@ allowed-tools:
 # pr-review — Dogfood the vine-reviewer Flow
 
 This is a contributor-only tool. It does **not** ship as part of the VINE product. It exists to
-**validate the `vine-reviewer` role recipe** (the agent definition in `agents/vine-reviewer.md`) by
+**validate the `vine-reviewer` role recipe** (the agent definition in `.claude/agents/vine-reviewer.md`) by
 exercising it exactly the way an external PR-reviewer auto-agent (e.g. a GitHub Action running
 Claude) would once it lands: take a real PR, spawn the `vine-reviewer` agent with nothing but the
 durable state, and see whether it can produce a sound review. The recipe's **Missing context log**
@@ -50,13 +50,13 @@ file list.
 
 ## Step 2: Confirm the Reviewer Recipe
 
-The reviewer role recipe lives in the `vine-reviewer` agent definition (`agents/vine-reviewer.md`) —
+The reviewer role recipe lives in the `vine-reviewer` agent definition (`.claude/agents/vine-reviewer.md`) —
 its system prompt carries the orientation order, what to scrutinize, what to produce, and the
 authority boundary. You don't load or pass that text; spawning the agent (Step 3) seeds it
 automatically, which is the whole point — the agent is the contract under test, exercised exactly as
 a real auto-reviewer would invoke it.
 
-Confirm `agents/vine-reviewer.md` exists (it surfaces as the `vine-reviewer` agent type). If it's
+Confirm `.claude/agents/vine-reviewer.md` exists (it surfaces as the `vine-reviewer` agent type). If it's
 absent, stop — there's nothing to validate.
 
 ## Step 3: Spawn the Reviewer Subagent
@@ -86,7 +86,7 @@ context log, Sources consulted, Draft PR description.
 Then add a short **vine-reviewer validation read-out** of your own — this is the reason the tool exists:
 
 - **Missing context log** — empty (recipe + artifacts sufficient) or, if not, list each gap as a
-  candidate fix to `agents/vine-reviewer.md`, `references/STATE.md`, or the artifact templates.
+  candidate fix to `.claude/agents/vine-reviewer.md`, `references/STATE.md`, or the artifact templates.
 - **Orientation friction** — did the subagent follow the orientation order cleanly, or did any step
   (issue → artifact dir → commits → final files) dead-end?
 - **Output completeness** — were all five "What to Produce" sections derivable, especially the Draft

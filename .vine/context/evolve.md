@@ -14,6 +14,13 @@
   session and leave PROJECT-MAP's PR cell stale (`—`), so evolve must verify against `main` rather
   than trust the tracker — otherwise it tries to re-open work that already merged, or worse, opens a
   PR from a now-stale branch that reverts later main commits.
+- **Check for an already-open handoff PR before opening one.** Also run
+  `gh pr list --state open --head <feature-branch>` at the start of evolve, not just `--state
+  merged`. Navigate closes the final phase by *suggesting* its PR, so the handoff PR is frequently
+  **already open** when evolve runs (PROJECT-MAP's row may still read `✅ Complete · PR —`). When it
+  is, the product handoff already exists: evolve does **not** open a new PR — it commits its
+  cycle-close artifacts (EVOLUTION.md, `.resolved`, the PROJECT-MAP evolve row) to that same branch
+  so they ride in the open PR, and updates that PR's body/notes if needed rather than duplicating it.
 - **All-phases-merged is a valid evolve entry state.** A multi-PR feature can have *every*
   phase-group PR already merged before evolve runs — evolve is the cycle-close, not the final
   phase's shipper. When `git diff origin/main HEAD` shows the product files identical to main, there

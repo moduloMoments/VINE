@@ -314,3 +314,138 @@ pre-existing (noted in Slice 4), not introduced here.
   `.vine/context/shared.md`) for plugin users now that those files are outside the plugin payload
   (Slice 3 discovered item). Phase 4 also carries the ADRs (Slice 9), including the (d) plugin-layout /
   payload-control ADR from the Slice 3 addendum.
+
+---
+
+## Phase 4: Docs + Cycle Knowledge
+
+### Slice 7: README + CHANGELOG — Complete
+**Started**: 2026-06-23 02:40
+**Commit**: 2e3af85
+**Gear**: free-climb
+**Approach taken**: Rewrote the README **Installation** section from the npx Global/Project/Upgrade/
+Manual blocks to a plugin-first flow: `claude plugin marketplace add moduloMoments/VINE` →
+`claude plugin install vine@moduloMoments`, an **Updating** subsection (`/plugin update vine`), and a
+**Migrating from npx** subsection (remove `.claude/commands/vine/`, install the plugin; init offers the
+cleanup). Rewrote **"Graduating to a team"** to the resolved overlay decision — overlay content stays
+repo-local/consumer-authored, VINE ships no distribution mechanism, a company forks the plugin's
+skills/agents (which distribute natively). Updated **Enforced vs Advisory** (intro + heading + Installing
+paragraph) so the journal-check hook reads as **plugin-default-on**, not npx-scaffolded; updated the
+Key-Principles "Commit per slice" anchor text to match. Retargeted three stale `agents/…` links →
+`plugins/vine/agents/…` (the restructure moved agents under the plugin; `docs/artifact-preview.md` stayed
+at root, link unchanged). CHANGELOG: updated the 0.4.0 cycle intro to include #57, added an Added entry
+(plugin/marketplace/colon-form/payload-scoping/default-on hook), a Changed entry (versioning + branch
+model), and a new Removed section (npx installer + `commands/vine/` + `package.json` + no
+overlay-distribution mechanism). Kept the block under `[Unreleased]` — the `[0.4.0]` date stamps at the
+`develop`→`main` release cut, not now (Keep-a-Changelog convention; `publish.yml` extracts at release).
+**Deviations from spec**: None. (The CHANGELOG `[Unreleased]`-vs-date-stamp call was surfaced to the
+engineer in the slice preview and left as `[Unreleased]`.)
+**Validation**: pass — every residual `npx`/`create-vine`/`commands/vine` string in README is intentional
+migration/historical context (Migrating-from-npx section + the Enforced/Advisory historical note); all
+changed links resolve (`plugins/vine/agents/{vine-coder,vine-reviewer}.md`, `plugins/vine/agents/`,
+`docs/artifact-preview.md`); install/update strings present; CHANGELOG #57 entries in place. (Docs-only
+slice — no lint/typecheck/test toolchain; trellis-check is untouched since no skill files changed.)
+**Decisions made during implementation**:
+  - Keep the CHANGELOG entry under `[Unreleased]` rather than stamping `[0.4.0]` now — the tag/date is cut at the release merge, and publish.yml extracts from here at that point (decided by: engineer, surfaced in preview) [confidence: high]
+  - Retarget README `agents/…` links to `plugins/vine/agents/…` as part of this README slice rather than deferring to Slice 8 (Slice 8 owns the *internal* doc sweep; README is Slice 7's surface) (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC9 (README half) — README leads with plugin install; the update path is `/plugin update vine`; overlay distribution is documented as consumer-owned with no VINE mechanism; no stale npx-as-primary instructions remain (only intentional migration context)
+**Engineer feedback incorporated**: Chose free-climb (docs work, confident domain) with the diff as the review surface.
+**Learnings**:
+  - Engineer → Claude: None new this slice.
+  - Claude → Engineer: A path-moving restructure (agents → `plugins/vine/agents/`) leaves stale *relative links* in prose docs that no skill-validator catches — only a path-resolves grep over the doc surfaces them. README links are Slice 7's surface; the internal-doc equivalents are Slice 8's.
+
+### Slice 8: Internal docs (CLAUDE.md, shared.md, STATE.md, +cold-check) — Complete
+**Started**: 2026-06-23 02:52
+**Commit**: c5056ad
+**Gear**: free-climb
+**Approach taken**: Swept every internal doc to the skills/plugin reality.
+  - **CLAUDE.md** — "What This Repo Is" + Repository Structure rewritten for `plugins/vine/` (skills at `plugins/vine/skills/<name>/SKILL.md`, agents/hooks under the plugin, manifest + marketplace pointers); "Command Authoring Conventions" → "Skill Authoring Conventions" (frontmatter drops `name`, adds `disable-model-invocation: true`; "command"→"skill" throughout); optimize line de-pluralized to "all skills".
+  - **shared.md** — Tooling Notes symlink claim → local-plugin dogfooding + dev loop; "Command Addition Checklist" → "Skill Addition Checklist" (paths + the SKILL.md row); Branch Naming → cut-from-`develop`; whole CI/CD block rewritten (branch model, SemVer policy, trellis-gate path → `plugins/vine/skills/`, journal-check now plugin-default-on not settings-wired, Release workflow no-npm, PR CI line, Release checklist for the new flow).
+  - **verify.md** — "11 command files" → "11 phase skills (`plugins/vine/skills/...`)".
+  - **navigate.md** — markdownlint glob → `plugins/vine/skills/*/SKILL.md`; frontmatter-valid list fixed (drop `name`, add `disable-model-invocation`); "command file"→"skill file".
+  - **references/STATE.md** — two `agents/…` paths → `plugins/vine/agents/…`; two `create-vine` mentions → "not in the plugin payload"; the `.vine/scripts/` section rewritten (journal-check ships *with the plugin* default-on via `plugins/vine/hooks/hooks.json`; `.vine/scripts/` reframed as contributor-only tooling home incl. `run-tests.sh`). No "version note" existed to change — `plugin.json` single-source is captured in CLAUDE.md + shared.md instead.
+  - **Cold-check items** — `help/SKILL.md:66` citation fixed via **Glob** (`**/skills/<name>/SKILL.md`) per the engineer's call, resolving the Slice-3 "how skills cite repo-internal locations for plugin users" question; `pr.md` + `CONTRIBUTING.md` `commands/vine/`→`plugins/vine/skills/`.
+  - **Folded-in (engineer decision): `main`→`develop` retarget** of the contributor PR flow — `pr.md` (diff range `develop...HEAD`, stop-on-`main`/`develop`, "Branch from develop", `gh pr create --base develop`) and `CONTRIBUTING.md` (Branch from develop + branch-model note), so the whole branch-model change ships in Phase 4's PR rather than dangling.
+**Deviations from spec**: Scope grew by the folded-in `main`→`develop` retarget of `pr.md` + `CONTRIBUTING.md` (engineer chose "fold in" over "defer"). SPEC Slice 8 annotated.
+**Validation**: pass — `trellis-check.sh` **11/11 skills**, 8 cross-reference anchors resolve, #132 guard intact, green stamp written (satisfies the gate for the `help/SKILL.md` touch); the two init `.vine/hooks` warnings are pre-existing (Slice 4). Final stale-reference sweep clean: zero `commands/vine`/`create-vine`/`bin/cli` across the edited docs (only the legitimate `npx markdownlint-cli2` tool remains), zero root-relative `agents/` links, zero `main..HEAD`/"Branch from main" in `pr.md`/`CONTRIBUTING.md`.
+**Decisions made during implementation**:
+  - help citation = Glob `**/skills/<name>/SKILL.md` (portable across plugin cache + contributor repo) rather than a hardcoded path or dropping the read (decided by: engineer) [confidence: high]
+  - Fold the `main`→`develop` contributor-flow retarget into this slice so the branch model ships coherently, vs. deferring it to a separate change (decided by: engineer) [confidence: high]
+  - `pr.md` defaults `gh pr create --base develop` explicitly rather than relying on the (still-pending) repo-admin default-base setting — robust now, and a release PR is a maintainer merge, not a `/pr` flow (decided by: claude) [confidence: medium]
+  - Reframe STATE.md's `.vine/scripts/` section rather than delete it — `.vine/scripts/` still exists as contributor tooling; only its *user-scaffold* identity is obsolete (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC9 (internal-docs half) — no internal doc describes the product as "11 command files in `commands/vine/`" or the npx-only install; the addition checklist targets skills; the release checklist + branch model are documented; no shipped skill (`help`) or contributor doc references the deleted `commands/vine/` path
+  - [x] AC11 (docs half) — `plugin.json` documented as the single version source; branch model (`main` release / `develop` integration) documented in shared.md CI/CD + Branch Naming + CONTRIBUTING + pr.md
+**Engineer feedback incorporated**: Chose free-climb; chose Glob for the help citation; chose to fold the `main`→`develop` retarget into this slice rather than defer it.
+**Learnings**:
+  - Engineer → Claude: When a branch-model change touches a contributor tool *and* its guide, retarget them together — a half-retargeted flow (diff vs `main`, create vs `develop`) is worse than either end-state.
+  - Claude → Engineer: The npx→plugin restructure left "command"/`commands/vine`/`create-vine` fingerprints spread across six contributor docs that no skill-linter checks; a single repo-wide grep for the old vocabulary is the only reliable net, and it belongs in the Skill Addition Checklist's spirit (multi-file drift) even though these files sit outside it.
+
+### Slice 9: Knowledge ADR(s) — Complete
+**Started**: 2026-06-23 09:22
+**Commit**: ca91e83
+**Gear**: free-climb
+**Approach taken**: Wrote four new ADRs under `.vine/knowledge/workflow/` in the Nygard format
+(Title-as-declarative-sentence / Status / Context / Decision / Consequences), each sourced
+`workflow/plugin-packaging · Rob + Claude`:
+  - **(a) `2026-06-23-vine-ships-as-a-plugin-and-drops-npx`** — plugin-only, skills-not-commands (the colon-form driver), drop npx, revised #57 gate ("keep npx working" → "migrate npx users"), `disable-model-invocation` rationale.
+  - **(b) `2026-06-23-overlay-distribution-is-documentation-not-a-mechanism`** — overlays are consumer-owned, VINE ships no distribution mechanism; the "harder half" of #57 resolved by scoping out.
+  - **(c) `2026-06-23-plugin-json-is-the-single-version-source-main-release-develop-integration`** — pin-not-float (the repo is the dev tree), `plugin.json` single version source, SemVer policy, `main`-release/`develop`-integration branch model, `package.json` removed (closes the 0.3.0/0.4.0 drift).
+  - **(d) `2026-06-23-scope-the-plugin-payload-with-a-plugins-vine-source-dir`** — no file-level payload exclusion exists (verified vs official docs); a scoped `source` subdir is the only control; supersedes the Slice-1 `.claudeignore` backlog idea.
+Then **amended the team-layer ADR** (`2026-06-22-vine-ships-a-team-layer-recommendation-not-a-prescribed-mechanism`): appended an "## Amendment (2026-06-23, #57)" section correcting its "seam where plugin distribution attaches" expectation (the seam carries documentation, not a mechanism → points to (b)), and flagged the amendment in its Status line — both per the established append-an-Amendment precedent in this layer (the anchor-personal-root ADR), keeping the immutable body intact.
+**Deviations from spec**: None. (Initial drafts used `[[wiki-link]]` cross-ref syntax — the memory-file convention, not VINE's; corrected to backtick-wrapped slugs to match the existing 9 records before commit. Not a spec deviation, a convention fix.)
+**Validation**: pass — all 4 ADRs carry the full Status/Context/Decision/Consequences structure; every backtick-slug cross-reference (6 distinct, incl. the amendment's) resolves to a real file; workflow ADR count 9 → 13; slugs follow `YYYY-MM-DD-<kebab>.md`. (Knowledge records aren't skills, so trellis-check doesn't gate them; the commit touches no `plugins/vine/skills/` file, so the trellis-gate is a no-op.)
+**Decisions made during implementation**:
+  - Four distinct ADRs rather than merging (a)+(c) or folding (d) — each answers a different "why" (packaging / scoping-out / versioning / repo-layout) and the `ls`-as-table-of-contents principle favors separate discoverable records; the SPEC enumerated them separately (decided by: engineer, via SPEC; ratified by: claude) [confidence: high]
+  - Amend the team-layer ADR via an appended Amendment + Status flag rather than supersede it — (b) corrects one forward-looking Consequence, it doesn't replace the record's decision; matches the anchor-personal-root precedent (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC10 — ADRs exist in the committed knowledge format; the team-layer "seam" expectation is explicitly amended (not left dangling); the drop-npx (revised gate), overlay-consumer-owned, versioning + branch-model, and plugin-layout/payload-control decisions are all captured
+**Engineer feedback incorporated**: Chose free-climb; the four-ADR split follows the SPEC's enumeration.
+**Learnings**:
+  - Engineer → Claude: None new this slice.
+  - Claude → Engineer: The knowledge layer has its own cross-reference convention (backtick-wrapped slugs, never `[[ ]]`) and its own immutability discipline (append an Amendment + flag the Status line, never rewrite the body) — both visible only by reading the existing records first. Matching a durable layer's house style is a read-before-write task, exactly like code.
+
+### Phase-group verification (Phase 4) + corrections
+**Commit**: 345f661 (corrections — shared.md:302 + pr-review.md)
+Delegated a phase-group-scope `vine-verification` pass over the Phase 4 diff (Slices 7–9). Verdict:
+AC9/AC10/AC11 (doc/knowledge halves) **all met**; trellis-check 11/11; ADRs present in Nygard format
+with the team-layer amendment in place. It surfaced **two real stale `agents/…` refs my Slice-8 grep
+missed** (my pattern didn't match the `` (`agents/… `` backtick form):
+  - **shared.md:302** (in Slice-8 scope) — `agents/vine-coder.md` → `plugins/vine/agents/vine-coder.md`. Fixed.
+  - **pr-review.md** (contributor tool, outside the Phase-4 diff / Slice-8 cold-check) — 4× `agents/vine-reviewer.md` → `plugins/vine/agents/vine-reviewer.md`. **Folded into this PR by engineer decision** (same restructure fallout, trivial, this cycle owns removing old-layout fingerprints) rather than spun out.
+Re-swept backtick-tolerant: zero root-relative `agents/vine-*` refs remain; remaining `commands/vine`/`create-vine` strings are all intentional (init's legacy-cleanup section + README migration context). **Learning:** a stale-path grep must be delimiter-tolerant — `(`, backtick, and space all precede a path in prose, so `\bagents/` beats `\(agents/`.
+
+### Remaining Work
+- **Incomplete slices**: All slices complete. Phase 4 (Slices 7–9) done; Phases 1–3 shipped (#134, #135). The full cycle (#57) is implemented.
+- **Blockers encountered**: None.
+- **Handoff context for evolve**:
+  - **Phase 4 ships as PR 4** into `develop` (not yet opened — navigate suggested it; PROJECT-MAP Phase-4 row is ✅ Complete, PR# pending). Branch `feature/plugin-packaging`, 4 commits on top of `develop`: `2e3af85` (S7), `c5056ad` (S8), `ca91e83` (S9), `345f661` (verify corrections), plus the pre-existing `1ecfd4c` "mark shipped" tracker.
+  - **Full-feature verification** is evolve's job (the tier above navigate's phase-group pass): AC-traceability across all 11 cycle ACs, spec-deviation review, the multi-PR prior-PR check (#134/#135). The phase-group `vine-verification` pass covered AC9/10/11 (doc/knowledge halves) only.
+  - **Repo-admin still owed (outside code)**: set `develop` as the default PR base + branch protection on GitHub. The branch model is documented (shared.md, CONTRIBUTING, pr.md, ADR-c) but the forge setting is manual. Flag in the PR or cycle close.
+  - **The human-only AC gate** persists: AC1 (cross-skill colon-form re-confirm under a real plugin install) can't be CI-automated (nested `claude -p` 401s — Slice 1/2 discovered item). Slice 1 confirmed it empirically for `status`; the other 10 are structurally identical. Evolve should note this as the one acceptance check that rode on human confirmation, not automation.
+  - **#57 is closeable** after PR 4 merges + evolve writes EVOLUTION.md. Per the PR issue-close convention, the impl PR uses `Refs #57`; evolve still owes the EVOLUTION report and has already produced the cycle's knowledge ADRs (Slice 9).
+
+### Post-completion refinement (2026-06-23): agent re-homing
+**Commit**: 73862bb
+Engineer raised, before the Phase-4 PR, that not all four agents should ship in the plugin. Reviewed
+the four and confirmed a clean split: the **phase-support** agents (`vine-codebase-explorer`,
+`vine-verification`) are invoked by the skills themselves and must ship; the **autonomous-role**
+agents (`vine-coder`, `vine-reviewer`) are the delegation layer, which has **no safe trigger surface
+yet** (naming-on-tickets is pending integration) and **no auto-delegation gate** (agents lack a
+`disable-model-invocation` equivalent) — so a shipped write-capable `vine-coder` would be a live
+auto-delegation target in every install. Engineer's call: **move both out of the payload, update
+everything as if that was the plan.**
+Done: `git mv` `vine-coder.md` + `vine-reviewer.md` → `.claude/agents/` (repo-resident, native
+project-agent dir, symmetric with `.claude/commands/`; loads for `/pr-review` dogfooding + forks,
+outside the plugin `source` dir so not shipped). Path/count/shipped-phrasing updates across README
+(install count + "The agents" reframe + ticket links), CLAUDE.md (What This Repo Is + Repository
+Structure, added `.claude/agents/` row), CHANGELOG, `shared.md`, `references/STATE.md`, `pr-review.md`
+(4 links). New ADR `2026-06-23-hold-autonomous-role-agents-out-of-the-shipped-payload`; ADR-d's
+payload check `agents(4)`→`agents(2)` with a tie-in. Role/concept descriptions (the delegation design
+in shared.md/STATE.md/ROADMAP/skills) left intact — only *packaging* changed, not the model.
+Validation: trellis-check 11/11 (anchors only reference `vine-verification`, which stayed); payload =
+`agents(2)`; `.claude/agents/` = coder+reviewer; zero residual `plugins/vine/agents/{coder,reviewer}`
+refs; ADR cross-refs resolve. **For evolve:** the cycle now ships **2 agents**, not 4 — fold this into
+the full-feature AC pass (AC4 "agents intact" still holds: the 4 recipes exist and load; 2 ship, 2 are
+repo-resident).
