@@ -427,7 +427,7 @@ Re-swept backtick-tolerant: zero root-relative `agents/vine-*` refs remain; rema
   - **#57 is closeable** after PR 4 merges + evolve writes EVOLUTION.md. Per the PR issue-close convention, the impl PR uses `Refs #57`; evolve still owes the EVOLUTION report and has already produced the cycle's knowledge ADRs (Slice 9).
 
 ### Post-completion refinement (2026-06-23): agent re-homing
-**Commit**: pending
+**Commit**: 73862bb
 Engineer raised, before the Phase-4 PR, that not all four agents should ship in the plugin. Reviewed
 the four and confirmed a clean split: the **phase-support** agents (`vine-codebase-explorer`,
 `vine-verification`) are invoked by the skills themselves and must ship; the **autonomous-role**
