@@ -175,3 +175,40 @@ convention — confirmed the restructure adopts the documented `plugins/<name>/`
     "whole-repo payload" item for the product payload.
   - **init Native Hook Scaffold is now obsolete for plugin users** (plugin ships the hook default-on) → folded
     into Slice 6 per engineer decision; SPEC Slice 6 annotated.
+
+---
+
+## Phase 3: Remove npx + Rewire Tooling
+
+### Slice 4: Rewire /trellis + trellis-gate to the skills layout — Complete
+**Started**: 2026-06-23 06:40
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Rewired the three trellis surfaces in lockstep to validate
+`plugins/vine/skills/<name>/SKILL.md` instead of `commands/vine/*.md`: (1) `.vine/scripts/trellis-check.sh`
+(the mechanical engine that writes the gate stamp), (2) `.claude/commands/trellis.md` (the doc), (3)
+`.vine/scripts/trellis-gate.sh` (the commit gate). Key changes: discovery glob → `plugins/vine/skills/*/SKILL.md`;
+"stem" now = skill **directory** name; Check 1's required-field set drops `name`, adds `disable-model-invocation`;
+**Check 2 repurposed** from "Name Matches Filename" (meaningless without a `name` field) to "No Auto-Fire —
+`disable-model-invocation: true`" (keeps the 12-check numbering stable AND adds real AC2 enforcement the linter
+lacked); Check 10 anchor paths → `plugins/vine/agents/…` + `plugins/vine/skills/{navigate,evolve}/SKILL.md`;
+gate now watches `plugins/vine/skills/`.
+**Deviations from spec**: Check 2's repurpose (vs delete-and-renumber) is the one design call beyond the literal
+goal — chosen to avoid the renumbering ripple trellis itself guards against, and to convert AC2 from
+convention to enforced check. (Engineer ratified.) No SPEC annotation needed — it's within Slice 4's stated
+"validate skills frontmatter" scope.
+**Validation**: pass — rewired `trellis-check.sh` passes **11/11 skills**, all **8 cross-reference anchors
+resolve** (now at `plugins/vine/` paths), personal-root guard intact, exit 0, green stamp written (AC8 first
+half). A deliberately-malformed skill (extra `name`, missing `disable-model-invocation`) is **flagged** —
+Frontmatter ❌ + NoFire ❌, exit 1 (AC8 second half). Zero residual `commands/vine` references across the three
+files. Pre-existing non-blocking legacy-`.vine/hooks` warnings on init (its body wraps the allowlisted sentence
+across two lines — byte-identical in the source command, not introduced here).
+**Decisions made during implementation**:
+  - Repurpose Check 2 → `disable-model-invocation: true` rather than delete + renumber (decided by: engineer) [confidence: high]
+  - Rewire engine first, then match the doc to it (the engine is the gate's source of truth; the doc must mirror it) (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC8 — `/trellis` validates the converted skills (11/11 pass) and flags a malformed SKILL.md; the gate now watches `plugins/vine/skills/` and blocks a touch without a green stamp (gate logic verified by code inspection; the live gate reloads next session).
+**Engineer feedback incorporated**: Chose free-climb with the trellis-run proof (pass-on-11 + fail-on-malformed) as the review surface; ratified the Check 2 repurpose.
+**Learnings**:
+  - Engineer → Claude: Preferred repurposing Check 2 over renumbering — keeping cross-reference numbering stable is itself the kind of drift trellis exists to catch.
+  - Claude → Claude: The engine (`trellis-check.sh`) and the doc (`trellis.md`) carry duplicate contracts (the anchor list, the check set) and MUST stay byte-consistent — each lists the other as the sync partner. Rewiring one without the other is the exact divergence Step 8 warns about.
