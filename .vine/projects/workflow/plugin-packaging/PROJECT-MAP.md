@@ -16,6 +16,6 @@
 | Phase | Slices | Status | PR |
 |-------|--------|--------|----|
 | Phase 1: Scaffold + Invocation Proof | Slice 1 | ✅ Shipped | #134 |
-| Phase 2: Convert the Product to Skills | Slices 2–3 | 🚧 Active | — |
-| Phase 3: Remove npx + Rewire Tooling | Slices 4–6 | ⬜ Pending | — |
-| Phase 4: Docs + Cycle Knowledge | Slices 7–9 | ⬜ Pending | — |
+| Phase 2: Convert the Product to Skills | Slices 2–3 | ✅ Complete | #135 |
+| Phase 3: Remove npx + Rewire Tooling | Slices 4–6 | ✅ Complete | #135 |
+| Phase 4: Docs + Cycle Knowledge | Slices 7–9 | 🚧 Active | — |

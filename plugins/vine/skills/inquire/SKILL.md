@@ -1,7 +1,7 @@
 ---
-name: vine:inquire
 description: "Design and spec a feature — define requirements, make architecture decisions, and break work into implementation slices after verifying codebase context"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob

@@ -1,6 +1,6 @@
 #!/bin/sh
 # VINE contributor main-commit guard (this repo only — NOT part of the user
-# scaffold; create-vine never copies this script).
+# plugin payload — it lives in the contributor repo only).
 # PreToolUse hook on Bash: blocks `git commit` while the checkout is on
 # 'main'. Spawned/parallel sessions sometimes open on the shared checkout
 # without a worktree; this gate turns "session committed straight to main"

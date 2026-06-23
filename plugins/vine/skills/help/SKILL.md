@@ -1,7 +1,7 @@
 ---
-name: vine:help
 description: "Show all VINE commands with usage examples — find the right command for your workflow, from setup to implementation to PR"
 argument-hint: ""
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob

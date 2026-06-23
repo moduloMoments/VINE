@@ -1,26 +1,25 @@
-name: Publish to npm
+name: Release plugin
 
 on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
-
-      - name: Read version from package.json
+      - name: Read version from plugin.json
         id: version
         run: |
-          VERSION=$(node -p "require('./package.json').version")
+          VERSION=$(grep -m1 '"version"' plugins/vine/.claude-plugin/plugin.json \
+            | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read version from plugins/vine/.claude-plugin/plugin.json"
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
@@ -30,6 +29,9 @@ jobs:
             echo "::error::Tag v${{ steps.version.outputs.version }} already exists"
             exit 1
           fi
+
+      - name: Validate the plugin
+        run: sh .vine/scripts/trellis-check.sh
 
       - name: Extract release notes from CHANGELOG.md
         id: notes
@@ -43,16 +45,6 @@ jobs:
           fi
           # Write to file for gh release to consume
           echo "$NOTES" > /tmp/release-notes.md
-
-      - name: Smoke test
-        run: |
-          mkdir /tmp/vine-test && cd /tmp/vine-test
-          node "$GITHUB_WORKSPACE/bin/cli.js"
-          test -f .claude/commands/vine/verify.md
-          echo "Smoke test passed"
-
-      - name: Publish to npm with provenance
-        run: npm publish --provenance --access public
 
       - name: Create git tag and GitHub release
         env:

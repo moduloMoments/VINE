@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "vine",
-      "source": "./"
+      "source": "./plugins/vine"
     }
   ]
 }

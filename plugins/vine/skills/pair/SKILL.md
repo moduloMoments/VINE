@@ -1,7 +1,7 @@
 ---
-name: vine:pair
 description: "Lightweight pair programming — quick fixes and small changes without artifact ceremony"
 argument-hint: "[file path or task description, e.g., 'src/auth.ts' or 'fix the retry logic']"
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob

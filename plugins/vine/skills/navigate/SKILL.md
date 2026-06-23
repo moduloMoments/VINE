@@ -1,7 +1,7 @@
 ---
-name: vine:navigate
 description: "Implement a feature slice by slice — write code together, run tests, review changes, and commit each validated slice with its acceptance criteria"
 argument-hint: "[feature path, e.g., 'payments/webhook-support']"
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob

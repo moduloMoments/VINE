@@ -1,7 +1,7 @@
 ---
-name: vine:optimize
 description: "Audit and improve command discoverability — score descriptions for skill matching, detect workflow chains, reduce token waste, and optimize interactivity patterns"
 argument-hint: ""
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob
