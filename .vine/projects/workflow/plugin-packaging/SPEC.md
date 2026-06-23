@@ -185,7 +185,7 @@ Session boundary: The full product (11 skills + 4 agents + hook) runs via the pl
   >   `.claude/agents` symlink was repointed to `../plugins/vine/agents` (final disposition → Slice 5).
   >   This supersedes the Slice-1 discovered item proposing a `.claudeignore`.
 
-## Phase 3: Remove npx + Rewire Tooling (Slices 4–6) ⬜
+## Phase 3: Remove npx + Rewire Tooling (Slices 4–6) ✅
 Summary: Retire the npx distribution and point the contributor tooling at the skills layout.
 Session boundary: The old path is gone, contributor dogfooding runs on the plugin, and existing users
 have a migration path. Ships as PR 3.
@@ -272,7 +272,7 @@ have a migration path. Ships as PR 3.
   > `plugins/vine/skills/init/SKILL.md` (the live product); the legacy `commands/vine/init.md` is deleted
   > in Slice 5.
   >
-  > **Done (navigate, 2026-06-23, commit `<pending>`):** "Native Hook Scaffold" section replaced with
+  > **Done (navigate, 2026-06-23, commit `372fc71`):** "Native Hook Scaffold" section replaced with
   > "Legacy npx-Install Cleanup" (detect `.claude/commands/vine/`, offer one-time removal, no-op on
   > decline) + a blockquote noting the hook is now plugin-provided. Contradiction-fixes: "What This
   > Does" item 7, the Output block's settings-hooks line, and the `.vine/scripts/` structure-table row.
@@ -310,9 +310,27 @@ Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 
 - **Files likely touched**: `CLAUDE.md`, `.vine/context/shared.md` (CI/CD Release checklist, Branch
   Naming, Skill Addition Checklist, Skill Workflows), `.vine/context/verify.md` (command count),
   `references/STATE.md`.
+
+  > **Added scope (navigate phase-group verification, 2026-06-23):** the Phase-3 cold check surfaced
+  > stale `commands/vine/` references that the npx removal (Slice 5) exposed but that fall outside the
+  > files above — fold them into this slice:
+  > - **`plugins/vine/skills/help/SKILL.md`** (shipped skill, ~line 66): "read that command file from
+  >   `commands/vine/` (or `~/.claude/commands/vine/`…)" points at a deleted path. The *correct*
+  >   replacement is the unresolved Slice-3 item — **how skills cite repo-internal locations for plugin
+  >   users** now that those files live in the plugin cache, not a predictable repo path — so fix it
+  >   here, with that question, not as a guess. (This re-trips the trellis-gate; run `/trellis` before
+  >   committing.)
+  > - **`.vine/context/navigate.md`** (~line 11): the markdownlint glob `commands/vine/*.md` now
+  >   matches zero files → retarget to `plugins/vine/skills/*/SKILL.md`.
+  > - **`.claude/commands/pr.md`** (~line 57, contributor-only): the "files in `commands/vine/` were
+  >   modified" gate references the old path → retarget to `plugins/vine/skills/`.
+  > - Confirm the `shared.md` **Tooling Notes** symlink claim (line ~89) and the whole **CI/CD** block
+  >   (npm publish / `package.json` version / `bin/cli.js` smoke test) are rewritten — already in the
+  >   CI/CD Release-checklist scope above, called out here so the cold-check findings are all tracked.
 - **Acceptance criteria**: No internal doc describes the product as "11 command files in
   `commands/vine/`" or references the npx-only install; the addition checklist targets skills; the
-  release checklist and branch model are documented (AC 9, 11).
+  release checklist and branch model are documented; no shipped skill or contributor doc references the
+  deleted `commands/vine/` path (AC 9, 11).
 - **Complexity signal**: Medium — the old layout is referenced across several contributor docs; the
   Command/State Addition checklists in shared.md exist to catch exactly this kind of multi-file drift.
 

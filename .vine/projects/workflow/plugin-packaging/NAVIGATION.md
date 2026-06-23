@@ -267,7 +267,7 @@ the redundant `trellis.yml` once I surfaced that `ci.yml` already covers it.
 
 ### Slice 6: init legacy-install migration (+ obsolete hook-scaffold revision) — Complete
 **Started**: 2026-06-23 07:40
-**Commit**: <pending>
+**Commit**: 372fc71
 **Gear**: free-climb
 **Approach taken**: Edited the live `plugins/vine/skills/init/SKILL.md`. Two coupled changes: (1)
 **Replaced the obsolete "Native Hook Scaffold" section** — the journal-before-commit hook now ships
