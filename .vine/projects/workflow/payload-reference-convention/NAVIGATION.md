@@ -123,7 +123,7 @@ review at slice boundary.
 
 ### Slice 3: Add the /trellis regression guard — Complete
 **Started**: 2026-06-23 18:05
-**Commit**: pending
+**Commit**: 01db36c
 **Gear**: free-climb
 **Approach taken**: Added **Check 13** to `.vine/scripts/trellis-check.sh` (repo-level, modeled on
 Check 12): scans `plugins/vine/{skills,agents,hooks}/` and fails on (1) any `references/…` path or
