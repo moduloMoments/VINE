@@ -86,7 +86,7 @@ evidence that disproved the "skills ignore allowed-tools" premise.
 
 ### Slice 2: Convert the remaining 10 commands to skills — Complete
 **Started**: 2026-06-23 06:05
-**Commit**: pending
+**Commit**: 508ae18
 **Gear**: free-climb
 **Approach taken**: Applied the Slice 1 recipe to all 10 remaining commands (init, verify, inquire,
 navigate, evolve, pair, pause, resume, help, optimize) → `skills/<name>/SKILL.md`. Per-file frontmatter
@@ -116,4 +116,61 @@ proof standing in as the review surface.
   - Claude → Engineer: A local-scope marketplace (Slice 1's `--scope local`) is invisible to user-scope
     `claude plugin marketplace update <name>` ("marketplace not found"); the dev-loop refresh from a
     worktree is re-`marketplace add ./ --scope local` + reinstall, which re-syncs the directory-source
-    snapshot. Refines the Slice 1 dev-loop note.
+    snapshot. Refines the Slice 1 dev-loop note. **Update**: a *same-version* reinstall is a no-op
+    ("already installed") and does NOT re-copy the snapshot — a forced refresh needs `uninstall` +
+    `install`.
+
+### Slice 3: Ship journal-check as a plugin hook (+ payload-slimming restructure) — Complete
+**Started**: 2026-06-23 06:10
+**Commit**: c679792
+**Gear**: free-climb
+**Approach taken**: Two parts. (1) **Journal-check as a plugin hook** — moved `journal-check.sh` out of
+`.vine/scripts/` into the plugin's `hooks/`, wired via `hooks/hooks.json` (PreToolUse/Bash →
+`sh "${CLAUDE_PLUGIN_ROOT}/hooks/journal-check.sh"`). Script logic unchanged (it keys off
+`CLAUDE_PROJECT_DIR`, the user's project). Dropped journal-check from the contributor `.claude/settings.json`
+(the plugin provides it now); `trellis-gate.sh` + `main-guard.sh` stay there, unshipped. (2) **Payload-slimming
+restructure** (engineer pulled this into the slice) — research confirmed Claude Code has NO file-level payload
+exclusion (no `.claudeignore`, no `files`/`exclude` field; verified against official docs); the only control is
+which directory `source` points at. So moved the entire product into `plugins/vine/`
+(`.claude-plugin/plugin.json`, `skills/`, `agents/`, `hooks/`) and set marketplace `source: "./plugins/vine"`.
+This both adopts the documented `plugins/<name>/` convention and scopes the payload to product-only.
+**Deviations from spec**:
+  - **Plugin moved from repo root to `plugins/vine/`** (SPEC Slice 1 / AC11 assumed product at root, `source: "./"`).
+    Forced by the payload-slimming decision + the no-file-exclusion finding; also lands us on the documented
+    convention. SPEC annotated (Slice 3 addendum + AC11).
+  - **`hooks/journal-check.sh` is the single home** (SPEC said "moved/copied from .vine/scripts/") — chose move,
+    no drift, and dropped its `.claude/settings.json` entry. SPEC Slice 3 annotated.
+  - **`.claude/agents` symlink repointed** to `../plugins/vine/agents` so contributor agent-loading survives
+    the move; final symlink disposition belongs to Slice 5 (annotated there).
+**Validation**: pass — `claude plugin validate .` passes; a forced reinstall yields a snapshot containing ONLY
+`.claude-plugin/ + skills(11) + agents(4) + hooks(2)` — `.vine/`, `.claude/`, `commands/`, `bin/`, `docs/`,
+`references/`, `package.json`, and `trellis-gate.sh`/`main-guard.sh` are all absent. journal-check resolves at
+`${CLAUDE_PLUGIN_ROOT}/hooks/journal-check.sh` and fires correctly (stale → exit 2 BLOCK, current → exit 0
+ALLOW, non-commit → 0).
+**Decisions made during implementation**:
+  - Move plugin into `plugins/vine/` for payload control (decided by: engineer, after research showed no file-level exclusion exists) [confidence: high]
+  - Adopt the documented `plugins/<name>/` layout rather than a generic `plugin/` (decided by: claude, ratified by engineer's convention question) [confidence: high]
+  - Repoint `.claude/agents` rather than delete it now — non-breaking; Slice 5 finalizes (decided by: claude) [confidence: medium]
+**Acceptance criteria**:
+  - [x] AC5 hook native — journal-check fires via `hooks/hooks.json` + `${CLAUDE_PLUGIN_ROOT}`; tested stale/current/non-commit against the installed snapshot. `trellis-gate.sh`/`main-guard.sh` now absent from the payload entirely (met in letter, not merely intent).
+**Engineer feedback incorporated**: Engineer pulled payload-slimming into this slice, then chose the subdir
+restructure once research showed it was the only viable mechanism, and asked whether we follow the GitHub
+convention — confirmed the restructure adopts the documented `plugins/<name>/` layout.
+**Learnings**:
+  - Engineer → Claude: Pushed for *true* payload slimming (not accept-by-intent) and for convention alignment — both converged on the same subdir restructure.
+  - Claude → Engineer: (1) Claude Code copies the `source` directory wholesale (minus `.git`) — NO `.claudeignore`/`files`/`exclude` exists; payload control is purely "scope the source dir." (2) A local *directory* source copies gitignored working files (`.vine/ACTIVE`, `settings.local.json`) into the cache, but a *github* source (production) clones — so only committed files ship; the personal-state leak is local-dev-only. (3) The `plugins/<name>/` layout is both the documented convention and the slimming mechanism — one move.
+
+### Discovered Items — Slice 3 (for later slices / evolve)
+  - **Slice 4 retarget**: `/trellis` + `trellis-gate.sh` must validate/watch `plugins/vine/skills/<name>/SKILL.md`
+    (not root `skills/`). SPEC Slice 4 annotated.
+  - **Slice 5 addition**: the `.claude/agents` symlink (repointed this slice) joins `.claude/commands/vine` in
+    the symlink-cleanup list — agents now arrive via the plugin. SPEC Slice 5 annotated.
+  - **Slice 8 (docs)**: skills reference `references/STATE.md` + `.vine/context/shared.md`, which are now outside
+    the plugin payload (`plugins/vine/` only). For plugin users these were already cwd-relative pointers (a
+    pre-existing Reference Legibility concern); the restructure just makes "not shipped" explicit. Docs should
+    address how skills cite repo-internal contracts for plugin users. Routed to Slice 8.
+  - **Supersedes the Slice-1 `.claudeignore` backlog note**: payload slimming is NOT achievable via an ignore
+    file (none supported); the subdir restructure done here is the mechanism, and it resolves the Slice-1
+    "whole-repo payload" item for the product payload.
+  - **init Native Hook Scaffold is now obsolete for plugin users** (plugin ships the hook default-on) → folded
+    into Slice 6 per engineer decision; SPEC Slice 6 annotated.
