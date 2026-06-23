@@ -182,7 +182,7 @@ convention — confirmed the restructure adopts the documented `plugins/<name>/`
 
 ### Slice 4: Rewire /trellis + trellis-gate to the skills layout — Complete
 **Started**: 2026-06-23 06:40
-**Commit**: pending
+**Commit**: e5252db
 **Gear**: free-climb
 **Approach taken**: Rewired the three trellis surfaces in lockstep to validate
 `plugins/vine/skills/<name>/SKILL.md` instead of `commands/vine/*.md`: (1) `.vine/scripts/trellis-check.sh`
