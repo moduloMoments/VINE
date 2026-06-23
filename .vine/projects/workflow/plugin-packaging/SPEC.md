@@ -237,7 +237,7 @@ have a migration path. Ships as PR 3.
   > release-time `trellis-check` validation folded into `publish.yml` above: this gates *merges*, that
   > gates *publishes*. New AC: a PR carrying a malformed SKILL.md fails the action.
   >
-  > **Done + deviations (navigate, 2026-06-23, commit `<pending>`):**
+  > **Done + deviations (navigate, 2026-06-23, commit `04bbb2f`):**
   > - Deletions complete: `bin/cli.js`, `commands/vine/` (11 files), the `.claude/commands/vine/` +
   >   `.claude/agents` symlinks, and `package.json` — all `git rm`'d. `develop` already existed
   >   (tracks `origin/develop`); the GitHub-side default-base / branch-protection is repo-admin.

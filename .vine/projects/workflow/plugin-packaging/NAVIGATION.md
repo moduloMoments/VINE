@@ -215,7 +215,7 @@ across two lines — byte-identical in the source command, not introduced here).
 
 ### Slice 5: Remove the npx distribution + rework the release flow (+ CI-fix) — Complete
 **Started**: 2026-06-23 07:10
-**Commit**: <pending>
+**Commit**: 04bbb2f
 **Gear**: free-climb
 **Approach taken**: Three parts. (1) **Delete the npx path** — `git rm` of `bin/cli.js`,
 `commands/vine/` (11 files), the `.claude/commands/vine/` + `.claude/agents` symlinks, and
