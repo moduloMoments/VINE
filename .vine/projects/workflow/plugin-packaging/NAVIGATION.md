@@ -122,7 +122,8 @@ proof standing in as the review surface.
 
 ### Slice 3: Ship journal-check as a plugin hook (+ payload-slimming restructure) — Complete
 **Started**: 2026-06-23 06:10
-**Commit**: c679792
+**Commit**: c679792 + 8d87cb3 (8d87cb3 records the marketplace `source` repoint + settings.json +
+symlink, which a failing-pathspec `git add` silently dropped from c679792; working tree was always correct)
 **Gear**: free-climb
 **Approach taken**: Two parts. (1) **Journal-check as a plugin hook** — moved `journal-check.sh` out of
 `.vine/scripts/` into the plugin's `hooks/`, wired via `hooks/hooks.json` (PreToolUse/Bash →
