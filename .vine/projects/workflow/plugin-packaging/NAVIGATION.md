@@ -10,7 +10,7 @@
 
 ### Slice 1: Plugin manifest, marketplace, and invocation spike — Complete
 **Started**: 2026-06-23 00:13
-**Commit**: pending
+**Commit**: 0d53055
 **Gear**: walk-me-through
 **Approach taken**: Stood up `.claude-plugin/plugin.json` (name `vine`, version `0.4.0`) and
 `.claude-plugin/marketplace.json` (marketplace name `moduloMoments`, one plugin entry `vine`,

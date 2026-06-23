@@ -104,7 +104,7 @@ dogfooding, and the npm publish flow are removed.
 
 ### Work Slices
 
-## Phase 1: Scaffold + Invocation Proof (Slices 1) ⬜
+## Phase 1: Scaffold + Invocation Proof (Slices 1) ✅
 Summary: Add the plugin manifest + marketplace and prove the skill recipe and colon namespace on a
 single low-risk command before converting anything else.
 Session boundary: The plugin installs locally and one phase invokes as `/vine:status`; the conversion
