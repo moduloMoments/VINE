@@ -4,7 +4,7 @@
 
 - Re-read any modified skill file in full to verify the change didn't break the document flow
 - Check that YAML frontmatter is still valid (description, argument-hint, allowed-tools, disable-model-invocation; no `name`)
-- If modifying state artifact formats, verify `references/STATE.md` is updated to match
+- If modifying state artifact formats, verify `references/CONTRACTS.md` is updated to match
 
 ## Validation Commands
 
@@ -19,5 +19,5 @@
 ## Domain-Specific Validation
 
 - If changing a phase skill: mentally trace a feature through the full chain (verify -> inquire -> navigate -> evolve) to confirm the change doesn't break handoff
-- If changing STATE.md: check that all skills that produce or consume that artifact section are updated
+- If changing CONTRACTS.md: check that all skills that produce or consume that artifact section are updated
 - If modifying skill files: preserve the "Load Engineer Profile" block (after the Load Context Overlays section). If adding new sections, place them after profile loading.

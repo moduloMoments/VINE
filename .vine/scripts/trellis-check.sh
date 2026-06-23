@@ -5,7 +5,7 @@
 # Runs trellis's command checks (Steps 1-4 of .claude/commands/trellis.md)
 # mechanically, so the .vine/.trellis-ok stamp the gate reads becomes
 # deterministic and CI-runnable instead of session-interpreted. The harder
-# artifact checks (Steps 5-7, STATE.md template parsing) stay in the skill —
+# artifact checks (Steps 5-7, CONTRACTS.md template parsing) stay in the skill —
 # they are out of scope here.
 #
 # Checks implemented, per skill file in plugins/vine/skills/<name>/SKILL.md:
@@ -22,7 +22,7 @@
 #
 # Plus one repo-level check (not per-command, no table column):
 #  10 Cross-reference anchors resolve (verification-tier contract family:
-#     STATE.md note, agent mode/scope names, command pointers) -> FAILURE
+#     CONTRACTS.md note, agent mode/scope names, command pointers) -> FAILURE
 #  12 Personal-root resolution wired into shared.md — the profile/overlay reads
 #     route through the "Resolving the personal root" helper, not a bare
 #     cwd-relative .vine.local/ read (#132 regression guard) -> FAILURE
@@ -237,7 +237,7 @@ EOF
 
   # --- Check 11: naked issue pointers in the body (warning-only) ---
   # A bare #<n> that isn't a [#n](link) and isn't immediately glossed by a
-  # parenthetical reads as an opaque pointer (references/STATE.md
+  # parenthetical reads as an opaque pointer (references/CONTRACTS.md
   # "Reference Legibility"). Warning-only; never affects pass/fail.
   naked=$(awk '/^---$/{c++; next} c>=2{
     t=$0
@@ -296,7 +296,7 @@ while IFS='|' read -r af anchor; do
   - $af — missing anchor: $anchor"
   fi
 done <<'PAIRS'
-references/STATE.md|**Verification-tier contract.**
+references/CONTRACTS.md|**Verification-tier contract.**
 plugins/vine/agents/vine-verification.md|### Feature Verification (cross-change)
 plugins/vine/agents/vine-verification.md|**Phase-group scope**
 plugins/vine/agents/vine-verification.md|**Full-feature scope**
@@ -381,7 +381,7 @@ fi
 
 if [ -n "$GLOSSWARN" ]; then
   echo
-  echo "⚠️ Naked issue pointers (bare #<n> with no gloss — see STATE.md Reference Legibility):"
+  echo "⚠️ Naked issue pointers (bare #<n> with no gloss — see CONTRACTS.md Reference Legibility):"
   printf '%s\n' "$GLOSSWARN"
 fi
 

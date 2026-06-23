@@ -88,6 +88,11 @@ reference, so the new name is in place before any other edit.
 **Files likely touched**: `references/CONTRACTS.md` (self-refs), `CLAUDE.md`, `README.md`,
 `.vine/README.md`, `.vine/context/{shared,verify,navigate,evolve,pair}.md`,
 `.claude/agents/vine-coder.md`, `.claude/commands/{trellis,pr-review}.md`, `ROADMAP.md`.
+**Addendum (navigate, Slice 0)**: also updated `.vine/scripts/trellis-check.sh` and
+`.vine/scripts/run-tests.sh` — both hardcode the Check 10 anchor pair
+(`references/STATE.md|**Verification-tier contract.**`) and the test fixture that stubs it, so the
+rename breaks `/trellis` unless they move to `references/CONTRACTS.md` too. Required to satisfy this
+slice's own "`/trellis` passes" AC; not in the original list.
 **Explicitly NOT touched**: `plugins/vine/skills/**` (their refs are *removed* in Slice 2, not
 renamed), `CHANGELOG.md`, and dated `.vine/knowledge/workflow/*.md` (historical — left
 period-accurate).

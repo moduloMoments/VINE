@@ -407,7 +407,7 @@ Unlike per-feature artifacts, PROFILE.md lives at `.vine.local/PROFILE.md` (unde
 
 `.vine/README.md` is a human/agent-facing orientation doc explaining how to *use* VINE inside this repo — what lives under `.vine/`, how context overlays compose (precedence, the personal `.vine.local/` layer), the optional `## Validation` block, and how to customize VINE for the repo. It is tracked like everything else under `.vine/` (track-by-default — only `.vine.local/` and the `.vine/ACTIVE` sentinel are gitignored).
 
-Unlike the overlays, the README configures nothing — overlays steer VINE's behavior, the README documents it. It points back to this file (STATE.md) for the authoritative artifact structure rather than duplicating it, so it can't drift from the contract.
+Unlike the overlays, the README configures nothing — overlays steer VINE's behavior, the README documents it. It points back to this file (CONTRACTS.md) for the authoritative artifact structure rather than duplicating it, so it can't drift from the contract.
 
 **Lifecycle:** written from a template at vine:init (Step 4) for fresh repos; **offered, declinable** in upgrade mode (Step 8) when absent. Declining changes nothing on disk. Like every other scaffold, VINE works identically whether or not the README is present.
 

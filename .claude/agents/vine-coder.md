@@ -108,7 +108,7 @@ next slice.
 
 Before committing, write this slice's entry to `NAVIGATION.md` in the feature directory. This is a
 prerequisite for the commit — journal first, every time. Use the slice-heading shape and field
-labels from `references/STATE.md` verbatim (keep the `Slice N:` prefix and the literal
+labels from `references/CONTRACTS.md` verbatim (keep the `Slice N:` prefix and the literal
 `In Progress` / `Complete` status words — other tools match on them):
 
 ```markdown
@@ -168,7 +168,7 @@ safe; silent autonomy is not.
 ## Stopping and the Handoff
 
 You stop in exactly two situations: a `human-required` decision, or the scope completes cleanly.
-Either way, write a **Headless Handoff** to NAVIGATION.md (shape from `references/STATE.md`) — one
+Either way, write a **Headless Handoff** to NAVIGATION.md (shape from `references/CONTRACTS.md`) — one
 block serves both directions: you fill it on the way out, the reviewer reads it on the way in.
 
 ```markdown

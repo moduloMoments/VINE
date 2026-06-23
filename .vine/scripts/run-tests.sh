@@ -157,7 +157,7 @@ EOF
 # stubs must also pass the per-skill checks — mkcmd builds them.
 mkanchors() {
   mkdir -p "$1/references" "$1/plugins/vine/agents"
-  printf '%s\n' '**Verification-tier contract.**' > "$1/references/STATE.md"
+  printf '%s\n' '**Verification-tier contract.**' > "$1/references/CONTRACTS.md"
   cat > "$1/plugins/vine/agents/vine-verification.md" <<'EOF'
 ### Feature Verification (cross-change)
 **Phase-group scope**
@@ -223,7 +223,7 @@ printf '%s' "$warnout" | grep -q 'fb/SKILL.md:.*\.vine/hooks'
 check "trellis-check: allowlisted fallback paragraph does not warn" 1 $?
 
 # Check 10: a missing anchor file must flip the run red.
-rm "$T/references/STATE.md"
+rm "$T/references/CONTRACTS.md"
 sh "$C" >/dev/null 2>&1
 check "trellis-check: missing cross-reference anchor -> fail (exit 1)" 1 $?
 
