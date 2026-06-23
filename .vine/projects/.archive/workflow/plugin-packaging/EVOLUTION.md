@@ -75,9 +75,11 @@ user-facing behavior.
   reading from the repo root. Low priority.
 - **Already routed (no new ticket):** oversized skill bodies (`init`/`evolve`/`navigate` >500 lines) →
   existing optimize-scope context-trim backlog; contributor skill-dev hot-reload helper → SPEC backlog.
-- **Repo-admin owed (manual, not a ticket):** set `develop` as the GitHub default PR base + branch
-  protection. The branch model is documented (shared.md, CONTRIBUTING, pr.md, ADR-c) but the forge setting
-  is manual.
+- **Repo-admin owed (manual, not a ticket):** ~~set `develop` as the GitHub default PR base + branch
+  protection.~~ **Corrected 2026-06-23 (release prep):** `main` stays the default branch so the
+  marketplace tracks it ref-free, and `pr.md` already targets `develop` explicitly via
+  `--base develop` — so **no default-branch flip is owed**. Branch protection on `main`/`develop` is an
+  optional forge nicety. See the corrected ADR-c (`…single-version-source-main-release-develop-integration`).
 
 ### Agent Evolution
 
