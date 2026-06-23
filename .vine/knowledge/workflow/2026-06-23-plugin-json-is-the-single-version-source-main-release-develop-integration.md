@@ -44,7 +44,9 @@ drifted out of sync — two version fields that could disagree.
   release-only is exactly what it enforces.
 - Every in-flight branch (including this cycle's remaining PRs) retargets to `develop`; the
   contributor PR flow (`/pr`, `CONTRIBUTING.md`) was retargeted `main`→`develop` to match.
-- One repo-admin action sits outside the code: setting `develop` as the default PR base + branch
-  protection on the forge.
+- No default-branch change is needed: `main` stays the repo's default branch (so the marketplace
+  tracks it with no `ref`), and contributor PRs target `develop` explicitly via `pr.md`'s
+  `gh pr create --base develop`. Branch protection on `main`/`develop` is an optional forge nicety,
+  not a prerequisite.
 - The release workflow (`publish.yml`) parses the version from plugin.json (node-free) and cuts a
   tagged GitHub release with no npm step.
