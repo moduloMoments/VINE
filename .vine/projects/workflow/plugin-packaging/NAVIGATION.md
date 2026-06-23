@@ -212,3 +212,55 @@ across two lines — byte-identical in the source command, not introduced here).
 **Learnings**:
   - Engineer → Claude: Preferred repurposing Check 2 over renumbering — keeping cross-reference numbering stable is itself the kind of drift trellis exists to catch.
   - Claude → Claude: The engine (`trellis-check.sh`) and the doc (`trellis.md`) carry duplicate contracts (the anchor list, the check set) and MUST stay byte-consistent — each lists the other as the sync partner. Rewiring one without the other is the exact divergence Step 8 warns about.
+
+### Slice 5: Remove the npx distribution + rework the release flow (+ CI-fix) — Complete
+**Started**: 2026-06-23 07:10
+**Commit**: <pending>
+**Gear**: free-climb
+**Approach taken**: Three parts. (1) **Delete the npx path** — `git rm` of `bin/cli.js`,
+`commands/vine/` (11 files), the `.claude/commands/vine/` + `.claude/agents` symlinks, and
+`package.json` entirely. `develop` already existed locally (tracks `origin/develop`), so the branch
+model is in place; the GitHub default-base / branch-protection toggle is repo-admin (flagged to
+engineer). (2) **Rework `publish.yml`** — renamed to "Release plugin", node-free version parse from
+`plugins/vine/.claude-plugin/plugin.json` (grep+sed), dropped `npm publish` + `setup-node` + the node
+smoke-test, replaced the smoke-test with `sh .vine/scripts/trellis-check.sh`, kept tag-exists-check +
+CHANGELOG-extract + GitHub-release, removed the `id-token` permission. (3) **CI-fix folded into this
+slice** — `ci.yml` runs `run-tests.sh`, which was red (16/27 failing) because Slice 3 *moved*
+`journal-check.sh` into `plugins/vine/hooks/` and Slice 4 rewired the trellis scripts to
+`plugins/vine/skills/`, but the test matrix still used the old paths/fixtures. Rewrote `run-tests.sh`:
+journal-check `J` path → `plugins/vine/hooks/`; trellis-gate fixtures → `plugins/vine/skills/test/SKILL.md`;
+trellis-check `mkcmd`/`mkanchors` → skills layout + new frontmatter (drop `name`, add
+`disable-model-invocation`); the old "name mismatch" case repurposed to the **no-auto-fire** case
+(matching Slice 4's Check 2 repurpose); warning greps → `<stem>/SKILL.md` paths. Also cleaned the stale
+`create-vine` header comments in the four surviving `.vine/scripts/*.sh`.
+**Deviations from spec**:
+  - **`trellis.yml` NOT created** (SPEC added-scope asked for it). `ci.yml` already runs
+    `trellis-check.sh` on every PR alongside `run-tests.sh`, so the dedicated-gate intent and the
+    "malformed SKILL.md fails the PR" AC are already met; a separate workflow would double-run
+    trellis-check. Engineer decision. SPEC Slice 5 annotated.
+  - **CI-fix (run-tests.sh rewrite) pulled into Slice 5** — not in the original goal, but `ci.yml`
+    must be green for PR 3 and the failures are fallout from Slices 3–4. Engineer chose to fold it in.
+    SPEC Slice 5 annotated.
+**Validation**: pass — `run-tests.sh` 27/27 (was 11/27); live `trellis-check.sh` 11/11 skills + 8
+anchors + #132 guard; `publish.yml` version parse verified (`0.4.0`); zero dangling
+`bin/cli`/`commands/vine`/`package.json`/`npm publish`/`create-vine` refs across `.github/` +
+`.vine/scripts/`; root `bin/`, `commands/`, `package.json` gone; contributor `.claude/commands/` tools
+(pr/pr-review/trellis/triage) intact.
+**Decisions made during implementation**:
+  - Skip `trellis.yml`; `ci.yml` already gates trellis-check on PRs (decided by: engineer) [confidence: high]
+  - Fold the `run-tests.sh` CI-fix into Slice 5 rather than a separate pair/PR (decided by: engineer) [confidence: high]
+  - Node-free version parse (grep+sed) in `publish.yml` since `setup-node` is removed (decided by: claude) [confidence: high]
+  - Clean stale `create-vine` comments in surviving scripts to satisfy AC7's grep-clean intent (decided by: claude) [confidence: medium]
+**Acceptance criteria**:
+  - [x] AC7 npx removed cleanly — `bin/cli.js`, `commands/vine/`, the `.claude/commands/vine/` symlink, and `package.json` gone; `publish.yml` no longer publishes to npm; no `create-vine` artifacts remain
+  - [x] AC11 versioning coherent — `plugin.json` is the sole version source (`0.4.0`); `package.json` removed (no competing field); marketplace `source` tracks `./plugins/vine` with no `ref`; `develop`/`main` branch model in place
+  - [x] AC6/AC8 (partial) — contributor tooling (trellis scripts) survives the deletions and validates the live skills; `ci.yml` (run-tests + trellis-check) is green for PR 3. Full marketplace-install / dogfooding re-confirm is the human-only gate (nested `claude -p` 401s).
+**Engineer feedback incorporated**: Chose free-climb; folded the CI-fix into the slice; chose to skip
+the redundant `trellis.yml` once I surfaced that `ci.yml` already covers it.
+**Learnings**:
+  - Engineer → Claude: When a specced new artifact duplicates existing coverage, drop it — the
+    enforcement matters, not the file count.
+  - Claude → Engineer: The hook test matrix (`run-tests.sh`, run by `ci.yml`) is a hidden coupling to
+    the layout — moving `journal-check.sh` (Slice 3) and rewiring the trellis scripts (Slice 4) both
+    silently broke it because no PR had exercised CI yet. A layout move isn't done until its tests move
+    with it; checking CI status at each restructure would have caught this two slices earlier.

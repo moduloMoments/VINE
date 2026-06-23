@@ -1,6 +1,6 @@
 #!/bin/sh
-# Test matrix for VINE hook scripts (contributor-only — never shipped by
-# create-vine). Each case runs against a throwaway temp repo so the live
+# Test matrix for VINE hook scripts (contributor-only — never shipped in the
+# plugin payload). Each case runs against a throwaway temp repo so the live
 # repo's sentinel and stamp are untouched.
 #
 # Usage: sh .vine/scripts/run-tests.sh
@@ -9,6 +9,7 @@
 set -u
 
 SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd)
+ROOT=$(cd "$SCRIPTS_DIR/../.." && pwd)
 PASS=0
 FAIL=0
 
@@ -23,7 +24,9 @@ payload_commit='{"tool_input":{"command":"git commit -m x"}}'
 payload_ls='{"tool_input":{"command":"ls -la"}}'
 
 # ---------- journal-check.sh ----------
-J="$SCRIPTS_DIR/journal-check.sh"
+# Now ships inside the plugin (plugins/vine/hooks/), not .vine/scripts/. Its
+# logic is unchanged — it keys off CLAUDE_PROJECT_DIR (the user's project).
+J="$ROOT/plugins/vine/hooks/journal-check.sh"
 T=$(mktemp -d)
 ( cd "$T" && git init -q . && git commit -q --allow-empty -m init )
 export CLAUDE_PROJECT_DIR="$T"
@@ -63,14 +66,14 @@ rm -rf "$T"
 # ---------- trellis-gate.sh ----------
 G="$SCRIPTS_DIR/trellis-gate.sh"
 T=$(mktemp -d)
-( cd "$T" && git init -q . && mkdir -p commands/vine .vine \
-  && echo cmd > commands/vine/test.md && git add -A && git commit -qm init )
+( cd "$T" && git init -q . && mkdir -p plugins/vine/skills/test .vine \
+  && echo cmd > plugins/vine/skills/test/SKILL.md && git add -A && git commit -qm init )
 export CLAUDE_PROJECT_DIR="$T"
 
 printf '%s' "$payload_commit" | sh "$G" >/dev/null 2>&1
-check "trellis-gate: no command changes -> allow" 0 $?
+check "trellis-gate: no skill changes -> allow" 0 $?
 
-echo edit >> "$T/commands/vine/test.md"
+echo edit >> "$T/plugins/vine/skills/test/SKILL.md"
 printf '%s' "$payload_commit" | sh "$G" >/dev/null 2>&1
 check "trellis-gate: changed, no stamp -> block (exit 2)" 2 $?
 
@@ -84,7 +87,7 @@ printf '%s' "$payload_commit" | sh "$G" >/dev/null 2>&1
 check "trellis-gate: fresh green stamp -> allow" 0 $?
 
 sleep 1
-echo edit2 >> "$T/commands/vine/test.md"
+echo edit2 >> "$T/plugins/vine/skills/test/SKILL.md"
 printf '%s' "$payload_commit" | sh "$G" >/dev/null 2>&1
 check "trellis-gate: edit newer than stamp -> block (exit 2)" 2 $?
 
@@ -118,25 +121,29 @@ rm -rf "$T"
 # ---------- trellis-check.sh ----------
 C="$SCRIPTS_DIR/trellis-check.sh"
 
-# Writes a minimal command file that passes every command check. Args:
-#   mkcmd <dir> <stem> <name-field> <h1-stem> <extra-overlay-line>
+# Writes a minimal skill file that passes every check. Args:
+#   mkcmd <root> <stem> <h1-stem> <extra-overlay-line> [dmi=true]
+# The skill lives at plugins/vine/skills/<stem>/SKILL.md; <stem> is the dir
+# name the /vine: colon namespace derives from, so H1 reads "# vine:<h1-stem>".
 mkcmd() {
-  cat > "$1/commands/vine/$2.md" <<EOF
+  dmi=${5:-true}
+  mkdir -p "$1/plugins/vine/skills/$2"
+  cat > "$1/plugins/vine/skills/$2/SKILL.md" <<EOF
 ---
-name: $3
 description: "d"
 argument-hint: ""
+disable-model-invocation: $dmi
 allowed-tools:
   - Read
   - AskUserQuestion
 ---
 
-# vine:$4 — Sub
+# vine:$3 — Sub
 
 ## Load Context Overlays
 
 Read \`.vine/context/$2.md\` if it exists.
-$5
+$4
 
 ## Load Engineer Profile
 
@@ -146,46 +153,48 @@ EOF
 
 # Check 10 resolves the PAIRS list in trellis-check.sh against
 # $CLAUDE_PROJECT_DIR, so the fixture stubs every anchor. Keep in sync with
-# that heredoc. The navigate/evolve anchors live in command files, so those
-# stubs must also pass the per-command checks — mkcmd builds them.
+# that heredoc. The navigate/evolve anchors live in skill files, so those
+# stubs must also pass the per-skill checks — mkcmd builds them.
 mkanchors() {
-  mkdir -p "$1/references" "$1/agents"
+  mkdir -p "$1/references" "$1/plugins/vine/agents"
   printf '%s\n' '**Verification-tier contract.**' > "$1/references/STATE.md"
-  cat > "$1/agents/vine-verification.md" <<'EOF'
+  cat > "$1/plugins/vine/agents/vine-verification.md" <<'EOF'
 ### Feature Verification (cross-change)
 **Phase-group scope**
 **Full-feature scope**
 **Base checks**
 **Cross-cutting checks**
 EOF
-  mkcmd "$1" navigate "vine:navigate" navigate "See the verification-tier contract note."
-  mkcmd "$1" evolve "vine:evolve" evolve "See the verification-tier contract note."
+  mkcmd "$1" navigate navigate "See the verification-tier contract note."
+  mkcmd "$1" evolve evolve "See the verification-tier contract note."
 }
 
 T=$(mktemp -d)
-mkdir -p "$T/commands/vine" "$T/.vine"
+mkdir -p "$T/plugins/vine/skills" "$T/.vine"
 export CLAUDE_PROJECT_DIR="$T"
 mkanchors "$T"
 
-mkcmd "$T" good "vine:good" good ""
+mkcmd "$T" good good ""
 sh "$C" >/dev/null 2>&1
 check "trellis-check: all valid -> pass (exit 0)" 0 $?
 grep -q '^status: pass' "$T/.vine/.trellis-ok"
 check "trellis-check: pass writes 'status: pass' stamp" 0 $?
 
-mkcmd "$T" bad "vine:WRONG" bad ""
+# Check 2 (repurposed from name-match): a skill that can auto-fire -> fail.
+mkcmd "$T" bad bad "" false
 sh "$C" >/dev/null 2>&1
-check "trellis-check: name mismatch -> fail (exit 1)" 1 $?
+check "trellis-check: disable-model-invocation false -> fail (exit 1)" 1 $?
 grep -q '^status: fail' "$T/.vine/.trellis-ok"
 check "trellis-check: fail overwrites stamp with 'status: fail'" 0 $?
-rm "$T/commands/vine/bad.md"
+rm -rf "$T/plugins/vine/skills/bad"
 
 # init/help skip the overlays/profile/order checks — a stub with neither passes.
-cat > "$T/commands/vine/init.md" <<'EOF'
+mkdir -p "$T/plugins/vine/skills/init"
+cat > "$T/plugins/vine/skills/init/SKILL.md" <<'EOF'
 ---
-name: vine:init
 description: "d"
 argument-hint: ""
+disable-model-invocation: true
 allowed-tools:
   - Read
   - AskUserQuestion
@@ -197,20 +206,20 @@ Body uses AskUserQuestion. No overlays/profile sections, by design.
 EOF
 sh "$C" >/dev/null 2>&1
 check "trellis-check: init skips overlays/profile/order -> pass" 0 $?
-rm "$T/commands/vine/init.md"
+rm -rf "$T/plugins/vine/skills/init"
 
 # Stray legacy .vine/hooks ref outside the allowlist -> warning only, still pass.
-mkcmd "$T" leg "vine:leg" leg 'Stray ref: `.vine/hooks/leg.md`.'
+mkcmd "$T" leg leg 'Stray ref: `.vine/hooks/leg.md`.'
 warnout=$(sh "$C" 2>/dev/null)
 check "trellis-check: stray legacy ref stays a warning -> pass" 0 $?
-printf '%s' "$warnout" | grep -q 'leg.md:.*\.vine/hooks'
+printf '%s' "$warnout" | grep -q 'leg/SKILL.md:.*\.vine/hooks'
 check "trellis-check: stray legacy ref is reported as a warning" 0 $?
-rm "$T/commands/vine/leg.md"
+rm -rf "$T/plugins/vine/skills/leg"
 
 # The allowlisted fallback paragraph must NOT warn.
-mkcmd "$T" fb "vine:fb" fb "If \`.vine/context/\` doesn't exist but legacy \`.vine/hooks/\` does, read from \`.vine/hooks/\` instead."
+mkcmd "$T" fb fb "If \`.vine/context/\` doesn't exist but legacy \`.vine/hooks/\` does, read from \`.vine/hooks/\` instead."
 warnout=$(sh "$C" 2>/dev/null)
-printf '%s' "$warnout" | grep -q 'fb.md:.*\.vine/hooks'
+printf '%s' "$warnout" | grep -q 'fb/SKILL.md:.*\.vine/hooks'
 check "trellis-check: allowlisted fallback paragraph does not warn" 1 $?
 
 # Check 10: a missing anchor file must flip the run red.

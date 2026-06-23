@@ -1,6 +1,6 @@
 #!/bin/sh
 # VINE trellis command-check engine (contributor-only — NOT part of the user
-# scaffold; create-vine never copies this script).
+# plugin payload — it lives in the contributor repo only).
 #
 # Runs trellis's command checks (Steps 1-4 of .claude/commands/trellis.md)
 # mechanically, so the .vine/.trellis-ok stamp the gate reads becomes

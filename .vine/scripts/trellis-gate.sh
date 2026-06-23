@@ -1,6 +1,6 @@
 #!/bin/sh
 # VINE contributor trellis gate (this repo only — NOT part of the user
-# scaffold; create-vine never copies this script).
+# plugin payload — it lives in the contributor repo only).
 # PreToolUse hook on Bash: blocks `git commit` when files under
 # plugins/vine/skills/ are in the change set and trellis hasn't passed since
 # the last skill-file edit. A fully green trellis run writes .vine/.trellis-ok
