@@ -62,9 +62,10 @@ Tips:
 
 ## Handle Questions
 
-If the engineer asks a follow-up question about a specific command, read that command file
-from `commands/vine/` (or `~/.claude/commands/vine/` for global installs) and give a concise
-summary of what it does, its key sections, and when to use it.
+If the engineer asks a follow-up question about a specific command, locate its skill with Glob
+(`**/skills/<name>/SKILL.md` — this resolves whether VINE is installed as a plugin, in the cache,
+or you're in the framework repo), read it, and give a concise summary of what it does, its key
+sections, and when to use it.
 
 Use `AskUserQuestion` if the engineer seems unsure which command fits their situation:
 

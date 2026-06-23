@@ -334,6 +334,18 @@ Session boundary: Docs and knowledge are current; #57 is closeable. Ships as PR 
 - **Complexity signal**: Medium — the old layout is referenced across several contributor docs; the
   Command/State Addition checklists in shared.md exist to catch exactly this kind of multi-file drift.
 
+  > **Done + deviation (navigate, 2026-06-23, commit `<slice8>`):** All specced + cold-check items
+  > landed (CLAUDE.md, shared.md CI/CD + checklists + Branch Naming, verify.md, navigate.md, STATE.md
+  > agent-paths/create-vine/`.vine/scripts` section, help/SKILL.md citation via Glob, pr.md +
+  > CONTRIBUTING `commands/vine`→`plugins/vine/skills`). No STATE.md "version note" existed to change —
+  > `plugin.json`-single-source is documented in CLAUDE.md + shared.md instead.
+  > **Deviation — `main`→`develop` retarget folded in (engineer decision).** Beyond the cold-check's
+  > `commands/vine` line, the develop branch model left `pr.md` and `CONTRIBUTING.md` diffing/branching
+  > against `main`. The engineer chose to retarget both here (rather than a separate change) so the
+  > branch model ships coherently in Phase 4's PR: `pr.md` now uses `develop...HEAD`, stops on
+  > `main`/`develop`, and `gh pr create --base develop`; `CONTRIBUTING.md` says "Branch from develop"
+  > with the branch-model note. trellis-check 11/11.
+
 ### Slice 9: Knowledge ADR(s)
 - **Goal**: Record (a) the plugin-only / drop-npx decision and its rationale (revised hard gate),
   (b) overlay distribution = document-only / consumer-owned, amending the team-layer ADR's "seam"

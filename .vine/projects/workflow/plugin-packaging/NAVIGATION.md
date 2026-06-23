@@ -321,7 +321,7 @@ pre-existing (noted in Slice 4), not introduced here.
 
 ### Slice 7: README + CHANGELOG — Complete
 **Started**: 2026-06-23 02:40
-**Commit**: pending
+**Commit**: 2e3af85
 **Gear**: free-climb
 **Approach taken**: Rewrote the README **Installation** section from the npx Global/Project/Upgrade/
 Manual blocks to a plugin-first flow: `claude plugin marketplace add moduloMoments/VINE` →
@@ -354,3 +354,30 @@ slice — no lint/typecheck/test toolchain; trellis-check is untouched since no 
 **Learnings**:
   - Engineer → Claude: None new this slice.
   - Claude → Engineer: A path-moving restructure (agents → `plugins/vine/agents/`) leaves stale *relative links* in prose docs that no skill-validator catches — only a path-resolves grep over the doc surfaces them. README links are Slice 7's surface; the internal-doc equivalents are Slice 8's.
+
+### Slice 8: Internal docs (CLAUDE.md, shared.md, STATE.md, +cold-check) — Complete
+**Started**: 2026-06-23 02:52
+**Commit**: pending
+**Gear**: free-climb
+**Approach taken**: Swept every internal doc to the skills/plugin reality.
+  - **CLAUDE.md** — "What This Repo Is" + Repository Structure rewritten for `plugins/vine/` (skills at `plugins/vine/skills/<name>/SKILL.md`, agents/hooks under the plugin, manifest + marketplace pointers); "Command Authoring Conventions" → "Skill Authoring Conventions" (frontmatter drops `name`, adds `disable-model-invocation: true`; "command"→"skill" throughout); optimize line de-pluralized to "all skills".
+  - **shared.md** — Tooling Notes symlink claim → local-plugin dogfooding + dev loop; "Command Addition Checklist" → "Skill Addition Checklist" (paths + the SKILL.md row); Branch Naming → cut-from-`develop`; whole CI/CD block rewritten (branch model, SemVer policy, trellis-gate path → `plugins/vine/skills/`, journal-check now plugin-default-on not settings-wired, Release workflow no-npm, PR CI line, Release checklist for the new flow).
+  - **verify.md** — "11 command files" → "11 phase skills (`plugins/vine/skills/...`)".
+  - **navigate.md** — markdownlint glob → `plugins/vine/skills/*/SKILL.md`; frontmatter-valid list fixed (drop `name`, add `disable-model-invocation`); "command file"→"skill file".
+  - **references/STATE.md** — two `agents/…` paths → `plugins/vine/agents/…`; two `create-vine` mentions → "not in the plugin payload"; the `.vine/scripts/` section rewritten (journal-check ships *with the plugin* default-on via `plugins/vine/hooks/hooks.json`; `.vine/scripts/` reframed as contributor-only tooling home incl. `run-tests.sh`). No "version note" existed to change — `plugin.json` single-source is captured in CLAUDE.md + shared.md instead.
+  - **Cold-check items** — `help/SKILL.md:66` citation fixed via **Glob** (`**/skills/<name>/SKILL.md`) per the engineer's call, resolving the Slice-3 "how skills cite repo-internal locations for plugin users" question; `pr.md` + `CONTRIBUTING.md` `commands/vine/`→`plugins/vine/skills/`.
+  - **Folded-in (engineer decision): `main`→`develop` retarget** of the contributor PR flow — `pr.md` (diff range `develop...HEAD`, stop-on-`main`/`develop`, "Branch from develop", `gh pr create --base develop`) and `CONTRIBUTING.md` (Branch from develop + branch-model note), so the whole branch-model change ships in Phase 4's PR rather than dangling.
+**Deviations from spec**: Scope grew by the folded-in `main`→`develop` retarget of `pr.md` + `CONTRIBUTING.md` (engineer chose "fold in" over "defer"). SPEC Slice 8 annotated.
+**Validation**: pass — `trellis-check.sh` **11/11 skills**, 8 cross-reference anchors resolve, #132 guard intact, green stamp written (satisfies the gate for the `help/SKILL.md` touch); the two init `.vine/hooks` warnings are pre-existing (Slice 4). Final stale-reference sweep clean: zero `commands/vine`/`create-vine`/`bin/cli` across the edited docs (only the legitimate `npx markdownlint-cli2` tool remains), zero root-relative `agents/` links, zero `main..HEAD`/"Branch from main" in `pr.md`/`CONTRIBUTING.md`.
+**Decisions made during implementation**:
+  - help citation = Glob `**/skills/<name>/SKILL.md` (portable across plugin cache + contributor repo) rather than a hardcoded path or dropping the read (decided by: engineer) [confidence: high]
+  - Fold the `main`→`develop` contributor-flow retarget into this slice so the branch model ships coherently, vs. deferring it to a separate change (decided by: engineer) [confidence: high]
+  - `pr.md` defaults `gh pr create --base develop` explicitly rather than relying on the (still-pending) repo-admin default-base setting — robust now, and a release PR is a maintainer merge, not a `/pr` flow (decided by: claude) [confidence: medium]
+  - Reframe STATE.md's `.vine/scripts/` section rather than delete it — `.vine/scripts/` still exists as contributor tooling; only its *user-scaffold* identity is obsolete (decided by: claude) [confidence: high]
+**Acceptance criteria**:
+  - [x] AC9 (internal-docs half) — no internal doc describes the product as "11 command files in `commands/vine/`" or the npx-only install; the addition checklist targets skills; the release checklist + branch model are documented; no shipped skill (`help`) or contributor doc references the deleted `commands/vine/` path
+  - [x] AC11 (docs half) — `plugin.json` documented as the single version source; branch model (`main` release / `develop` integration) documented in shared.md CI/CD + Branch Naming + CONTRIBUTING + pr.md
+**Engineer feedback incorporated**: Chose free-climb; chose Glob for the help citation; chose to fold the `main`→`develop` retarget into this slice rather than defer it.
+**Learnings**:
+  - Engineer → Claude: When a branch-model change touches a contributor tool *and* its guide, retarget them together — a half-retargeted flow (diff vs `main`, create vs `develop`) is worse than either end-state.
+  - Claude → Engineer: The npx→plugin restructure left "command"/`commands/vine`/`create-vine` fingerprints spread across six contributor docs that no skill-linter checks; a single repo-wide grep for the old vocabulary is the only reliable net, and it belongs in the Skill Addition Checklist's spirit (multi-file drift) even though these files sit outside it.
