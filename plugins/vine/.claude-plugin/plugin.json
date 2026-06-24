@@ -1,6 +1,6 @@
 {
   "name": "vine",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "VINE — AI-assisted feature development workflow for Claude Code (verify → inquire → navigate → evolve)",
   "author": {
     "name": "moduloMoments",
