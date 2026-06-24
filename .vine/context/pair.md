@@ -9,7 +9,7 @@
 ## Scope Guardrails
 
 - Pair sessions on this repo often touch command files — changes ripple. If a "quick fix" needs updates in more than 2 command files, suggest escalating to the full VINE cycle.
-- Doc updates (README, CLAUDE.md, STATE.md) triggered by command changes are in-scope for pair, but track them explicitly so nothing gets missed.
+- Doc updates (README, CLAUDE.md, CONTRACTS.md) triggered by command changes are in-scope for pair, but track them explicitly so nothing gets missed.
 
 ## Commit Conventions
 

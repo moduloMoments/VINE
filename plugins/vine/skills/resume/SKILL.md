@@ -36,7 +36,7 @@ to re-read everything yourself.
 
 ## Identify the Feature
 
-Scan for feature directories per the Filtering Convention in `references/STATE.md` (both roots;
+Scan for feature directories per the Filtering Convention (both roots;
 resolved and `.archive/` subtrees filtered out). If all projects are resolved or archived, tell the
 engineer there's nothing to resume and suggest starting a new cycle with `/vine:verify` — present
 the command in its own fenced code block so it's copy-pastable.
@@ -54,7 +54,7 @@ Read whatever exists in the feature directory. Build your understanding in layer
 ### Layer 1: PAUSE.md (if present)
 
 Read `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` — the feature's mirrored personal path
-(shared personal root, resolved per *The two roots* in `references/STATE.md`); pause state lives under
+(shared personal root, resolved per **Resolving the personal root** in `shared.md`'s Overlay Loading Protocol); pause state lives under
 `.vine.local/` even for a shared `.vine/projects/` feature. Extract:
 - **Phase** at time of pause
 - **Active slice** (if navigate was in progress)
@@ -179,7 +179,7 @@ hold, so resume reconstructs it identically every time. When task tools aren't a
 this; the status summary above is the progress view.
 
 **Consume the pause state.** If you read and displayed a PAUSE.md, delete it now — the
-consumed-once rule (see `references/STATE.md`): a lingering pause keeps re-suggesting
+consumed-once rule: a lingering pause keeps re-suggesting
 `/vine:resume` and re-presents stale notes on the next resume. Its notes have already been
 surfaced in the summary above; anything worth keeping past this resume belongs in
 NAVIGATION.md's Remaining Work, not PAUSE.md. (If no PAUSE.md was present, skip — nothing to

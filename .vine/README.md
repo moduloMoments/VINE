@@ -20,8 +20,8 @@ feature stands.
 | `scripts/` | Native hook scripts (e.g. `journal-check.sh`) |
 | `ACTIVE`, `projects/**/PAUSE.md` | Ephemeral session state (gitignored) |
 
-`references/STATE.md` in the repo root is the **authoritative** contract for every artifact's
-format and lifecycle. Treat this table as a map; consult STATE.md for the details.
+`references/CONTRACTS.md` in the repo root is the **authoritative** contract for every artifact's
+format and lifecycle. Treat this table as a map; consult CONTRACTS.md for the details.
 
 ## Context overlays
 
@@ -64,7 +64,7 @@ extra:                   # anything else
 Every key is **optional** — declare only the checks this repo has. The `vine:verify`
 verification agent and the `navigate` / `evolve` / `pair` phases read this block to run the right
 checks; with no block (or missing keys) they fall back to inferring commands from package scripts
-and config. Full schema: `references/STATE.md`.
+and config. Full schema: `references/CONTRACTS.md`.
 
 ## Customizing VINE for this repo
 

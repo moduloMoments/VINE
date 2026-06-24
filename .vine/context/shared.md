@@ -19,7 +19,7 @@ from every linked worktree, so one profile / overlay set is seen everywhere; in 
 resolves to the same directory as cwd, so behavior is unchanged. A non-git directory falls back to
 the cwd-relative `./.vine.local/`. (The `.vine/ACTIVE` sentinel is the lone exception — it stays
 cwd-relative by design; only the shared personal root needs git resolution.) Full rule and
-rationale: *The two roots → Resolving the roots* in `references/STATE.md`.
+rationale: *The two roots → Resolving the roots* in `references/CONTRACTS.md`.
 
 - **Apply as overlay instructions.** Treat the contents of both files as additional instructions
   layered on top of the command. Overlay instructions take precedence over command defaults when
@@ -84,7 +84,7 @@ cross-repo distribution is a separate, future concern.
 
 ## Tooling Notes
 
-The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/STATE.md`. Repo-specific note:
+The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/CONTRACTS.md`. Repo-specific note:
 
 - This repo IS the VINE framework — the product lives under `plugins/vine/` (skills, agents, hooks). Contributors dogfood it by installing the repo as a local plugin: `claude plugin marketplace add ./ --scope local` then `claude plugin install vine@moduloMoments --scope local`. **Dev loop:** a directory-source install is a snapshot copy, so a skill edit is picked up by refreshing it — re-run `marketplace add ./ --scope local`, then `uninstall` + `install` (a same-version reinstall is a no-op and won't re-copy the snapshot).
 - Agent reports are findings-trustworthy, diagnosis-unverified: subagent findings (test counts, file lists, AC checks) are reliable, but re-verify root-cause narratives and load-bearing claims with a cheap direct check before acting on them. (Cycle-0 spike evidence: three accurate reports, one inverted root cause.)
@@ -92,7 +92,7 @@ The command and agent inventory lives in the harness's native skill list, not in
 ## Project Conventions
 
 ### Repository Structure
-See `CLAUDE.md` — repo facts live there (Knowledge Boundary rule, `references/STATE.md`). This repo tracks `.vine/` by default (overlays, knowledge, and feature projects travel with the repo for contributor onboarding); personal and ephemeral state lives in the gitignored personal root `.vine.local/` (profile, personal overlays, pause state, local-only projects), with the `.vine/ACTIVE` session sentinel gitignored in place.
+See `CLAUDE.md` — repo facts live there (Knowledge Boundary rule, `references/CONTRACTS.md`). This repo tracks `.vine/` by default (overlays, knowledge, and feature projects travel with the repo for contributor onboarding); personal and ephemeral state lives in the gitignored personal root `.vine.local/` (profile, personal overlays, pause state, local-only projects), with the `.vine/ACTIVE` session sentinel gitignored in place.
 
 ### Writing Style
 Command authoring conventions live in `CLAUDE.md` (Knowledge Boundary rule: repo facts every contributor session needs).
@@ -101,7 +101,7 @@ Command authoring conventions live in `CLAUDE.md` (Knowledge Boundary rule: repo
 When adding or removing a VINE phase skill, update all of these:
 - `CLAUDE.md` — skill count and list
 - `README.md` — skill references, install text, hooks table
-- `references/STATE.md` — if the skill affects the artifact chain
+- `references/CONTRACTS.md` — if the skill affects the artifact chain
 - `.vine/context/verify.md` — skill count reference
 - `plugins/vine/skills/<name>/SKILL.md` — the skill file itself (frontmatter: no `name`, plus `disable-model-invocation: true`)
 
@@ -109,7 +109,7 @@ When adding or removing a VINE phase skill, update all of these:
 When adding or removing a state artifact (ROUTE.md's addition in the routing-foundation cycle and
 its removal one cycle later in cross-actor-state are the worked examples — the same checklist run
 forward, then in reverse), update all of these:
-- `references/STATE.md` — the artifact template (every heading marked `<!-- required -->` /
+- `references/CONTRACTS.md` — the artifact template (every heading marked `<!-- required -->` /
   `<!-- optional -->`), its place in the artifact chain, and the Source-of-Truth and Committing
   Artifacts tables
 - `CLAUDE.md` — the State Artifact Chain line
@@ -125,7 +125,7 @@ Feature branches match the VINE project slug: `.vine/projects/<domain>/<feature-
 
 ### Content Standards
 - Keep command files focused — one phase, one responsibility
-- State artifact formats are defined in `references/STATE.md` — commands must produce artifacts that match
+- State artifact formats are defined in `references/CONTRACTS.md` — commands must produce artifacts that match
 - README is the source of truth for user-facing documentation
 - Markdown should be clean, readable without rendering
 
@@ -221,7 +221,7 @@ first route unless the engineer signals otherwise:
   repo-defined (read Team Context / the phase overlay's ticket workflow; this repo uses GitHub
   Issues, falling back to `gh issue create`, else leave it in the feature artifact). Give it a
   standalone title and enough cold-pickup context to act on without the VINE artifacts
-  (Reference Legibility, `references/STATE.md`). Lowest friction; current scope stays intact, and
+  (Reference Legibility, `references/CONTRACTS.md`). Lowest friction; current scope stays intact, and
   the item earns its own cycle when it's picked up later.
 - **Trigger now (`vine:pair`)** — a small, contained fix you want to handle immediately. Pair is
   artifact-free (no SPEC needed), so it fits an unrelated discovery as-is; spin a separate
@@ -294,7 +294,7 @@ override path is the intended #55 mechanism, available to the team, not the indi
   recommended default is safe and a reviewer can ratify after the fact (gearing, continuation,
   test-coverage defer, profile/growth updates, feature selection, commit confirmation).
 - **`human-required`** — `vine-coder` does **not** choose. It **escalates via the Headless Handoff
-  block and stops** (written to NAVIGATION.md — format in `references/STATE.md`; the leash is the PR
+  block and stops** (written to NAVIGATION.md — format in `references/CONTRACTS.md`; the leash is the PR
   review). Use for decisions a reviewer must own: design choices, spec sign-off, scope/acceptance,
   blocker resolution, and anything that commits the work to a direction expensive to reverse.
 
