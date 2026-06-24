@@ -326,7 +326,7 @@ when deciding how much to trust a long or lightly-attended session.
 | `PAUSE.md` | pause | Session state, phase, active slice, engineer notes (ephemeral; in `.vine.local/`) |
 | `PROFILE.md` | all phases | Engineer's domain expertise and growth log (per-repo; in `.vine.local/`) |
 
-These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/STATE.md) for detailed artifact formats and the chaining protocol.
+These files are human-readable, git-friendly, and designed to survive session boundaries. See the full [State Reference](references/CONTRACTS.md) for detailed artifact formats and the chaining protocol.
 
 **When your repo tracks `.vine/` artifacts** (the team-shared choice), VINE keeps the committed artifacts in step with the code: each **slice commit** bundles the code with that slice's NAVIGATION.md journal entry and any SPEC.md deviation notes, and each **phase-group PR** carries the group's full artifact state — SPEC plan, NAVIGATION record, and PROJECT-MAP tracker — alongside the diff. Repos that keep `.vine/` gitignored or personal commit code only; the journal-before-commit guarantee compares file modification time, not commit contents, so it holds either way.
 
@@ -350,7 +350,7 @@ Decision / Consequences — with the title written as a declarative sentence, so
 its table of contents. Records are **committed by default**: durable judgment travels with the repo
 for every teammate. They're immutable — a changed decision is a *new* record that supersedes the old
 one (the old record's status flips to point forward), never an in-place edit. See the
-[State Reference](references/STATE.md) for the full format and the five properties of a good record.
+[State Reference](references/CONTRACTS.md) for the full format and the five properties of a good record.
 
 `vine:evolve` distills records from a finished cycle — you pick which decisions are worth keeping —
 and `vine:verify` surfaces a domain's records at the start of exploration, as prior judgment that is
@@ -411,7 +411,7 @@ verification and exploration agents work the same whether a human or `vine-coder
 
 VINE owns the role recipes and the ticket convention; the platform owns how a role is invoked (the
 sub-agent, a CI trigger) — VINE never implements an agent runner. See the
-[State Reference](references/STATE.md) for the journal and handoff contracts, and the ticket
+[State Reference](references/CONTRACTS.md) for the journal and handoff contracts, and the ticket
 convention ("Autonomous Delegation — the vine-coder ticket") in `.vine/context/shared.md`.
 
 ## Engineer Profile

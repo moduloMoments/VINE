@@ -131,9 +131,10 @@ check (and both allowlist entries) is slated to harden to a failure.
 
 ### Check 10: Cross-Reference Anchors (repo-level)
 
-The verification-tier contract spans three surfaces — `plugins/vine/agents/vine-verification.md` (the
-checklist), `plugins/vine/skills/navigate/SKILL.md` and `plugins/vine/skills/evolve/SKILL.md` (the tier
-pointers), and `references/STATE.md` (the contract note) — held together by literal anchor strings.
+The verification-tier contract spans two surfaces — `plugins/vine/agents/vine-verification.md` (the
+checklist) and `references/CONTRACTS.md` (the contract note) — held together by literal anchor strings.
+(The shipped skills describe the two tiers but, per the self-contained rule, carry no pointer into
+`references/`, so they are no longer anchored here.)
 This check verifies each anchor still resolves. It catches the drift class where a section
 is renamed but its cross-references aren't updated (the stale "step 9" pointer this check
 was born from).
@@ -148,18 +149,15 @@ Verify each file → anchor pair (literal substring match; the same list lives i
 
 | File | Expected anchor |
 |------|-----------------|
-| `references/STATE.md` | `**Verification-tier contract.**` |
+| `references/CONTRACTS.md` | `**Verification-tier contract.**` |
 | `plugins/vine/agents/vine-verification.md` | `### Feature Verification (cross-change)` |
 | `plugins/vine/agents/vine-verification.md` | `**Phase-group scope**` |
 | `plugins/vine/agents/vine-verification.md` | `**Full-feature scope**` |
 | `plugins/vine/agents/vine-verification.md` | `**Base checks**` |
 | `plugins/vine/agents/vine-verification.md` | `**Cross-cutting checks**` |
-| `plugins/vine/skills/navigate/SKILL.md` | `verification-tier contract note` |
-| `plugins/vine/skills/evolve/SKILL.md` | `verification-tier contract note` |
 
-The first six pairs confirm the pointed-at anchors exist (the contract note in STATE.md;
-the mode and scope vocabulary in the agent). The last two confirm both commands still carry
-their pointer to the contract note.
+These six pairs confirm the pointed-at anchors exist (the contract note in CONTRACTS.md;
+the mode and scope vocabulary in the agent).
 
 ### Check 11: Naked Issue Pointers (warning-only)
 
@@ -167,7 +165,7 @@ Scan each command body for a bare issue pointer — `#<digits>` that is neither 
 (`[#56](…)`) nor immediately followed by a parenthetical gloss (`#56 (archive resolved
 projects)`). A naked pointer names a location without saying what's there, so a reader has to
 dereference it; the gloss makes the reference legible to humans and self-checking for agents
-(see `references/STATE.md`, "Reference Legibility"). These are **warnings, not failures** — they
+(see `references/CONTRACTS.md`, "Reference Legibility"). These are **warnings, not failures** — they
 never affect pass/fail and have no column in the Step 4 table.
 
 The floor covers the product surface (skill files). The same rule applies by convention to the
@@ -195,6 +193,29 @@ Like Check 10 this is repo-level, not per-command, and inspects only `.vine/cont
 A gap is a **failure** that counts toward pass/fail, mirroring Check 10. Skipped when `shared.md`
 is absent (it is optional). The same two assertions live in `.vine/scripts/trellis-check.sh` — keep
 them in sync.
+
+### Check 13: Shipped-Surface Reference Convention (repo-level)
+
+Shipped skills, agents, and hooks run with the **consuming repo as cwd**, so a path in any of them
+must fall into exactly one bucket (full rule: CLAUDE.md "Skill Authoring Conventions"). This guard
+prevents regression of #142/#141/#138 by scanning `plugins/vine/{skills,agents,hooks}/` and failing
+on either violation:
+
+- **any `references/…` path** — VINE-source-internal, absent in a consuming repo; inline runtime
+  needs via the operative-copy pattern instead; and
+- **a bare `agents/|skills/|hooks/` plugin-root path** — payload cross-references go by invocable
+  name or `${CLAUDE_PLUGIN_ROOT}/…`, never a bare plugin-root-relative path.
+
+Every legitimate occurrence of those tokens is `/`-preceded — `${CLAUDE_PLUGIN_ROOT}/hooks/…`,
+`**/skills/…` (the portable help glob), `.claude/skills/…` and `.claude/commands/…` (consumer-tree
+discovery scans), `.vine/hooks/…` (legacy) — so the bare-path check anchors on a **non-slash
+boundary**. Bucket-2 consumer paths (`.vine/…`, `.vine.local/…`) and name-based agent references
+("the `vine-verification` agent") are never flagged. Prose that happens to read `X/Y` (e.g. "skills
+and commands") must avoid the slash, since the check can't tell a two-word slash from a path.
+
+Like Checks 10 and 12 this is repo-level, not per-command, and is a **failure** that counts toward
+pass/fail. The same two patterns live in `.vine/scripts/trellis-check.sh` (Check 13) — keep them in
+sync.
 
 ## Step 4: Format Results
 
@@ -231,7 +252,7 @@ summary line.
 Print Check 11's naked-pointer warnings the same way, under their own header:
 
 ```
-⚠️ Naked issue pointers (bare #<n> with no gloss — see STATE.md Reference Legibility):
+⚠️ Naked issue pointers (bare #<n> with no gloss — see CONTRACTS.md Reference Legibility):
 - <file>:<line> — <line text>
 ```
 
@@ -250,17 +271,24 @@ Then print the Check 12 personal-root result as its own line:
 - Any gap: **"❌ N personal-root resolution gap(s) in shared.md"** followed by one line per gap.
   Like Check 10, gaps count toward the pass/fail status.
 
+Then print the Check 13 shipped-surface result as its own line:
+
+- Clean: **"✅ Shipped surfaces carry no VINE-source-internal reference (#142/#141/#138 guard)"**
+- Any violation: **"❌ N shipped-surface reference violation(s)"** followed by one line per hit
+  (file:line, tagged `references/ path` or `bare payload path`). Like Check 10, violations count
+  toward the pass/fail status.
+
 The combined summary (covering both command and artifact results) is printed in Step 7.
 
-## Step 5: Parse STATE.md and Discover Artifacts
+## Step 5: Parse CONTRACTS.md and Discover Artifacts
 
-This step builds the data needed for artifact validation in Step 6. If `references/STATE.md`
+This step builds the data needed for artifact validation in Step 6. If `references/CONTRACTS.md`
 does not exist, print a warning and skip Steps 5–7 entirely — command validation (Steps 1–4)
 always runs regardless.
 
-### 5a: Parse Artifact Templates from STATE.md
+### 5a: Parse Artifact Templates from CONTRACTS.md
 
-Read `references/STATE.md`. Locate each artifact template by finding the `### <Name>.md`
+Read `references/CONTRACTS.md`. Locate each artifact template by finding the `### <Name>.md`
 headings under `## State Files` (CONTEXT.md, SPEC.md, NAVIGATION.md, EVOLUTION.md)
 and under `## Per-Repo Artifacts` (PROFILE.md).
 
@@ -283,12 +311,12 @@ be satisfied.
 `<!-- optional -->` marker, record it as a warning. This catches marker drift when someone
 adds a section to a template without annotating it.
 
-If STATE.md exists but the template structure can't be parsed (no code fences found, no
+If CONTRACTS.md exists but the template structure can't be parsed (no code fences found, no
 markers found at all), print a warning and skip Steps 6–7.
 
 ### 5b: Discover Artifacts
 
-Use Glob to find all artifacts per the Filtering Convention in `references/STATE.md` (both roots):
+Use Glob to find all artifacts per the Filtering Convention in `references/CONTRACTS.md` (both roots):
 
 - Look for `CONTEXT.md`, `SPEC.md`, `NAVIGATION.md`, `EVOLUTION.md` under `.vine/projects/*/*/`
   **and** `.vine.local/projects/*/*/` (domain/feature-slug directories)
@@ -303,7 +331,7 @@ handle the "no artifacts" case cleanly.
 
 Using the parsed section requirements from Step 5a and the discovered artifacts from Step 5b,
 run the following checks against each artifact. Skip this step entirely if Step 5 was skipped
-(STATE.md missing/unparseable) or no artifacts were discovered.
+(CONTRACTS.md missing/unparseable) or no artifacts were discovered.
 
 For each discovered artifact, run the applicable checks from the tiers below. Track pass/fail
 results per check per artifact.
@@ -312,7 +340,7 @@ results per check per artifact.
 
 **Applies to**: all artifact types (CONTEXT, SPEC, NAVIGATION, EVOLUTION, PROFILE)
 
-For each section marked `<!-- required -->` in the artifact's STATE.md template, verify that
+For each section marked `<!-- required -->` in the artifact's CONTRACTS.md template, verify that
 a matching heading exists in the actual artifact file.
 
 - Match headings by heading level and text prefix. For example, the template's
@@ -412,7 +440,7 @@ When a `## Validation` block is present, verify it is a fenced YAML block whose 
 only from the documented set — `lint`, `typecheck`, `test`, `test-all`, `build`, `extra` — and
 that `extra` (if present) is a list. An unknown key or a malformed block fails. **Absence is not
 a failure**: a repo with no `## Validation` block falls back to prose inference (the contract is
-optional, per `references/STATE.md`), so the check simply doesn't run.
+optional, per `references/CONTRACTS.md`), so the check simply doesn't run.
 
 Like all of Steps 5–7, Check E and the optional-route-field shape check are
 **session-judged and do not gate the `.vine/.trellis-ok` stamp** (Step 8).
@@ -423,14 +451,14 @@ Present artifact validation results after the command checks from Step 4. This s
 output regardless of whether artifacts were found — the section should always appear so
 contributors know artifact validation ran.
 
-### Case 1: STATE.md Missing or Unparseable
+### Case 1: CONTRACTS.md Missing or Unparseable
 
 If Step 5 was skipped, print:
 
 ```
 ## Artifact Validation
 
-⚠️  Skipped — references/STATE.md is missing or could not be parsed.
+⚠️  Skipped — references/CONTRACTS.md is missing or could not be parsed.
 Command validation results above are unaffected.
 ```
 
@@ -471,7 +499,7 @@ Column mapping:
 Use `✅` for pass, `❌` for fail, `—` for not applicable (the check doesn't apply to this
 artifact type).
 
-After the table, print any unmarked heading warnings from Step 5a (headings in STATE.md
+After the table, print any unmarked heading warnings from Step 5a (headings in CONTRACTS.md
 templates that lack a `<!-- required -->` or `<!-- optional -->` marker).
 
 Then print the Check E result as its own repo-level line (like Check 10's anchor line):

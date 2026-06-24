@@ -86,7 +86,7 @@ context log, Sources consulted, Draft PR description.
 Then add a short **vine-reviewer validation read-out** of your own — this is the reason the tool exists:
 
 - **Missing context log** — empty (recipe + artifacts sufficient) or, if not, list each gap as a
-  candidate fix to `.claude/agents/vine-reviewer.md`, `references/STATE.md`, or the artifact templates.
+  candidate fix to `.claude/agents/vine-reviewer.md`, `references/CONTRACTS.md`, or the artifact templates.
 - **Orientation friction** — did the subagent follow the orientation order cleanly, or did any step
   (issue → artifact dir → commits → final files) dead-end?
 - **Output completeness** — were all five "What to Produce" sections derivable, especially the Draft

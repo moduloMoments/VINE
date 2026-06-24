@@ -4,7 +4,7 @@
 
 When verifying a feature for the VINE framework itself, always check:
 
-- **Cross-phase consistency**: How does this change affect the contract between phases? Read `references/STATE.md` for artifact specs.
+- **Cross-phase consistency**: How does this change affect the contract between phases? Read `references/CONTRACTS.md` for artifact specs.
 - **Skill file structure**: Check all 11 phase skills (`plugins/vine/skills/<name>/SKILL.md`) for patterns that relate to the feature area. Changes often ripple across phases.
 - **README alignment**: Does the README describe behavior that this feature would change?
 - **Issue templates**: Would this change affect how bugs, friction, or ideas are reported?

@@ -38,7 +38,7 @@ when deciding which feature to pick up.
 
 ## Identify the Feature
 
-Scan for feature directories per the Filtering Convention in `references/STATE.md` (both roots,
+Scan for feature directories per the Filtering Convention (both roots,
 `.archive/` subtrees filtered). Unlike the other enumerating commands, status **includes** resolved
 projects — mark them as such rather than filtering them out.
 
