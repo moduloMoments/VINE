@@ -34,7 +34,7 @@ back.
 
 ## Identify the Feature
 
-Scan for feature directories per the Filtering Convention in `references/STATE.md` (both roots;
+Scan for feature directories per the Filtering Convention (both roots;
 resolved and `.archive/` subtrees filtered out). If all projects are resolved or archived, tell the
 engineer there's nothing active to pause.
 
@@ -82,7 +82,7 @@ Ask a single question with `freeform: true`:
 
 Write PAUSE.md to the feature's **mirrored personal path** —
 `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the shared personal root, resolved per
-*The two roots* in `references/STATE.md`) — matching the template defined there. Pause state is
+**Resolving the personal root** in `shared.md`'s Overlay Loading Protocol). Pause state is
 personal, so it lives under `.vine.local/` even for a shared `.vine/projects/` feature:
 
 ```markdown
@@ -101,7 +101,7 @@ pause state matters.
 ## Clear the Active-Session Sentinel
 
 If `.vine/ACTIVE` exists at the repo root, delete it. The sentinel marks an active navigate
-session (format and lifecycle in `references/STATE.md`); pausing ends the session, and a
+session; pausing ends the session, and a
 lingering sentinel keeps installed hooks firing against work that's no longer active. If the
 file doesn't exist, skip silently — pausing from a non-navigate phase is normal.
 

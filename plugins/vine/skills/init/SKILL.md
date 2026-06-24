@@ -42,7 +42,7 @@ Scan the project for available tooling. Check each of these and catalog what you
 
 **Claude configuration:**
 - `.claude/commands/` — available slash commands (these can be suggested in overlay files)
-- `.claude/skills/` — available skills/agents (these can be wired into specific phases)
+- `.claude/skills/` — available skills and agents (these can be wired into specific phases)
 - `.claude/settings.json` or `.claude/settings.local.json` — project-level settings
 - `CLAUDE.md` — project conventions already documented
 
@@ -100,8 +100,7 @@ shared personal root at the repository's **primary** worktree — `dirname "$(gi
 from every linked worktree, so one profile / overlay set is seen everywhere; in a single checkout it
 resolves to the same directory as cwd, so behavior is unchanged. A non-git directory falls back to
 the cwd-relative `./.vine.local/`. (The `.vine/ACTIVE` sentinel is the lone exception — it stays
-cwd-relative by design; only the shared personal root needs git resolution.) Full rule and
-rationale: *The two roots → Resolving the roots* in `references/STATE.md`.
+cwd-relative by design; only the shared personal root needs git resolution.)
 
 - **Apply as overlay instructions.** Treat both files' contents as instructions layered on top
   of the command; overlay instructions take precedence over command defaults when they conflict.
@@ -169,7 +168,7 @@ Never create project directories as siblings of `context/`.
 [Repo-specific notes the native skill list can't carry — tool topology, integration caveats,
 which discovered capabilities matter for this repo's workflows. Do NOT enumerate commands or
 agents: the harness's native skill list is the inventory's home, and a file copy can only
-drift (Knowledge Boundary rule, references/STATE.md). Phase-specific tool/agent mappings
+drift (Knowledge Boundary rule). Phase-specific tool/agent mappings
 belong in the per-phase overlays below, not here.]
 
 ## Project Conventions
@@ -247,7 +246,7 @@ routes offered and the backlog destination stay repo-supplied.
 
 [Machine-readable validation contract read by vine-verification and the phase commands. Write
 it as a fenced YAML block with the optional keys lint / typecheck / test / test-all / build /
-extra (schema in references/STATE.md and the framework's own shared.md). Populate from the
+extra. Populate from the
 Step-1 discovery — package.json scripts, lint/test config — and keep only the keys this repo
 has. Optional: omit the block and verification falls back to prose inference.]
 
@@ -286,9 +285,7 @@ repo on how to *use* VINE inside it (what lives under `.vine/`, how overlays com
 customize). It is distinct from the overlays: overlays configure VINE's behavior; this README
 explains it.
 
-Write it from the template below, filling `[Project Name]` and `[date]`. The template points at
-`references/STATE.md` for the authoritative structure rather than duplicating it — keep it that
-way so the README can't drift from the contract.
+Write it from the template below, filling `[Project Name]` and `[date]`.
 
 **Fresh repos:** write the file. **Upgrade mode** (existing `.vine/context/`): don't write it
 here — Step 8 offers it, declinable. Either way, Step 6 keeps `.vine/README.md` tracked even when
@@ -316,9 +313,6 @@ feature stands.
 | `context/<phase>.md` | Per-phase overlays — `verify.md`, `inquire.md`, `navigate.md`, `evolve.md`, `pair.md` |
 | `projects/<domain>/<feature-slug>/` | Per-feature artifacts: CONTEXT → SPEC → NAVIGATION → EVOLUTION, plus PROJECT-MAP |
 | `ACTIVE` | Ephemeral session sentinel (gitignored, per-worktree) |
-
-`references/STATE.md` in the repo root is the **authoritative** contract for every artifact's
-format and lifecycle. Treat this table as a map; consult STATE.md for the details.
 
 Personal and ephemeral state that shouldn't be committed lives in the sibling **`.vine.local/`**
 root (gitignored, mirrors `.vine/`): your `PROFILE.md`, personal overlays under `context/`, pause
@@ -366,7 +360,7 @@ extra:                   # anything else
 Every key is **optional** — declare only the checks this repo has. The `vine:verify`
 verification agent and the `navigate` / `evolve` / `pair` phases read this block to run the right
 checks; with no block (or missing keys) they fall back to inferring commands from package scripts
-and config. Full schema: `references/STATE.md`.
+and config.
 
 ## Customizing VINE for this repo
 
@@ -540,8 +534,7 @@ This makes upgrading after installing new skills, agents, or commands a one-comm
 ### Knowledge Boundary Dedup
 
 In upgrade mode, after the overlay diff above, compare `CLAUDE.md` and
-`.vine/context/shared.md` for content that violates the Knowledge Boundary rule
-(`references/STATE.md`):
+`.vine/context/shared.md` for content that violates the Knowledge Boundary rule:
 
 - Sections appearing near-verbatim in both files
 - A full workflow map or command/agent inventory still homed in CLAUDE.md (pre-0.4 layout —
@@ -578,7 +571,7 @@ The block (canonical template in `vine:optimize` 3e):
 This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
 has active features, suggest the matching phase — routing details in
 `.vine/context/shared.md`. Durable design decisions are recorded as committed ADR records
-under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).
+under `.vine/knowledge/<domain>/`.
 ```
 
 - **If the block is missing entirely**, offer to add it.
@@ -601,7 +594,7 @@ committed normally with the other init changes.
 
 Before plugin packaging, VINE installed via `npx create-vine`, which file-copied the command
 files into `.claude/commands/vine/`. Plugin users now get every phase as a
-`skills/<name>/SKILL.md` through the plugin, resolving to the same `/vine:<name>` colon form — so
+skill through the plugin, resolving to the same `/vine:<name>` colon form — so
 a leftover `.claude/commands/vine/` is a stale duplicate. It doesn't collide (the two coexist),
 but it's dead weight that can drift from the shipped skills. Init offers to remove it (#58
 offer-migration pattern).
@@ -623,8 +616,8 @@ to one — the old npx install, not the plugin), offer the cleanup via `AskUserQ
 the next `/vine:init`. Don't show this offer when `.claude/commands/vine/` is absent.
 
 > **The journal-before-commit hook is no longer scaffolded here.** It now ships **with the VINE
-> plugin** (`hooks/hooks.json`, PreToolUse on Bash) and is active automatically for every plugin
-> user — no per-repo `.claude/settings.json` step (full behavior in `references/STATE.md`).
+> plugin** (the bundled journal-check hook, PreToolUse on Bash) and is active automatically for every plugin
+> user — no per-repo `.claude/settings.json` step.
 > Validation and lint enforcement remain deliberately out of scope: when and how to run a
 > project's checks depends on its tooling, and that decision belongs to the repo.
 
@@ -635,10 +628,9 @@ resolved before that offer existed (or where the engineer declined it) sit
 **resolved-but-unarchived** forever, with no command that will ever sweep them. Init closes
 that gap.
 
-Scan both roots per the Filtering Convention in `references/STATE.md` for directories containing a
+Scan both roots per the Filtering Convention for directories containing a
 `.resolved` marker that are **not already under an `.archive/` subtree**. If none, skip silently — no
-offer, no mention. Otherwise list them and offer to archive them, mirroring evolve's archive mechanics
-(lifecycle in `references/STATE.md`, "Project Lifecycle"):
+offer, no mention. Otherwise list them and offer to archive them, mirroring evolve's archive mechanics:
 
 1. **Present the list** of resolved-but-unarchived projects (`<domain>/<feature-slug>`), then
    offer via `AskUserQuestion` (`multiSelect: false`):

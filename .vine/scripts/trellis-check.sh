@@ -5,7 +5,7 @@
 # Runs trellis's command checks (Steps 1-4 of .claude/commands/trellis.md)
 # mechanically, so the .vine/.trellis-ok stamp the gate reads becomes
 # deterministic and CI-runnable instead of session-interpreted. The harder
-# artifact checks (Steps 5-7, STATE.md template parsing) stay in the skill —
+# artifact checks (Steps 5-7, CONTRACTS.md template parsing) stay in the skill —
 # they are out of scope here.
 #
 # Checks implemented, per skill file in plugins/vine/skills/<name>/SKILL.md:
@@ -22,7 +22,7 @@
 #
 # Plus one repo-level check (not per-command, no table column):
 #  10 Cross-reference anchors resolve (verification-tier contract family:
-#     STATE.md note, agent mode/scope names, command pointers) -> FAILURE
+#     CONTRACTS.md note, agent mode/scope names, command pointers) -> FAILURE
 #  12 Personal-root resolution wired into shared.md — the profile/overlay reads
 #     route through the "Resolving the personal root" helper, not a bare
 #     cwd-relative .vine.local/ read (#132 regression guard) -> FAILURE
@@ -237,7 +237,7 @@ EOF
 
   # --- Check 11: naked issue pointers in the body (warning-only) ---
   # A bare #<n> that isn't a [#n](link) and isn't immediately glossed by a
-  # parenthetical reads as an opaque pointer (references/STATE.md
+  # parenthetical reads as an opaque pointer (references/CONTRACTS.md
   # "Reference Legibility"). Warning-only; never affects pass/fail.
   naked=$(awk '/^---$/{c++; next} c>=2{
     t=$0
@@ -296,14 +296,12 @@ while IFS='|' read -r af anchor; do
   - $af — missing anchor: $anchor"
   fi
 done <<'PAIRS'
-references/STATE.md|**Verification-tier contract.**
+references/CONTRACTS.md|**Verification-tier contract.**
 plugins/vine/agents/vine-verification.md|### Feature Verification (cross-change)
 plugins/vine/agents/vine-verification.md|**Phase-group scope**
 plugins/vine/agents/vine-verification.md|**Full-feature scope**
 plugins/vine/agents/vine-verification.md|**Base checks**
 plugins/vine/agents/vine-verification.md|**Cross-cutting checks**
-plugins/vine/skills/navigate/SKILL.md|verification-tier contract note
-plugins/vine/skills/evolve/SKILL.md|verification-tier contract note
 PAIRS
 
 # An emptied pair list must not read as green — zero pairs is a failure.
@@ -341,6 +339,33 @@ if [ -f "$SHARED" ]; then
   fi
 fi
 
+# ---------- Check 13: shipped-surface reference convention (#142/#141/#138) ----------
+# Shipped skills/agents/hooks run with the *consuming* repo as cwd, so they must
+# carry no VINE-source-internal path. FAILURE on either:
+#   (1) any `references/…` path (absent in a consuming repo), or
+#   (2) a bare `agents/|skills/|hooks/` plugin-root path — payload cross-refs go
+#       by invocable name or `${CLAUDE_PLUGIN_ROOT}/…`.
+# Every legitimate occurrence is `/`-preceded (`${CLAUDE_PLUGIN_ROOT}/`, `**/`,
+# `.claude/`, `.vine/`), so the bare-path regex anchors on a non-slash boundary.
+# Bucket-2 consumer paths (.vine/…, .vine.local/…) and name-based agent refs are
+# never flagged. Full rule: CLAUDE.md "Skill Authoring Conventions".
+
+SHIP_PATHS="plugins/vine/skills plugins/vine/agents plugins/vine/hooks"
+SHIP_ISSUES=0
+SHIPDETAIL=""
+refhits=$(cd "$root" && grep -rnE 'references/' $SHIP_PATHS 2>/dev/null)
+if [ -n "$refhits" ]; then
+  SHIP_ISSUES=$((SHIP_ISSUES + $(printf '%s\n' "$refhits" | wc -l | tr -d ' ')))
+  SHIPDETAIL="$SHIPDETAIL
+$(printf '%s\n' "$refhits" | sed 's/^/  - references\/ path: /')"
+fi
+barehits=$(cd "$root" && grep -rnE '(^|[^/[:alnum:]])(agents|skills|hooks)/[A-Za-z<]' $SHIP_PATHS 2>/dev/null)
+if [ -n "$barehits" ]; then
+  SHIP_ISSUES=$((SHIP_ISSUES + $(printf '%s\n' "$barehits" | wc -l | tr -d ' ')))
+  SHIPDETAIL="$SHIPDETAIL
+$(printf '%s\n' "$barehits" | sed 's/^/  - bare payload path: /')"
+fi
+
 echo
 if [ "$ISSUE_COUNT" -eq 0 ]; then
   SUMMARY="✅ $TOTAL/$TOTAL skills pass all checks"
@@ -366,7 +391,15 @@ fi
 echo "$RESOLVE_SUMMARY"
 [ -n "$RESOLVEDETAIL" ] && printf '%s\n' "$RESOLVEDETAIL"
 
-if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ] && [ "$RESOLVE_ISSUES" -eq 0 ]; then
+if [ "$SHIP_ISSUES" -eq 0 ]; then
+  SHIP_SUMMARY="✅ Shipped surfaces carry no VINE-source-internal reference (#142/#141/#138 guard)"
+else
+  SHIP_SUMMARY="❌ $SHIP_ISSUES shipped-surface reference violation(s)"
+fi
+echo "$SHIP_SUMMARY"
+[ -n "$SHIPDETAIL" ] && printf '%s\n' "$SHIPDETAIL"
+
+if [ "$ISSUE_COUNT" -eq 0 ] && [ "$ANCHOR_ISSUES" -eq 0 ] && [ "$RESOLVE_ISSUES" -eq 0 ] && [ "$SHIP_ISSUES" -eq 0 ]; then
   STATUS="pass"
 else
   STATUS="fail"
@@ -381,7 +414,7 @@ fi
 
 if [ -n "$GLOSSWARN" ]; then
   echo
-  echo "⚠️ Naked issue pointers (bare #<n> with no gloss — see STATE.md Reference Legibility):"
+  echo "⚠️ Naked issue pointers (bare #<n> with no gloss — see CONTRACTS.md Reference Legibility):"
   printf '%s\n' "$GLOSSWARN"
 fi
 
@@ -391,7 +424,7 @@ mkdir -p "$root/.vine"
 {
   echo "status: $STATUS"
   echo "checked: $when"
-  echo "summary: $SUMMARY; $ANCHOR_SUMMARY; $RESOLVE_SUMMARY"
+  echo "summary: $SUMMARY; $ANCHOR_SUMMARY; $RESOLVE_SUMMARY; $SHIP_SUMMARY"
 } > "$STAMP"
 
 [ "$STATUS" = pass ]

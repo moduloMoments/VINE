@@ -4,6 +4,13 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+### Changed
+- **Shipped skills are self-contained (#142, #141, #138)** — A shipped skill runs with the consuming repo as cwd, so its body no longer cites any VINE-source-internal file. The ~60 dead `references/STATE.md` pointers across 9 skills are removed (runtime-critical content inlined via the operative-copy pattern), payload cross-references use invocable names or `${CLAUDE_PLUGIN_ROOT}/…` instead of bare `agents/…` paths, and `vine:init` no longer writes dead `references/…` pointers into a consuming repo's README/CLAUDE.md. The convention is one rule with three buckets — payload-internal, consumer working tree, VINE-source-internal (forbidden on shipped surfaces) — documented in CLAUDE.md "Skill Authoring Conventions" and `references/CONTRACTS.md` "Path resolution by audience."
+- **`references/STATE.md` renamed to `references/CONTRACTS.md`** — The file carries the artifact templates and cross-cutting conventions, far broader than "state" (which also collided with the session state it merely documents). Live/operative references updated; historical records (this CHANGELOG, dated `.vine/knowledge/` ADRs) left period-accurate.
+
+### Added
+- **Trellis Check 13: shipped-surface reference guard** — `/trellis` fails the build on any `references/…` path or bare `agents|skills|hooks/` path in `plugins/vine/{skills,agents,hooks}/`, so the self-contained convention can't silently drift back. Bucket-2 consumer paths (`.vine/…`) and name-based agent references don't trip it.
+
 ## [0.4.0] - 2026-06-23
 
 This is the 0.4.0 "platform alignment" cycle — aligning VINE's vocabulary and mechanics with

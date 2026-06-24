@@ -41,7 +41,7 @@ Three phases:
 3. **Apply** — Improve descriptions, write the workflow map to shared.md, verify CLAUDE.md's
    pointer, add chain links to prose
 
-Knowledge placement follows the Knowledge Boundary rule in `references/STATE.md`: the
+Knowledge placement follows the Knowledge Boundary rule: the
 workflow map is VINE routing knowledge, so it lives in `.vine/context/shared.md`; CLAUDE.md
 carries only an availability-gated pointer; the command/agent inventory lives in the
 harness's native skill list, never in files.
@@ -198,7 +198,7 @@ across every phase invocation.
 
 | Anti-pattern | What to check |
 |-------------|--------------|
-| **shared.md / CLAUDE.md overlap** | Content that appears in both is read twice per invocation. Apply the Knowledge Boundary rule (`references/STATE.md`) to pick the single home and leave a one-line pointer at the other. |
+| **shared.md / CLAUDE.md overlap** | Content that appears in both is read twice per invocation. Apply the Knowledge Boundary rule to pick the single home and leave a one-line pointer at the other. |
 | **Inventory in files** | Any command or agent enumeration in shared.md, CLAUDE.md, or an overlay is a finding, not a feature — the harness's native skill list is the inventory's home, and file copies can only drift. |
 | **Inter-command duplication** | Multiple commands explaining the same convention independently. Could a shared reference (context overlays, CLAUDE.md) carry this once? |
 | **Overlay redundancy** | Per-phase overlays that restate what the command prose already says. Overlays should add project-specific context, not echo the command's own instructions. |
@@ -337,8 +337,7 @@ instruction quality was lost.
 - Show estimated token savings for each proposed reduction
 
 For cross-file duplication, recommend which file should own the content and propose removing
-it from the other, leaving a one-line pointer at the old home. The Knowledge Boundary rule in
-`references/STATE.md` decides ownership: CLAUDE.md owns repo facts every session needs (paid
+it from the other, leaving a one-line pointer at the old home. The Knowledge Boundary rule decides ownership: CLAUDE.md owns repo facts every session needs (paid
 by every teammate, VINE or not); shared.md owns cross-phase VINE knowledge; phase overlays own
 phase-specific mappings; the native skill list owns the inventory.
 
@@ -365,7 +364,7 @@ often better than a blocking prompt.
 
 Add or update a `## Skill Workflows` section in `.vine/context/shared.md`. The map is VINE
 routing knowledge — workflow chains plus state-based suggestions — so it lives on the VINE
-surface, loaded only by VINE sessions (Knowledge Boundary rule, `references/STATE.md`).
+surface, loaded only by VINE sessions (Knowledge Boundary rule).
 CLAUDE.md carries only the pointer verified in 3e.
 
 Format:
@@ -408,7 +407,7 @@ VINE pointer block; if it's missing, offer to add it:
 This repo uses VINE. If vine commands are available in this session and `.vine/projects/`
 has active features, suggest the matching phase — routing details in
 `.vine/context/shared.md`. Durable design decisions are recorded as committed ADR records
-under `.vine/knowledge/<domain>/` (format in `references/STATE.md`).
+under `.vine/knowledge/<domain>/`.
 ```
 
 The gate is command availability — visible to Claude in its own skill list — so the block

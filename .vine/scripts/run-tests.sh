@@ -153,11 +153,10 @@ EOF
 
 # Check 10 resolves the PAIRS list in trellis-check.sh against
 # $CLAUDE_PROJECT_DIR, so the fixture stubs every anchor. Keep in sync with
-# that heredoc. The navigate/evolve anchors live in skill files, so those
-# stubs must also pass the per-skill checks — mkcmd builds them.
+# that heredoc.
 mkanchors() {
   mkdir -p "$1/references" "$1/plugins/vine/agents"
-  printf '%s\n' '**Verification-tier contract.**' > "$1/references/STATE.md"
+  printf '%s\n' '**Verification-tier contract.**' > "$1/references/CONTRACTS.md"
   cat > "$1/plugins/vine/agents/vine-verification.md" <<'EOF'
 ### Feature Verification (cross-change)
 **Phase-group scope**
@@ -165,8 +164,6 @@ mkanchors() {
 **Base checks**
 **Cross-cutting checks**
 EOF
-  mkcmd "$1" navigate navigate "See the verification-tier contract note."
-  mkcmd "$1" evolve evolve "See the verification-tier contract note."
 }
 
 T=$(mktemp -d)
@@ -222,8 +219,27 @@ warnout=$(sh "$C" 2>/dev/null)
 printf '%s' "$warnout" | grep -q 'fb/SKILL.md:.*\.vine/hooks'
 check "trellis-check: allowlisted fallback paragraph does not warn" 1 $?
 
+# Check 13: shipped-surface reference convention (#142/#141/#138).
+# A `references/…` path in a shipped skill must fail the run.
+mkcmd "$T" shipref shipref 'Consult `references/CONTRACTS.md` for detail.'
+sh "$C" >/dev/null 2>&1
+check "trellis-check: references/ path in shipped skill -> fail (exit 1)" 1 $?
+rm -rf "$T/plugins/vine/skills/shipref"
+
+# A bare agents/|skills/|hooks/ plugin-root path must fail.
+mkcmd "$T" shipbare shipbare 'Run `hooks/journal-check.sh` directly.'
+sh "$C" >/dev/null 2>&1
+check "trellis-check: bare hooks/ path in shipped skill -> fail (exit 1)" 1 $?
+rm -rf "$T/plugins/vine/skills/shipbare"
+
+# Bucket-2 consumer paths (.vine/context/…) and name-based agent refs must NOT trip it.
+mkcmd "$T" shipok shipok 'Reads `.vine/context/shared.md`; the `vine-verification` agent owns the checklist.'
+sh "$C" >/dev/null 2>&1
+check "trellis-check: bucket-2 + name-based agent refs do not trip guard -> pass" 0 $?
+rm -rf "$T/plugins/vine/skills/shipok"
+
 # Check 10: a missing anchor file must flip the run red.
-rm "$T/references/STATE.md"
+rm "$T/references/CONTRACTS.md"
 sh "$C" >/dev/null 2>&1
 check "trellis-check: missing cross-reference anchor -> fail (exit 1)" 1 $?
 
