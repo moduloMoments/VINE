@@ -37,6 +37,7 @@ These slash commands in `.claude/commands/` help with common contributor workflo
 - `/trellis` — validate structural conventions across VINE skill files
 - `/pr` — create a PR using the repo's template and contributing guidelines
 - `/pr-review` — simulate a PR-reviewer auto-agent against a real PR to dogfood the `review.md` reviewer contract
+- `/release-plugin` — cut a tagged release (maintainer): bump `plugin.json`, finalize the changelog, and drive the `develop`→`main` flow up to the publish workflow
 
 When submitting a PR:
 
