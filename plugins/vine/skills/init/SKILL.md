@@ -502,16 +502,32 @@ If `.vine/context/` already exists (from a previous `/vine:init` or manual setup
 1. Read all existing overlay files
 2. Re-run repo discovery to find new tools, agents, commands, or conventions added since
    the last init
-3. Check for required shared.md sections that may be missing from older installs:
-   - "Overlay Loading Protocol" — if missing, add it (every command's Load Context Overlays
-     bootstrap defers to it for the shared loading rules; absent it, those references dangle)
-   - "Collaboration Stance" — if missing, add it (commands now reference this from shared.md)
-   - "Engineer Profile Protocol" — if missing, add it
-   - "Interaction Constraints" — if missing, add it
-   - "Out-of-Scope Routing" — if missing, add it (commands now reference this pattern from
-     shared.md to route unrelated discoveries: backlog by default, or trigger now)
-   - "Validation" — if missing, offer the structured block populated from discovery; declining
-     leaves prose inference in place (nothing changes on disk)
+3. Check for required shared.md *content* that may be missing from older installs. Match each
+   item below by its **sentinel string**, not just by section-heading presence — a sub-block
+   added to a section *after* that section first shipped is invisible to a heading-only check,
+   so an older repo that already has the heading silently keeps the stale content. For each
+   `(content, sentinel)` pair, if the sentinel is absent, splice the current block in (preserving
+   any custom content per step 5):
+   - "Overlay Loading Protocol" — sentinel: the `## Overlay Loading Protocol` heading. If missing,
+     add the whole section (every command's Load Context Overlays bootstrap defers to it for the
+     shared loading rules; absent it, those references dangle)
+   - "Resolving the personal root" sub-block (lives *inside* Overlay Loading Protocol) — sentinel:
+     `git rev-parse --git-common-dir`. If missing, splice in the current `**Resolving the personal
+     root.**` paragraph from the Overlay Loading Protocol template above. Without it, skills fall
+     through to a cwd-relative `.vine.local/` write, so a local-only project created in a git
+     worktree is lost when that worktree is removed (the gap an older "Overlay Loading Protocol"
+     heading hides — it satisfies the heading check yet predates this sub-block)
+   - "Collaboration Stance" — sentinel: the `## Collaboration Stance` heading. If missing, add it
+     (commands now reference this from shared.md)
+   - "Engineer Profile Protocol" — sentinel: the `## Engineer Profile Protocol` heading. If
+     missing, add it
+   - "Interaction Constraints" — sentinel: the `## Interaction Constraints` heading. If missing,
+     add it
+   - "Out-of-Scope Routing" — sentinel: the `## Out-of-Scope Routing` heading. If missing, add it
+     (commands now reference this pattern from shared.md to route unrelated discoveries: backlog
+     by default, or trigger now)
+   - "Validation" — sentinel: the `## Validation` heading. If missing, offer the structured block
+     populated from discovery; declining leaves prose inference in place (nothing changes on disk)
 4. Present a diff of what's new vs what's already in the overlays using `AskUserQuestion`:
    - New tools/agents discovered that aren't in overlays yet
    - Existing overlay entries that reference tools/agents no longer present
