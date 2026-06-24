@@ -16,9 +16,10 @@ allowed-tools:
 Contributor/maintainer command. Cuts a tagged plugin release following VINE's branch model:
 `main` = release, `develop` = integration. The version in
 `plugins/vine/.claude-plugin/plugin.json` is the **single source of truth**; the marketplace entry
-omits `version` so plugin.json wins. The release is the proven two-PR pattern — **stamp** the
-version on `develop` (cf. #139), then **cut** `develop`→`main` (cf. #140) — followed by the
-manual `publish.yml` dispatch that tags and publishes.
+omits `version` so plugin.json wins. The release flow: **stamp** the version on `develop` (cf. #139),
+**cut** `develop`→`main` as a *merge commit* (cf. #140), **sync** `develop` back up to `main` by
+fast-forward (so the branches never diverge), then the manual `publish.yml` dispatch that tags and
+publishes.
 
 This command does the mechanical work (version math, file edits, branch, commits, push, PRs) and
 **hands off the merges and the publish dispatch to the maintainer** — every merge here hits a
@@ -91,20 +92,67 @@ The PR body should quote the finalized `## [X.Y.Z]` changelog section so the mai
 exact release notes. Then **hand off**: tell the maintainer to merge this PR into `develop` (it hits
 the 1-review gate — self-merge). Do not merge it yourself.
 
-## Step 5: Cut `develop` → `main` (release PR — cf. #140)
+## Step 5: Cut `develop` → `main` — as a **merge commit**
 
 After the stamp PR is merged to `develop` (confirm: `git fetch origin develop` and check
 `plugins/vine/.claude-plugin/plugin.json` on `origin/develop` now reads `X.Y.Z`), open the release
-PR. Its head is `develop` itself — no new commits, it just promotes the stamped `develop` to `main`:
+PR. Its head is `develop`, promoting the stamped `develop` to `main`:
 
 ```
 gh pr create --base main --head develop --title "Release vX.Y.Z" --body "<summary + changelog link>"
 ```
 
-Hand off again: the maintainer merges `develop`→`main`. `main` is release-only — never commit to it
-directly (the repo's `main-guard` hook enforces this for local commits).
+Hand off: the maintainer merges `develop`→`main` using **Create a merge commit** — **not squash,
+not rebase.** This is load-bearing for branch convergence: a merge commit makes `develop` an
+ancestor of `main`, which is what lets Step 6 fast-forward `develop` back to `main`. A squash- or
+rebase-merge severs that ancestry and the branches **permanently diverge** — every future
+`develop`→`main` then conflicts on the prior release's already-shared work. (Requires "Allow merge
+commits" enabled in repo settings; feature→`develop` PRs may still squash.) `main` is release-only —
+never commit to it directly (the `main-guard` hook enforces this locally).
 
-## Step 6: Publish (tag + GitHub release)
+**Diverged-history recovery.** If `main` and `develop` have *already* diverged (a past release
+squashed, so `git merge-base --is-ancestor origin/main origin/develop` is false), a plain
+`develop`→`main` PR throws spurious conflicts. Don't hand-resolve them — cut a `main`-based branch
+carrying `develop`'s exact tree (conflict-free), then merge *it* as a merge commit:
+
+```
+git fetch origin develop main
+git checkout -B release-cut/X.Y.Z origin/main
+git merge -s ours --no-commit origin/develop   # record develop as a parent; keep main's tree for now
+git read-tree -m -u origin/develop             # set the tree to develop's exact tree (handles renames/deletes)
+git commit -m "Release vX.Y.Z (develop→main)"
+git push -u origin release-cut/X.Y.Z
+gh pr create --base main --head release-cut/X.Y.Z --title "Release vX.Y.Z"
+```
+
+Verify `git diff release-cut/X.Y.Z origin/develop` is empty (tree matches develop) before handing
+off. This branch still carries `develop` as a parent, so Step 6's fast-forward works and the
+divergence is healed after this one release.
+
+## Step 6: Sync `develop` up to `main` (fast-forward)
+
+The release merge advanced `main`; now bring `develop` even with it so the branches stay converged
+and the next release is conflict-free. Because the Step 5 merge made `develop` an ancestor of
+`main`'s new tip, this is a **fast-forward**, not a force-push:
+
+```
+git fetch origin main
+git merge-base --is-ancestor origin/develop origin/main && echo "fast-forward is safe"
+```
+
+Then advance `develop` to `main`. This is a direct write to the protected `develop` branch, so the
+**maintainer** runs it (it's a fast-forward, not a force-push — but branch protection still requires
+an admin/direct push because there's no diff to route through a PR):
+
+```
+git push origin origin/main:refs/heads/develop
+```
+
+Confirm `git rev-parse origin/develop origin/main` now match. If the `is-ancestor` check failed, the
+Step 5 merge was squashed instead of a merge commit — stop and surface it; do **not** force-push to
+paper over it.
+
+## Step 7: Publish (tag + GitHub release)
 
 `publish.yml` is `workflow_dispatch` (manual). Once `main` carries the bumped `plugin.json`, it can
 run. It reads the version from `plugin.json`, re-checks the tag is free, validates the plugin
@@ -120,17 +168,22 @@ Triggering it creates a **public tag and release** — an outward, hard-to-rever
 
 After a dispatch, verify: `gh release view vX.Y.Z` and `git ls-remote --tags origin vX.Y.Z`.
 
-## Step 7: Report
+## Step 8: Report
 
-Summarize what shipped: the version, the two PR links, the changelog section, and the release URL
-(or the pending-dispatch state). Users update via `/plugin update vine`.
+Summarize what shipped: the version, the PR links, the changelog section, that `develop` is synced
+to `main`, and the release URL (or the pending-dispatch state). Users update via `/plugin update
+vine`.
 
 ## Guardrails
 
 - **plugin.json is the only version field.** Never reintroduce a competing version (no `package.json`
   version, no `version` in `marketplace.json`).
-- **Never bypass branch protection.** If a merge is blocked on review, hand it to the maintainer —
-  don't reach for `--admin` on the user's behalf.
+- **Release to `main` is a merge commit, never a squash.** Squash/rebase severs `develop`→`main`
+  ancestry and the branches diverge permanently. After the merge, fast-forward `develop` to `main`
+  (Step 6) so they stay converged.
+- **Never bypass branch protection.** If a merge is blocked on review, or the Step 6 fast-forward
+  needs a direct push to protected `develop`, hand it to the maintainer — don't reach for `--admin`
+  on the user's behalf.
 - **Stamp before cut.** The version must be on `develop` before the `develop`→`main` PR, or the
   release PR carries no bump.
 - **One concern.** This command cuts a release; it does not bundle feature work. Run it on a clean
