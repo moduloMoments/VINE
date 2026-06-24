@@ -2,6 +2,10 @@
 
 ## PR Workflow
 
+- **Target `develop`, never `main`.** VINE runs a `main`-release / `develop`-integration model:
+  feature and cycle PRs integrate into `develop`; promoting to `main` is a separate maintainer-cut
+  release (`/release-plugin`). When evolve's handoff opens a PR, the `gh pr create` it runs **must**
+  pass `--base develop` (or defer to `/pr`, which already targets `develop`).
 - Create PRs via `gh pr create` using the repo's PR template
 - Link to related GitHub Issues when applicable
 - PR title should reflect the VINE phase perspective (e.g., "Improve verify phase context discovery")
