@@ -4,6 +4,8 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-04
+
 This set comes out of a clean-environment onboarding audit: repeated cold runs of
 marketplace install → `/vine:init` → `/vine:verify` on a fresh sample repo, fixing what the
 runs surfaced — followed by applying the audit's recommendations in full.
