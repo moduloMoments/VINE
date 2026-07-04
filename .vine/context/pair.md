@@ -4,7 +4,7 @@
 
 - **Structural check**: Run `/trellis` if any command file was modified
 - **Cross-reference check**: If changing a command file, verify references in CLAUDE.md, README.md, and shared.md are still accurate
-- **Frontmatter check**: Ensure YAML frontmatter has exactly: name, description, argument-hint, allowed-tools
+- **Frontmatter check**: Ensure YAML frontmatter has description, argument-hint, allowed-tools, and `disable-model-invocation: true` — and **no `name` field** (the `/vine:<name>` form derives from plugin + directory name; an explicit `name` risks double-namespacing)
 
 ## Scope Guardrails
 

@@ -8,7 +8,6 @@
 
 ## Validation Commands
 
-- **Markdown lint**: `npx markdownlint-cli2 "plugins/vine/skills/*/SKILL.md" "references/*.md" "README.md"` (once configured)
 - **Link check**: Verify any cross-references between files still resolve
 - **Frontmatter check**: Ensure all command files have valid YAML frontmatter with required fields
 

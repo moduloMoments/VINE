@@ -188,6 +188,7 @@ prose inference (package.json scripts, config files, the phase overlays). Keys:
 # omitted (demonstrating graceful partial population; the block degrades to its present keys).
 extra:
   - sh .vine/scripts/trellis-check.sh   # command structure + cross-reference anchors
+  - sh .vine/scripts/run-tests.sh       # hook-script test matrix (same checks as PR CI)
 ```
 
 ## CI/CD
