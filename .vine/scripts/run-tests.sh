@@ -152,8 +152,10 @@ EOF
 }
 
 # Check 10 resolves the PAIRS list in trellis-check.sh against
-# $CLAUDE_PROJECT_DIR, so the fixture stubs every anchor. Keep in sync with
-# that heredoc.
+# $CLAUDE_PROJECT_DIR, so the fixture stubs every anchor. Check 12 requires
+# the plugin-shipped protocol (plugins/vine/PROTOCOL.md) with the personal-root
+# helper wired into the Engineer Profile Protocol section, so the fixture stubs
+# that too. Keep both in sync with trellis-check.sh.
 mkanchors() {
   mkdir -p "$1/references" "$1/plugins/vine/agents"
   printf '%s\n' '**Verification-tier contract.**' > "$1/references/CONTRACTS.md"
@@ -163,6 +165,15 @@ mkanchors() {
 **Full-feature scope**
 **Base checks**
 **Cross-cutting checks**
+EOF
+  cat > "$1/plugins/vine/PROTOCOL.md" <<'EOF'
+## Overlay Loading Protocol
+
+**Resolving the personal root.** Resolve at the primary worktree.
+
+## Engineer Profile Protocol
+
+Resolve the shared personal root (Resolving the personal root) and read PROFILE.md.
 EOF
 }
 
@@ -237,6 +248,12 @@ mkcmd "$T" shipok shipok 'Reads `.vine/context/shared.md`; the `vine-verificatio
 sh "$C" >/dev/null 2>&1
 check "trellis-check: bucket-2 + name-based agent refs do not trip guard -> pass" 0 $?
 rm -rf "$T/plugins/vine/skills/shipok"
+
+# Check 12: a missing plugin protocol must flip the run red (#132 guard's new home).
+mv "$T/plugins/vine/PROTOCOL.md" "$T/PROTOCOL.md.bak"
+sh "$C" >/dev/null 2>&1
+check "trellis-check: missing PROTOCOL.md -> fail (exit 1)" 1 $?
+mv "$T/PROTOCOL.md.bak" "$T/plugins/vine/PROTOCOL.md"
 
 # Check 10: a missing anchor file must flip the run red.
 rm "$T/references/CONTRACTS.md"
