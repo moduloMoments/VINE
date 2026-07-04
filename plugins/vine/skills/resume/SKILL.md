@@ -18,15 +18,20 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/resume.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The resume
-overlay carries resume-specific extensions for this project. If `shared.md` is absent, degrade
-gracefully: read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/resume.md` if they exist and apply them
+per the protocol. The resume overlay carries resume-specific extensions for this project.
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol.
 
 ---
 
@@ -53,9 +58,8 @@ Read whatever exists in the feature directory. Build your understanding in layer
 
 ### Layer 1: PAUSE.md (if present)
 
-Read `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` — the feature's mirrored personal path
-(shared personal root, resolved per **Resolving the personal root** in `shared.md`'s Overlay Loading Protocol); pause state lives under
-`.vine.local/` even for a shared `.vine/projects/` feature. Extract:
+Read `.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` — the feature's mirrored personal
+path, resolved per Resolving the personal root (VINE Protocol). Extract:
 - **Phase** at time of pause
 - **Active slice** (if navigate was in progress)
 - **Timestamp** — calculate how long ago the pause was
@@ -86,8 +90,8 @@ Check the current git branch. If it doesn't match the expected feature branch
 ## Present Status
 
 Display a status summary tailored to what you found. The format depends on whether PAUSE.md
-exists. Emit it per the Next-Step Suggestions convention in shared.md — plain chat text, with
-only the runnable `/vine:…` command line in a fenced block.
+exists. Emit it per the Next-Step Suggestions convention in the VINE Protocol — plain chat
+text, with only the runnable `/vine:…` command line in a fenced block.
 
 ### With PAUSE.md
 
@@ -139,32 +143,9 @@ Skip this if no Milestones table exists or all PR numbers are already filled in.
 
 ### Without PAUSE.md (artifact-only fallback)
 
-````
----
-🔄 Resuming: [Feature Name]
-   Phase: [detected from artifacts]
-   Progress: [N of M slices complete, if applicable]
-   Branch: [current branch — with warning if it doesn't match]
-
-   No pause state found — reconstructing from artifacts.
-
-[If PROJECT-MAP.md exists:]
-📊 VINE Progress: verify ✅ → inquire ✅ → navigate 🚧 → evolve ⬜
-[If PROJECT-MAP.md has Milestones table:]
-📦 Milestones:
-   [Compact milestone summary — e.g., "Phase 1: ✅ PR #42 | Phase 2: 🚧 | Phase 3: ⬜"]
-
-[If navigate in progress:]
-📋 Navigation progress:
-   [List slices with status: ✅ complete / 🔲 pending / ▶️ in progress]
-
-📋 Recommended next step: [1-2 sentence explanation of why this is the right next step]
-
-```
-/vine:[next command] <domain>/<feature-slug>
-```
----
-````
+Same block as above minus the Paused/notes lines; add "No pause state found — reconstructing
+from artifacts." and, if navigate is in progress, a per-slice status list (✅ complete /
+🔲 pending / ▶️ in progress).
 
 ## Restore Session State
 
@@ -173,17 +154,11 @@ the in-session task list to match what `/vine:navigate` would create (see naviga
 live task view" step): `TaskCreate` one task per remaining slice in the current phase group,
 titled by the slice name, `blockedBy`-ordered, skipping slices already `Complete` in
 NAVIGATION.md and prefixing conditional slices `(conditional: <condition>)`. If a slice is
-`In Progress` per its NAVIGATION.md status suffix, `TaskUpdate` it to `in_progress`. The
-rebuilt list is a derived view — it carries no information the journal and spec don't already
-hold, so resume reconstructs it identically every time. When task tools aren't available, skip
-this; the status summary above is the progress view.
+`In Progress` per its NAVIGATION.md status suffix, `TaskUpdate` it to `in_progress`. When task
+tools aren't available, skip; the status summary is the progress view.
 
-**Consume the pause state.** If you read and displayed a PAUSE.md, delete it now — the
-consumed-once rule: a lingering pause keeps re-suggesting
-`/vine:resume` and re-presents stale notes on the next resume. Its notes have already been
-surfaced in the summary above; anything worth keeping past this resume belongs in
-NAVIGATION.md's Remaining Work, not PAUSE.md. (If no PAUSE.md was present, skip — nothing to
-consume.)
+**Consume the pause state.** If you displayed a PAUSE.md, delete it now (consumed-once rule).
+Anything worth keeping belongs in NAVIGATION.md's Remaining Work. Skip if none was present.
 
 ## Recommend Next Step
 
@@ -199,18 +174,9 @@ Based on the detected phase, recommend the appropriate command:
 | evolve in progress | `/vine:evolve <domain>/<feature-slug>` — finish the evolution report |
 | evolve complete | Consider resolving the project or re-running evolve |
 
-**Do not auto-launch the recommended command.** The engineer decides when to proceed. Resume
-**creates no artifacts** — it never writes a CONTEXT/SPEC/NAVIGATION/EVOLUTION file; its job
-is to *restore* context, not produce the artifact chain. It does touch ephemeral and derived
-state: rebuilding the in-session task view (when task tools are available), consuming the
-PAUSE.md it displays, and backfilling PR numbers into the derived PROJECT-MAP view.
-
-**Resume is the `/clear` exception.** Unlike the phase commands, resume does *not* suggest
-`/clear` before the next step. The phase commands recommend a fresh session so heavy context
-flows through `.vine/` files rather than chat; resume is the opposite — it exists to rebuild
-that context into the current session, so clearing would immediately discard what it just
-restored. Resume is a handoff back into the work that was already running: you continue in the
-same session.
+**Do not auto-launch the recommended command.** Resume creates no artifacts — it only touches
+ephemeral/derived state (task view, PAUSE.md consumption, PR backfill). Do not suggest
+`/clear`: resume exists to rebuild context into the current session; clearing would discard it.
 
 ## Handle Edge Cases
 

@@ -17,16 +17,21 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/optimize.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The optimize
-overlay carries optimize-specific extensions for this project (custom discovery paths, description
-conventions, workflow patterns to enforce). If `shared.md` is absent, degrade gracefully: read the
-phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/optimize.md` if they exist and apply them
+per the protocol. The optimize overlay carries optimize-specific extensions for this project
+(custom discovery paths, description conventions, workflow patterns to enforce).
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol.
 
 ## What This Does
 
@@ -41,10 +46,7 @@ Three phases:
 3. **Apply** — Improve descriptions, write the workflow map to shared.md, verify CLAUDE.md's
    pointer, add chain links to prose
 
-Knowledge placement follows the Knowledge Boundary rule: the
-workflow map is VINE routing knowledge, so it lives in `.vine/context/shared.md`; CLAUDE.md
-carries only an availability-gated pointer; the command/agent inventory lives in the
-harness's native skill list, never in files.
+Knowledge placement follows the Knowledge Boundary rule (3b).
 
 ## Phase 1: Discover
 
@@ -102,8 +104,6 @@ scan the command prose for how it spawns agents:
 
 Read `CLAUDE.md` (project root) and `.vine/context/shared.md` if they exist. Note:
 - Whether CLAUDE.md contains the availability-gated VINE pointer block (see 3e)
-- Whether CLAUDE.md still carries a full workflow map or command inventory (pre-0.4 layout —
-  a move candidate for 3d/3e)
 - Whether shared.md already has a workflow map (to update rather than create)
 - Conventions in either file that affect skill behavior
 
@@ -152,17 +152,12 @@ Detect relationships between commands by analyzing their prose and artifacts:
 
 **Explicit chains** — Command A's prose mentions command B by name:
 - "suggest running `/vine:evolve`" → navigate suggests evolve
-- "run `/vine:init` first" → dependency on init
-- "consider `/vine:pair` instead" → lateral switch
 
 **Artifact chains** — Command A produces a file that command B consumes:
 - verify writes CONTEXT.md → inquire reads CONTEXT.md
-- inquire writes SPEC.md → navigate reads SPEC.md
 
 **State-based triggers** — Conditions where a command becomes relevant:
 - CONTEXT.md exists but no SPEC.md → inquire is the next step
-- NAVIGATION.md has "Remaining Work" section → resume is relevant
-- No `.vine/` directory → init should run first
 
 **Capability chains** — Commands that share tool access patterns or domain overlap,
 suggesting they work well in sequence.
@@ -219,18 +214,6 @@ For each command, produce:
   token savings and a before/after sketch of the tighter version
 - **Cross-file waste**: Any duplication with shared.md, CLAUDE.md, or other commands
 
-Present the analysis as a ranked list, highest-waste commands first:
-
-> "**Token Efficiency:**
-> [Table: command | tokens | density | top opportunity | est. savings]
->
-> **Cross-file duplication:**
-> [Table: content | appears in | recommendation]"
-
-When proposing reductions in Phase 3, show the tightened version alongside the original so the
-engineer can verify no instruction quality was lost. Never cut content that changes Claude's
-behavior — only cut content that restates what Claude would already do.
-
 ### 2d. Workflow Detection
 
 Group chains into coherent workflows — sequences of commands that accomplish a goal together:
@@ -257,17 +240,12 @@ via `AskUserQuestion` instead of prose-based option lists or silent assumptions.
 | **Batch decisions** | Multiple independent yes/no decisions presented sequentially. Each round-trip costs tokens and time. | Batch into a single `AskUserQuestion` with `multiSelect: true`. |
 | **Missing confirmation** | Command performs a consequential action (file writes, git operations, external calls) without confirming intent. | Add a confirmation `AskUserQuestion` before the action. |
 
-Proposed conversions must follow the Interaction Constraints from `.vine/context/shared.md`.
+Proposed conversions must follow the Interaction Constraints from the VINE Protocol.
 
 For each command, produce:
 - Number of existing `AskUserQuestion` uses
 - Number of decision points that should use `AskUserQuestion` but don't
 - Specific locations and proposed conversions
-
-Present the interactivity analysis:
-
-> "**Interactivity:**
-> [Table: command | existing AskUser calls | proposed additions | top opportunity]"
 
 Present the full analysis:
 
@@ -362,10 +340,8 @@ often better than a blocking prompt.
 
 ### 3d. Write Workflow Map to shared.md
 
-Add or update a `## Skill Workflows` section in `.vine/context/shared.md`. The map is VINE
-routing knowledge — workflow chains plus state-based suggestions — so it lives on the VINE
-surface, loaded only by VINE sessions (Knowledge Boundary rule).
-CLAUDE.md carries only the pointer verified in 3e.
+Add or update a `## Skill Workflows` section in `.vine/context/shared.md`. The map lives there
+per the Knowledge Boundary rule (3b); CLAUDE.md carries only the pointer verified in 3e.
 
 Format:
 
@@ -386,8 +362,8 @@ Format:
 ```
 
 **Rules for the workflow map:**
-- Chains and state-based suggestions ONLY — no command or agent inventory. The harness's
-  native skill list is the inventory's home; an enumeration in the map can only drift.
+- Chains and state-based suggestions ONLY — no command or agent inventory, per the Knowledge
+  Boundary rule (3b).
 - Keep it concise — this is routing context, not documentation
 - Each workflow should be 3-7 steps max
 - State-based suggestions use observable conditions (file exists, git state, etc.)
@@ -410,12 +386,8 @@ has active features, suggest the matching phase — routing details in
 under `.vine/knowledge/<domain>/`.
 ```
 
-The gate is command availability — visible to Claude in its own skill list — so the block
-works whether VINE is installed repo-level or globally, and a teammate who doesn't use VINE
-pays only these few lines. The durable-decisions line is itself an availability-gated pointer
-(it names where committed judgment lives without expanding into the records). Verify the
-pointer exists and is accurate — both the routing line and the durable-decisions line — and
-never expand it into a map.
+Verify the pointer exists and is accurate — both the routing line and the durable-decisions
+line — and never expand it into a map.
 
 ### 3f. Add Chain Links to Command Prose
 
@@ -467,25 +439,12 @@ After applying changes, present a summary:
 
 ## Running on a Schedule
 
-vine:optimize works best when re-run after significant changes to commands, skills, or
-workflows. The engineer can:
-
-1. **Manual**: Run `/vine:optimize` whenever commands change
-2. **Post-evolve**: vine:evolve suggests re-running optimize when it recommends new commands
-   or skills (if the integration is wired up)
-3. **Scheduled**: Use Claude Code's `/schedule` to run optimize on a cron (e.g., weekly)
-
-The command is idempotent — re-running it updates existing analysis rather than duplicating.
-The workflow map in shared.md includes a generation date so staleness is visible.
+Re-run after commands/skills/workflows change — manually, when evolve suggests it, or on a
+`/schedule` cron. Idempotent: re-runs update the existing analysis and map (the map's
+generation date shows staleness).
 
 ## Important Principles
-
-**Don't break what works.** If a command currently triggers correctly, preserve those
-matching patterns even while improving the description.
 
 **Chains emerge from prose and artifacts.** The relationship data already exists in how
 commands reference each other and what files they produce/consume. This command surfaces
 and formalizes those relationships — it doesn't invent them.
-
-**The engineer decides.** Every change is presented for approval. vine:optimize reports and
-recommends; it doesn't edit silently.

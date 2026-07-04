@@ -17,24 +17,27 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/pair.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The pair
-overlay carries pair-specific extensions for this project (preferred test commands, lint/format
-requirements, commit conventions for small changes). If `shared.md` is absent, degrade gracefully:
-read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/pair.md` if they exist and apply them
+per the protocol. The pair overlay carries pair-specific extensions for this project
+(preferred test commands, lint/format requirements, commit conventions for small changes).
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Do not prompt
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol. Do not prompt
 for domain registration — that's verify's job. Pair sessions are too quick for profile ceremony.
 
 ---
 
-VINE's four phases are powerful but heavyweight. Sometimes you just need to fix a bug, tweak a
-feature, or refactor a small piece of code. vine:pair gives you VINE's guided narration and
-structured commit without the artifact ceremony. No CONTEXT.md, no SPEC.md — just you and the
-engineer working together on a small change.
+Quick fixes and small changes without artifact ceremony — no CONTEXT.md, no SPEC.md; the
+commit and retro block are the only outputs.
 
 ## Before You Start
 
@@ -89,11 +92,9 @@ and why:
 > "Adding a null check before the API call — the current code assumes the response always has
 > a `data` field but the error path returns `null`."
 
-**Profile-adjusted density:**
-- **Confident/familiar**: One-liner only for non-obvious changes. Skip explanations for
-  standard patterns the engineer clearly knows.
-- **Learning/new**: One-liner for every change, with a brief "why this pattern" note when
-  using something they might not have seen before.
+Calibrate narration density per the Engineer Profile Protocol — one-liner per change with
+"why this pattern" notes for learning/new; one-liner only for non-obvious changes for
+confident/familiar.
 
 **Stay small.** If the change starts growing beyond what a single commit can capture cleanly,
 pause and flag it:
@@ -153,17 +154,8 @@ After the commit (or if the engineer decides not to commit), close with a brief 
 
 ## Important Principles
 
-**Quick means quick.** The whole point of pair is avoiding ceremony. If you're spending more
-than a few minutes on context gathering, you're doing it wrong.
-
-**No artifacts.** Don't write CONTEXT.md, SPEC.md, NAVIGATION.md, or EVOLUTION.md. The commit
-and the retro block are the only outputs.
-
 **The engineer is driving.** They know what they want to change. Your job is to execute well,
 narrate your reasoning so they can steer, and catch things they might miss.
 
 **Stay in scope.** If you notice something that should be fixed but isn't what the engineer
 asked for, mention it in the retro's CLAUDE.md suggestion rather than fixing it.
-
-**One commit.** Pair work is small enough for a single commit. If it's not, that's a signal
-to escalate to the full cycle.

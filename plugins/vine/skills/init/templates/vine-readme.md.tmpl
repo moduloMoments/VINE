@@ -1,0 +1,72 @@
+# Using VINE in this repo
+
+This directory holds VINE's working state for **[Project Name]**. VINE is a pure-markdown,
+AI-assisted development framework: features flow through phases — **verify → inquire → navigate
+→ evolve** (plus lightweight **pair** for small changes) — and each phase reads shared context
+from here and writes its artifacts back.
+
+New here? Run `/vine:help` for the full command list, or `/vine:status` to see where the current
+feature stands.
+
+## What lives under `.vine/`
+
+| Path | What it is |
+|------|------------|
+| `context/shared.md` | Repo-wide overlay, loaded by every phase |
+| `context/<phase>.md` | Per-phase overlays — `verify.md`, `inquire.md`, `navigate.md`, `evolve.md`, `pair.md` |
+| `projects/<domain>/<feature-slug>/` | Per-feature artifacts: CONTEXT → SPEC → NAVIGATION → EVOLUTION, plus PROJECT-MAP |
+| `ACTIVE` | Ephemeral session sentinel (gitignored, per-worktree) |
+
+Personal and ephemeral state that shouldn't be committed lives in the sibling **`.vine.local/`**
+root (gitignored, mirrors `.vine/`): your `PROFILE.md`, personal overlays under `context/`, pause
+state, and any local-only feature projects. `.vine/` is tracked by default; `.vine.local/` is not.
+
+## Context overlays and precedence
+
+The framework's loading and precedence rules ship with the VINE plugin (its `PROTOCOL.md`),
+so they update with the plugin and never go stale here. The short version:
+
+1. **Plugin defaults** — each phase's skill plus the plugin protocol.
+2. **This repo's overlays** (`context/shared.md`, `context/<phase>.md`) — repo-specific
+   context; wins over plugin defaults on conflict.
+3. **Your personal layer** (`.vine.local/context/<name>.md`, mirroring any repo overlay) —
+   wins over the repo overlay, **except** sections marked `<!-- class: policy -->` directly
+   under their heading (e.g. **Team Context**, **CI/CD**), which the repo always wins.
+
+Only policy-class sections carry the marker — unmarked means preference.
+
+## The `## Validation` block
+
+`shared.md` may carry an optional `## Validation` section: a fenced YAML block that declares how
+this repo's checks run, so verification doesn't have to guess.
+
+```yaml
+lint: <command>          # linter / formatter
+typecheck: <command>     # static type check
+test: <command>          # scoped / per-file tests
+test-all: <command>      # full suite
+build: <command>         # build / compile check
+extra:                   # anything else
+  - <command>
+```
+
+Every key is **optional** — declare only the checks this repo has. The `vine:verify`
+verification agent and the `navigate` / `evolve` / `pair` phases read this block to run the right
+checks; with no block (or missing keys) they fall back to inferring commands from package scripts
+and config.
+
+## Customizing VINE for this repo
+
+- **Edit the overlays.** `shared.md` and the per-phase files are plain markdown — change them to
+  teach VINE this repo's conventions, tools, and gotchas. Re-running `/vine:init` in upgrade mode
+  folds in newly discovered tooling without clobbering your edits.
+- **Add per-phase guidance.** Create or extend `context/<phase>.md` to give one phase context the
+  others don't need.
+- **Keep personal tweaks local.** Drop preferences you don't want to commit into the personal
+  overlay at `.vine.local/context/shared.md` — it overrides preference sections but never policy ones.
+
+### Team distribution
+
+To share overlays with your team, commit the files under `.vine/context/` you want shared, and mark
+team-enforced sections `<!-- class: policy -->` so a personal overlay can't weaken them. Keep
+personal-only tweaks in the gitignored personal root (`.vine.local/context/`).
