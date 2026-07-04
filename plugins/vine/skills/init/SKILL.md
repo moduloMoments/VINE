@@ -80,7 +80,10 @@ Create `.vine/context/`:
 ### shared.md
 
 Write `.vine/context/shared.md` from the shipped template at
-`${CLAUDE_SKILL_DIR}/templates/shared.md.tmpl`: copy it verbatim, fill `[Project Name]` and
+`${CLAUDE_SKILL_DIR}/templates/shared.md.tmpl` (equivalently
+`${CLAUDE_PLUGIN_ROOT}/skills/init/templates/shared.md.tmpl`; if neither variable resolved to a
+path, the "Base directory for this skill" line at the top of this skill names the same
+directory — the `templates/` folder lives under it): copy it verbatim, fill `[Project Name]` and
 `[date]`, and replace each bracketed placeholder with repo-specific content per the guidance
 inside the bracket (Tooling Notes and Project Conventions from the Step-1 discovery, Team
 Context from the Step-2 answers, Validation as a fenced YAML block populated from discovered
@@ -116,7 +119,8 @@ commit message conventions for small fixes
 ## Step 4: Scaffold the .vine/README.md Orientation Doc
 
 Write `.vine/README.md` from the shipped template at
-`${CLAUDE_SKILL_DIR}/templates/vine-readme.md.tmpl`, filling `[Project Name]`. It's a tracked,
+`${CLAUDE_SKILL_DIR}/templates/vine-readme.md.tmpl` (same path-resolution fallbacks as the
+Step 3 template), filling `[Project Name]`. It's a tracked,
 human/agent-facing doc that orients anyone opening this repo on how to *use* VINE inside it —
 distinct from the overlays: overlays configure VINE's behavior; this README explains it.
 
