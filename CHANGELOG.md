@@ -4,6 +4,48 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+This set comes out of a clean-environment onboarding audit: repeated cold runs of
+marketplace install → `/vine:init` → `/vine:verify` on a fresh sample repo, fixing what the
+runs surfaced.
+
+### Added
+- **First-run init nudge** — `vine:verify` and `vine:pair` now say so once when no `.vine/`
+  exists ("No `.vine/` found — `/vine:init` sets up context overlays and the gitignore
+  rules…") instead of silently degrading. The suggestion previously lived only in
+  `shared.md`'s protocol — the file that's missing in exactly that situation.
+- **Personal-root gitignore guard** — before `vine:verify` seeds `.vine.local/PROFILE.md` in
+  a repo that never ran init, it adds the `.vine.local/` + `.vine/ACTIVE` ignore lines, so
+  personal state is never one `git add -A` away from a commit.
+- **Scaffolding reaches history** — `vine:init` writes a `.gitkeep` in `.vine/projects/` (git
+  doesn't track empty dirs), its completion block reminds the engineer the scaffolding is
+  uncommitted, and `vine:verify`'s first artifact commit sweeps still-untracked init
+  scaffolding (`.gitignore`, `.vine/README.md`, `.vine/context/`) so a teammate's clone gets
+  the ignore protection.
+- **Precedence one-pager** — `docs/precedence.md` documents what controls what (skill file →
+  repo overlays → personal overlays → policy sections; profile as depth-only), linked from
+  the README's Context Overlays section.
+
+### Changed
+- **README restructured around "start with verify"** — Quick Start (install + init + first
+  verify) moves to the top; the core loop is the story; pair/pause/resume/status/multi-PR
+  move to a "When You Need Them" section. 487 → ~440 lines.
+- **`vine:verify` first-run polish** — domain + slug batched into one `AskUserQuestion` call;
+  the scope check recommends `vine:pair` only on a clear-cut evaluation (borderline reads
+  keep the full cycle as the recommended option); the sign-off commit states what's being
+  committed and to which branch; the permission-mode recommendation no longer conditions on
+  a mode the model can't observe; the familiarity question documents its deliberate lack of
+  a "(Recommended)" option.
+- **`vine:init` cold-path polish** — Step-2 team questions derive recommended defaults from
+  discovery (solo repos get solo defaults); the Step-4 `[date]` placeholder instruction
+  matches its template; internal issue-number archaeology and a cross-skill step-number
+  pointer removed; the Collaboration Stance header no longer reads as "internal, not shown
+  to the engineer" in a tracked file the engineer is told to edit.
+
+### Fixed
+- **README update command** — `claude plugin update vine@moduloMoments` (verified working);
+  the previously documented bare `/plugin update vine` doesn't resolve without the
+  marketplace suffix.
+
 ## [0.4.1] - 2026-06-23
 
 ### Changed

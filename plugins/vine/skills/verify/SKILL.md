@@ -22,7 +22,10 @@ Read `.vine/context/shared.md` and `.vine/context/verify.md` if they exist, then
 personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The verify
 overlay carries verify-specific extensions for this project (preferred exploration patterns, key
 areas to always check, domain-specific questions). If `shared.md` is absent, degrade gracefully:
-read the phase overlay if present, otherwise proceed on command defaults.
+read the phase overlay if present, otherwise proceed on command defaults. If `.vine/` doesn't
+exist at all, this repo has never been initialized — say so once and keep going: "No `.vine/`
+found — `/vine:init` sets up context overlays and the gitignore rules for VINE's personal root.
+Continuing on defaults for now."
 
 ## Load Engineer Profile
 
@@ -46,7 +49,15 @@ that seeds new domains:
   root** in `shared.md`'s Overlay Loading Protocol — `<personal-root>/.vine.local/PROFILE.md`, not
   cwd, so the profile is written and read at the same place from every worktree) with the selected
   level and today's date. If PROFILE.md doesn't exist there yet, create it with a
-  `## Domain Expertise` table (columns: Domain, Level, Last Updated, Notes).
+  `## Domain Expertise` table (columns: Domain, Level, Last Updated, Notes). Before the first
+  write, check that the personal root is actually ignored (`git check-ignore -q .vine.local`
+  at the personal root) — in a repo that never ran `/vine:init` it won't be, so add the two
+  lines `.vine.local/` and `.vine/ACTIVE` to `.gitignore` first. Personal state must never be
+  one `git add -A` away from a commit.
+
+  This question has no "(Recommended)" option by design — there's no honest default for
+  someone's own familiarity. It's the deliberate exception to the recommended-first rule in
+  the Interaction Constraints.
 
 If no profile exists and the engineer hasn't confirmed a domain yet, do nothing — the prompt
 happens naturally when the domain is confirmed during CONTEXT.md creation. No upfront questions.
@@ -54,10 +65,11 @@ happens naturally when the domain is confirmed during CONTEXT.md creation. No up
 ## Before You Start
 
 **Ask permissions mode recommended.** This is a cooperative framework — the engineer reviews every
-change as it happens, not after the fact. If the session is running in Accept edits mode:
+change as it happens, not after the fact. You can't reliably observe the session's permission
+mode, so recommend it once, non-blocking, at the start of the phase:
 
-> "I'd recommend switching to Ask permissions mode so you can review what verify writes as we go.
-> It's not required — want to continue in Accept edits?"
+> "I'd recommend Ask permissions mode for this phase so you can review what verify writes as we
+> go — skip this if you're already there. Not required either way."
 
 Don't block on this — if the engineer prefers Accept edits, proceed. The mode toggle is the
 engineer's action: you can ask, never switch it yourself or assume it happened.
@@ -177,6 +189,12 @@ If the work clearly warrants the full cycle, skip this check — don't ask the q
 the answer is obvious. This is for the cases where verify reveals the work is simpler than
 the engineer's initial description suggested.
 
+Recommend pair only when the evaluation is clear-cut — file count AND design-need both point
+to pair. On a borderline read (small file count but real design questions, or vice versa),
+either skip the question or put "Continue with full cycle" first as the recommended option:
+an unnecessary CONTEXT.md costs minutes, but bouncing an engineer's first cycle into pair on
+a coin flip reads as "the framework told me not to use it."
+
 ### 4. Identify Documentation Gaps
 
 As you explore, note where the documentation doesn't match reality:
@@ -259,8 +277,9 @@ and discoverability (see all VINE work in a domain at a glance). It also survive
 if you work on the same domain in different services.
 
 When starting, use `AskUserQuestion` to let the engineer select the domain and confirm the
-feature slug. Suggest likely domains based on the codebase areas discussed. The tool auto-adds
-an "Other" option for custom input. Follow up with a second prompt for the feature slug if needed.
+feature slug — batch both into one call (the Interaction Constraints allow up to 4 questions).
+Suggest likely domains based on the codebase areas discussed. The tool auto-adds
+an "Other" option for custom input.
 
 Confirm both before creating the directory.
 
@@ -320,7 +339,8 @@ PROJECT-MAP.md alongside CONTEXT.md to track VINE progress for this feature:
    | evolve | ⬜ | — |
    ```
 
-   Save to `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md`. No Milestones table yet —
+   Save to `<root>/projects/<domain>/<feature-slug>/PROJECT-MAP.md` — the same root the
+   Shared-or-local prompt chose for CONTEXT.md. No Milestones table yet —
    that's added by inquire if the feature needs multi-PR treatment.
 
 ### Sign-Off Gate
@@ -347,6 +367,11 @@ Once approved:
 1. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
    directory** — the per-path test in "Committing Artifacts" — and it exits
    non-zero), commit CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history. If
+   `/vine:init`'s scaffolding is still untracked (`.gitignore`, `.vine/README.md`,
+   `.vine/context/`), sweep it into this same commit — the artifacts shouldn't enter history
+   without the ignore rules that protect the personal root. Before committing, say plainly
+   what you're committing and to which branch; verify never creates branches itself (branch
+   policy is the repo's — wire conventions in the overlays). If
    the feature directory is gitignored (a local project under `.vine.local/projects/`), skip this
    step silently — personal-scope artifacts never enter a commit.
 2. Persist actionable retro items before printing the completion block. The retro is

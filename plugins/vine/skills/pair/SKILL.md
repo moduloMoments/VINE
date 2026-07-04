@@ -22,7 +22,10 @@ Read `.vine/context/shared.md` and `.vine/context/pair.md` if they exist, then f
 personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The pair
 overlay carries pair-specific extensions for this project (preferred test commands, lint/format
 requirements, commit conventions for small changes). If `shared.md` is absent, degrade gracefully:
-read the phase overlay if present, otherwise proceed on command defaults.
+read the phase overlay if present, otherwise proceed on command defaults. If `.vine/` doesn't
+exist at all, this repo has never been initialized — say so once and keep going: "No `.vine/`
+found — `/vine:init` sets up context overlays and the gitignore rules for VINE's personal root.
+Continuing on defaults for now."
 
 ## Load Engineer Profile
 

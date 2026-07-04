@@ -68,7 +68,11 @@ Use `AskUserQuestion` to gather context that can't be derived from code:
 - Any external integrations to wire in (Jira, Linear, Slack, Confluence)
 - Testing expectations (coverage thresholds, required test types)
 
-Keep it to 1-2 rounds of questions max. Don't over-interrogate.
+Keep it to 1-2 rounds of questions max. Don't over-interrogate. Derive each question's
+recommended option from the Step-1 discovery rather than assuming a team: a repo with no
+team signals (single committer, no review config, no CODEOWNERS) recommends solo-appropriate
+defaults ("Solo-owned", "No required review", "None") so a first-time user can accept the
+recommendations and move on.
 
 ## Step 3: Generate Context Overlay Files
 
@@ -177,7 +181,7 @@ belong in the per-phase overlays below, not here.]
 
 ## Collaboration Stance
 
-Internal, not shown to the engineer. Apply this stance in all VINE phases:
+Instructions for Claude — apply this stance in all VINE phases (don't print it at the engineer):
 
 > "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
 >
@@ -285,7 +289,7 @@ repo on how to *use* VINE inside it (what lives under `.vine/`, how overlays com
 customize). It is distinct from the overlays: overlays configure VINE's behavior; this README
 explains it.
 
-Write it from the template below, filling `[Project Name]` and `[date]`.
+Write it from the template below, filling `[Project Name]`.
 
 **Fresh repos:** write the file. **Upgrade mode** (existing `.vine/context/`): don't write it
 here — Step 8 offers it, declinable. Either way, Step 6 keeps `.vine/README.md` tracked even when
@@ -384,6 +388,8 @@ personal-only tweaks in the gitignored personal root (`.vine.local/context/`).
 Create `.vine/projects/` — the directory where all VINE project artifacts live. This keeps
 project state (CONTEXT.md, SPEC.md, NAVIGATION.md, etc.) separate from configuration
 (context/, PROFILE.md). All VINE phases read and write project artifacts under this directory.
+Write a `.gitkeep` inside so the directory survives commits and clones — git doesn't track
+empty directories, and the first `vine:verify` may be days away.
 
 ## Step 6: Gitignore
 
@@ -490,7 +496,7 @@ tree:
    nothing personal is newly staged; `git check-ignore` should report `.vine.local/` and
    `.vine/ACTIVE` ignored, the rest of `.vine/` tracked.
 
-**If the engineer declines**, this is a no-op (#58 rename-fallback): no files move, no `.gitignore`
+**If the engineer declines**, this is a no-op: no files move, no `.gitignore`
 edit, and the offer reappears on the next `/vine:init`. Don't show it when `.gitignore` already
 matches the track-by-default end-state.
 
@@ -563,7 +569,7 @@ step 3e *verifies and keeps it accurate* thereafter, so both reference the same 
 than reinventing it (the **Availability-Gated Pointer** convention in `shared.md`). If `CLAUDE.md`
 doesn't exist, skip silently — init is not a CLAUDE.md generator.
 
-The block (canonical template in `vine:optimize` 3e):
+The block (canonical template lives with `vine:optimize`'s CLAUDE.md-pointer check):
 
 ```markdown
 ## VINE
@@ -596,8 +602,7 @@ Before plugin packaging, VINE installed via `npx create-vine`, which file-copied
 files into `.claude/commands/vine/`. Plugin users now get every phase as a
 skill through the plugin, resolving to the same `/vine:<name>` colon form — so
 a leftover `.claude/commands/vine/` is a stale duplicate. It doesn't collide (the two coexist),
-but it's dead weight that can drift from the shipped skills. Init offers to remove it (#58
-offer-migration pattern).
+but it's dead weight that can drift from the shipped skills. Init offers to remove it.
 
 **Only when `.claude/commands/vine/` exists** (a directory of command `*.md` files, or a symlink
 to one — the old npx install, not the plugin), offer the cleanup via `AskUserQuestion`
@@ -681,6 +686,10 @@ offer, no mention. Otherwise list them and offer to archive them, mirroring evol
 
 📋 Next step: Run `/vine:verify` to start your first feature.
    Your context overlays will be loaded automatically.
+
+📌 The scaffolding above is created but not committed — commit it when you're ready
+   (`git add .vine .gitignore` + a commit), or let your first verify cycle sweep it
+   into the artifact commit.
 
 👤 Your engineer profile (.vine.local/PROFILE.md) will build as you work —
    each new domain prompts a quick familiarity check during verify.
