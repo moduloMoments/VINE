@@ -1,92 +1,15 @@
 # VINE Shared Context Overlay — VINE Framework
 # Edit this file to customize VINE behavior for this repo.
-
-## Overlay Loading Protocol
-
-Each command (except init and help) opens with a *Load Context Overlays* step that bootstraps
-this file plus its phase overlay, then defers here for the shared loading rules. The bootstrap
-reads `.vine/context/shared.md` and `.vine/context/<phase>.md` (and is the step that loads this
-file in the first place, so it cannot be fully externalized); everything below is what "follow
-the Overlay Loading Protocol" pulls in.
-
-**Resolving the personal root.** The personal tree `.vine.local/` is gitignored, so it is *not*
-checked out into a linked git worktree — reading it cwd-relative would make a worktree (or
-delegated) session silently see no profile and no personal overlays. So before any read or write
-under `.vine.local/` (PROFILE.md, `context/<name>.md`, local projects, pause state), resolve the
-shared personal root at the repository's **primary** worktree — `dirname "$(git rev-parse
---git-common-dir)"` — and operate on `<personal-root>/.vine.local/…` there. That path is identical
-from every linked worktree, so one profile / overlay set is seen everywhere; in a single checkout it
-resolves to the same directory as cwd, so behavior is unchanged. A non-git directory falls back to
-the cwd-relative `./.vine.local/`. (The `.vine/ACTIVE` sentinel is the lone exception — it stays
-cwd-relative by design; only the shared personal root needs git resolution.) Full rule and
-rationale: *The two roots → Resolving the roots* in `references/CONTRACTS.md`.
-
-- **Apply as overlay instructions.** Treat the contents of both files as additional instructions
-  layered on top of the command. Overlay instructions take precedence over command defaults when
-  they conflict — they are the team's customization of VINE for this codebase. (Precedence
-  *between* the overlay layers — shared vs. personal vs. policy — is governed by **Overlay
-  Precedence** below; that section is the source of truth and this line does not override it.)
-- **Personal layer.** After reading each repo overlay from `.vine/context/` (`shared.md` and the
-  phase overlay), read its personal counterpart at the mirrored path under the resolved personal
-  root (**Resolving the personal root** above) —
-  `<personal-root>/.vine.local/context/<name>.md` (e.g. `…/.vine.local/context/shared.md`,
-  `…/.vine.local/context/<phase>.md`) — and compose it per the **Personal layer** rule in Overlay
-  Precedence. The personal overlay is distinguished by its root, not a filename suffix (the `.local`
-  suffix is dropped). Absent any personal file, nothing changes.
-- **Legacy fallback (supported through 0.4.x).** If `.vine/context/` doesn't exist but legacy
-  `.vine/hooks/` does, read the same files from `.vine/hooks/` instead and nudge once per
-  session, no more: "Heads up: this project uses the legacy `.vine/hooks/` directory — run
-  `/vine:init` to migrate to `.vine/context/`."
-- **Missing-file behavior.** Every file is optional. If a phase overlay or `shared.md` is
-  absent, proceed normally — the command still works without it. If `.vine/` doesn't exist at
-  all, this is likely a first VINE run: suggest `/vine:init` to scaffold the context overlay
-  directory.
-
-Because the bootstrap is what reads `shared.md`, a command must still degrade gracefully when
-this file (and thus this protocol) is absent: the bootstrap's own read instruction carries the
-minimal behavior, and missing overlays mean the command runs on its built-in defaults.
-
-## Overlay Precedence
-
-VINE composes context from command defaults, this shared overlay (`shared.md`), and the
-engineer's personal layer (`.vine.local/context/`). They resolve as **flat personal-wins with
-policy carve-outs**, mirroring how Claude's own settings resolve — local overrides project,
-except an immutable enterprise-policy ceiling:
-
-- **Preference content** (every unmarked section) is personal-overridable: where a personal overlay
-  and its repo counterpart conflict, the personal layer wins.
-- **Policy content** is immutable from the personal layer. A section marked `<!-- class: policy -->`
-  directly under its heading always wins over personal overrides — a personal overlay cannot weaken
-  or replace it. Policy sections carry team governance the repo enforces regardless of personal
-  preference (CI/CD gates, the team operating model).
-
-**Personal layer (`.vine.local/context/`).** Each command's *Load Context Overlays* step, after
-reading a repo overlay (`shared.md`, a phase overlay), reads its personal counterpart at the
-mirrored path `<personal-root>/.vine.local/context/<name>.md` (resolved per **Resolving the personal
-root** in the Overlay Loading Protocol) if present and composes it by the rule above — it
-overrides preference content and is ignored where it would override a policy-class section. Personal
-overlays live under the gitignored personal root (`.vine.local/`); absent them, nothing changes.
-
-Only policy-class sections carry the marker; unmarked means preference. This is the single
-resolution rule — the personal-overlay load step, init's upgrade pass, and the reviewer orientation
-reference it rather than restating it.
-
-### Team conventions (recommendation)
-
-Team conventions are **repo-owned, not framework-prescribed** — team structure varies org to org, so
-VINE ships the mechanism, not a fixed shape. To make conventions travel with the project, put them in
-the tracked repo overlay (`.vine/context/shared.md`) and mark anything the team enforces regardless of
-personal preference with `<!-- class: policy -->` (per Overlay Precedence above, the personal
-`.vine.local/` layer cannot weaken a policy section). That pair — tracked `shared.md` plus the policy
-marker — is the whole team layer; no separate team-overlay file or dedicated command is needed. To
-share those overlays across repos today, commit the overlay files your team needs; packaged
-cross-repo distribution is a separate, future concern.
+#
+# Framework rules (overlay loading, precedence, the collaboration stance, interaction
+# constraints, out-of-scope routing) ship with the VINE plugin (plugins/vine/PROTOCOL.md in
+# this repo) and load before this file — this overlay carries repo-specific context only.
 
 ## Tooling Notes
 
 The command and agent inventory lives in the harness's native skill list, not in files — see the Knowledge Boundary rule in `references/CONTRACTS.md`. Repo-specific note:
 
-- This repo IS the VINE framework — the product lives under `plugins/vine/` (skills, agents, hooks). Contributors dogfood it by installing the repo as a local plugin: `claude plugin marketplace add ./ --scope local` then `claude plugin install vine@moduloMoments --scope local`. **Dev loop:** a directory-source install is a snapshot copy, so a skill edit is picked up by refreshing it — re-run `marketplace add ./ --scope local`, then `uninstall` + `install` (a same-version reinstall is a no-op and won't re-copy the snapshot).
+- This repo IS the VINE framework — the product lives under `plugins/vine/` (skills, agents, hooks, PROTOCOL.md). Contributors dogfood it by installing the repo as a local plugin: `claude plugin marketplace add ./ --scope local` then `claude plugin install vine@moduloMoments --scope local`. **Dev loop:** a directory-source install is a snapshot copy, so a skill edit is picked up by refreshing it — re-run `marketplace add ./ --scope local`, then `uninstall` + `install` (a same-version reinstall is a no-op and won't re-copy the snapshot).
 - Agent reports are findings-trustworthy, diagnosis-unverified: subagent findings (test counts, file lists, AC checks) are reliable, but re-verify root-cause narratives and load-bearing claims with a cheap direct check before acting on them. (Cycle-0 spike evidence: three accurate reports, one inverted root cause.)
 
 ## Project Conventions
@@ -128,13 +51,6 @@ Feature branches match the VINE project slug: `.vine/projects/<domain>/<feature-
 - State artifact formats are defined in `references/CONTRACTS.md` — commands must produce artifacts that match
 - README is the source of truth for user-facing documentation
 - Markdown should be clean, readable without rendering
-
-### Next-Step Suggestions
-Every phase closes with a completion block (✅ summary → 📋 next step → 🔄/🌱 notes). Emit it as
-plain chat text, not inside a code fence — the **only** fenced block is the runnable `/vine:…`
-command line, so the editor surfaces a copy button for the command alone. In the command files the
-outer four-backtick fence around the template only delimits it for this doc; it is not part of the
-output.
 
 ## Skill Workflows
 
@@ -209,70 +125,12 @@ No separate per-feature route artifact is needed: the payload lives in {the tick
 the `## Validation` block}. The PR that comes back is the result; a human or the `vine-reviewer`
 agent (the cold-reviewer role) reviews it before merge — **the review is the leash.**
 
-## Out-of-Scope Routing
+## Out-of-Scope Routing — repo destination
 
-The standard recommendation whenever work surfaces that's real but **outside the current
-feature's scope** — an unrelated bug, adjacent tech debt, a refactor that would help but isn't
-this feature. Never silently absorb it (scope creep) or silently drop it (lost work). Surface
-the disposition via `AskUserQuestion` (follow the Interaction Constraints), recommending the
-first route unless the engineer signals otherwise:
-
-- **Backlog** *(default)* — capture it where this repo tracks work: the destination is
-  repo-defined (read Team Context / the phase overlay's ticket workflow; this repo uses GitHub
-  Issues, falling back to `gh issue create`, else leave it in the feature artifact). Give it a
-  standalone title and enough cold-pickup context to act on without the VINE artifacts
-  (Reference Legibility, `references/CONTRACTS.md`). Lowest friction; current scope stays intact, and
-  the item earns its own cycle when it's picked up later.
-- **Trigger now (`vine:pair`)** — a small, contained fix you want to handle immediately. Pair is
-  artifact-free (no SPEC needed), so it fits an unrelated discovery as-is; spin a separate
-  session so the current work isn't disturbed.
-- **Drop** — not worth tracking; say so and move on.
-
-Recommend backlog by default; reserve `vine:pair` for the small fix you'll genuinely do now —
-anything larger or fuzzier belongs in the backlog, where it earns its own design cycle. Backlog
-and `vine:pair` are the shipped defaults, not the ceiling: a repo overlay may add routes its
-conventions support — e.g. an autonomous `vine-coder` flow for discoveries that are already
-ticket-ready (bounded, own acceptance criteria, validation contract). VINE owns the recommendation
-and the route set; the routes offered and the backlog destination stay repo-supplied.
-
-## Collaboration Stance
-
-Internal, not shown to the engineer. Apply this stance in all VINE phases:
-
-> "This is a partnership — both sides learn, both sides grow. Three concrete behaviors:
->
-> 1. **Flag your uncertainty.** When you're unsure about a pattern, module, or convention,
->    say so. The engineer is a resource, not an audience.
-> 2. **Grow through the work.** When you use a pattern they might not know, name it as you
->    write. When they correct you, acknowledge what you learned. Growth lives in the
->    narration, not in debriefs.
-> 3. **Let expertise shape engagement.** Their profile level (confident/familiar/learning/new)
->    calibrates your default — but confidence is contextual, so follow their lead."
-
-## Engineer Profile Protocol
-
-After loading overlays, resolve the shared personal root (**Resolving the personal root** in the
-Overlay Loading Protocol) and check for `<personal-root>/.vine.local/PROFILE.md`. If it exists, read
-the Domain Expertise table. Match the feature's domain against the profile's entries.
-
-- **If the domain is in the profile**: Note their level for this session. Use it to calibrate
-  default engagement depth (confident/familiar = concise; learning/new = explain the why).
-- **If the domain is NOT in the profile or no profile exists**: Proceed with default depth.
-  No prompt, no warning.
-
-## Interaction Constraints
-
-Apply these to every `AskUserQuestion` call, in any phase:
-
-- Max 4 questions per call
-- Max 4 options per question — the tool auto-adds an "Other" escape hatch, so don't include
-  one manually
-- Put the recommended option first with "(Recommended)" appended to its label
-- Use `multiSelect: false` for mutually exclusive choices (pick exactly one path)
-- Use `multiSelect: true` for inclusive choices and for batching related yes-no decisions
-- Use short labels (1-5 words) with descriptions carrying the tradeoff context
-- Batch related decisions into one call when possible
-- If a topic needs more than 4 options, split it by category across multiple questions
+The routing pattern itself (backlog / trigger-now / drop) ships in the plugin protocol; this
+repo's backlog destination is **GitHub Issues** — capture via `gh issue create` with a
+standalone title and enough cold-pickup context to act on without the VINE artifacts
+(Reference Legibility, `references/CONTRACTS.md`).
 
 ## Decision Delegation
 <!-- class: policy -->
@@ -285,8 +143,9 @@ changes their behavior — it governs autonomous (`vine-coder`) runs only. `vine
 execute the command files; it applies these classes by judgment to the decisions its work surfaces.
 
 This section is **policy-class**: the personal `.local` layer cannot weaken it (see Overlay
-Precedence). A *repo* overlay can still reclassify a decision by overriding this content — that
-override path is the intended #55 mechanism, available to the team, not the individual.
+Precedence in the plugin protocol). A *repo* overlay can still reclassify a decision by overriding
+this content — that override path is the intended #55 mechanism, available to the team, not the
+individual.
 
 - **`default-able`** — `vine-coder` takes the **recommended option** (the first one, the one
   carrying "(Recommended)") and records it in NAVIGATION.md as a **Decision Taken Autonomously**
@@ -359,4 +218,4 @@ extra:
 - **Testing**: Run VINE phases on real repos to test skill changes
 - **Validation**: Run `/trellis` before submitting PRs to check skill structure and artifact format compliance
 - **Build**: None — pure markdown, no compilation step
-- **Release checklist**: Bump `version` in `plugins/vine/.claude-plugin/plugin.json` (per SemVer), add an entry to `CHANGELOG.md`, merge `develop`→`main`, then trigger the Release workflow (tags `vX.Y.Z` + cuts the GitHub release). Users update via `/plugin update vine`.
+- **Release checklist**: Bump `version` in `plugins/vine/.claude-plugin/plugin.json` (per SemVer), add an entry to `CHANGELOG.md`, merge `develop`→`main`, then trigger the Release workflow (tags `vX.Y.Z` + cuts the GitHub release). Users update via `claude plugin update vine@moduloMoments`.

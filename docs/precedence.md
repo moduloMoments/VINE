@@ -14,7 +14,8 @@ that stack; the fifth (the profile) never overrides anything. One page, base to 
    wins over defaults ▶ │  .vine/context/shared.md                 │  repo overlays
                         │  .vine/context/<phase>.md                │  (tracked, team-shared)
                         ├──────────────────────────────────────────┤
-              base ──▶  │  SKILL.md — the phase command itself     │  ships with the plugin
+              base ──▶  │  SKILL.md + the plugin's PROTOCOL.md     │  ship with the plugin
+                        │  (the phase command + framework rules)   │  (update together)
                         └──────────────────────────────────────────┘
 
     outside the stack:   .vine.local/PROFILE.md   → adjusts explanation depth, overrides nothing
@@ -23,15 +24,21 @@ that stack; the fifth (the profile) never overrides anything. One page, base to 
 
 ## The layers
 
-**1. The command file (`SKILL.md`).** Ships with the plugin; defines the phase's steps and
-defaults. You never edit it — everything below customizes it from the outside.
+**1. The command file (`SKILL.md`) plus the plugin protocol (`PROTOCOL.md`).** Both ship with
+the plugin. The skill defines the phase's steps; the protocol carries the framework machinery
+every phase loads first (overlay loading and precedence rules, personal-root resolution, the
+collaboration stance, interaction constraints, out-of-scope routing). Because both update with
+the plugin, the machinery can never version-skew against the skills. You never edit either —
+everything below customizes them from the outside.
 
 **2. Repo overlays (`.vine/context/shared.md` + `.vine/context/<phase>.md`).** Tracked in the
-repo, created by `/vine:init`. Every phase (except `init` and `help`) loads `shared.md` plus its
+repo, created by `/vine:init` — and deliberately slim: they carry *repo-specific* context only
+(tooling notes, conventions, team context, the validation contract), never framework machinery.
+Every phase (except `init` and `help`) loads `shared.md` plus its
 own phase file; both apply as additional instructions, and **overlay instructions win over
-command defaults when they conflict**. The two repo files don't outrank each other — the phase
-file just scopes its guidance to one phase, so put phase-specific content there and repo-wide
-content in `shared.md`.
+command defaults (skill + protocol) when they conflict**. The two repo files don't outrank each
+other — the phase file just scopes its guidance to one phase, so put phase-specific content
+there and repo-wide content in `shared.md`.
 
 **3. Personal overlays (`.vine.local/context/<name>.md`).** A gitignored mirror of any repo
 overlay (same filename, different root — `.vine.local/context/shared.md` pairs with
@@ -70,7 +77,7 @@ new. It never changes what a phase does, only how much it narrates.
   active navigate session until the feature's NAVIGATION.md is updated. It's enforcement, not
   context — it doesn't read overlays and no overlay can change it.
 
-The canonical wording of the loading and precedence rules lives in your repo's own
-`.vine/context/shared.md` ("Overlay Loading Protocol" and "Overlay Precedence") once
-`/vine:init` has scaffolded it; artifact contracts live in
+The canonical wording of the loading and precedence rules lives in the plugin's
+[PROTOCOL.md](../plugins/vine/PROTOCOL.md) ("Overlay Loading Protocol" and "Overlay
+Precedence"); artifact contracts live in
 [references/CONTRACTS.md](../references/CONTRACTS.md).

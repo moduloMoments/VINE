@@ -6,7 +6,38 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 This set comes out of a clean-environment onboarding audit: repeated cold runs of
 marketplace install → `/vine:init` → `/vine:verify` on a fresh sample repo, fixing what the
-runs surfaced.
+runs surfaced — followed by applying the audit's recommendations in full.
+
+### Changed — framework machinery now ships with the plugin
+- **`plugins/vine/PROTOCOL.md` (the VINE Protocol)** — The framework machinery that init
+  previously copied verbatim into every consuming repo's `shared.md` (~140 lines: overlay
+  loading + precedence, personal-root resolution, collaboration stance, engineer profile
+  protocol, interaction constraints, out-of-scope routing, next-step convention) now ships as
+  a plugin payload file. Every loading skill reads it via `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md`
+  before the repo overlays, so the rules update with the plugin and can never version-skew
+  against the skills — the audit's biggest flagged risk. It also closes the "the
+  suggest-init rule lived in the file that's missing" circularity and makes the #132
+  personal-root resolution rule available even in repos that never ran init.
+- **init generates slim, repo-specific overlays** — The `shared.md` and `.vine/README.md`
+  templates moved out of init's instruction stream into shipped template files
+  (`skills/init/templates/`, referenced via `${CLAUDE_SKILL_DIR}`), and the generated
+  `shared.md` now carries only repo-specific content (~40 lines instead of ~190). A new
+  **Machinery Single-Homing** offer in init's upgrade flow removes the stock machinery
+  sections from pre-protocol installs (customized sections are kept — they legitimately
+  override protocol defaults).
+- **init Step 8 is trigger-gated** — A trigger table opens the migrations/cleanups step; on a
+  fresh repo only two rows can fire, and the rest of the step is skipped unread (cold-run
+  evidence: ~230 lines of no-op trigger-reading on first run). The offer/decline scaffolding
+  (AskUserQuestion shape, decline-is-a-no-op, offer-repeats) is stated once in the preamble.
+- **Over-specification audit applied in full** — All 11 skills tightened per the audit
+  (~440 lines net: repeated rules single-stated, shared.md-restatements retargeted to the
+  protocol, development archaeology removed, resume's duplicate status template folded to
+  delta prose, example bloat trimmed). Skill total: 3,900 → ~3,470 lines, with init 704 → 407.
+  Also fixes evolve's growth-log question listing its recommended option third
+  (recommended-first rule) and genericizes an evolve example that quoted VINE's own dev cycle.
+- **trellis Checks 12/13 follow the machinery** — Check 12 (personal-root #132 guard) now
+  asserts against `plugins/vine/PROTOCOL.md` (and fails if the file is missing); Check 13's
+  shipped-surface scan includes PROTOCOL.md. Script and skill doc updated in sync.
 
 ### Added
 - **First-run init nudge** — `vine:verify` and `vine:pair` now say so once when no `.vine/`

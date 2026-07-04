@@ -210,12 +210,16 @@ migration.)
             └── PAUSE.md           # Session state (ephemeral, mirrors the feature's path)
 ```
 
-`shared.md` is loaded by every phase (conventions, team context, CI commands, the validation
-contract); per-phase overlays exist only where one phase needs something the others don't.
-Overlay instructions take precedence over command defaults when they conflict; your personal
-layer in `.vine.local/context/` overrides preference sections but never `<!-- class: policy -->`
-ones. **The full who-wins-over-what chain — command file, repo overlays, personal overlays,
-profile, and the hook — is one page: [What controls what](docs/precedence.md).**
+The framework's own machinery (overlay loading and precedence rules, the collaboration stance,
+interaction constraints) ships *with the plugin* — its `PROTOCOL.md`, loaded by every phase
+before the overlays — so it updates with the plugin and never goes stale in your repo. Your
+overlays carry only repo-specific context: `shared.md` is loaded by every phase (conventions,
+team context, the validation contract); per-phase overlays exist only where one phase needs
+something the others don't. Overlay instructions take precedence over plugin defaults when they
+conflict; your personal layer in `.vine.local/context/` overrides preference sections but never
+`<!-- class: policy -->` ones. **The full who-wins-over-what chain — plugin, repo overlays,
+personal overlays, profile, and the hook — is one page:
+[What controls what](docs/precedence.md).**
 
 As you complete VINE cycles, `/vine:evolve` suggests updates to your overlay files based on
 what you learn — tools that proved useful, patterns that should be default, agents that

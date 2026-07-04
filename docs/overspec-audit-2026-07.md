@@ -1,6 +1,12 @@
-# Skill over-specification audit — proposed cuts (July 2026)
+# Skill over-specification audit — findings and disposition (July 2026)
 
-**Status: proposal only — nothing here has been applied.** Three independent audit passes
+**Status: applied in full on 2026-07-04.** The in-file cuts landed across all 11 skills; the
+init template extraction shipped via `skills/init/templates/` + `${CLAUDE_SKILL_DIR}`; the
+Step-8 trigger table landed; and the version-skew flag (below) was resolved by moving the
+framework machinery into the plugin-shipped `plugins/vine/PROTOCOL.md` rather than embedding
+it in every consuming repo's shared.md. This page is kept as the finding-level record.
+
+Original audit basis: three independent audit passes
 covered all 11 shipped skills (3,900 lines total), cross-checked against
 `.vine/scripts/trellis-check.sh` so no proposed cut touches a load-bearing anchor, heading,
 or template field. Evidence from live cold-runs of init and verify on a fresh sample repo
@@ -75,17 +81,15 @@ but test a decline path after the edit.
   layer, …") is a gloss of shared.md section names repeated in all 10 loading skills
   (~2–3 lines each). If trimmed, do it as one uniform sweep across all skills or not at all.
 
-## Flagged, no behavior-preserving fix (design decisions, not cuts)
+## Flagged items — final disposition
 
-- **Version-skew in generated shared.md:** ~140 lines of invariant framework machinery
-  (personal-root resolution, Overlay Precedence, Interaction Constraints, Out-of-Scope
-  Routing) are copied verbatim into every consuming repo, where they drift against the
-  plugin as it evolves. Any de-embedding changes generated files → its own design cycle.
-- **evolve line ~346: recommended option listed third** in the engineer-contribution
-  question, conflicting with shared.md's recommended-first rule — pre-existing
-  inconsistency, one-line fix but it changes an option order, so flagged rather than applied.
+- **Version-skew in generated shared.md:** RESOLVED — the machinery moved into the
+  plugin-shipped `PROTOCOL.md`; init now generates a slim repo-specific shared.md, and its
+  upgrade flow offers Machinery Single-Homing to migrate pre-protocol installs.
+- **evolve: recommended option listed third** in the growth-log question: FIXED — reordered
+  recommended-first.
 - **Cross-file operative copies** (e.g. the verification-tier note in both navigate and
-  evolve) are the self-contained-skills convention working as designed — not flagged as cuts.
+  evolve) are the self-contained-skills convention working as designed — left in place.
 
 ## Full per-finding detail
 
