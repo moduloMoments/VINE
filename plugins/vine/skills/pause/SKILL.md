@@ -15,15 +15,20 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/pause.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The pause
-overlay carries pause-specific extensions for this project. If `shared.md` is absent, degrade
-gracefully: read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/pause.md` if they exist and apply them
+per the protocol. The pause overlay carries pause-specific extensions for this project.
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol.
 
 ---
 
@@ -81,9 +86,8 @@ Ask a single question with `freeform: true`:
 ## Write PAUSE.md
 
 Write PAUSE.md to the feature's **mirrored personal path** —
-`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the shared personal root, resolved per
-**Resolving the personal root** in `shared.md`'s Overlay Loading Protocol). Pause state is
-personal, so it lives under `.vine.local/` even for a shared `.vine/projects/` feature:
+`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per Resolving the personal
+root (VINE Protocol); pause state is personal even for a shared `.vine/projects/` feature:
 
 ```markdown
 # Paused: [Feature Name]
@@ -100,10 +104,8 @@ pause state matters.
 
 ## Clear the Active-Session Sentinel
 
-If `.vine/ACTIVE` exists at the repo root, delete it. The sentinel marks an active navigate
-session; pausing ends the session, and a
-lingering sentinel keeps installed hooks firing against work that's no longer active. If the
-file doesn't exist, skip silently — pausing from a non-navigate phase is normal.
+If `.vine/ACTIVE` exists at the repo root, delete it — pausing ends the active session. If
+absent, skip silently.
 
 ## Completion
 

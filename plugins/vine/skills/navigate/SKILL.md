@@ -20,16 +20,22 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/navigate.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The navigate
-overlay carries navigate-specific extensions for this project (agents to invoke after code changes,
-test commands to run, lint/format requirements, review tools to use per domain). If `shared.md` is
-absent, degrade gracefully: read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/navigate.md` if they exist and apply them
+per the protocol. The navigate overlay carries navigate-specific extensions for this project
+(agents to invoke after code changes, test commands to run, lint/format requirements, review
+tools to use per domain).
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Navigate is
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol. Navigate is
 the biggest consumer of the stance — it directly shapes how you work together on every slice.
 
 ## Before You Start
@@ -41,17 +47,13 @@ any code:
 > "I'd recommend Ask permissions mode for navigate so you review each change as we go. It's not
 > required — want to continue in Accept edits?"
 
-Don't block on this. The mode toggle is the engineer's action: you can ask, never switch it
+Don't block on this. The mode toggle is always the engineer's action — ask, never switch it
 yourself or assume it happened. Navigate without review drifts toward autonomous coding with
 extra documentation — fine if the engineer chooses it deliberately, not as a default.
 
-You and the engineer are building a feature together. The landscape is mapped (CONTEXT.md), the
-design is approved (SPEC.md) — now you're implementing it. This isn't autonomous coding. You're
-navigating together: the engineer steers, you execute, and both of you learn along the way.
-
-The key principle: **getting where you're going together, both engaged.** The engineer isn't just
-watching you code. They're making decisions, catching issues you'd miss, learning patterns from
-your approach, and teaching you things about the domain that make the implementation better.
+The landscape is mapped (CONTEXT.md), the design approved (SPEC.md) — now you implement it
+together: the engineer steers, you execute (Collaboration Stance, VINE Protocol). This is not
+autonomous coding.
 
 ## Getting Started
 
@@ -84,17 +86,14 @@ phase: [phase group or slice being started]
 started: [YYYY-MM-DD HH:MM]
 ```
 
-The sentinel is deliberately minimal — feature path, phase, timestamp, nothing else. It is
-not a mini-PAUSE.md; handoff state lives in PAUSE.md. Its only job is to mark "a navigate
-session is active on this feature" so installed native hooks can scope their checks to
-active work. It never leaves the machine.
+Keep it to these three fields — its only job is marking an active session for installed
+hooks; handoff state lives in PAUSE.md. It never leaves the machine.
 
 **Consume any pause state.** If the feature's mirrored personal path
 (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per **Resolving the personal root** in
-`shared.md`'s Overlay Loading Protocol) contains a PAUSE.md, picking the work back up consumes it: surface its
-notes in your starting-point summary, then delete the file.
-A consumed pause must not linger — it would keep suggesting `/vine:resume` for work that has
-already resumed.
+the VINE Protocol) contains a PAUSE.md, picking the work back up consumes it: surface its
+notes in your starting-point summary, then delete the file — a consumed pause must not linger
+suggesting `/vine:resume`.
 
 **Build the live task view (when available).** If native task tools are available in this
 session, create the live view of slice progress (the ephemeral, in-session mirror of the
@@ -152,9 +151,7 @@ interpretation:
 > about [specific aspect] — I haven't seen how this project handles [pattern/convention].]
 > Sound right, or would you go a different direction?"
 
-The self-assessment isn't performative humility — it's an honest signal that helps the
-engineer decide where to focus their attention. If you're genuinely confident about
-everything, don't manufacture doubt.
+If you're genuinely confident about everything, don't manufacture doubt.
 
 After the preview, use `AskUserQuestion` for the gearing decision:
 
@@ -165,8 +162,7 @@ After the preview, use `AskUserQuestion` for the gearing decision:
 - **"Walk me through this"** description: "Show me each step — I want to stay close to the implementation (pairs with Ask permissions)"
 
 **Gearing:** The engineer's choice sets the engagement level for this slice *and* the
-permission mode that fits it. Recommend the matching mode — the toggle is always the
-engineer's action; you can suggest it, never flip it or assume it happened:
+permission mode that fits it — recommend the matching mode:
 
 - **"Free climb"**: The engineer trusts the approach and wants to move faster. Recommend
   **Accept edits** for this slice so edits land without a prompt each
@@ -179,10 +175,8 @@ engineer's action; you can suggest it, never flip it or assume it happened:
   3c. The engineer wants to stay close to the implementation — either because the code is
   unfamiliar, the approach is novel, or they want to learn from the process.
 
-Use the profile's expertise level to inform which option you recommend (confident/familiar
-→ default to "free climb"; learning/new → default to "walk me through this") but the
-engineer always chooses. Confidence depends on both domain expertise and the specific code
-being touched.
+The engineer always chooses — confidence depends on both domain expertise and the specific
+code being touched.
 
 Wait for confirmation or redirection. This is the "steering" — the engineer might say
 "actually, let's use the existing helper for that" or "be careful, that module has a
@@ -196,13 +190,8 @@ As you write code, explain your reasoning for non-obvious decisions:
 > payment providers. This way adding a new provider is just a new class, no changes to
 > the orchestration layer."
 
-When you use a pattern the engineer might not know, name it and briefly say why it fits.
-When the engineer corrects your approach, acknowledge what you learned — not just the
-change you made — and capture it in NAVIGATION.md's learnings section.
-
-This serves two purposes: the engineer can catch misunderstandings early, and they learn
-patterns they might apply elsewhere. This is the "two-way" part — you're not just writing
-code, you're transferring knowledge.
+Apply stance behavior 2 (VINE Protocol): name patterns as you write, acknowledge corrections
+— and capture what you learned in NAVIGATION.md's learnings section.
 
 **c. Pause for review after each meaningful change** (skip in "free climb" mode)
 
@@ -220,7 +209,7 @@ When you encounter something not covered by the spec (and you will), use `AskUse
 to present the options interactively. Never print markdown option lists for the engineer to
 respond to.
 
-Follow the Interaction Constraints from `.vine/context/shared.md` for every `AskUserQuestion` call.
+Follow the Interaction Constraints from the VINE Protocol for every `AskUserQuestion` call.
 
 The engineer decides. You document each decision in NAVIGATION.md.
 
@@ -249,10 +238,9 @@ failures to the next slice.
 **b. Update NAVIGATION.md**
 
 Before committing, update the slice's entry in `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md`
-with the full journal record. This is a prerequisite for committing — update the journal
-first, every time. It's mechanically enforced when the scaffold hooks are installed:
-`journal-check.sh` blocks `git commit` while NAVIGATION.md is older than the last commit. Without the scaffold, honoring the ordering is on you — never
-stronger than that. For each slice, capture:
+with the full journal record. This is a prerequisite for committing — journal first, every
+time (the journal-check hook enforces it when installed; without it, it's on you). For each
+slice, capture:
 
 ```markdown
 ### Slice N: [Name] — [Status: In Progress / Complete]
@@ -279,10 +267,8 @@ schema. Use the labels verbatim: keep the `Slice N:` prefix, the literal
 Resume, pause, and artifact-format validation locate entries by these strings, so a custom heading
 or relabeled field breaks the chain silently.
 
-`**Gear**` records the gearing choice you'd otherwise lose to prose. Lead `**Validation**` with a
-bare `pass`/`fail` token; a slice that lands in more than one commit lists them `+`-separated
-(`hashA + hashB`) in the single `**Commit**` field. An autonomous `vine-coder` run adds optional
-fields and writes the journal itself; navigate never runs unattended.
+An autonomous `vine-coder` run adds optional fields and writes the journal itself; navigate
+never runs unattended.
 
 **c. Commit the slice**
 
@@ -291,9 +277,7 @@ Stage the changed files and commit with this format. **When this feature directo
 bundle this slice's artifact updates into the same commit so the tracked spec and journal never lag
 the code: the slice's NAVIGATION.md journal entry plus any SPEC.md deviation annotations you made
 during the slice (step 6). **When the feature directory is gitignored** — a local project under
-`.vine.local/projects/`, which is fine — commit code only; the
-journal-before-commit guarantee compares file modification time, not commit contents, so it holds
-either way. Never force-add a gitignored artifact.
+`.vine.local/projects/`, which is fine — commit code only. Never force-add a gitignored artifact.
 
 ```
 <slice-name>: <1-2 sentence summary>
@@ -312,10 +296,8 @@ hash. When task tools are available, `TaskUpdate` this slice's task to `complete
 commit lands — the live view follows the journal, so it flips only after the durable record is
 written.
 
-**Important:** Review depth is set by the engineer's gear choice: in Ask permissions they
-review each change before it lands; in free climb they review at the slice boundary. Either
-way the commit follows validation and a journal update — structured committing, not
-autonomous committing.
+**Important:** Either gear, the commit follows validation and a journal update — structured
+committing, not autonomous committing.
 
 ### 5. Handle Blockers
 
@@ -323,12 +305,9 @@ When you hit something unexpected:
 
 **If it's a quick question**: Ask the engineer directly. They probably know the answer.
 
-**If it's a significant blocker**: Stop, document it, and use `AskUserQuestion` to present
-options. Describe the blocker clearly, then offer concrete resolution paths:
-
-- Use `multiSelect: false` with up to 4 options grounded in the specific situation
-- Put the recommended option first with "(Recommended)" suffix
-- Common patterns: "Mock and defer", "Block and resolve", "Work around (tech debt)", "Descope"
+**If it's a significant blocker**: Stop and document it. Describe the blocker, then offer
+concrete resolution paths via `AskUserQuestion` per the Interaction Constraints — common
+patterns: "Mock and defer", "Block and resolve", "Work around (tech debt)", "Descope".
 
 **If it reveals a spec gap**: Note it. Sometimes verify and inquire missed something. That's
 normal. Make the tactical decision together and note it for vine:evolve to capture.
@@ -364,7 +343,7 @@ After each slice is validated and committed:
 5. Decide how to proceed. Offer three paths via `AskUserQuestion` — **continue in this
    session**, **`/clear` and continue fresh**, or **pause**. The `/clear` path means run
    `/clear` then re-invoke `/vine:navigate <domain>/<feature-slug>`, which auto-resumes at the
-   next not-Complete slice — navigate rebuilds state from NAVIGATION.md + SPEC.md (Slices 15–16),
+   next not-Complete slice — navigate rebuilds state from NAVIGATION.md + SPEC.md,
    so a mid-phase clear loses nothing. **Surface it selectively**: mark "`/clear` and continue
    fresh" as Recommended only when the session context has grown heavy (several slices deep, or a
    lot of exploration this session) or the next slice is substantially independent of what you
@@ -381,7 +360,7 @@ After each slice is validated and committed:
 NAVIGATION.md is already current (you updated it at the slice commit), so nothing extra to write —
 the re-invoked `/vine:navigate` rebuilds context from it. Leave `.vine/ACTIVE` in place; the next
 invocation refreshes its `phase` line. Then tell the engineer the exact command to run — the
-message, followed by the command in its own fenced code block so it's copy-pastable:
+message, followed by the command in its own fenced block:
 
 > "Slice N committed. Run `/clear`, then /vine:navigate — it'll pick up at Slice N+1 with a
 > fresh context. NAVIGATION.md carries everything forward."
@@ -402,7 +381,7 @@ stopping. This ensures the next session (or vine:resume) has structured handoff 
 ```
 
 After writing Remaining Work, suggest running `/vine:pause` to capture the engineer's notes —
-the message, followed by the command in its own fenced code block so it's copy-pastable:
+the message, followed by the command in its own fenced block:
 
 > "NAVIGATION.md updated with remaining work. If you want to capture any personal notes
 > for when you come back, run /vine:pause before closing the session."
@@ -446,12 +425,9 @@ phase group boundary before showing the completion block:
    - **Anything else the report surfaces**: fix it within the current session before
      moving on — don't carry a failing phase group into a PR.
 
-   This is lighter than evolve's full pass — no deviation review, no follow-up triage, no
-   handoff prep — but thorough enough that a PR opened after this step is shippable.
-
-   > **Verification tiers:** This is the phase-group tier; evolve runs the full-feature
-   > tier. The two tiers are intentionally asymmetric; the `vine-verification` agent
-   > owns the checklist itself.
+   This is the phase-group tier (evolve runs the full-feature tier; the `vine-verification`
+   agent owns the checklist). Lighter than evolve's pass — but a PR opened after this step
+   should be shippable.
 
 2. Update the completed phase's row in PROJECT-MAP.md — change status from `🚧 Active` to
    `✅ Shipped` (or `✅ Complete` if no PR yet).
@@ -489,18 +465,11 @@ the sentinel's `phase` line instead. Then show the phase group completion block:
 ---
 ```
 
-Between groups is a great time for the engineer to review the commit history and take a break.
-The work so far should stand on its own.
-
 ## Important Principles
-
-**Respect the engineer's expertise — and flag your own gaps.** They know this codebase better
-than you. When they suggest a different approach, explore it seriously. When you're unsure,
-say so — the engineer is a resource, not an audience.
 
 **Stay in scope.** If you notice something that should be fixed but isn't in the spec, don't
 fix it inline. Note it in NAVIGATION.md under "discovered items," then apply the **Out-of-Scope
-Routing** pattern from `.vine/context/shared.md` — recommend backlog by default, or, for a small
+Routing** pattern from the VINE Protocol — recommend backlog by default, or, for a small
 fix the engineer wants handled now, a separate `vine:pair` session so the current slice stays
 focused.
 
@@ -518,11 +487,8 @@ Read NAVIGATION.md and verify each slice entry has:
 - **Acceptance criteria**: At least one criterion checked (either `[x]` or `[ ]` with reason)
 - **Learnings**: Not empty — at minimum "None" is acceptable, but blank is not
 - **Deviation closure**: For every slice whose "Deviations from spec" is not "None" (or
-  blank), confirm SPEC.md carries the matching annotation step 6 requires — a strikethrough
-  or addendum in the affected section. This is a lookup, not a judgment call: like a missing
-  commit hash, a recorded deviation with no SPEC.md annotation is a gap. Grep SPEC.md for the
-  deviation's subject if you're unsure it's there. The point is to never leave evolve
-  cross-referencing two documents to reconstruct what changed.
+  blank), confirm SPEC.md carries the matching step-6 annotation. A recorded deviation with
+  no SPEC.md annotation is a gap — grep SPEC.md for the deviation's subject if unsure.
 
 If any slice has gaps, list them:
 
@@ -559,8 +525,7 @@ conversation output and doesn't survive `/clear` — anything evolve should act 
 in NAVIGATION.md (a slice's Learnings or the Remaining Work handoff context), not just
 the retro.
 
-Then present the completion block per the Next-Step Suggestions convention in shared.md —
-plain chat text, with only the runnable `/vine:…` command line in a fenced block:
+Then present the completion block per the Next-Step Suggestions convention (VINE Protocol):
 
 ````
 ---

@@ -6,133 +6,40 @@ VINE is a command chain for AI-assisted feature development in established codeb
 
 > **Early adopter alert.** VINE is in active development. The commands work and we use them daily, but expect rough edges. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get involved, or open a [Discussion](../../discussions) if something breaks or feels off.
 
-## Philosophy
+## Quick Start
 
-Most AI coding frameworks optimize for speed. VINE optimizes for **three things growing together**:
-
-1. **The product** — features built on solid understanding, not guesswork
-2. **The agent** — Claude gets smarter about your codebase with every cycle
-3. **The user** — the engineer learns patterns and deepens expertise alongside the AI
-
-VINE is for engineers who want to stay engaged with their code, not delegate it away. The AI accelerates your work; it doesn't replace your judgment. Every phase is a partnership — Claude flags its own uncertainty, names patterns as it uses them, and calibrates to your expertise. You steer, it executes, and both sides learn.
-
-## The Four Phases
-
-```
-vine:verify  →  vine:inquire  →  vine:navigate  →  vine:evolve
-   📡              📐               🧭                🌱
- Explore         Design           Build            Grow
-
-         ╰─────── vine:pair ───────╯
-                     🤝
-                Quick changes
-```
-
-### vine:verify — Context Building Spike
-Research the codebase together. The engineer brings tribal knowledge, edge cases, and "the weird stuff." Claude reads broadly and asks questions. Together you produce a CONTEXT.md that captures the real landscape — not just what the code says, but what the docs don't.
-
-**Output:** `.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
-
-### vine:inquire — Feature Specification
-Design the feature on top of verified context. Discuss architecture, weigh tradeoffs (always 2-3 options), and get explicit human approval on every decision. Layer the spec on the foundation you built in verify. When the draft is ready, inquire presents SPEC.md as a clickable link and gates completion on your explicit sign-off — approve to hand off to navigate, or request changes to iterate. (Verify presents CONTEXT.md the same way on creation. Auto-opening the file is optional repo wiring, never hardcoded — the clickable link is the portable default.)
-
-**Output:** `.vine/projects/<domain>/<feature-slug>/SPEC.md`
-
-### vine:navigate — Guided Implementation
-Build the feature together. For each slice, choose your engagement level: **"free climb"** (Claude cranks, you review the diff at the slice boundary — pairs with **auto-accept-edits**) or **"walk me through this"** (full narration, pauses for feedback — pairs with **approve-edits**). Claude recommends the permission mode that matches your chosen gear, but flipping the toggle is always your move. Claude flags its own uncertainty in the preview so you know where to focus. Every decision is documented, every slice is committed with its acceptance criteria. When your harness provides native task tools, navigate also keeps an ephemeral live view of slice progress that mirrors NAVIGATION.md — a derived view, always rebuilt from the journal, never the reverse.
-
-**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + committed changes (one commit per validated slice)
-
-### vine:evolve — Triple Evolution
-Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, new commands). User growth (knowledge gained, areas to explore).
-
-**Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
-
-## Multi-PR Features
-
-For features that span multiple PRs, VINE tracks progress across phase groups with milestone
-status. When `vine:inquire` detects a larger feature (>4 slices or phase groups), it offers to
-set up multi-PR tracking in `PROJECT-MAP.md`. Each phase group maps to a milestone with its own
-PR, and `vine:navigate` delegates a lightweight verification pass to its verification agent
-before suggesting a PR at each phase boundary.
-
-`vine:evolve` reviews prior PRs via `gh` CLI to surface reviewer feedback that may affect
-cross-phase integration. `gh` CLI is optional — evolve works without it but can't check PR
-status or review comments.
-
-## Quick Mode: vine:pair
-
-Not every change needs the full cycle. `vine:pair` is a lightweight command for quick fixes,
-small features, and minor refactors — VINE's guided narration without the artifact ceremony.
-
-```
-> /vine:pair src/auth.ts
-> /vine:pair "fix the retry logic in the payments module"
-```
-
-vine:pair reads the target file and its immediate neighbors, asks what you want to change,
-implements with brief narration, and produces a single commit. No CONTEXT.md, no SPEC.md —
-just you and Claude working together on a small change.
-
-If the work grows beyond a quick fix, pair suggests escalating to the full cycle.
-
-## Session Management: vine:pause + vine:resume + vine:status
-
-Long-running features span multiple sessions. `vine:pause` captures where you stopped and why,
-`vine:resume` picks it back up, and `vine:status` gives a quick progress check.
-
-```
-> /vine:pause                    # saves session state + your notes to PAUSE.md
-> /vine:resume                   # shows status, progress, and recommends next command
-> /vine:status                   # quick read-only progress check
-```
-
-vine:pause detects your current phase from artifacts, asks for free-form notes, and writes a
-lightweight `PAUSE.md` to the feature directory. vine:resume reads it (plus existing artifacts)
-to tell you exactly where you are — no re-reading everything yourself.
-
-vine:status is lighter than resume — it reads `PROJECT-MAP.md` (or detects artifacts) and
-displays progress without loading session state or recommending next steps. Useful for a quick
-check or when deciding which feature to pick up next.
-
-Resume also works without PAUSE.md by reconstructing state from artifacts alone. PAUSE.md adds
-your notes and explicit phase tracking, but it's not required.
-
-## Key Principles
-
-**Partnership, not delegation.** Claude flags its own uncertainty, names patterns as it uses them, and acknowledges when the engineer corrects its approach. The engineer steers, Claude executes, and both sides learn through the work — not in retrospective debriefs.
-
-**Approve-edits mode recommended.** Run with approve-edits enabled so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Navigate's per-slice gearing maps to a recommended mode: **"free climb"** → switch to **auto-accept-edits** yourself and back at the slice boundary; **"walk me through this"** → stay in **approve-edits** so each edit lands under your review. Speed when you trust the approach, control when you don't. (See [Enforced vs Advisory](#enforced-vs-advisory) for which guarantees are mechanical.)
-
-**Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
-
-**Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought (and mechanically [enforced by the plugin's journal-check hook](#enforced-vs-advisory)).
-
-**Chain, don't rush.** Each phase suggests the next step but doesn't auto-trigger. The engineer decides when to move forward. Each phase completion suggests a fresh session for the next phase — state flows through `.vine/` files, not chat context. Navigate can suggest a `/clear` between slices too, selectively — recommended when context has grown heavy or the next slice is independent; re-invoking `/vine:navigate` auto-resumes at the next unfinished slice, with the journal carrying everything forward.
-
-**Evolve everything.** Every feature is an opportunity to improve the product, make the agent smarter, and help the engineer grow. The retro block at the end of each phase captures all three.
-
-## Installation
-
-VINE installs as a native Claude Code plugin from the moduloMoments marketplace:
+VINE installs as a native Claude Code plugin:
 
 ```bash
 claude plugin marketplace add moduloMoments/VINE
 claude plugin install vine@moduloMoments
 ```
 
-This brings the full product — all 11 phases (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:optimize`, `/vine:help`), the two agents the phases call (codebase exploration + verification), and the journal-check hook — available in every project. Each phase invokes in colon form: `/vine:<name>`. (The autonomous-delegation agents are repo-resident, not shipped by default — see [Autonomous delegation](#autonomous-delegation).)
+Then, in a Claude Code session in your repo:
+
+```
+> /vine:init                # once per repo — scaffolds .vine/ context overlays
+> /vine:verify I need to add webhook support to the payments service
+```
+
+That's the whole on-ramp. **Start with `verify` — the rest finds you.** Every phase ends by
+suggesting the exact next command to run, so you never need to memorize the command list:
+verify hands you to inquire, inquire to navigate, navigate to evolve. (Skipped `init`? Verify
+still works and will suggest it.)
+
+The install brings all 11 phases (`/vine:init`, `/vine:verify`, `/vine:inquire`, `/vine:navigate`, `/vine:evolve`, `/vine:pair`, `/vine:pause`, `/vine:resume`, `/vine:status`, `/vine:optimize`, `/vine:help`), the two agents the phases call (codebase exploration + verification), and the journal-check hook — available in every project.
 
 ### Updating
 
-```
-/plugin update vine
+```bash
+claude plugin update vine@moduloMoments
 ```
 
-This pulls the latest released version. Your `.vine/` directory (context overlays, artifacts) and the
-personal `.vine.local/` root (profile, personal overlays) are untouched — only the plugin is updated.
-Check the [CHANGELOG](CHANGELOG.md) to see what's new, or watch
-[releases](https://github.com/moduloMoments/VINE/releases) on GitHub for notifications.
+(Or `/plugin` inside a session to manage plugins interactively. The bare name `vine` won't
+resolve — include the `@moduloMoments` marketplace suffix.) Your `.vine/` directory (context
+overlays, artifacts) and the personal `.vine.local/` root (profile, personal overlays) are
+untouched — only the plugin is updated. Check the [CHANGELOG](CHANGELOG.md) to see what's new,
+or watch [releases](https://github.com/moduloMoments/VINE/releases) on GitHub.
 
 ### Migrating from npx
 
@@ -169,24 +76,92 @@ VINE works without `gh` CLI, but `vine:evolve` uses it to review prior PRs in mu
 and to suggest opening PRs at the end of a cycle. Install from [cli.github.com](https://cli.github.com)
 if you want those capabilities.
 
-## Usage
-
-### First time in a repo
-
-Run `/vine:init` to scaffold context overlays. This discovers your repo's tools, agents, CI, and
-conventions, then generates `.vine/context/` with pre-filled templates:
+## The Core Loop
 
 ```
-> /vine:init
+vine:verify  →  vine:inquire  →  vine:navigate  →  vine:evolve
+   📡              📐               🧭                🌱
+ Explore         Design           Build            Grow
 ```
 
-### Start a feature
+One feature, four phases, each handing verified state to the next through files in
+`.vine/projects/` — so each phase can start in a fresh session with nothing lost.
+
+### vine:verify — Context Building Spike
+
+**This is where every feature starts.** Research the codebase together. The engineer brings tribal knowledge, edge cases, and "the weird stuff." Claude reads broadly and asks questions. Together you produce a CONTEXT.md that captures the real landscape — not just what the code says, but what the docs don't. If the work turns out simpler than expected, verify says so and offers to drop into lightweight `vine:pair` instead of the full cycle.
+
+**Output:** `.vine/projects/<domain>/<feature-slug>/CONTEXT.md`
+
+### vine:inquire — Feature Specification
+
+Design the feature on top of verified context. Discuss architecture, weigh tradeoffs (always 2-3 options), and get explicit human approval on every decision. When the draft is ready, inquire presents SPEC.md as a clickable link and gates completion on your explicit sign-off — approve to hand off to navigate, or request changes to iterate.
+
+**Output:** `.vine/projects/<domain>/<feature-slug>/SPEC.md`
+
+### vine:navigate — Guided Implementation
+
+Build the feature together. For each slice, choose your engagement level: **"free climb"** (Claude cranks, you review the diff at the slice boundary) or **"walk me through this"** (full narration, pauses for feedback). Claude flags its own uncertainty in the preview so you know where to focus. Every decision is documented, every slice is committed with its acceptance criteria.
+
+**Output:** `.vine/projects/<domain>/<feature-slug>/NAVIGATION.md` + committed changes (one commit per validated slice)
+
+### vine:evolve — Triple Evolution
+
+Verify against acceptance criteria, then drive three evolutions. Product quality (verification, PR prep). Agent capability (CLAUDE.md updates, overlay improvements). User growth (knowledge gained, areas to explore).
+
+**Output:** `.vine/projects/<domain>/<feature-slug>/EVOLUTION.md` + handoff package
+
+## When You Need Them
+
+The rest of VINE stays out of the way until a phase suggests it or you go looking:
+
+**`vine:pair` — quick changes.** Not every change needs the full cycle. Pair reads the target
+file and its neighbors, asks what you want, implements with brief narration, and produces a
+single commit. No CONTEXT.md, no SPEC.md. If the work grows, pair suggests escalating to the
+full cycle — and verify's scope check suggests de-escalating to pair.
 
 ```
-> /vine:verify I need to add webhook support to the payments service
+> /vine:pair src/auth.ts
+> /vine:pair "fix the retry logic in the payments module"
 ```
 
-At the end of each phase, you'll see a suggested next step. Run it when you're ready.
+**`vine:pause` / `vine:resume` / `vine:status` — session management.** Long features span
+sessions. Pause captures where you stopped and why (a lightweight PAUSE.md with your notes);
+resume reads it plus the artifacts to tell you exactly where you are; status is a quick
+read-only progress check. Resume also works without a PAUSE.md by reconstructing state from
+artifacts alone.
+
+**Multi-PR features.** When `vine:inquire` detects a larger feature (>4 slices or phase
+groups), it offers milestone tracking in `PROJECT-MAP.md` — each phase group maps to its own
+PR, with a lightweight verification pass at each boundary. `vine:evolve` reviews prior PRs via
+`gh` CLI to surface feedback affecting cross-phase integration.
+
+**`vine:optimize` / `vine:help` — maintenance and reference.** Optimize tunes your overlay
+files and workflow chains as your repo's tooling evolves; help lists every command with usage.
+
+## Philosophy
+
+Most AI coding frameworks optimize for speed. VINE optimizes for **three things growing together**:
+
+1. **The product** — features built on solid understanding, not guesswork
+2. **The agent** — Claude gets smarter about your codebase with every cycle
+3. **The user** — the engineer learns patterns and deepens expertise alongside the AI
+
+VINE is for engineers who want to stay engaged with their code, not delegate it away. The AI accelerates your work; it doesn't replace your judgment. Every phase is a partnership — Claude flags its own uncertainty, names patterns as it uses them, and calibrates to your expertise. You steer, it executes, and both sides learn.
+
+### Key Principles
+
+**Partnership, not delegation.** Claude flags its own uncertainty, names patterns as it uses them, and acknowledges when the engineer corrects its approach. The engineer steers, Claude executes, and both sides learn through the work — not in retrospective debriefs.
+
+**Ask permissions mode recommended.** Run with edit approval on so you review every change as it happens. VINE will suggest it, but the mode toggle is always yours — Claude can't switch permission modes for you. Navigate's per-slice gearing maps to a recommended mode: **"free climb"** → switch to **auto-accept-edits** yourself and back at the slice boundary; **"walk me through this"** → stay in **approve-edits** so each edit lands under your review. (See [Enforced vs Advisory](#enforced-vs-advisory) for which guarantees are mechanical.)
+
+**Human decides, always.** Every design choice, tradeoff, and priority call is made by the engineer. Claude presents options, the human chooses.
+
+**Commit per slice.** Each validated slice gets committed with its acceptance criteria and its NAVIGATION.md journal entry — the journal update is a prerequisite for committing, not an afterthought (and mechanically [enforced by the plugin's journal-check hook](#enforced-vs-advisory)).
+
+**Chain, don't rush.** Each phase suggests the next step but doesn't auto-trigger. The engineer decides when to move forward. Each phase completion suggests a fresh session for the next phase — state flows through `.vine/` files, not chat context.
+
+**Evolve everything.** Every feature is an opportunity to improve the product, make the agent smarter, and help the engineer grow. The retro block at the end of each phase captures all three.
 
 ## Context Overlays
 
@@ -235,32 +210,16 @@ migration.)
             └── PAUSE.md           # Session state (ephemeral, mirrors the feature's path)
 ```
 
-### shared.md
-
-Loaded by every VINE phase. Contains repo-wide context:
-
-- Available slash commands and agents with descriptions
-- Project conventions (testing, linting, naming, architecture patterns)
-- Team context (ownership, review patterns, external integrations)
-- CI/CD commands (how to run tests, lint, build)
-
-### Per-phase overlays
-
-Only created when there's something phase-specific to add:
-
-| File | Example content |
-|------|----------------|
-| `verify.md` | Key areas to always explore, domain-specific questions |
-| `inquire.md` | Preferred architecture patterns, design review checklists |
-| `navigate.md` | Agents to run after code changes, test commands per domain |
-| `evolve.md` | PR creation workflow, CI validation, issue tracker integration |
-| `pair.md` | Test commands, lint/format requirements, commit conventions for small changes |
-
-### How overlays load
-
-Each VINE command checks for `.vine/context/shared.md` and `.vine/context/<phase>.md` before
-starting. If found, the contents are applied as additional instructions on top of the base
-command. Overlay instructions take precedence when they conflict with defaults.
+The framework's own machinery (overlay loading and precedence rules, the collaboration stance,
+interaction constraints) ships *with the plugin* — its `PROTOCOL.md`, loaded by every phase
+before the overlays — so it updates with the plugin and never goes stale in your repo. Your
+overlays carry only repo-specific context: `shared.md` is loaded by every phase (conventions,
+team context, the validation contract); per-phase overlays exist only where one phase needs
+something the others don't. Overlay instructions take precedence over plugin defaults when they
+conflict; your personal layer in `.vine.local/context/` overrides preference sections but never
+`<!-- class: policy -->` ones. **The full who-wins-over-what chain — plugin, repo overlays,
+personal overlays, profile, and the hook — is one page:
+[What controls what](docs/precedence.md).**
 
 As you complete VINE cycles, `/vine:evolve` suggests updates to your overlay files based on
 what you learn — tools that proved useful, patterns that should be default, agents that
@@ -289,15 +248,10 @@ The staleness check compares the journal's file modification time against the la
 artifacts or keeps them gitignored and personal.
 
 **Installing**: nothing to install — the hook ships *with the plugin* and is wired
-automatically through its `hooks/hooks.json` (resolved under `${CLAUDE_PLUGIN_ROOT}`), so
-installing VINE turns it on. (Plugin users get it default-on; the earlier npx installer
-offered it opt-in via `/vine:init` instead.) It still scopes itself to active sessions via
-the sentinel, so it never touches non-VINE work, and every guarantee below stays advisory.
-
-Lint and test enforcement are deliberately not part of the scaffold: when to run a
-project's checks depends entirely on its tooling, so that decision stays with the repo —
-native Claude Code hooks in `.claude/settings.json` are available directly to teams that
-want them.
+automatically, so installing VINE turns it on. Lint and test enforcement are deliberately
+not part of the scaffold: when to run a project's checks depends entirely on its tooling,
+so that decision stays with the repo — native Claude Code hooks in `.claude/settings.json`
+are available directly to teams that want them.
 
 ### Advisory — always
 
