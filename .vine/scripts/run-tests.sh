@@ -94,7 +94,35 @@ check "trellis-gate: edit newer than stamp -> block (exit 2)" 2 $?
 printf '%s' "$payload_ls" | sh "$G" >/dev/null 2>&1
 check "trellis-gate: non-commit -> allow" 0 $?
 
-rm -rf "$T"
+# Foreign-repo commits are none of the gate's business: the gate resolves the
+# repo the git command targets and passes when it isn't this one. $T is still
+# dirty with no fresh stamp here, so any block below would come from
+# misattributing the target.
+F=$(mktemp -d)
+( cd "$F" && git init -q . && git commit -q --allow-empty -m init )
+
+printf '{"tool_input":{"command":"git commit -m x"},"cwd":"%s"}' "$F" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: payload cwd in foreign repo -> allow" 0 $?
+
+printf '{"tool_input":{"command":"git -C %s commit -m x"}}' "$F" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: git -C foreign repo -> allow" 0 $?
+
+printf '{"tool_input":{"command":"cd %s && git commit -m x"}}' "$F" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: cd foreign repo && commit -> allow" 0 $?
+
+printf '{"tool_input":{"command":"git commit -m x"},"cwd":"%s"}' "$T" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: dirty skills, explicit cwd in this repo -> block (exit 2)" 2 $?
+
+# Linked worktrees are the same repo — dirty skills there still gate, against
+# the worktree's own change set and stamp.
+W="$F/wt"
+( cd "$T" && git worktree add -q "$W" -b wt-test 2>/dev/null )
+echo edit >> "$W/plugins/vine/skills/test/SKILL.md"
+printf '{"tool_input":{"command":"cd %s && git commit -m x"}}' "$W" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: dirty skills in linked worktree of this repo -> block (exit 2)" 2 $?
+( cd "$T" && git worktree remove -f "$W" 2>/dev/null )
+
+rm -rf "$F" "$T"
 
 # ---------- main-guard.sh ----------
 M="$SCRIPTS_DIR/main-guard.sh"
