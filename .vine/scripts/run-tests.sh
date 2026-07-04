@@ -94,7 +94,35 @@ check "trellis-gate: edit newer than stamp -> block (exit 2)" 2 $?
 printf '%s' "$payload_ls" | sh "$G" >/dev/null 2>&1
 check "trellis-gate: non-commit -> allow" 0 $?
 
-rm -rf "$T"
+# Foreign-repo commits are none of the gate's business: the gate resolves the
+# repo the git command targets and passes when it isn't this one. $T is still
+# dirty with no fresh stamp here, so any block below would come from
+# misattributing the target.
+F=$(mktemp -d)
+( cd "$F" && git init -q . && git commit -q --allow-empty -m init )
+
+printf '{"tool_input":{"command":"git commit -m x"},"cwd":"%s"}' "$F" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: payload cwd in foreign repo -> allow" 0 $?
+
+printf '{"tool_input":{"command":"git -C %s commit -m x"}}' "$F" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: git -C foreign repo -> allow" 0 $?
+
+printf '{"tool_input":{"command":"cd %s && git commit -m x"}}' "$F" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: cd foreign repo && commit -> allow" 0 $?
+
+printf '{"tool_input":{"command":"git commit -m x"},"cwd":"%s"}' "$T" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: dirty skills, explicit cwd in this repo -> block (exit 2)" 2 $?
+
+# Linked worktrees are the same repo — dirty skills there still gate, against
+# the worktree's own change set and stamp.
+W="$F/wt"
+( cd "$T" && git worktree add -q "$W" -b wt-test 2>/dev/null )
+echo edit >> "$W/plugins/vine/skills/test/SKILL.md"
+printf '{"tool_input":{"command":"cd %s && git commit -m x"}}' "$W" | sh "$G" >/dev/null 2>&1
+check "trellis-gate: dirty skills in linked worktree of this repo -> block (exit 2)" 2 $?
+( cd "$T" && git worktree remove -f "$W" 2>/dev/null )
+
+rm -rf "$F" "$T"
 
 # ---------- main-guard.sh ----------
 M="$SCRIPTS_DIR/main-guard.sh"
@@ -108,15 +136,49 @@ check "main-guard: commit on main -> block (exit 2)" 2 $?
 printf '%s' "$payload_ls" | sh "$M" >/dev/null 2>&1
 check "main-guard: non-commit on main -> allow" 0 $?
 
+# Foreign-repo commits are none of the guard's business: the guard resolves
+# the repo the git command targets and passes when it isn't this one. $T is
+# still on main here (and so is $F), so any block below would come from
+# misattributing the target.
+F=$(mktemp -d)
+( cd "$F" && git init -q -b main . && git commit -q --allow-empty -m init )
+
+printf '{"tool_input":{"command":"git commit -m x"},"cwd":"%s"}' "$F" | sh "$M" >/dev/null 2>&1
+check "main-guard: payload cwd in foreign repo, this repo on main -> allow" 0 $?
+
+printf '{"tool_input":{"command":"git -C %s commit -m x"}}' "$F" | sh "$M" >/dev/null 2>&1
+check "main-guard: git -C foreign repo, this repo on main -> allow" 0 $?
+
+printf '{"tool_input":{"command":"cd %s && git commit -m x"}}' "$F" | sh "$M" >/dev/null 2>&1
+check "main-guard: cd foreign repo && commit, this repo on main -> allow" 0 $?
+
+printf '{"tool_input":{"command":"git commit -m x"},"cwd":"%s"}' "$T" | sh "$M" >/dev/null 2>&1
+check "main-guard: explicit cwd in this repo on main -> block (exit 2)" 2 $?
+
+# Linked worktrees are the same repo but carry their own HEAD — the guard
+# judges the branch of the worktree the commit lands in, not the root's.
+W="$F/wt"
+( cd "$T" && git worktree add -q "$W" -b wt-feat 2>/dev/null )
+printf '{"tool_input":{"command":"cd %s && git commit -m x"}}' "$W" | sh "$M" >/dev/null 2>&1
+check "main-guard: worktree on feature branch, root on main -> allow" 0 $?
+( cd "$T" && git worktree remove -f "$W" 2>/dev/null )
+
 ( cd "$T" && git checkout -q -b feat )
 printf '%s' "$payload_commit" | sh "$M" >/dev/null 2>&1
 check "main-guard: commit on feature branch -> allow" 0 $?
+
+# Converse worktree case: root on a feature branch, linked worktree on main.
+W="$F/wt-main"
+( cd "$T" && git worktree add -q "$W" main 2>/dev/null )
+printf '{"tool_input":{"command":"git -C %s commit -m x"}}' "$W" | sh "$M" >/dev/null 2>&1
+check "main-guard: worktree on main, root on feature branch -> block (exit 2)" 2 $?
+( cd "$T" && git worktree remove -f "$W" 2>/dev/null )
 
 ( cd "$T" && git checkout -q --detach )
 printf '%s' "$payload_commit" | sh "$M" >/dev/null 2>&1
 check "main-guard: detached HEAD fails open -> allow" 0 $?
 
-rm -rf "$T"
+rm -rf "$F" "$T"
 
 # ---------- trellis-check.sh ----------
 C="$SCRIPTS_DIR/trellis-check.sh"
