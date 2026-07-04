@@ -17,17 +17,22 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/verify.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The verify
-overlay carries verify-specific extensions for this project (preferred exploration patterns, key
-areas to always check, domain-specific questions). If `shared.md` is absent, degrade gracefully:
-read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/verify.md` if they exist and apply them
+per the protocol. The verify overlay carries verify-specific extensions for this project
+(preferred exploration patterns, key areas to always check, domain-specific questions).
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Additionally, verify is the command
-that seeds new domains:
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol.
+Additionally, verify is the command that seeds new domains:
 
 - **If the domain is NOT in the profile**: After the engineer confirms the domain via
   AskUserQuestion, ask them to rate their familiarity:
@@ -43,10 +48,18 @@ that seeds new domains:
   4. "New" — "This is my first time in this area"
 
   Add the domain to `PROFILE.md` at the resolved shared personal root (**Resolving the personal
-  root** in `shared.md`'s Overlay Loading Protocol — `<personal-root>/.vine.local/PROFILE.md`, not
-  cwd, so the profile is written and read at the same place from every worktree) with the selected
+  root** in the VINE Protocol — `<personal-root>/.vine.local/PROFILE.md`, not cwd) with the selected
   level and today's date. If PROFILE.md doesn't exist there yet, create it with a
-  `## Domain Expertise` table (columns: Domain, Level, Last Updated, Notes).
+  `## Domain Expertise` table (columns: Domain, Level, Last Updated, Notes). Before the first
+  write, check that the personal root is actually ignored — probe a child path,
+  `git check-ignore -q .vine.local/PROFILE.md` at the personal root (the bare directory
+  probe false-negatives while the directory doesn't exist yet). In a repo that never ran
+  `/vine:init` it won't be ignored, so add the two lines `.vine.local/` and `.vine/ACTIVE`
+  to `.gitignore` first. Personal state must never be one `git add -A` away from a commit.
+
+  This question has no "(Recommended)" option by design — there's no honest default for
+  someone's own familiarity. It's the deliberate exception to the recommended-first rule in
+  the Interaction Constraints.
 
 If no profile exists and the engineer hasn't confirmed a domain yet, do nothing — the prompt
 happens naturally when the domain is confirmed during CONTEXT.md creation. No upfront questions.
@@ -54,10 +67,11 @@ happens naturally when the domain is confirmed during CONTEXT.md creation. No up
 ## Before You Start
 
 **Ask permissions mode recommended.** This is a cooperative framework — the engineer reviews every
-change as it happens, not after the fact. If the session is running in Accept edits mode:
+change as it happens, not after the fact. You can't reliably observe the session's permission
+mode, so recommend it once, non-blocking, at the start of the phase:
 
-> "I'd recommend switching to Ask permissions mode so you can review what verify writes as we go.
-> It's not required — want to continue in Accept edits?"
+> "I'd recommend Ask permissions mode for this phase so you can review what verify writes as we
+> go — skip this if you're already there. Not required either way."
 
 Don't block on this — if the engineer prefers Accept edits, proceed. The mode toggle is the
 engineer's action: you can ask, never switch it yourself or assume it happened.
@@ -66,16 +80,17 @@ engineer's action: you can ask, never switch it yourself or assume it happened.
 respond to. Instead, use the `AskUserQuestion` tool to present interactive prompts. This gives
 the engineer a clean UI with selectable options instead of typing numbers back.
 
-Follow the Interaction Constraints from `.vine/context/shared.md` for every `AskUserQuestion` call.
+Follow the Interaction Constraints from the VINE Protocol for every `AskUserQuestion` call.
 
 You and the engineer are about to explore a codebase together. Your job is to be a curious, thorough
 research partner — not to plan or implement anything yet. Think of this as a spike: you're both
 building shared understanding of the terrain before anyone draws a map.
 
 The engineer likely knows things about this code that aren't written down anywhere — edge cases,
-historical decisions, workarounds, "don't touch that" zones. Your job is to draw that knowledge out
-while contributing what you can see in the code itself. The combination of their tribal knowledge
-and your ability to read broadly is what makes this phase powerful.
+historical decisions, workarounds, "don't touch that" zones. Draw that knowledge out; their tribal
+knowledge plus your broad reading is what makes this phase powerful. When the overlays already
+answer a question (init often captures known quirks in Tooling Notes), don't re-ask it — confirm
+it and probe for what's changed since.
 
 ## How This Phase Works
 
@@ -101,15 +116,12 @@ alternatives, gotchas that cost someone time. Present what you find in a dedicat
 Decisions on record** subsection — each record's title, status, and gist — so you and the engineer
 carry prior reasoning into the exploration instead of rediscovering it.
 
-These records are *prior judgment, not current truth*. A record can read `Accepted` and still
-describe a decision the code has since moved past. Where one appears to contradict what the live
-code now does, **surface the mismatch for the engineer — never auto-trust the record** (consistent
-with how verify treats every source: the contradiction call is the engineer's, not yours). A
-still-live record is valuable context; a stale one is a signal worth a supersede when this cycle
-reaches evolve.
+These records are *prior judgment, not current truth* — a record can read `Accepted` and still
+describe a decision the code has since moved past. Where one appears to contradict the live code,
+**surface the mismatch for the engineer — never auto-trust the record**; a stale record is a
+supersede candidate when this cycle reaches evolve.
 
-**With no records present** — the common first-cycle case — this is a silent no-op: verify
-proceeds exactly as it does today.
+**With no records present** — the common first-cycle case — this is a silent no-op.
 
 Once you have direction, explore the relevant code. For larger features touching multiple
 areas, delegate to the `vine-codebase-explorer` agent to research specific areas in parallel
@@ -133,12 +145,10 @@ This is the most important part. The engineer has context you can't get from the
 
 - **Edge cases**: "Oh yeah, that endpoint breaks if the user has more than 50 items because of the
   pagination bug we never fixed"
-- **Historical decisions**: "We went with that approach because the other service wasn't ready yet,
-  but it is now"
 - **Workarounds**: "That try-catch is there because the third-party API sometimes returns HTML
   instead of JSON"
-- **Ownership and politics**: "The payments team owns that service and they're mid-migration, so
-  don't depend on their v1 API"
+
+(Historical decisions and ownership/politics belong in the same net — anything the code can't say.)
 
 Ask open-ended questions to draw this out. Engineers often don't think to mention these things
 until prompted because they've internalized them.
@@ -177,6 +187,12 @@ If the work clearly warrants the full cycle, skip this check — don't ask the q
 the answer is obvious. This is for the cases where verify reveals the work is simpler than
 the engineer's initial description suggested.
 
+Recommend pair only when the evaluation is clear-cut — file count AND design-need both point
+to pair. On a borderline read (small file count but real design questions, or vice versa),
+either skip the question or put "Continue with full cycle" first as the recommended option:
+an unnecessary CONTEXT.md costs minutes, but bouncing an engineer's first cycle into pair on
+a coin flip reads as "the framework told me not to use it."
+
 ### 4. Identify Documentation Gaps
 
 As you explore, note where the documentation doesn't match reality:
@@ -202,7 +218,7 @@ are "not great." Capture them without judgment:
 
 Most of these stay cataloged for inquire to weigh against the feature. But if something is
 clearly unrelated to this feature and worth acting on regardless, apply the **Out-of-Scope
-Routing** pattern from `.vine/context/shared.md` rather than letting it ride — backlog it by
+Routing** pattern from the VINE Protocol rather than letting it ride — backlog it by
 default, or a `vine:pair` session for a small fix worth doing now.
 
 ### 6. Write CONTEXT.md
@@ -251,21 +267,18 @@ The domain is the root area or module the feature lives in — not the repo name
 logical domain the work touches. For example:
 - `.vine/projects/payments/webhook-support/CONTEXT.md`
 - `.vine/projects/payments/retry-logic/CONTEXT.md`
-- `.vine/projects/auth/sso-migration/CONTEXT.md`
-- `.vine/projects/onboarding/welcome-flow/CONTEXT.md`
 
-This two-level namespacing gives you collision prevention (multiple features in the same domain)
-and discoverability (see all VINE work in a domain at a glance). It also survives across repos
-if you work on the same domain in different services.
+Two-level namespacing prevents collisions and makes a domain's VINE work discoverable at a glance.
 
 When starting, use `AskUserQuestion` to let the engineer select the domain and confirm the
-feature slug. Suggest likely domains based on the codebase areas discussed. The tool auto-adds
-an "Other" option for custom input. Follow up with a second prompt for the feature slug if needed.
+feature slug — batch both into one call (the Interaction Constraints allow up to 4 questions).
+Suggest likely domains based on the codebase areas discussed. The tool auto-adds
+an "Other" option for custom input.
 
 Confirm both before creating the directory.
 
 **Shared or local?** Once the domain and slug are confirmed, decide which root the project lives
-under. Use `AskUserQuestion` (one question, per the Interaction Constraints in `shared.md`):
+under. Use `AskUserQuestion` (one question, per the Interaction Constraints):
 
 - **"Shared — commit with the repo (Recommended)"**: create under
   `.vine/projects/<domain>/<feature-slug>/`. This is the default — `.vine/` is tracked, so the
@@ -274,8 +287,8 @@ under. Use `AskUserQuestion` (one question, per the Interaction Constraints in `
   `.vine.local/` root is gitignored entirely, so the project stays on this machine — nothing about
   it enters a commit. Use this for spikes, throwaway exploration, or work you're not ready to share.
 
-Resolve `.vine.local/` at the shared personal root (the repo's primary worktree), per **Resolving
-the personal root** in `shared.md`'s Overlay Loading Protocol — not cwd, so the choice holds across worktrees. Whichever root the
+Resolve `.vine.local/` per **Resolving the personal root** in the VINE Protocol — not cwd, so the
+choice holds across worktrees. Whichever root the
 engineer picks, the rest of the cycle follows it automatically: discovery scans both roots, and the
 per-path commit test (Sign-Off Gate, below) commits a shared project and skips a local one with no
 special-casing.
@@ -320,7 +333,8 @@ PROJECT-MAP.md alongside CONTEXT.md to track VINE progress for this feature:
    | evolve | ⬜ | — |
    ```
 
-   Save to `.vine/projects/<domain>/<feature-slug>/PROJECT-MAP.md`. No Milestones table yet —
+   Save to `<root>/projects/<domain>/<feature-slug>/PROJECT-MAP.md` — the same root the
+   Shared-or-local prompt chose for CONTEXT.md. No Milestones table yet —
    that's added by inquire if the feature needs multi-PR treatment.
 
 ### Sign-Off Gate
@@ -344,21 +358,26 @@ from the absence of objections; ask for it. This is the gate that closes verify,
 
 Once approved:
 
-1. If this feature directory is tracked (run `git check-ignore -q` against the **specific feature
-   directory** — the per-path test in "Committing Artifacts" — and it exits
-   non-zero), commit CONTEXT.md and PROJECT-MAP.md now — this is their first entry into history. If
+1. If this feature directory is tracked (the per-path test: run `git check-ignore -q` against
+   the **specific feature directory**; exit non-zero means tracked), commit CONTEXT.md and
+   PROJECT-MAP.md now — this is their first entry into history. If
+   `/vine:init`'s scaffolding is still untracked (`.gitignore`, `.vine/README.md`,
+   `.vine/context/`), sweep it into this same commit — the artifacts shouldn't enter history
+   without the ignore rules that protect the personal root. Before committing, say plainly
+   what you're committing and to which branch; verify never creates branches itself (branch
+   policy is the repo's — wire conventions in the overlays). If
    the feature directory is gitignored (a local project under `.vine.local/projects/`), skip this
    step silently — personal-scope artifacts never enter a commit.
 2. Persist actionable retro items before printing the completion block. The retro is
    conversation output and doesn't survive `/clear` — anything inquire should act on
    belongs in the relevant CONTEXT.md section (open questions, tribal knowledge,
    documentation gaps), not just the retro.
-3. Suggest next step. Emit the block below per the Next-Step Suggestions convention in
-   shared.md — plain chat text, with only the `/vine:inquire` command line in a fenced block.
+3. Suggest next step. Emit the block below per the Next-Step Suggestions convention in the
+   VINE Protocol — plain chat text, with only the `/vine:inquire` command line in a fenced block.
 
 ````
 ---
-✅ vine:verify complete → CONTEXT.md + PROJECT-MAP.md written to .vine/projects/<domain>/<feature-slug>/
+✅ vine:verify complete → CONTEXT.md + PROJECT-MAP.md written to <root>/projects/<domain>/<feature-slug>/
 📋 Suggested next step: Run /vine:inquire to build the feature spec.
    Key items to address:
    - [open question 1]

@@ -23,7 +23,7 @@
 # Plus one repo-level check (not per-command, no table column):
 #  10 Cross-reference anchors resolve (verification-tier contract family:
 #     CONTRACTS.md note, agent mode/scope names, command pointers) -> FAILURE
-#  12 Personal-root resolution wired into shared.md — the profile/overlay reads
+#  12 Personal-root resolution wired into the plugin protocol — profile/overlay reads
 #     route through the "Resolving the personal root" helper, not a bare
 #     cwd-relative .vine.local/ read (#132 regression guard) -> FAILURE
 #
@@ -311,31 +311,35 @@ if [ "$ANCHOR_TOTAL" -eq 0 ]; then
   - PAIRS list is empty — the anchor check verified nothing"
 fi
 
-# ---------- Check 12: personal-root resolution wired into shared.md ----------
-# Guards #132: the high-frequency profile/overlay reads in shared.md's protocols
-# must route through the "Resolving the personal root" helper, never a bare
-# cwd-relative `.vine.local/` read — which a linked git worktree does not check
-# out, so the read silently returns nothing. FAILURE. Skipped when shared.md is
-# absent (it is optional). Only inspects shared.md: command files inherit the
-# fix by deferring to these protocols.
+# ---------- Check 12: personal-root resolution wired into the plugin protocol ----------
+# Guards #132: the high-frequency profile/overlay reads must route through the
+# "Resolving the personal root" helper, never a bare cwd-relative `.vine.local/`
+# read — which a linked git worktree does not check out, so the read silently
+# returns nothing. FAILURE. The helper's home is the plugin-shipped protocol
+# (plugins/vine/PROTOCOL.md) — always present in this repo, so never skipped.
+# Command files inherit the fix by deferring to the protocol.
 
-SHARED="$root/.vine/context/shared.md"
+PROTOCOL="$root/plugins/vine/PROTOCOL.md"
 RESOLVE_ISSUES=0
 RESOLVEDETAIL=""
-if [ -f "$SHARED" ]; then
+if [ ! -f "$PROTOCOL" ]; then
+  RESOLVE_ISSUES=$((RESOLVE_ISSUES + 1))
+  RESOLVEDETAIL="$RESOLVEDETAIL
+  - plugins/vine/PROTOCOL.md — file missing (skills load it via \${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md)"
+else
   # (a) the helper must be defined (lives in the Overlay Loading Protocol).
-  if ! grep -qF '**Resolving the personal root.**' "$SHARED"; then
+  if ! grep -qF '**Resolving the personal root.**' "$PROTOCOL"; then
     RESOLVE_ISSUES=$((RESOLVE_ISSUES + 1))
     RESOLVEDETAIL="$RESOLVEDETAIL
-  - shared.md — missing the \`**Resolving the personal root.**\` helper definition"
+  - PROTOCOL.md — missing the \`**Resolving the personal root.**\` helper definition"
   fi
   # (b) the Engineer Profile Protocol must reference it — reverting to a bare
   #     cwd-relative PROFILE.md read drops this phrase and trips the check.
-  epp=$(awk '/^## Engineer Profile Protocol/{f=1; next} f && /^## /{exit} f{print}' "$SHARED")
+  epp=$(awk '/^## Engineer Profile Protocol/{f=1; next} f && /^## /{exit} f{print}' "$PROTOCOL")
   if ! printf '%s\n' "$epp" | grep -qF 'Resolving the personal root'; then
     RESOLVE_ISSUES=$((RESOLVE_ISSUES + 1))
     RESOLVEDETAIL="$RESOLVEDETAIL
-  - shared.md — Engineer Profile Protocol must route the PROFILE.md read through 'Resolving the personal root' (bare cwd-relative read regresses #132)"
+  - PROTOCOL.md — Engineer Profile Protocol must route the PROFILE.md read through 'Resolving the personal root' (bare cwd-relative read regresses #132)"
   fi
 fi
 
@@ -350,7 +354,7 @@ fi
 # Bucket-2 consumer paths (.vine/…, .vine.local/…) and name-based agent refs are
 # never flagged. Full rule: CLAUDE.md "Skill Authoring Conventions".
 
-SHIP_PATHS="plugins/vine/skills plugins/vine/agents plugins/vine/hooks"
+SHIP_PATHS="plugins/vine/skills plugins/vine/agents plugins/vine/hooks plugins/vine/PROTOCOL.md"
 SHIP_ISSUES=0
 SHIPDETAIL=""
 refhits=$(cd "$root" && grep -rnE 'references/' $SHIP_PATHS 2>/dev/null)
@@ -384,9 +388,9 @@ echo "$ANCHOR_SUMMARY"
 [ -n "$ANCHORDETAIL" ] && printf '%s\n' "$ANCHORDETAIL"
 
 if [ "$RESOLVE_ISSUES" -eq 0 ]; then
-  RESOLVE_SUMMARY="✅ Personal-root resolution wired into shared.md (#132 guard)"
+  RESOLVE_SUMMARY="✅ Personal-root resolution wired into PROTOCOL.md (#132 guard)"
 else
-  RESOLVE_SUMMARY="❌ $RESOLVE_ISSUES personal-root resolution gap(s) in shared.md"
+  RESOLVE_SUMMARY="❌ $RESOLVE_ISSUES personal-root resolution gap(s) in PROTOCOL.md"
 fi
 echo "$RESOLVE_SUMMARY"
 [ -n "$RESOLVEDETAIL" ] && printf '%s\n' "$RESOLVEDETAIL"

@@ -4,6 +4,79 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+This set comes out of a clean-environment onboarding audit: repeated cold runs of
+marketplace install → `/vine:init` → `/vine:verify` on a fresh sample repo, fixing what the
+runs surfaced — followed by applying the audit's recommendations in full.
+
+### Changed — framework machinery now ships with the plugin
+- **`plugins/vine/PROTOCOL.md` (the VINE Protocol)** — The framework machinery that init
+  previously copied verbatim into every consuming repo's `shared.md` (~140 lines: overlay
+  loading + precedence, personal-root resolution, collaboration stance, engineer profile
+  protocol, interaction constraints, out-of-scope routing, next-step convention) now ships as
+  a plugin payload file. Every loading skill reads it via `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md`
+  before the repo overlays, so the rules update with the plugin and can never version-skew
+  against the skills — the audit's biggest flagged risk. It also closes the "the
+  suggest-init rule lived in the file that's missing" circularity and makes the #132
+  personal-root resolution rule available even in repos that never ran init.
+- **init generates slim, repo-specific overlays** — The `shared.md` and `.vine/README.md`
+  templates moved out of init's instruction stream into shipped template files
+  (`skills/init/templates/`, referenced via `${CLAUDE_SKILL_DIR}`), and the generated
+  `shared.md` now carries only repo-specific content (~40 lines instead of ~190). A new
+  **Machinery Single-Homing** offer in init's upgrade flow removes the stock machinery
+  sections from pre-protocol installs (customized sections are kept — they legitimately
+  override protocol defaults).
+- **init Step 8 is trigger-gated** — A trigger table opens the migrations/cleanups step; on a
+  fresh repo only two rows can fire, and the rest of the step is skipped unread (cold-run
+  evidence: ~230 lines of no-op trigger-reading on first run). The offer/decline scaffolding
+  (AskUserQuestion shape, decline-is-a-no-op, offer-repeats) is stated once in the preamble.
+- **Over-specification audit applied in full** — All 11 skills tightened per the audit
+  (~440 lines net: repeated rules single-stated, shared.md-restatements retargeted to the
+  protocol, development archaeology removed, resume's duplicate status template folded to
+  delta prose, example bloat trimmed). Skill total: 3,900 → ~3,470 lines, with init 704 → 407.
+  Also fixes evolve's growth-log question listing its recommended option third
+  (recommended-first rule) and genericizes an evolve example that quoted VINE's own dev cycle.
+- **trellis Checks 12/13 follow the machinery** — Check 12 (personal-root #132 guard) now
+  asserts against `plugins/vine/PROTOCOL.md` (and fails if the file is missing); Check 13's
+  shipped-surface scan includes PROTOCOL.md. Script and skill doc updated in sync.
+
+### Added
+- **First-run init nudge** — `vine:verify` and `vine:pair` now say so once when no `.vine/`
+  exists ("No `.vine/` found — `/vine:init` sets up context overlays and the gitignore
+  rules…") instead of silently degrading. The suggestion previously lived only in
+  `shared.md`'s protocol — the file that's missing in exactly that situation.
+- **Personal-root gitignore guard** — before `vine:verify` seeds `.vine.local/PROFILE.md` in
+  a repo that never ran init, it adds the `.vine.local/` + `.vine/ACTIVE` ignore lines, so
+  personal state is never one `git add -A` away from a commit.
+- **Scaffolding reaches history** — `vine:init` writes a `.gitkeep` in `.vine/projects/` (git
+  doesn't track empty dirs), its completion block reminds the engineer the scaffolding is
+  uncommitted, and `vine:verify`'s first artifact commit sweeps still-untracked init
+  scaffolding (`.gitignore`, `.vine/README.md`, `.vine/context/`) so a teammate's clone gets
+  the ignore protection.
+- **Precedence one-pager** — `docs/precedence.md` documents what controls what (skill file →
+  repo overlays → personal overlays → policy sections; profile as depth-only), linked from
+  the README's Context Overlays section.
+
+### Changed
+- **README restructured around "start with verify"** — Quick Start (install + init + first
+  verify) moves to the top; the core loop is the story; pair/pause/resume/status/multi-PR
+  move to a "When You Need Them" section. 487 → ~440 lines.
+- **`vine:verify` first-run polish** — domain + slug batched into one `AskUserQuestion` call;
+  the scope check recommends `vine:pair` only on a clear-cut evaluation (borderline reads
+  keep the full cycle as the recommended option); the sign-off commit states what's being
+  committed and to which branch; the permission-mode recommendation no longer conditions on
+  a mode the model can't observe; the familiarity question documents its deliberate lack of
+  a "(Recommended)" option.
+- **`vine:init` cold-path polish** — Step-2 team questions derive recommended defaults from
+  discovery (solo repos get solo defaults); the Step-4 `[date]` placeholder instruction
+  matches its template; internal issue-number archaeology and a cross-skill step-number
+  pointer removed; the Collaboration Stance header no longer reads as "internal, not shown
+  to the engineer" in a tracked file the engineer is told to edit.
+
+### Fixed
+- **README update command** — `claude plugin update vine@moduloMoments` (verified working);
+  the previously documented bare `/plugin update vine` doesn't resolve without the
+  marketplace suffix.
+
 ## [0.4.1] - 2026-06-23
 
 ### Changed

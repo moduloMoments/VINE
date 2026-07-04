@@ -17,16 +17,21 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/inquire.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The inquire
-overlay carries inquire-specific extensions for this project (design review checklists, architecture
-decision templates, preferred patterns to recommend). If `shared.md` is absent, degrade gracefully:
-read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/inquire.md` if they exist and apply them
+per the protocol. The inquire overlay carries inquire-specific extensions for this project
+(design review checklists, architecture decision templates, preferred patterns to recommend).
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`.
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol.
 
 ---
 
@@ -64,12 +69,9 @@ If CONTEXT.md exists, read it and summarize the key points back to the engineer:
 > were: [list]. Let's start by resolving those."
 
 **Consume any pause state.** If the feature's mirrored personal path
-(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per **Resolving the personal root** in
-`shared.md`'s Overlay Loading Protocol) contains a PAUSE.md (e.g., the engineer paused after verify), surface its
-notes alongside the summary above, then delete it — the
-consumed-once rule. A consumed pause must not linger: it would keep
-suggesting `/vine:resume` for work that has already resumed. Anything worth keeping past this
-session belongs in the artifacts, not PAUSE.md. (If no PAUSE.md is present, skip.)
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`, resolved per the VINE Protocol) has a
+PAUSE.md, surface its notes with the summary, then delete it (consumed-once rule — anything
+worth keeping belongs in the artifacts). Skip if absent.
 
 ### 2. Resolve Open Questions
 
@@ -90,13 +92,11 @@ research the specific area rather than reading broadly yourself.
 
 For each significant design decision:
 
-**Use AskUserQuestion for all design decisions.** Never print markdown option lists — use the
-interactive `AskUserQuestion` tool instead. This gives the engineer a clean UI with selectable
-options.
+Use `AskUserQuestion` for all design decisions — never print markdown option lists. Follow the
+Interaction Constraints from the VINE Protocol.
 
-Follow the Interaction Constraints from `.vine/context/shared.md` for every `AskUserQuestion` call.
-
-**Wait for the decision.** Don't assume. Don't proceed. The engineer decides.
+**Wait for the decision.** Don't assume. Don't proceed. The engineer decides — push back if
+you see problems, but it's their call.
 
 **Document the decision.** Capture not just what was chosen but why. Future you (or another
 engineer) will want to know.
@@ -170,10 +170,6 @@ Session boundary: After this phase, the data layer is complete and testable inde
 ## Phase 2: API Layer (Slices 4-6)
 Summary: Build the endpoints and service logic on top of the data layer.
 Session boundary: After this phase, the API is functional end-to-end.
-
-## Phase 3: Integration (Slices 7-8)
-Summary: Wire up event handlers, webhooks, and monitoring.
-Session boundary: Feature is complete and ready for evolve.
 ```
 
 Each phase should be a coherent unit — something that makes sense to implement, review, and
@@ -228,7 +224,7 @@ Based on everything you've discussed, suggest updates to the project backlog:
 - Tech debt items deferred from this work
 
 Present these as suggestions — the engineer manages the backlog. For any item that's actionable
-now rather than someday, apply the **Out-of-Scope Routing** pattern from `.vine/context/shared.md`
+now rather than someday, apply the **Out-of-Scope Routing** pattern from the VINE Protocol
 (backlog by default, or a `vine:pair` session for a small fix worth doing now) instead of only
 parking it.
 
@@ -277,10 +273,6 @@ Save to `.vine/projects/<domain>/<feature-slug>/SPEC.md`.
 **Build on verify, don't redo it.** CONTEXT.md is your foundation. Reference it, don't repeat it.
 If you find gaps in the context, note them — but don't turn inquire into another exploration phase.
 
-**The engineer decides.** Every design choice, every tradeoff, every priority call. You present,
-they decide, you document. This isn't a rubber stamp — push back if you see problems, but
-ultimately it's their call.
-
 **Spec for the navigator.** The person running vine:navigate (possibly a different engineer, possibly
 the same one in a different session) should be able to pick up SPEC.md and know exactly what to
 build, why, and in what order. If they'd need to ask clarifying questions, the spec isn't done.
@@ -325,8 +317,8 @@ Once approved:
    fold it into the relevant slice in SPEC.md now. Only items with no downstream action
    belong in the retro alone.
 
-Then present the completion block per the Next-Step Suggestions convention in shared.md —
-plain chat text, with only the `/vine:navigate` command line in a fenced block:
+Then present the completion block per the Next-Step Suggestions convention in the VINE
+Protocol — plain chat text, with only the `/vine:navigate` command line in a fenced block:
 
 ````
 ---
@@ -343,14 +335,9 @@ plain chat text, with only the `/vine:navigate` command line in a fenced block:
    Inquire is analytical — navigate needs a tactical, implementation-focused headspace.
    SPEC.md carries everything forward; conversation context doesn't need to.
 
-🎫 Auto-agent ticket (when scope is autonomous-eligible): If a phase group is bounded, independent
-   of in-flight work, carries acceptance criteria, and the repo has a validation contract, it can be
-   handed to the `vine-coder` agent (the autonomous coding role — implements a ticketed slice
-   end-to-end and opens a PR) instead of being run with a human in `/vine:navigate`. Emit a ticket
-   per the **Autonomous Delegation** convention in shared.md — scope (which slices), the SPEC.md
-   pointer, the constraints, and dispatch to `vine-coder` — and the PR it opens is reviewed (by the
-   engineer or the `vine-reviewer` agent) before merge. Omit this block when the scope is
-   interactive.
+🎫 If a phase group is autonomous-eligible per the **Autonomous Delegation** convention in
+   shared.md, emit a `vine-coder` ticket (scope, SPEC.md pointer, constraints, dispatch); the
+   PR is reviewed before merge. Omit when scope is interactive.
 
 🌱 Phase retro:
    - CLAUDE.md suggestion: [any project conventions or decisions worth persisting]

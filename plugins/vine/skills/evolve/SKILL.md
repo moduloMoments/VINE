@@ -17,25 +17,29 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/evolve.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The evolve
-overlay carries evolve-specific extensions for this project (PR creation tools, CI validation
-commands, repo-level agents and skills to suggest wiring into overlays, Jira/Linear integration for
-follow-up items). If `shared.md` is absent, degrade gracefully: read the phase overlay if present,
-otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/evolve.md` if they exist and apply them
+per the protocol. The evolve overlay carries evolve-specific extensions for this project
+(PR creation tools, CI validation commands, repo-level agents and skills to suggest wiring
+into overlays, Jira/Linear integration for follow-up items).
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-Follow the Engineer Profile Protocol and Collaboration Stance from `.vine/context/shared.md`. Note the
+Follow the Engineer Profile Protocol and Collaboration Stance from the VINE Protocol. Note the
 current domain expertise entries — you'll use this during Evolution 3 to propose updates.
 If no profile exists, you'll offer to create one during Evolution 3.
 
 ---
 
-The feature is implemented. Now you evolve three things: the product, the agent's capabilities,
-and the user's knowledge. This is what makes VINE different from frameworks that just verify and
-ship — every feature is an opportunity to grow on three dimensions.
+The feature is implemented. Now evolve three things: the product, the agent's capabilities,
+and the user's knowledge.
 
 ## Getting Started
 
@@ -60,7 +64,7 @@ table, note which phases shipped in prior PRs — evolve's verification should f
 phase group and cross-phase integration, not re-verify already-shipped work.
 
 If the feature's mirrored personal path (`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`,
-resolved per **Resolving the personal root** in `shared.md`'s Overlay Loading Protocol) contains a PAUSE.md, picking the work back up
+resolved per **Resolving the personal root** in the VINE Protocol) contains a PAUSE.md, picking the work back up
 consumes it: surface its notes, then delete the file — a consumed pause must not linger suggesting
 `/vine:resume`.
 Also delete `.vine/ACTIVE` (repo root) if it exists: any navigate session on this feature is
@@ -92,8 +96,7 @@ actually landed in a slice, so build a two-column mapping of each criterion to i
 | [criterion text] | **unaccounted** |
 
 Pull the evidence from NAVIGATION.md's slice entries (their per-slice acceptance criteria and
-commit hashes). This is a lookup against the record, not a re-verification — trust the
-per-slice validation. A criterion with no slice/commit behind it is **unaccounted**: surface
+commit hashes). A criterion with no slice/commit behind it is **unaccounted**: surface
 it rather than letting it silently vanish. Unaccounted usually means one of two things — a
 slice covered it without recording the link (fixable: note the evidence) or the cycle didn't
 deliver it (a real gap for the engineer to decide on before shipping). This table is the
@@ -104,15 +107,11 @@ Acceptance Criteria Results in EVOLUTION.md.
 This is where evolve adds value. Delegate to the `vine-verification` agent in **feature
 verification mode at full-feature scope** — the checklist, including the cross-cutting
 checks that full-feature scope adds, lives in the agent definition; don't restate it here.
-Pass the agent:
+(Full-feature tier; navigate runs the phase-group tier at group boundaries.) Pass the agent:
 
 - The feature's changed files and the acceptance criteria from SPEC.md
 - Custom integration validation commands from `.vine/context/evolve.md`, if defined (the agent
   otherwise reads the `## Validation` block in `.vine/context/shared.md`, prose-inference fallback)
-
-> **Verification tiers:** This is the full-feature tier; navigate runs the phase-group tier
-> at phase group boundaries. The two tiers are intentionally asymmetric; the
-> `vine-verification` agent owns the checklist itself.
 
 **For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
 `gh` CLI is available, review the prior PRs as part of integration verification:
@@ -120,13 +119,9 @@ Pass the agent:
 - Run `gh pr view <number>` for each shipped phase's PR to check status and review comments
 - Run `gh api repos/{owner}/{repo}/pulls/<number>/comments` to surface reviewer feedback
   that may affect the current phase
-- Run `gh pr checks <number>` for each shipped phase's PR to read CI status — a framework
-  that preps the handoff shouldn't be blind to red checks
-- Flag any unresolved review comments or requested changes from prior PRs — these could
-  indicate integration issues or concerns that carry forward
-- Flag any failing or still-pending checks from prior PRs — surface them in the Product
-  Evolution section so they're visible before the handoff
-- Include a summary of cross-PR review findings and CI status in the Product Evolution section
+- Run `gh pr checks <number>` for each shipped phase's PR to read CI status
+- Flag unresolved review comments, requested changes, and failing or pending checks from
+  prior PRs; summarize cross-PR findings and CI status in the Product Evolution section
 
 ### Review Spec Deviations
 
@@ -147,7 +142,7 @@ Compile from NAVIGATION.md's "discovered items" and any gaps found during verifi
 Suggest concrete backlog items with enough context that someone else could pick them up.
 
 If there are actionable follow-up items (not just "consider someday" notes), route them with the
-**Out-of-Scope Routing** pattern from `.vine/context/shared.md`: most become backlog tickets, but
+**Out-of-Scope Routing** pattern from the VINE Protocol: most become backlog tickets, but
 a small fix the engineer wants handled now can go straight to a `vine:pair` session. Use
 `AskUserQuestion` with `multiSelect: true` to let the engineer pick which items become tickets.
 For each selected item:
@@ -201,21 +196,13 @@ where VINE compounds — each feature makes the next one easier.
 ### CLAUDE.md Suggestions
 
 Review everything you learned during this feature and suggest updates to CLAUDE.md (or the
-project's equivalent configuration). These might include:
-
-- **Coding conventions** discovered: "This project uses the repository pattern for all data
-  access. New services should follow src/repositories/ for reference."
-- **Architectural patterns**: "Feature flags are managed via src/config/flags.ts. All new
-  features should be gated."
-- **Testing conventions**: "Integration tests use the test database defined in docker-compose.test.yml.
-  Always reset state between tests."
-- **Tribal knowledge codified**: Things from CONTEXT.md that should be persistent project knowledge
-  rather than living in one VINE session's artifacts.
+project's equivalent configuration): coding conventions, architectural patterns, testing
+conventions discovered during the feature, and tribal knowledge from CONTEXT.md that should
+become persistent project knowledge. Point at a reference path where one exists — e.g.:
+"This project uses the repository pattern for all data access — see src/repositories/."
 
 Use `AskUserQuestion` with `multiSelect: true` to let the engineer batch their decisions on
-which suggestions to accept. Max 4 options per question — if you have more suggestions, split
-across multiple calls by category. Put the strongest recommendation first with "(Recommended)"
-in its label.
+which suggestions to accept, per the Interaction Constraints.
 
 For each accepted suggestion, draft the exact text to add. The engineer manages the file —
 you draft, they commit.
@@ -293,9 +280,8 @@ Review NAVIGATION.md for what the engineer brought to this cycle:
 
 Frame this as contribution, not education:
 
-> "Your call to exclude status from the stance update avoided unnecessary complexity — the
-> interaction surface principle you applied there is a clean design heuristic. The auto-accept
-> addition to gearing turned a stylistic toggle into a real mode shift."
+> "Your call to [decision] avoided [cost] — the [principle] you applied there is a clean
+> design heuristic."
 
 **Do not summarize what the engineer "learned."** If they explored something new, they know.
 If they didn't, don't invent growth. If the cycle was routine work in their comfort zone,
@@ -304,9 +290,8 @@ say so and move on — not every feature is a learning experience.
 ### Update Engineer Profile
 
 Based on the completed cycle, propose updates to `PROFILE.md` at the resolved shared personal root
-(**Resolving the personal root** in `shared.md`'s Overlay Loading Protocol —
-`<personal-root>/.vine.local/PROFILE.md`, not cwd, so the profile is read and written at the same
-place from every worktree). This is the concrete, persistent output of user evolution — the profile
+(**Resolving the personal root** in the VINE Protocol — `<personal-root>/.vine.local/PROFILE.md`,
+not cwd). This is the concrete, persistent output of user evolution — the profile
 grows with each VINE cycle.
 
 **Domain expertise update:**
@@ -340,14 +325,13 @@ the engineer writes their own narrative:
 > out — your call whether anything is worth recording."
 
 Use `AskUserQuestion`:
-1. "Use your draft" — "I'll draft bullet points from the cycle; you can edit before saving"
-2. "I'll write my own" — "I'll add the date/domain header, you fill in the bullets"
-3. "Skip (Recommended)" — "Not every cycle needs a log entry"
+1. "Skip (Recommended)" — "Not every cycle needs a log entry"
+2. "Use your draft" — "I'll draft bullet points from the cycle; you can edit before saving"
+3. "I'll write my own" — "I'll add the date/domain header, you fill in the bullets"
 
-Put "Skip" as recommended. Growth log entries should be the exception, not the default —
-only when the engineer genuinely wants to record something. If they choose the draft option,
-write bullet points focused on the engineer's contributions and decisions — not what they
-"learned." Present the draft for editing before writing to the file.
+Entries only when the engineer genuinely wants to record something. If they choose the draft,
+focus bullets on contributions and decisions, not what they "learned"; present for editing
+before writing.
 
 For each accepted change, write the update to the resolved-root `PROFILE.md` directly (the
 `<personal-root>/.vine.local/PROFILE.md` resolved above). Create the file if needed, using a
@@ -376,10 +360,10 @@ observations. Domain-specific knowledge goes in the profile, not here.
 
 ### Distill Durable Decisions
 
-This cycle produced *judgment* a cold reader can't recover from the code — why an approach won
-over its alternatives, a hard-won gotcha. That judgment has a durable home: `.vine/knowledge/<domain>/`,
-the committed, append-only ADR layer. This is the **fourth and last** of evolve's "where does this learning
-go" homes; the routing rule below decides which learnings belong here versus the three you just handled.
+Some learnings are judgment a cold reader can't recover from the code — why an approach won,
+a hard-won gotcha. Their durable home is `.vine/knowledge/<domain>/`, the committed,
+append-only ADR layer; the routing rule below decides what belongs here versus the three
+homes you just handled.
 
 **Routing rule (operative copy).**
 Route each candidate learning to exactly one home, first match wins:
@@ -400,10 +384,9 @@ a real alternative, or a gotcha that cost time to learn, is a candidate. A resta
 plainly shows is not.
 
 **Let the engineer choose.** Present the mined candidates via `AskUserQuestion` (`multiSelect: true`)
-so the engineer picks which become records — proposing a record is reviewer-ratifiable, never
-auto-applied; the engineer decides directly. Batch into one call; if there are more than four
-candidates, split by category across calls (Interaction Constraints, `shared.md`). **If no candidate rises to a durable
-record, write nothing** — declining all is current behavior, fully backward-compatible.
+so the engineer picks which become records — never auto-apply. Batch into one call; more than
+four candidates split by category across calls (Interaction Constraints). **If no candidate
+rises to a durable record, write nothing.**
 
 **Write each accepted record.** One date-prefixed file per record under `.vine/knowledge/<domain>/`,
 named `YYYY-MM-DD-<kebab-of-title>.md`, following the Nygard ADR template:
@@ -420,14 +403,11 @@ one, do both halves of the bidirectional link:
 1. The new record carries `Supersedes: <old-slug>`.
 2. Flip the *old* record's Status line from `Accepted — <date>` to `Superseded by <new-slug> — <date>`.
 
-Edit the Status line **only** — never the old record's Context / Decision / Consequences. The body is
-immutable; the single Status-line flip is the lone exception that keeps the layer append-only and
-concurrent-safe. Without the flip, a cold reader landing on the old
-record would trust a stale `Accepted` and never learn it was replaced.
+Edit the Status line **only** — the body is immutable; the single Status-line flip is the lone
+exception to append-only.
 
-**Records persist beyond the project.** These files live in `.vine/knowledge/<domain>/`, separate from
-`.vine/projects/`. Resolving or archiving this project (below) never moves or deletes them — durable
-judgment outlives the project that produced it.
+(Resolving or archiving this project never moves these records — durable judgment outlives
+the project.)
 
 ## Write EVOLUTION.md
 
@@ -526,8 +506,8 @@ Options (mutually exclusive):
 
 If the engineer promotes, move the directory tree from the personal root to the shared root. The
 source is gitignored (untracked), so this is a plain `mv`, not `git mv`; the *Commit Evolve Changes*
-step then stages the artifacts at their new tracked path. Resolve `.vine.local/` at the shared
-personal root (the repo's primary worktree), per **Resolving the personal root** in `shared.md`'s Overlay Loading Protocol:
+step then stages the artifacts at their new tracked path. Resolve `.vine.local/` per
+**Resolving the personal root** in the VINE Protocol:
 
 ```
 mkdir -p .vine/projects/<domain>
@@ -554,13 +534,9 @@ Options (mutually exclusive):
 If the engineer chooses to resolve, write an empty `.resolved` file to the project's directory —
 `<root>/projects/<domain>/<feature-slug>/.resolved`, where `<root>` is `.vine/` for a shared project
 or `.vine.local/` for one kept local (the promotion step above may have just made it shared). Then
-consume any
-`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md` (the mirrored personal path) that still
-exists — the backstop delete. Evolve's
-session-start consumption normally removed it already, so a PAUSE.md surviving to here appeared
-*after* evolve began and its notes aren't necessarily stale: surface them to the engineer first,
-then delete the file. Never delete it silently — the same surface-then-delete rule the other
-consumption triggers follow.
+consume any PAUSE.md still at the mirrored personal path
+(`.vine.local/projects/<domain>/<feature-slug>/PAUSE.md`) — it appeared after evolve began, so
+its notes may be fresh: surface them first, then delete. Never delete silently.
 
 **Offer to archive — move resolved work out of the way.** Only when the engineer just resolved
 the project, offer to archive it — move it under its own root's `.archive/`
@@ -642,10 +618,5 @@ cheerleading.
 **Agent evolution compounds.** Every CLAUDE.md update and every skill suggestion makes the
 next VINE cycle faster and better. Take this seriously — it's the long game.
 
-**User evolution requires tact.** You're reflecting back what someone learned, not evaluating
-their performance. Be a mirror, not a teacher. If they didn't learn anything new, that's fine
-— maybe this feature was in their comfort zone. Don't manufacture growth that didn't happen.
-
-**The handoff is for humans.** PR descriptions, reviewer notes, and commit messages are read
-by people. Write them clearly, with context, assuming the reader doesn't have VINE artifacts
-in front of them.
+**User evolution requires tact** — see the constraints in Engineer Contributions. **The
+handoff is for humans**: write it assuming the reader has no VINE artifacts in front of them.

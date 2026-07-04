@@ -178,28 +178,28 @@ The high-frequency profile and personal-overlay reads must resolve the **shared 
 via `dirname "$(git rev-parse --git-common-dir)"` before reading `.vine.local/PROFILE.md` /
 `context/<name>.md`, never a bare cwd-relative `.vine.local/` read — which a linked git worktree
 does not check out, so the read silently returns nothing (issue #132). The contract lives in
-`.vine/context/shared.md`: a named helper, **Resolving the personal root**, defined once in the
-Overlay Loading Protocol and referenced from the Personal-layer rule and the Engineer Profile
-Protocol.
+the plugin-shipped protocol `plugins/vine/PROTOCOL.md`: a named helper, **Resolving the personal
+root**, defined once in the Overlay Loading Protocol and referenced from the Personal-layer rule
+and the Engineer Profile Protocol.
 
-Like Check 10 this is repo-level, not per-command, and inspects only `.vine/context/shared.md`
-(skill files inherit the fix by deferring to these protocols). It asserts:
+Like Check 10 this is repo-level, not per-command, and inspects only `plugins/vine/PROTOCOL.md`
+(skill files inherit the fix by deferring to the protocol). It asserts:
 
-- the helper is defined — `.vine/context/shared.md` contains the literal `**Resolving the personal
-  root.**`; and
+- the file exists and defines the helper — `plugins/vine/PROTOCOL.md` contains the literal
+  `**Resolving the personal root.**`; and
 - the `## Engineer Profile Protocol` section references `Resolving the personal root` (reverting it
   to a bare cwd-relative `.vine.local/PROFILE.md` read drops the phrase and trips the check).
 
-A gap is a **failure** that counts toward pass/fail, mirroring Check 10. Skipped when `shared.md`
-is absent (it is optional). The same two assertions live in `.vine/scripts/trellis-check.sh` — keep
-them in sync.
+A gap is a **failure** that counts toward pass/fail, mirroring Check 10. Unlike the optional
+overlays, PROTOCOL.md ships with the plugin — a missing file is itself a failure. The same
+assertions live in `.vine/scripts/trellis-check.sh` — keep them in sync.
 
 ### Check 13: Shipped-Surface Reference Convention (repo-level)
 
 Shipped skills, agents, and hooks run with the **consuming repo as cwd**, so a path in any of them
 must fall into exactly one bucket (full rule: CLAUDE.md "Skill Authoring Conventions"). This guard
-prevents regression of #142/#141/#138 by scanning `plugins/vine/{skills,agents,hooks}/` and failing
-on either violation:
+prevents regression of #142/#141/#138 by scanning `plugins/vine/{skills,agents,hooks}/` plus the
+plugin-shipped `plugins/vine/PROTOCOL.md` and failing on either violation:
 
 - **any `references/…` path** — VINE-source-internal, absent in a consuming repo; inline runtime
   needs via the operative-copy pattern instead; and
@@ -267,8 +267,8 @@ After the warnings, print the Check 10 anchor result as its own line:
 
 Then print the Check 12 personal-root result as its own line:
 
-- Wired: **"✅ Personal-root resolution wired into shared.md (#132 guard)"**
-- Any gap: **"❌ N personal-root resolution gap(s) in shared.md"** followed by one line per gap.
+- Wired: **"✅ Personal-root resolution wired into PROTOCOL.md (#132 guard)"**
+- Any gap: **"❌ N personal-root resolution gap(s) in PROTOCOL.md"** followed by one line per gap.
   Like Check 10, gaps count toward the pass/fail status.
 
 Then print the Check 13 shipped-surface result as its own line:

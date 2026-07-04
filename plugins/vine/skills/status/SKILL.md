@@ -14,21 +14,21 @@ allowed-tools:
 
 ## Load Context Overlays
 
-Read `.vine/context/shared.md` and `.vine/context/status.md` if they exist, then follow the
-**Overlay Loading Protocol** from `shared.md` for the rest (apply-as-overlay precedence, the
-personal `.local` layer, the legacy-directory fallback, and missing-file behavior). The status
-overlay carries status-specific extensions for this project. If `shared.md` is absent, degrade
-gracefully: read the phase overlay if present, otherwise proceed on command defaults.
+Read the **VINE Protocol** at `${CLAUDE_PLUGIN_ROOT}/PROTOCOL.md` first — the framework's
+loading and precedence rules, personal-root resolution, the Collaboration Stance, the Engineer
+Profile Protocol, Interaction Constraints, and Out-of-Scope Routing. Then read the repo
+overlays `.vine/context/shared.md` and `.vine/context/status.md` if they exist and apply them
+per the protocol. The status overlay carries status-specific extensions for this project.
+
+Degrade gracefully: every overlay file is optional; if `.vine/` doesn't exist at all, suggest
+`/vine:init` once and continue on defaults. If the protocol itself is unreadable, the minimums
+are: overlay instructions override command defaults, and anything under `.vine.local/` resolves
+at the repo's primary worktree — `dirname "$(git rev-parse --git-common-dir)"` — never cwd.
 
 ## Load Engineer Profile
 
-After loading overlays, resolve the shared personal root (**Resolving the personal root** in
-`shared.md`'s Overlay Loading Protocol) and check for the engineer's profile at
-`<personal-root>/.vine.local/PROFILE.md` — resolved, not cwd-relative, so a worktree session sees
-the same profile as the main checkout.
-
-If it exists, note it for the status display. No depth hint needed — status is a read-only
-display command.
+Follow the Engineer Profile Protocol from the VINE Protocol. No depth hint needed — status is
+a read-only display command.
 
 ---
 
@@ -112,12 +112,9 @@ compact summary of all active projects before asking which to drill into:
 
 **Read-only.** Status never writes or modifies anything. No artifact updates, no state changes.
 
-**Fast.** This should complete in seconds. Read PROJECT-MAP.md (or detect artifacts and count
-slice headings) and display — no deep content analysis, no git log archaeology. Counting
-`Complete` slice headings in NAVIGATION.md is the deepest it reads. When a live task list
-exists in the session (e.g., status run alongside an active navigate), status may read it via
-`TaskList` for the slice count instead; in a fresh session there is no list, so it derives
-`[X of Y]` from NAVIGATION.md as usual.
+**Fast.** Complete in seconds; counting `Complete` slice headings in NAVIGATION.md is the
+deepest read. A live in-session task list may substitute via `TaskList`; in a fresh session,
+derive from NAVIGATION.md instead.
 
 **No recommendations.** Unlike resume, status doesn't suggest next steps or load PAUSE.md.
 It answers "where does this stand?" and nothing more. If the engineer wants guidance, they
