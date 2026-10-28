@@ -113,6 +113,11 @@ checks that full-feature scope adds, lives in the agent definition; don't restat
 - Custom integration validation commands from `.vine/context/evolve.md`, if defined (the agent
   otherwise reads the `## Validation` block in `.vine/context/shared.md`, prose-inference fallback)
 
+**Wait for the report.** Verification is a gate, so the next step needs its result. If the
+agent is still running in the background, end your turn and continue here when its report
+arrives. A report that doesn't list the commands it ran with their exit codes counts as
+not verified.
+
 **For multi-PR features**: If PROJECT-MAP.md has a Milestones table with PR numbers, and
 `gh` CLI is available, review the prior PRs as part of integration verification:
 

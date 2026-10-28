@@ -88,7 +88,9 @@ The goal is informed decisions, not decision theater.
 
 Now propose the architecture. When a design decision requires deeper understanding of how
 existing code handles a similar problem, delegate to the `vine-codebase-explorer` agent to
-research the specific area rather than reading broadly yourself.
+research the specific area rather than reading broadly yourself. The design decision depends on
+what it finds, so wait for its report: if it's still running in the background, end your turn and
+continue when it arrives.
 
 For each significant design decision:
 
