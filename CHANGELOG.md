@@ -4,6 +4,15 @@ All notable changes to VINE are documented here. Format follows [Keep a Changelo
 
 ## [Unreleased]
 
+### Fixed
+
+- Verification can no longer read as green before it runs (#168). navigate, pair and evolve
+  now wait for the `vine-verification` report before the next step, and inquire waits for the
+  `vine-codebase-explorer` report it designs from. The agent states it is a gate, reports a
+  check it couldn't run as not run, and lists each command with its exit code; callers treat a
+  report with no commands as not verified. The README recommends `CLAUDE_CODE_FORK_SUBAGENT=0`
+  so Claude can wait in interactive sessions.
+
 ## [0.5.0] - 2026-07-04
 
 This set comes out of a clean-environment onboarding audit: repeated cold runs of

@@ -115,6 +115,11 @@ affected files (lint, typecheck, tests) — the agent reads the `## Validation` 
 `.vine/context/shared.md` (prose-inference fallback when absent). If `.vine/context/pair.md`
 defines custom validation commands, pass those to the agent instead.
 
+**Wait for the report.** Verification is a gate, so the next step needs its result. If the
+agent is still running in the background, end your turn and continue here when its report
+arrives. A report that doesn't list the commands it ran with their exit codes counts as
+not verified.
+
 Fix any issues before moving to the commit step.
 
 ## Commit

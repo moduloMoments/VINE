@@ -232,6 +232,11 @@ The agent reads the `## Validation` block in `.vine/context/shared.md` for the c
 validation commands, pass those to the agent — the overlay overrides the defaults entirely, it
 knows this project's toolchain.
 
+**Wait for the report.** Verification is a gate, so the next step needs its result. If the
+agent is still running in the background, end your turn and continue here when its report
+arrives. A report that doesn't list the commands it ran with their exit codes counts as
+not verified.
+
 If validation fails, fix the issues within the same slice. Don't commit broken code or carry
 failures to the next slice.
 
@@ -410,8 +415,10 @@ phase group boundary before showing the completion block:
    - Each slice in the group with its acceptance criteria from SPEC.md
    - Custom validation commands from `.vine/context/navigate.md`, if defined
 
-   The agent runs the base checks for that scope and reports without fixing. When the
-   report comes back:
+   The agent runs the base checks for that scope and reports without fixing. Wait for the
+   report before suggesting a PR: if the agent is still running in the background, end your
+   turn and continue here when it arrives. A report that doesn't list the commands it ran
+   with their exit codes counts as not verified. When the report comes back:
 
    - **Acceptance Criteria section**: present the agent's rollup to the engineer. If any
      criteria are unmet, resolve them before proceeding.

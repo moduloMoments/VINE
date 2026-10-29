@@ -363,6 +363,15 @@ against accidental auto-delegation (agent definitions carry no `disable-model-in
 today), a write-capable autonomous coder shouldn't be a live delegation target in every install. The
 verification and exploration agents work the same whether a human or `vine-coder` drives the work.
 
+**Verification waits.** Claude Code starts subagents in the background by default, and the
+desktop app and VS Code always do. The phases tell Claude to wait for `vine-verification`'s
+report before committing, but in interactive sessions Claude can only wait once fork mode is off.
+Add this to your `settings.json` and restart Claude Code:
+
+```json
+{ "env": { "CLAUDE_CODE_FORK_SUBAGENT": "0" } }
+```
+
 VINE owns the role recipes and the ticket convention; the platform owns how a role is invoked (the
 sub-agent, a CI trigger) — VINE never implements an agent runner. See the
 [State Reference](references/CONTRACTS.md) for the journal and handoff contracts, and the ticket
